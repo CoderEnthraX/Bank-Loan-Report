@@ -70,14 +70,10 @@ showTable = input.bool(true, "Show Table", group = GRP_D)
 tablePos  = input.string("Top Right", "Position", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = GRP_D)
 tableSize = input.string("Small", "Text Size", options = ["Tiny", "Small", "Normal"], group = GRP_D)
 tableTz   = input.string("Asia/Kolkata", "Date Timezone", options = ["Asia/Kolkata", "Exchange", "UTC", "America/New_York", "Europe/London", "Asia/Dubai", "Asia/Singapore"], group = GRP_D, tooltip = "Timezone used for the DATA RANGE dates. TRADING DAY always shows the exchange's trading date.")
-HZ_PROFIT = "In profit at horizon"
-HZ_TP1    = "TP1 reached within horizon"
-HZ_TP4    = "TP4 reached within horizon"
-showHz    = input.bool(true, "Show Time-Horizon Accuracy", group = GRP_D)
-hzMode    = input.string(HZ_PROFIT, "Accuracy Means", options = [HZ_PROFIT, HZ_TP1, HZ_TP4], group = GRP_D, tooltip = "How a filled trade is judged at each horizon (counted over all loaded bars):\nIn profit at horizon: the trade is above entry (long) / below entry (short) when the horizon is reached; a trade that already hit TP4 counts as a win, a trade that already hit the stop as a loss.\nTP1 reached within horizon: TP1 was touched before the horizon ended.\nTP4 reached within horizon: the full +2R target was hit before the horizon ended.")
-hz1Min    = input.int(60, "Horizons (minutes)", minval = 1, inline = "hz", group = GRP_D)
-hz2Min    = input.int(90, "", minval = 1, inline = "hz", group = GRP_D)
-hz3Min    = input.int(120, "", minval = 1, inline = "hz", group = GRP_D, tooltip = "Time after the fill at which each accuracy is measured. Converted to bars of the chart timeframe (60 min = 12 bars on a 5-minute chart).")
+showRr    = input.bool(true, "Show Win Rate by R Level", group = GRP_D)
+rr1       = input.float(1.0, "R Levels", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D)
+rr2       = input.float(1.5, "", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D)
+rr3       = input.float(2.0, "", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D, tooltip = "WIN RATE rows: the share of closed trades whose price reached this many R in profit before the stop was hit.")
 
 GRP_A = "ALERTS"
 alertsOn = input.bool(true, "alert() Messages (armed / filled / targets / stop)", group = GRP_A, tooltip = "Create one alert with the condition 'Any alert() function call' to receive every event with its prices.")
@@ -104,9 +100,7 @@ f_r(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
 
 f_pct(int wins, int losses) => wins + losses > 0 ? str.tostring(math.round(100.0 * wins / (wins + losses))) + "%" : "0%"
 
-f_hzBars(int mins) => math.max(1, math.round(mins * 60.0 / timeframe.in_seconds()))
-
-f_hzLabel(int mins) => mins >= 60 ? str.tostring(mins / 60.0, "#.##") + "H" : str.tostring(mins) + "M"
+f_rLabel(float x) => str.tostring(x, "#.##") + "R"
 
 // ═══════════════════════════════════ VWAP (session) ═══════════════════════════════════
 // Volume weighted when the symbol has volume, equal weights (TWAP) when it has none.
@@ -182,20 +176,21 @@ var float  totR     = 0.0
 var string lastRes  = "—"
 var int    firstTime = time
 
-// time-horizon accuracy: one slot per horizon (1H / 1.5H / 2H by default)
-var array<int>  hzWins  = array.new_int(3, 0)
-var array<int>  hzTotal = array.new_int(3, 0)
-var array<bool> hzDone  = array.new_bool(3, true)
-var array<int>  hzLen   = array.from(f_hzBars(hz1Min), f_hzBars(hz2Min), f_hzBars(hz3Min))
+// win rate by R level: how many closed trades reached +1R / +1.5R / +2R before the stop
+var float        trRisk = na
+var float        bestPx = na
+var array<float> rrLv   = array.from(rr1, rr2, rr3)
+var array<int>   rrHit  = array.new_int(3, 0)
 
-// records the outcome of the live trade at horizon k (once per trade)
-f_hzRecord(int k, bool win) =>
-    if not array.get(hzDone, k)
-        array.set(hzDone, k, true)
-        array.set(hzTotal, k, array.get(hzTotal, k) + 1)
-        if win
-            array.set(hzWins, k, array.get(hzWins, k) + 1)
-    k
+// called once when a trade closes: credits every R level its best price reached
+f_rrRecord(bool isL, bool win) =>
+    float d = isL ? 1.0 : -1.0
+    for k = 0 to 2
+        float lvR = array.get(rrLv, k)
+        float lvl = math.round_to_mintick(lim + d * lvR * trRisk)
+        if win ? lvR <= tp4R : d * (bestPx - lvl) >= 0
+            array.set(rrHit, k, array.get(rrHit, k) + 1)
+    win
 
 if newDay
     dayFills := 0
@@ -218,13 +213,9 @@ if math.abs(st) == 2 and bar_index > fillBar
     bool tp4Hit  = isL ? high >= t4 : low <= t4
     int  reached = (isL ? high >= t3 : low <= t3) ? 3 : (isL ? high >= t2 : low <= t2) ? 2 : (isL ? high >= t1 : low <= t1) ? 1 : 0
     tpHit := math.max(tpHit, reached)
-    int   elapsed = bar_index - fillBar
-    float liveMv  = isL ? close - lim : lim - close
-    for k = 0 to 2
-        if stopHit or tp4Hit
-            f_hzRecord(k, hzMode == HZ_PROFIT ? not stopHit : hzMode == HZ_TP1 ? tpHit >= 1 : tp4Hit and not stopHit)
-        else if elapsed >= array.get(hzLen, k)
-            f_hzRecord(k, hzMode == HZ_PROFIT ? liveMv > 0 : hzMode == HZ_TP1 ? tpHit >= 1 : false)
+    // best price after the fill; a stop bar adds nothing (order inside that bar is unknown)
+    if not stopHit
+        bestPx := isL ? math.max(bestPx, high) : math.min(bestPx, low)
     box.set_right(gBox, bar_index)
     box.set_right(rBox, bar_index)
     line.set_x2(eLine, bar_index)
@@ -235,6 +226,7 @@ if math.abs(st) == 2 and bar_index > fillBar
         // stop checked first: a bar touching both is counted as a loss
         bool  win = not stopHit
         float res = win ? tp4R : -1.0
+        f_rrRecord(isL, win)
         totR     += res
         dayR     += res
         totW     += win ? 1 : 0
@@ -257,7 +249,7 @@ if math.abs(st) == 1 and bar_index > armBar
         tpHit    := 0
         tpBefore := 0
         dayFills += 1
-        array.fill(hzDone, false)
+        bestPx   := lim
         longFill  := isL
         shortFill := not isL
         if not na(limLine)
@@ -279,8 +271,7 @@ if math.abs(st) == 1 and bar_index > armBar
             lastExit := bar_index
             st       := 0
             stopEvent := true
-            for k = 0 to 2
-                f_hzRecord(k, false)
+            f_rrRecord(isL, false)
     else if bar_index - armBar >= retestBars
         if not na(limLine)
             line.delete(limLine)
@@ -305,6 +296,7 @@ if canArm and (bullDisp or bearDisp)
         armBar := bar_index
         lim    := math.round_to_mintick(entry)
         stp    := math.round_to_mintick(stop)
+        trRisk := risk
         t1     := math.round_to_mintick(lim + d * tp1R * risk)
         t2     := math.round_to_mintick(lim + d * tp2R * risk)
         t3     := math.round_to_mintick(lim + d * tp3R * risk)
@@ -353,7 +345,7 @@ f_row(table tb, int r, string k, string v, color vc, color bg, string sz, string
 var table mon = na
 if showTable and barstate.islast
     if na(mon)
-        mon := table.new(f_pos(tablePos), 2, showHz ? 20 : 17, bgcolor = color.new(#1E222D, 0), border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
+        mon := table.new(f_pos(tablePos), 2, showRr ? 20 : 17, bgcolor = color.new(#1E222D, 0), border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
     string sz     = f_size(tableSize)
     color  white  = color.new(#FFFFFF, 0)
     color  cellBg = color.new(#1E222D, 0)
@@ -390,13 +382,14 @@ if showTable and barstate.islast
     f_row(mon, 12, "TRADING DAY", str.format_time(time_tradingday, "EEE dd MMM yyyy", "UTC"), white, cellBg, sz, "MODEL DAY and FILLS / CAP count this trading day only. A trade is credited on the day it exits.")
     f_row(mon, 13, "MODEL DAY", str.tostring(dayW) + "W/" + str.tostring(dayL) + "L · " + f_pct(dayW, dayL) + " · " + f_r(dayR), dayR >= 0 ? posC : negC, cellBg, sz)
     f_row(mon, 14, "FILLS / CAP", str.tostring(dayFills) + "/" + str.tostring(maxFills), white, cellBg, sz)
-    f_row(mon, 15, "DATA RANGE", str.format_time(firstTime, "dd MMM yyyy", tz) + " → " + str.format_time(time, "dd MMM yyyy HH:mm", tz) + " · " + str.tostring(bar_index + 1) + " bars", white, cellBg, sz, "LOADED BARS and the accuracy rows cover every trade from the first to the last bar loaded on the chart.")
+    f_row(mon, 15, "DATA RANGE", str.format_time(firstTime, "dd MMM yyyy", tz) + " → " + str.format_time(time, "dd MMM yyyy HH:mm", tz) + " · " + str.tostring(bar_index + 1) + " bars", white, cellBg, sz, "LOADED BARS and the WIN RATE rows cover every trade from the first to the last bar loaded on the chart.")
     f_row(mon, 16, "LOADED BARS", lastRes + " · " + f_pct(totW, totL) + " · " + f_r(totR), totR >= 0 ? posC : negC, cellBg, sz)
-    if showHz
-        string hzTip = "Accuracy = " + hzMode + ", over all filled trades in the DATA RANGE. Trades still running before the horizon are not counted yet."
+    if showRr
+        int    closed = totW + totL
+        string rrTip  = "Share of closed trades in the DATA RANGE whose price reached this many R in profit before the stop (the live trade is counted once it closes). Trades exit at TP4 (+" + str.tostring(tp4R, "#.##") + "R) or the stop, so the TP4 level equals the model's win rate. Green = above the break-even win rate for that R."
         for k = 0 to 2
-            int    w_  = array.get(hzWins, k)
-            int    n_  = array.get(hzTotal, k)
-            int    mn  = k == 0 ? hz1Min : k == 1 ? hz2Min : hz3Min
-            string val = n_ > 0 ? str.tostring(math.round(100.0 * w_ / n_)) + "% · " + str.tostring(w_) + "/" + str.tostring(n_) : "—"
-            f_row(mon, 17 + k, "ACCURACY " + f_hzLabel(mn), val, n_ == 0 ? white : 100.0 * w_ / n_ >= 50 ? posC : negC, cellBg, sz, hzTip)
+            int    hits = array.get(rrHit, k)
+            float  lvR  = array.get(rrLv, k)
+            float  pct  = closed > 0 ? 100.0 * hits / closed : 0.0
+            string val  = closed > 0 ? str.tostring(math.round(pct)) + "% · " + str.tostring(hits) + "/" + str.tostring(closed) : "—"
+            f_row(mon, 17 + k, "WIN RATE " + f_rLabel(lvR), val, closed == 0 ? white : pct >= 100.0 / (1.0 + lvR) ? posC : negC, cellBg, sz, rrTip)
