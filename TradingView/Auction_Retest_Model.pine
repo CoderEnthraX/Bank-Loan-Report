@@ -188,7 +188,7 @@ f_rrRecord(bool isL, bool win) =>
     for k = 0 to 2
         float lvR = array.get(rrLv, k)
         float lvl = math.round_to_mintick(lim + d * lvR * trRisk)
-        if win ? lvR <= tp4R : d * (bestPx - lvl) >= 0
+        if win ? lvR <= tp4R : d * (lvl - lim) > 0 and d * (bestPx - lvl) >= 0
             array.set(rrHit, k, array.get(rrHit, k) + 1)
     win
 
@@ -213,7 +213,7 @@ if math.abs(st) == 2 and bar_index > fillBar
     bool tp4Hit  = isL ? high >= t4 : low <= t4
     int  reached = (isL ? high >= t3 : low <= t3) ? 3 : (isL ? high >= t2 : low <= t2) ? 2 : (isL ? high >= t1 : low <= t1) ? 1 : 0
     tpHit := math.max(tpHit, reached)
-    // best price after the fill; a stop bar adds nothing (order inside that bar is unknown)
+    // best price after the fill; the fill bar and a stop bar add nothing (order inside a bar is unknown)
     if not stopHit
         bestPx := isL ? math.max(bestPx, high) : math.min(bestPx, low)
     box.set_right(gBox, bar_index)
@@ -289,7 +289,7 @@ if canArm and (bullDisp or bearDisp)
     float sStop = isL ? swingLow - stopBufAtr * atr : swingHigh + stopBufAtr * atr
     float stop  = stopMode == STOP_ATR ? cStop : isL ? math.max(sStop, cStop) : math.min(sStop, cStop)
     float risk  = d * (entry - stop)
-    if risk > 0
+    if risk >= syminfo.mintick and math.round_to_mintick(stop) != math.round_to_mintick(entry)
         if not na(limLine)
             line.delete(limLine)
         st     := isL ? 1 : -1
@@ -361,8 +361,7 @@ if showTable and barstate.islast
     color  stBg   = act ? (st == 2 ? green : red) : armed ? orange : grey
     color  rgBg   = regime == "TRENDING" ? green : regime == "TRANSITION" ? orange : pink
     color  biasC  = bias == "BULLISH" ? color.new(#69F0AE, 0) : bias == "BEARISH" ? color.new(#FF80AB, 0) : white
-    float  risk   = has ? math.abs(lim - stp) : na
-    float  liveR  = act and risk > 0 ? (st == 2 ? close - lim : lim - close) / risk : na
+    float  liveR  = act and trRisk > 0 ? (st == 2 ? close - lim : lim - close) / trRisk : na
     table.cell(mon, 0, 0, "AUCTION RETEST", text_color = white, bgcolor = color.new(#29A3E0, 0), text_size = sz)
     table.cell(mon, 1, 0, "MODEL MONITOR", text_color = white, bgcolor = color.new(#3D8FD6, 0), text_size = sz)
     f_row(mon, 1, "STATE", stTxt, white, stBg, sz)
