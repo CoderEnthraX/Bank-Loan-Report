@@ -1,65 +1,55 @@
-# VWAP Orderflow Sniper [Absorption + Aggression]
+# TradingView indicators
 
-A TradingView indicator (Pine Script v6) built on top of TradingView's built-in **VWAP** indicator. The original VWAP, anchor periods and the three bands work exactly as before. On top of them it adds orderflow-based **BUY / SELL signals** with **Entry / Stop Loss / Target boxes**.
-
-File: [`VWAP_Orderflow_Sniper.pine`](VWAP_Orderflow_Sniper.pine)
+| File | What it is |
+|---|---|
+| [`Auction_Retest_Model.pine`](Auction_Retest_Model.pine) | **Auction Retest Model**: session VWAP + displacement + time-limited retest. It reproduces the trade logic seen on the *Auction Retest Pro* reference screenshots. |
+| [`VWAP_Orderflow_Sniper.pine`](VWAP_Orderflow_Sniper.pine) | The earlier VWAP + absorption/aggression orderflow indicator. |
 
 ## Install
 
-1. In TradingView, open **Pine Editor**, then choose **Open → New blank indicator**.
-2. Delete everything in the editor, then paste the full contents of `VWAP_Orderflow_Sniper.pine`.
-3. Click **Save**, then **Add to chart**.
-4. The symbol needs volume data. Forex/CFD gold such as `OANDA:XAUUSD` provides tick volume, which works. Symbols without volume show the original *"No volume is provided"* error.
+1. In TradingView, open **Pine Editor** and choose **Open → New blank indicator**.
+2. Paste the whole `.pine` file, then click **Save** and **Add to chart**.
+3. Use a 5-minute chart. Futures and FX with volume give a true VWAP. Symbols without volume (e.g. `NSE:NIFTY`) automatically use a time-weighted average instead.
 
-## Signal logic
+## Auction Retest Model: how a trade is built
 
-| Step | What it means | Chart output |
+Every rule below was measured from the reference screenshots: 12 fully measured trades on GC1! and EURUSD, plus checks on US Tech 100, MCX crude and Nifty.
+
+| Step | Rule | Default |
 |---|---|---|
-| **VWAP side** | Buys only when the candle closes **above** VWAP, sells only when it closes **below** VWAP. | Dashboard: *ABOVE ▲ BUYS ONLY* / *BELOW ▼ SELLS ONLY* |
-| **Delta** | Aggressive buy volume minus aggressive sell volume. Read from lower-timeframe intrabars (1m on intraday charts). If no intrabar data exists, it is estimated from the candle. | Dashboard: Bar Delta, Session CVD |
-| **Absorption** | High effort with a low result: heavy volume that fails to move price. Four detectors: rejection wick on high volume, delta against the candle, churn (huge volume with a tiny range at a local extreme), and delta divergence over N bars. It must happen at VWAP or Band #1. | **Pre Buy / Pre Sell Warning** bubble + absorption zone box |
-| **Aggression** | Initiative market orders. One side trades at least *Aggression Ratio* × the other side, on a full-bodied candle with at least average volume. | — |
-| **Signal** (Sniper mode) | An armed absorption setup, followed by aggression in the same direction, on the correct VWAP side, after the filters (CVD, distance from VWAP, optional VWAP slope, optional session). | **Buy / Sell Bubble**, trade boxes, signal label |
+| VWAP | Session VWAP, reset at each new trading day (03:30 IST for CME/ICE, 09:00 for MCX, 09:15 for NSE) | Session |
+| Side filter | Longs only when the displacement closes above VWAP; shorts only when it closes below | On |
+| Displacement | A confirmed candle closing beyond the highest high (long) or lowest low (short) of the previous 6 bars. Its body is ≥ 60 % of its range, it closes within 30 % of its extreme, and its range is ≥ 0.8 × ATR | 6 / 60 % / 30 % / 0.8 |
+| Armed | Limit = the shallower of the 50 % body level and the broken 6-bar level. A dashed line marks it for the retest window | 5 bars |
+| Filled | Price trades back into the limit: ▲ under the bar for a long, ▼ above the bar for a short. The trade boxes start on this bar | — |
+| Stop | Entry ∓ 1.8 × ATR(14) (an optional *Swing + Buffer* mode is available) | 1.8 |
+| Targets | TP1–TP4 = 0.6R / 1R / 1.5R / 2R. The trade ends at **TP4 (+2R)** or the **stop (−1R)** | 0.6/1/1.5/2 |
+| Controls | One trade at a time; a 2-bar cooldown after an exit; at most 5 fills per day | 2 / 5 |
 
-Other signal modes: **Aggression Only** (no absorption needed) and **Absorption Breakout** (a close beyond the absorption zone).
+**Model monitor table**, one row each:
 
-Signals are confirmed on bar close by default (*Confirm On Bar Close*), so they do not repaint.
+1. **STATE**: SCANNING / BUY or SELL RETEST ARMED / LONG or SHORT ACTIVE.
+2. **REGIME**: from the ADX and the DI spread.
+3. **BIAS**: from the DI spread.
+4. **ENTRY**: shown as LIMIT while the setup is armed.
+5. **STOP**.
+6. **TP1–TP4**.
+7. **LIVE / BARS**: the current R and the bars since the fill.
+8. **TARGETS HIT**: n/3.
+9. **MODEL DAY**: W/L, win % and R. A trade counts on the day it exits.
+10. **FILLS / CAP**.
+11. **LOADED BARS**: the last result, the win % and the total R over the loaded history.
 
-## Settings
+**Alerts**:
 
-**INSTITUTIONAL FLOW SETTINGS** (same three inputs as the reference screenshot)
-- **Aggression Ratio** `2.2`: the minimum buy/sell volume ratio for an aggressive candle.
-- **Absorption Sensitivity** `1.2`: the minimum relative volume for absorption. Lower values detect more absorption.
-- **Dynamic RR Base** `1.5`: the TP1 reward:risk in *Dynamic RR* mode, scaled up to 1.5× by the signal score (0–100). TP2 = 2× and TP3 = 3× that RR.
+- Fixed alerts: Buy/Sell Retest Armed, Entry Filled, Target Hit and Stop Hit.
+- Full details: one alert with **Any alert() function call** sends every event with its prices.
 
-**VWAP Settings / Bands Settings**: unchanged from the built-in VWAP.
+### Accuracy notes
 
-**TRADE LEVELS (ENTRY / STOP / TARGET)**: all levels can be set manually.
-- Entry: *Signal Close*, *Signal Bar Midpoint* (limit) or *VWAP Retest* (limit), plus an optional offset.
-- Stop Loss: *Absorption / Swing* (beyond the absorption zone + an ATR buffer, clamped between min and max ATR), *ATR*, *Fixed Points*, or *Percent*.
-- Targets: *Dynamic RR*, *Fixed RR* (TP1/TP2/TP3), or *Fixed Points* (TP1/TP2/TP3), with 1–3 targets.
-- Stop management: *None*, *Breakeven after TP1*, or *Step Trail* (BE after TP1, then TP1 after TP2).
+- The entry rule matched all 12 measured trades to within one or two ticks.
+- The 1.8 × ATR stop matched 10 of 12. Two shorts in the screenshots had tighter stops, just beyond the displacement candle, and no rule fitted them consistently.
+- The reference uses a closed-source script, so a few internals could not be measured from photos: the exact ATR length, and how the vendor treats a bar that touches both the stop and TP4. Expect most trades to match, but a few may differ by a bar or a tick. All of these settings are inputs.
+- REGIME and BIAS are informational only. The reference trades in every regime.
 
-**BUY / SELL BOX SETTINGS**
-- Fill and border colours for the buy box (target / stop) and the sell box (target / stop).
-- Border width and border style (solid, dashed, dotted).
-- Box length (this is also the maximum trade duration), cutting boxes at the exit bar, price text inside boxes, and text colour and size.
-- Absorption zone boxes (bull/bear colours and length).
-
-**SIGNAL LABELS**: a BUY/SELL label with score, Entry, SL and TPs. Hover over it for aggression ratio, relative volume, delta and risk. The result (✓ TP hit / ✗ SL / ⌛ time exit) is added to the label when the trade closes.
-
-**Style tab**: Buy Bubble, Sell Bubble, Pre Buy Warning and Pre Sell Warning (colour, shape, location), VWAP and bands, plus Boxes / Labels / Tables visibility.
-
-**DASHBOARD**: VWAP, price side, bar delta, session CVD, aggression, absorption, setup state, relative volume, delta feed, the open trade, signal count, win rate (TP1 reached vs. stop hit) and TP1/TP2/TP3 hit counts.
-
-## Alerts
-
-- Fixed alerts: **Buy Signal**, **Sell Signal**, **Pre Buy Warning**, **Pre Sell Warning**.
-- Full trade plan: create an alert with **Any alert() function call** to get `BUY XAUUSD [5] Entry … | SL … | TP1 … | TP2 … | TP3 … | Score …`.
-
-## Notes
-
-- Pine Script cannot read real footprint or bid/ask data on most plans. Delta here is built from lower-timeframe intrabars (or a candle estimate), which is the standard approximation for orderflow in Pine.
-- Intrabar data is limited to 100,000 lower-timeframe bars. Older chart bars fall back to the candle estimate automatically, and the dashboard shows which feed is active.
-- The win-rate statistics are a rough guide: stops are checked before targets inside the same candle. Use them to tune settings, not as a backtest.
-- For educational use only. This is not financial advice.
+For educational use only. This is not financial advice.

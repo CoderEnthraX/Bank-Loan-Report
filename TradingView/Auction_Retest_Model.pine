@@ -4,13 +4,13 @@
 //
 //  1. SESSION VWAP is the auction's fair value. Longs are only armed above it, shorts below it.
 //  2. DISPLACEMENT: a confirmed candle that closes beyond the highest high / lowest low of the
-//     previous N bars (structure break) with real range (≥ k × ATR), a dominant body and a
-//     close near its extreme.
+//     previous 6 bars (structure break) with real range, a dominant body (≥ 60 % of the range)
+//     and a close near its extreme.
 //  3. ARMED: a limit is placed at the retest level — the broken structure level or 50 % of the
 //     displacement body, whichever is closer to price (shallow retest, no impulse chasing).
 //     A short dashed line marks it for the length of the retest window.
 //  4. FILLED: price trades back into the limit inside the window → ▲ / ▼ marker, the stop box
-//     (structural invalidation, capped in ATR) and the target box with TP1–TP4 (0.6/1/1.5/2 R).
+//     (invalidation 1.8 × ATR from the entry) and the target box with TP1–TP4 (0.6/1/1.5/2 R).
 //  5. The trade ends at TP4 (+2R) or the stop (−1R). Cooldown and a daily fill cap apply.
 // ═══════════════════════════════════════════════════════════════════════════════════════
 indicator("Auction Retest Model [VWAP Displacement + Retest]", shorttitle = "ARM", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500)
@@ -19,15 +19,18 @@ indicator("Auction Retest Model [VWAP Displacement + Retest]", shorttitle = "ARM
 
 GRP_M = "AUCTION RETEST MODEL"
 sessInput    = input.session("0000-2359", "Trading Session", group = GRP_M, tooltip = "Setups are only armed and filled inside this session (exchange time).")
-structLen    = input.int(10, "Structure Lookback (bars)", minval = 2, group = GRP_M, tooltip = "The displacement candle must close beyond the highest high (long) / lowest low (short) of this many previous bars.")
+structLen    = input.int(6, "Structure Lookback (bars)", minval = 2, group = GRP_M, tooltip = "The displacement candle must close beyond the highest high (long) / lowest low (short) of this many previous bars.")
 retestBars   = input.int(5, "Retest Window (bars)", minval = 1, group = GRP_M, tooltip = "How many bars after the displacement the limit stays armed. Not filled in time = setup cancelled.")
 dispAtr      = input.float(0.8, "Min Displacement Range (x ATR)", minval = 0.0, step = 0.05, group = GRP_M)
-dispBodyPct  = input.float(50.0, "Min Displacement Body (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M)
+dispBodyPct  = input.float(60.0, "Min Displacement Body (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M)
 dispClosePct = input.float(30.0, "Max Close Distance From Extreme (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M, tooltip = "A bullish displacement must close in the top part of its range (bearish: bottom part).")
-stopLen      = input.int(6, "Stop Structure Lookback (bars)", minval = 1, group = GRP_M, tooltip = "Bars (including the displacement candle) scanned for the structural low / high that invalidates the setup.")
-stopBufAtr   = input.float(0.22, "Stop Buffer (x ATR)", minval = 0.0, step = 0.01, group = GRP_M)
-maxRiskAtr   = input.float(2.0, "Max Risk (x ATR)", minval = 0.1, step = 0.1, group = GRP_M, tooltip = "The stop is never placed further than this from the entry.")
-cooldownBars = input.int(3, "Cooldown After Exit (bars)", minval = 0, group = GRP_M)
+STOP_ATR   = "ATR Model"
+STOP_SWING = "Swing + Buffer (ATR capped)"
+stopMode     = input.string(STOP_ATR, "Stop Mode", options = [STOP_ATR, STOP_SWING], group = GRP_M, tooltip = "ATR Model: stop = entry -/+ Stop Distance x ATR (matches the reference trades).\nSwing + Buffer: beyond the lowest low / highest high of the last N bars plus a buffer, never further than Stop Distance x ATR.")
+stopAtr      = input.float(1.8, "Stop Distance (x ATR)", minval = 0.1, step = 0.1, group = GRP_M)
+stopLen      = input.int(6, "Swing Lookback (bars)", minval = 1, inline = "sw", group = GRP_M)
+stopBufAtr   = input.float(0.22, "Buffer (x ATR)", minval = 0.0, step = 0.01, inline = "sw", group = GRP_M)
+cooldownBars = input.int(2, "Cooldown After Exit (bars)", minval = 0, group = GRP_M)
 maxFills     = input.int(5, "Max Fills Per Day", minval = 1, group = GRP_M)
 atrLen       = input.int(14, "ATR Length", minval = 1, group = GRP_M)
 vwapFilter   = input.bool(true, "Longs Above VWAP / Shorts Below", group = GRP_M)
@@ -58,7 +61,8 @@ stopBorder = input.color(color.new(#FF4F8B, 0), "Border", inline = "s2", group =
 tpLineCol  = input.color(color.new(#69F0AE, 0), "TP Lines", inline = "s3", group = GRP_S)
 entryCol   = input.color(color.new(#FFFFFF, 0), "Entry Line", inline = "s3", group = GRP_S)
 limitCol   = input.color(color.new(#FFFFFF, 0), "Armed Limit (dashed)", inline = "s4", group = GRP_S)
-markCol    = input.color(color.new(#FFFFFF, 0), "Fill Marker", inline = "s4", group = GRP_S)
+markCol    = input.color(color.new(#FFFFFF, 0), "Long Fill ▲", inline = "s5", group = GRP_S)
+markColS   = input.color(color.new(#FFCDD2, 0), "Short Fill ▼", inline = "s5", group = GRP_S)
 boxBorderW = input.int(2, "Box Border Width", minval = 1, maxval = 4, group = GRP_S)
 
 GRP_D = "MODEL MONITOR"
@@ -89,7 +93,7 @@ f_px(float p) => str.tostring(p, format.mintick)
 
 f_r(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
 
-f_pct(int w, int l) => w + l > 0 ? str.tostring(math.round(100.0 * w / (w + l))) + "%" : "0%"
+f_pct(int wins, int losses) => wins + losses > 0 ? str.tostring(math.round(100.0 * wins / (wins + losses))) + "%" : "0%"
 
 // ═══════════════════════════════════ VWAP (session) ═══════════════════════════════════
 // Volume weighted when the symbol has volume, equal weights (TWAP) when it has none.
@@ -251,9 +255,9 @@ if canArm and (bullDisp or bearDisp)
     bool  isL   = bullDisp
     float d     = isL ? 1.0 : -1.0
     float entry = isL ? math.max(bodyMid, priorHigh) : math.min(bodyMid, priorLow)
+    float cStop = entry - d * stopAtr * atr
     float sStop = isL ? swingLow - stopBufAtr * atr : swingHigh + stopBufAtr * atr
-    float cStop = entry - d * maxRiskAtr * atr
-    float stop  = isL ? math.max(sStop, cStop) : math.min(sStop, cStop)
+    float stop  = stopMode == STOP_ATR ? cStop : isL ? math.max(sStop, cStop) : math.min(sStop, cStop)
     float risk  = d * (entry - stop)
     if risk > 0
         if not na(limLine)
@@ -276,7 +280,9 @@ bool tpEvent = math.abs(st) == 2 and tpHit > tpBefore
 
 plot(showVwap ? vwap : na, "VWAP", color = vwapCol, linewidth = 2)
 plotshape(longFill, "Long Fill", shape.triangleup, location.belowbar, color = markCol, size = size.tiny)
-plotshape(shortFill, "Short Fill", shape.triangledown, location.abovebar, color = markCol, size = size.tiny)
+plotshape(shortFill, "Short Fill", shape.triangledown, location.abovebar, color = markColS, size = size.tiny)
+plot(longFill ? 1 : 0, "Long Event", color = color.new(#00E676, 0), display = display.status_line + display.data_window)
+plot(shortFill ? 1 : 0, "Short Event", color = color.new(#FF5252, 0), display = display.status_line + display.data_window)
 
 // ═══════════════════════════════════════ ALERTS ═══════════════════════════════════════
 
@@ -337,7 +343,7 @@ if showTable and barstate.islast
     f_row(mon, 7, "TP2", has ? f_px(t2) : "—", white, cellBg, sz)
     f_row(mon, 8, "TP3", has ? f_px(t3) : "—", white, cellBg, sz)
     f_row(mon, 9, "TP4", has ? f_px(t4) : "—", white, cellBg, sz)
-    f_row(mon, 10, "LIVE / BARS", act ? f_r(liveR) + " · " + str.tostring(bar_index - fillBar + 1) : "—", act ? (liveR >= 0 ? color.new(#69F0AE, 0) : color.new(#FF80AB, 0)) : white, cellBg, sz)
+    f_row(mon, 10, "LIVE / BARS", act ? f_r(liveR) + " · " + str.tostring(bar_index - fillBar) : "—", act ? (liveR >= 0 ? color.new(#69F0AE, 0) : color.new(#FF80AB, 0)) : white, cellBg, sz)
     f_row(mon, 11, "TARGETS HIT", act ? str.tostring(tpHit) + "/3 reached" : "—", white, cellBg, sz)
     f_row(mon, 12, "MODEL DAY", str.tostring(dayW) + "W/" + str.tostring(dayL) + "L · " + f_pct(dayW, dayL) + " · " + f_r(dayR), dayR >= 0 ? color.new(#69F0AE, 0) : color.new(#FF80AB, 0), cellBg, sz)
     f_row(mon, 13, "FILLS / CAP", str.tostring(dayFills) + "/" + str.tostring(maxFills), white, cellBg, sz)
