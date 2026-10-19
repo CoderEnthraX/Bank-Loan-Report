@@ -16,7 +16,8 @@
 //     for the first impulse of a session against a previous session dominated by opposite
 //     impulses) and the target box with TP1–TP4 (0.6/1/1.5/2 R).
 //  5. The trade ends at TP4 (+2R) or the stop (−1R). One trade at a time, a 2-bar cooldown,
-//     5 fills per day and a −3R daily stop. Levels are kept unrounded, like the reference.
+//     5 fills per day and a −3R daily stop. Shortly after a trade, a new signal in its direction
+//     must break the extreme made since that trade's fill. Levels stay unrounded, like the reference.
 // ═══════════════════════════════════════════════════════════════════════════════════════
 indicator("Auction Retest Model [VWAP Displacement + Retest]", shorttitle = "ARM", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500)
 
@@ -47,6 +48,8 @@ biasNet      = input.int(3, "Prev Session Net Impulses", minval = 1, inline = "h
 cooldownBars = input.int(2, "Cooldown After Exit (bars)", minval = 0, group = GRP_M, tooltip = "Bars to wait after an exit before a new setup can be armed. 0 and 1 are the same: a setup is never armed on the exit bar itself.")
 maxFills     = input.int(5, "Max Fills Per Day", minval = 1, group = GRP_M)
 dayStopR     = input.float(3.0, "Daily Stop (R)", minval = 0.0, step = 0.5, group = GRP_M, tooltip = "No new setups for the rest of the day once the day's closed trades total this many R lost. 0 = off.")
+fillBarStopR = input.bool(false, "Count Fill-Bar Stops In Daily Stop", group = GRP_M, tooltip = "Off (reference behaviour): a trade stopped out on its own fill bar does not count toward the daily stop. It is still counted in MODEL DAY and LOADED BARS.")
+legReset     = input.bool(true, "Re-anchor Breakout After A Trade", group = GRP_M, tooltip = "Within Breakout Lookback bars of a closed trade's fill, a new signal in that trade's direction must break the high (long) / low (short) made since that fill instead of the full lookback.")
 atrLen       = input.int(14, "ATR Length", minval = 1, group = GRP_M)
 vwapFilter   = input.bool(true, "Longs Above VWAP / Shorts Below", group = GRP_M)
 slopeBars    = input.int(3, "VWAP Slope Bars", minval = 0, maxval = 500, group = GRP_M, tooltip = "Longs need the VWAP higher than this many bars ago, shorts lower. Skipped in the first bars of a new VWAP period. 0 = off.")
@@ -94,7 +97,7 @@ tableTz   = input.string("Asia/Kolkata", "Date Timezone", options = ["Asia/Kolka
 showRr    = input.bool(true, "Show Win Rate by R Level", group = GRP_D)
 rr1       = input.float(1.0, "R Levels", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D)
 rr2       = input.float(1.5, "", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D)
-rr3       = input.float(2.0, "", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D, tooltip = "WIN RATE rows: the share of closed trades whose price reached this many R in profit before the stop was hit.")
+rr3       = input.float(2.0, "", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D, tooltip = "WIN row: the share of closed trades whose price reached each of these R levels in profit before the stop was hit.")
 
 GRP_A = "ALERTS"
 alertsOn = input.bool(true, "alert() Messages (armed / filled / targets / stop)", group = GRP_A, tooltip = "Create one alert with the condition 'Any alert() function call' to receive every event with its prices.")
@@ -183,8 +186,9 @@ bool  bigCandle = rng > 0 and rng >= dispAtr * atr and body / rng * 100.0 >= dis
 bool  bullShape = close > open and bigCandle and (high - close) / rng * 100.0 <= dispClosePct + 1e-7 and slopeUp
 bool  bearShape = close < open and bigCandle and (close - low) / rng * 100.0 <= dispClosePct + 1e-7 and slopeDn
 bool  setupOk   = vwBars >= minOpenBars and not (skipSunday and dayofweek(time, "UTC") == dayofweek.sunday)
-bool  bullDisp  = setupOk and bullShape and close > priorHigh and (not vwapFilter or close > vwap) and (momAtr <= 0 or momMove >= momAtr * atr)
-bool  bearDisp  = setupOk and bearShape and close < priorLow and (not vwapFilter or close < vwap) and (momAtr <= 0 or -momMove >= momAtr * atr)
+// every displacement condition except the structure break, which is tested in step 3 (it can be re-anchored after a trade)
+bool  bullBase  = setupOk and bullShape and (not vwapFilter or close > vwap) and (momAtr <= 0 or momMove >= momAtr * atr)
+bool  bearBase  = setupOk and bearShape and (not vwapFilter or close < vwap) and (momAtr <= 0 or -momMove >= momAtr * atr)
 
 // ── counter-bias half stop ──
 // impulse = the displacement candle whose wick breaks the 10-bar extreme (no gates). Counted per session; the first
@@ -228,6 +232,8 @@ var line   l1       = na
 var line   l2       = na
 var line   l3       = na
 var bool   trHalf   = false   // the armed / live trade uses the half stop
+var int    lastFill = na      // fill bar and direction of the most recent trade
+var int    lastDir  = 0
 var array<box>  drawnBoxes = array.new<box>()
 var array<line> drawnLines = array.new<line>()
 
@@ -235,6 +241,7 @@ var int    dayFills = 0
 var int    dayW     = 0
 var int    dayL     = 0
 var float  dayR     = 0.0
+var float  dayRiskR = 0.0     // R counted toward the daily stop
 var int    totW     = 0
 var int    totL     = 0
 var float  totR     = 0.0
@@ -262,6 +269,7 @@ if newDay
     dayW     := 0
     dayL     := 0
     dayR     := 0.0
+    dayRiskR := 0.0
 
 bool longFill   = false
 bool shortFill  = false
@@ -295,6 +303,7 @@ if math.abs(st) == 2 and bar_index > fillBar
         f_rrRecord(isL, win)
         totR     += res
         dayR     += res
+        dayRiskR += res
         totW     += win ? 1 : 0
         dayW     += win ? 1 : 0
         totL     += win ? 0 : 1
@@ -313,6 +322,8 @@ if math.abs(st) == 1 and bar_index > armBar
     if touched and inSession and dayFills < maxFills
         st       := isL ? 2 : -2
         fillBar  := bar_index
+        lastFill := bar_index
+        lastDir  := isL ? 1 : -1
         tpHit    := 0
         tpBefore := 0
         dayFills += 1
@@ -343,6 +354,7 @@ if math.abs(st) == 1 and bar_index > armBar
         if isL ? low <= stp : high >= stp
             totR     += -1.0
             dayR     += -1.0
+            dayRiskR += fillBarStopR ? -1.0 : 0.0
             totL     += 1
             dayL     += 1
             lastRes  := "STOP " + f_r(-1.0)
@@ -361,7 +373,24 @@ if math.abs(st) == 1 and bar_index > armBar
 // ── 3. arm a new setup on a confirmed displacement candle ──
 // no new setup on the exit bar itself, then the cooldown
 bool cooled  = na(lastExit) or bar_index - lastExit >= math.max(cooldownBars, 1)
-bool dayOpen = dayStopR <= 0 or dayR > -dayStopR
+bool dayOpen = dayStopR <= 0 or dayRiskR > -dayStopR
+// structure break: the 10-bar extreme, or shortly after a closed trade the extreme since its fill (same direction only)
+int   legN    = na(lastFill) ? 0 : bar_index - lastFill
+bool  legOn   = legReset and math.abs(st) != 2 and legN > 0 and legN < structLen
+float brkHigh = priorHigh
+float brkLow  = priorLow
+if legOn
+    float legHigh = high[1]
+    float legLow  = low[1]
+    for j = 1 to legN
+        legHigh := math.max(legHigh, high[j])
+        legLow  := math.min(legLow, low[j])
+    if lastDir == 1
+        brkHigh := legHigh
+    else
+        brkLow := legLow
+bool bullDisp = bullBase and close > brkHigh
+bool bearDisp = bearBase and close < brkLow
 bool canArm  = barstate.isconfirmed and inSession and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
 bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
 if canArm and (bullDisp or bearDisp) and not keepArm

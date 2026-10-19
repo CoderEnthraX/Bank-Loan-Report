@@ -21,12 +21,13 @@ The rules below were fitted to **80 trades of the original indicator**. They wer
 | Side filter | Longs only when the displacement closes above VWAP and VWAP is higher than 3 bars ago. Shorts only when it closes below and VWAP is lower | On / 3 bars |
 | Displacement | A confirmed candle closing beyond the highest high (long) or lowest low (short) of the previous **10** bars. Its body is ≥ 55 % of its range, it closes within 25 % of its extreme, its range is ≥ 0.8 × ATR, and its close is ≥ 0.85 × ATR beyond the close 10 bars earlier | 10 / 55 % / 25 % / 0.8 / 0.85 |
 | Skipped | The first bar after a VWAP reset, and bars opening on Sunday (UTC), the thin weekly reopen | 1 bar / On |
+| Re-anchored break | Within 10 bars of a closed trade's fill, a new signal in that trade's direction must break the high (long) / low (short) made since that fill instead of the 10-bar extreme | On |
 | Armed | Limit = the shallower of the 50 % body level and the 6-bar high (long) or low (short) before the candle. A dashed line marks it for the retest window. A newer candle in the same direction does not move an armed limit; an opposite one replaces it | 5 bars |
 | Filled | Price trades back into the limit: ▲ under the bar for a long, ▼ above the bar for a short. The trade boxes start on this bar, and the stop is also checked on it | — |
 | Stop | Entry ∓ 1.8 × ATR(14) of the displacement candle (an optional *Swing + Buffer* mode is available) | 1.8 |
 | Half stop | The first impulse of a session in a direction, when the previous session had at least 3 more impulses the other way (bull minus bear), uses entry ∓ 0.9 × ATR, or just beyond the displacement candle if that is further. An *impulse* is the displacement candle whose wick breaks the 10-bar high/low, counted with no other gates | 0.9 / 3 |
 | Targets | TP1–TP4 = 0.6R / 1R / 1.5R / 2R. The trade ends at **TP4 (+2R)** or the **stop (−1R)**. Levels are kept unrounded, like the original | 0.6/1/1.5/2 |
-| Controls | One trade at a time (trades carry over to the next session); a 2-bar cooldown after an exit; at most 5 fills per day; no new setups after −3R on the day | 2 / 5 / 3R |
+| Controls | One trade at a time (trades carry over to the next session); a 2-bar cooldown after an exit; at most 5 fills per day; no new setups after −3R on the day (a trade stopped out on its own fill bar does not count toward this daily stop) | 2 / 5 / 3R |
 
 **Model monitor table** (10 compact rows; hover a row for its tooltip):
 
@@ -49,9 +50,9 @@ The rules below were fitted to **80 trades of the original indicator**. They wer
 
 The model was replayed bar by bar on the same 5-minute data as the 80 original trades:
 
-- **75 of 80** original trades are reproduced on the exact candle, with the same direction, entry and stop. The first version matched 50.
-- **6** trades are extra (the first version had 38), and **5** original trades are missed. Most of the rest trace back to one US30 morning, where a spike wick in this data feed shifts the first signal.
-- **Entries:** every original entry is the body mid or the 6-bar level of a 10-bar breakout candle. The exception is two US30 shorts on 7 Oct, where one spike wick blocks the breakout in this data.
+- **79 of 80** original trades are reproduced on the exact candle, with the same direction, entry and stop. The first version matched 50.
+- **3** trades are extra (the first version had 38) and **1** original trade is missed. The remaining differences are borderline cases: an ETH long whose breakout clears the 10-bar high by only 0.15, so the model arms one bar before the original (one extra plus the one miss); a CRUDE long where the VWAP slope is barely positive; and a NIFTY short whose setup matches a SENSEX trade the original did take.
+- **Entries:** every original entry is the body mid or the 6-bar level of a breakout candle, including the US30 7 Oct shorts, which need the re-anchored break after the 05:30 trade.
 - **Stops:** all 80 original stops are reproduced: 72 at 1.8 × ATR(14) and the 8 half stops at 0.9 × ATR (or just beyond the displacement candle), which the half-stop rule picks out exactly. It also explains why NIFTY and SENSEX took the same 9 Oct long with different stops: SENSEX had an earlier impulse that session, NIFTY did not.
 - **Win rate:** across the exported history the model wins 33–39 % per symbol at +2R / −1R. This is the same range as the original's LOADED BARS readings (34–38 %).
 - REGIME and BIAS are informational only. The reference trades in every regime.
