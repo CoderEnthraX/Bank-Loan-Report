@@ -24,39 +24,35 @@ The rules below were fitted to **80 trades of the original indicator**. They wer
 | Armed | Limit = the shallower of the 50 % body level and the 6-bar high (long) or low (short) before the candle. A dashed line marks it for the retest window. A newer candle in the same direction does not move an armed limit; an opposite one replaces it | 5 bars |
 | Filled | Price trades back into the limit: ▲ under the bar for a long, ▼ above the bar for a short. The trade boxes start on this bar, and the stop is also checked on it | — |
 | Stop | Entry ∓ 1.8 × ATR(14) of the displacement candle (an optional *Swing + Buffer* mode is available) | 1.8 |
+| Half stop | The first impulse of a session in a direction, when the previous session had at least 3 more impulses the other way (bull minus bear), uses entry ∓ 0.9 × ATR, or just beyond the displacement candle if that is further. An *impulse* is the displacement candle whose wick breaks the 10-bar high/low, counted with no other gates | 0.9 / 3 |
 | Targets | TP1–TP4 = 0.6R / 1R / 1.5R / 2R. The trade ends at **TP4 (+2R)** or the **stop (−1R)**. Levels are kept unrounded, like the original | 0.6/1/1.5/2 |
 | Controls | One trade at a time (trades carry over to the next session); a 2-bar cooldown after an exit; at most 5 fills per day; no new setups after −3R on the day | 2 / 5 / 3R |
 
-**Model monitor table**, one row each:
+**Model monitor table** (10 compact rows; hover a row for its tooltip):
 
 1. **STATE**: SCANNING / BUY or SELL RETEST ARMED / LONG or SHORT ACTIVE / DAY CAP REACHED / DAILY STOP HIT.
-2. **REGIME**: from the ADX and the DI spread.
-3. **BIAS**: from the DI spread.
-4. **ENTRY**: shown as LIMIT while the setup is armed.
-5. **STOP**.
-6. **TP1–TP4**.
-7. **LIVE / BARS**: the current R and the bars since the fill.
-8. **TARGETS HIT**: n/3.
-9. **TRADING DAY**: the date the MODEL DAY row covers.
-10. **MODEL DAY**: W/L, win % and R. A trade counts on the day it exits.
-11. **FILLS / CAP**.
-12. **DATA RANGE**: the first and last loaded bar and the bar count.
-13. **LOADED BARS**: the last result, the win % and the total R over the loaded history.
-14. **WIN RATE 1R / 1.5R / 2R**: the share of closed trades that reached that profit before the stop. The levels can be changed in the settings.
+2. **REGIME / BIAS**: regime with the ADX, then the DI bias.
+3. **ENTRY / STOP** (LIMIT / STOP while armed). A **½** marks a half stop.
+4. **TP1 · TP2 · TP3 · TP4**.
+5. **LIVE · BARS · HIT**: the current R, the bars since the fill and TP1–TP3 reached.
+6. **MODEL DAY**: the trading date, W/L, win %, R and fills / daily cap. A trade counts on the day it exits.
+7. **LOADED BARS**: the last result, the win % and the total R over the loaded history.
+8. **DATA RANGE**: the first and last loaded bar and the bar count.
+9. **WIN 1R · 1.5R · 2R**: the share of closed trades that reached each profit level before the stop, plus the trade count. The levels can be changed in the settings.
 
 **Alerts**:
 
-- Fixed alerts: Buy/Sell Retest Armed, Entry Filled, Target Hit and Stop Hit.
+- Fixed alerts: Buy/Sell Retest Armed, Entry Filled, Target Hit, Stop Hit and Retest Cancelled (the armed limit expired or was replaced, so cancel a working order).
 - Full details: one alert with **Any alert() function call** sends every event with its prices.
 
 ### Accuracy notes
 
 The model was replayed bar by bar on the same 5-minute data as the 80 original trades:
 
-- **71 of 80** original trades are reproduced on the exact candle, with the same direction, entry and stop. The previous version matched 50.
-- **9** trades are extra (the previous version had 38), and **9** original trades are missed.
+- **75 of 80** original trades are reproduced on the exact candle, with the same direction, entry and stop. The first version matched 50.
+- **6** trades are extra (the first version had 38), and **5** original trades are missed. Most of the rest trace back to one US30 morning, where a spike wick in this data feed shifts the first signal.
 - **Entries:** every original entry is the body mid or the 6-bar level of a 10-bar breakout candle. The exception is two US30 shorts on 7 Oct, where one spike wick blocks the breakout in this data.
-- **Stops:** 72 of the 80 original stops are exactly 1.8 × ATR(14). The other 8 are about half that (0.9 × ATR, or just beyond the displacement candle). No rule in the data separates them, so the model always uses 1.8 × ATR. On those trades the original exits earlier, and this causes most of the remaining misses.
+- **Stops:** all 80 original stops are reproduced: 72 at 1.8 × ATR(14) and the 8 half stops at 0.9 × ATR (or just beyond the displacement candle), which the half-stop rule picks out exactly. It also explains why NIFTY and SENSEX took the same 9 Oct long with different stops: SENSEX had an earlier impulse that session, NIFTY did not.
 - **Win rate:** across the exported history the model wins 33–39 % per symbol at +2R / −1R. This is the same range as the original's LOADED BARS readings (34–38 %).
 - REGIME and BIAS are informational only. The reference trades in every regime.
 
