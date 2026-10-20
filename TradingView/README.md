@@ -69,7 +69,7 @@ Signals are the indicator's. Extra settings, all **off by default**:
 | Risk | Base $ risk per trade (default $50). Quantity = risk ÷ (stop distance × point value), converted to the account currency and rounded down to the lot step. Units per lot (forex, default 100,000) and max-risk cap. |
 | Costs | Spread in ticks (chart = bid; buys pay the spread). Commission $ per lot round trip, plus an option to push every target out by commission + spread. TradingView only charges commission set in **Settings → Properties**; the table shows the value to enter there. |
 | Streaks | Stop for the day after N losses in a row; stop for the day after N wins in a row; pause for 1–3 trading days after N losses in a row. |
-| Loss recovery | Off · recover all unrecovered losses on the next trade (base + total loss) · over N trades · a % of the losses · martingale multiplier. Sizing returns to base once profits repay the pool. |
+| Loss recovery | Off · recover all unrecovered losses on the next trade (base + total loss) · over N trades · a % of the losses · martingale multiplier · exact recovery at TP4 (base + losses ÷ TP4 R) · step-up (+$ per loss in a row) · Fibonacci · D'Alembert. Sizing returns to base once profits repay the pool. |
 
 Note: TradingView's broker emulator decides the order of stop vs target inside a bar from the bar's open/high/low, so a few trades can exit differently from the indicator, which always assumes the stop first.
 

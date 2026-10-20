@@ -100,10 +100,15 @@ L_ALL   = "Recover all losses on the next trade"
 L_SPLIT = "Recover losses over N trades"
 L_PART  = "Recover a % of losses per trade"
 L_MART  = "Martingale (multiply after each loss)"
-recMode  = input.string(L_OFF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use Max Risk to cap it.")
+L_EXACT = "Exact recovery at TP4"
+L_STEP  = "Step-up (+$ per loss in a row)"
+L_FIB   = "Fibonacci (1,1,2,3,5... x base)"
+L_DALE  = "D'Alembert (+1 unit per loss, -1 per win)"
+recMode  = input.string(L_OFF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nExact at TP4: base + losses / TP4 R, so a TP4 win repays the losses plus a normal win (risks less than 'All').\nStep-up: base + step $ x losses in a row.\nFibonacci: base x 1, 1, 2, 3, 5, 8... by losses in a row.\nD'Alembert: base x units; +1 unit after a loss, -1 after a win (minimum 1).\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use Max Risk to cap it.")
 recN     = input.int(3, "N Trades (Over N)", minval = 1, group = GRP_L)
 recPct   = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.0, step = 5.0, group = GRP_L)
 recMult  = input.float(2.0, "Multiplier (Martingale)", minval = 1.0, step = 0.25, group = GRP_L)
+recStep  = input.float(25.0, "Step $ (Step-up)", minval = 0.0, step = 5.0, group = GRP_L)
 
 GRP_D = "DISPLAY"
 showTable = input.bool(true, "Show Table", group = GRP_D)
@@ -207,7 +212,8 @@ var bool  dayBlock  = false
 var int   pauseLeft = 0
 var bool  paused    = false
 var float recPool   = 0.0    // unrecovered $ losses
-var int   recLosses = 0      // losses in a row for martingale
+var int   recLosses = 0      // losses in a row while losses are unrecovered
+var int   dUnits    = 1      // D'Alembert units
 var int   totW      = 0
 var int   totL      = 0
 
@@ -305,9 +311,11 @@ if math.abs(st) == 2 and pos == 0
     if win
         recPool   := math.max(0.0, recPool - trPnl)
         recLosses := recPool > 0 ? recLosses : 0
+        dUnits    := math.max(1, dUnits - 1)
     else
         recPool   += -trPnl
         recLosses += 1
+        dUnits    += 1
     lastExit := bar_index
     st       := 0
     trPnl    := 0.0
@@ -348,8 +356,16 @@ if canArm and (bullDisp or bearDisp) and not keepArm
     float stop  = half ? (isL ? math.min(entry - halfStopAtr * atr, low) : math.max(entry + halfStopAtr * atr, high)) : entry - d * stopAtr * atr
     float rp    = d * (entry - stop)
     // risk $ for this trade: base + loss recovery, capped
-    float add = recMode == L_ALL ? recPool : recMode == L_SPLIT ? recPool / recN : recMode == L_PART ? recPool * recPct / 100.0 : 0.0
-    float rUsd = recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : baseRisk + add
+    float add = recMode == L_ALL ? recPool : recMode == L_SPLIT ? recPool / recN : recMode == L_PART ? recPool * recPct / 100.0 : recMode == L_EXACT ? recPool / tp4R : recMode == L_STEP ? recStep * recLosses : 0.0
+    // Fibonacci number for the current losing run: 1, 1, 2, 3, 5 ...
+    float fa = 1.0
+    float fb = 1.0
+    if recLosses > 1
+        for k = 2 to recLosses
+            float fc = fa + fb
+            fa := fb
+            fb := fc
+    float rUsd = recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : recMode == L_FIB ? baseRisk * (recLosses == 0 ? 1.0 : fb) : recMode == L_DALE ? baseRisk * dUnits : baseRisk + add
     rUsd := maxRisk > 0 ? math.min(rUsd, maxRisk) : rUsd
     float perUnit = rp * syminfo.pointvalue * fx
     float q       = perUnit > 0 ? rUsd / perUnit : 0.0
@@ -423,7 +439,7 @@ if showTable and barstate.islast
     f_row(mon, 2, "ENTRY / STOP", has ? f_px(lim) + " / " + f_px(stp) : "—", white)
     f_row(mon, 3, "TP1 · TP2 · TP3 · TP4", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC)
     f_row(mon, 4, "RISK · QTY · LOTS", has ? f_usd(riskUsd) + " · " + str.tostring(qty, "#,##0.##") + " · " + str.tostring(lots, "#,##0.##") : "base " + f_usd(baseRisk), white)
-    f_row(mon, 5, "RECOVERY POOL", recMode == L_OFF ? "off" : f_usd(recPool) + (recMode == L_MART ? " · " + str.tostring(recLosses) + " losses" : ""), recPool > 0 ? negC : white)
+    f_row(mon, 5, "RECOVERY POOL", recMode == L_OFF ? "off" : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), recPool > 0 ? negC : white)
     f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(totW) + "W/" + str.tostring(totL) + "L", white)
     f_row(mon, 7, "DAY P&L · R · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayRiskR, "0.00") + "R · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayPnl >= 0 ? posC : negC)
     f_row(mon, 8, "PROPERTIES COMMISSION", commLot > 0 ? str.tostring(commLot / unitsPer / 2.0, "0.########") + " per contract" : "0 (no commission)", white)
