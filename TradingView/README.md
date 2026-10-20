@@ -4,6 +4,7 @@
 |---|---|
 | [`Auction_Retest_Model.pine`](Auction_Retest_Model.pine) | **Auction Retest Model**: session VWAP + displacement + time-limited retest. It reproduces the trade logic seen on the *Auction Retest Pro* reference screenshots. |
 | [`Auction_Retest_Strategy.pine`](Auction_Retest_Strategy.pine) | The same model as a **strategy** for backtesting, with money-management settings (all off by default). |
+| [`../MetaTrader5/AuctionRetestEA.mq5`](../MetaTrader5/AuctionRetestEA.mq5) | MetaTrader 5 Expert Advisor port of the strategy (same signals and settings). |
 | [`VWAP_Orderflow_Sniper.pine`](VWAP_Orderflow_Sniper.pine) | The earlier VWAP + absorption/aggression orderflow indicator. |
 
 ## Install
@@ -70,6 +71,11 @@ Signals are the indicator's. Extra settings, all **off by default**:
 | Costs | Spread in price units, e.g. gold 0.16 (chart = bid; buys pay the spread). Commission $ per lot round trip, plus an option to push every target out by commission + spread. TradingView only charges commission set in **Settings → Properties**; the table shows the value to enter there. |
 | Streaks | Stop for the day after N losses in a row; stop for the day after N wins in a row; pause for 1–3 trading days after N losses in a row. |
 | Loss recovery | Off · recover all unrecovered losses on the next trade (base + total loss) · over N trades · a % of the losses · martingale multiplier · exact recovery at TP4 (base + losses ÷ TP4 R) · step-up (+$ per loss in a row) · Fibonacci · D'Alembert. **Rule C**: carried = closed-trade equity below its last high (updated once per candle, after commission); next risk = max(base, carried ÷ split). **Rule C split**: same, but the base steps up with total profit (200→200/3, 500→500/5, 1000→1000/8, then +500 adds one part). Sizing returns to base once profits repay the pool. |
+| Final exit | "Final Exit At" TP1 / TP2 / TP3 / TP4: the remaining position closes at that target (e.g. TP2 = 1R); partials only before it. |
+| Lot size | Auto by ticker: forex 100,000 · gold 100 oz · silver 5,000 · platinum/palladium 100 · crypto (BTC, ETH, …) 1 coin · oil CFDs 1,000 bbl · natural gas CFDs 10,000 · any futures contract (CL, NG, MCX CRUDEOIL, …) 1 contract · others 1. Or "Broker fixed" units (e.g. 100). Lot step auto: futures 1, others 0.01. |
+| Time filters | Time zone; trade only between two times; daily force-close time (closes open trades, cancels armed limits); no trading Saturday/Sunday (closes trades when Saturday starts). |
+| News | A daily news window plus 5 one-off news events (date, time, minutes). No new trades from N minutes before (default 60) until the window ends; open trades are closed and armed limits cancelled when it starts. |
+| More loss recovery | Labouchère · Grand Martingale · Paroli · Reverse D'Alembert · Delayed recovery (after N losses) · % of equity · Oscar's Grind. |
 
 **Leverage** (default 1:100): position value is limited to equity × leverage, and the size is reduced to fit. TradingView's own margin check is off, because with its default 100 % margin it silently rejects orders larger than the account. That is why an earlier version took far fewer trades than the indicator. Trades are drawn with the indicator's boxes (target, stop, TP lines, dashed armed limit).
 
