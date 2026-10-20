@@ -95,7 +95,11 @@ LOT_FIX  = "Broker fixed (units below)"
 lotMode    = input.string(LOT_AUTO, "Lot Size", options = [LOT_AUTO, LOT_FIX], inline = "lot", group = GRP_R, tooltip = "Auto: forex 100,000 units · gold 100 oz · silver 5,000 oz · platinum/palladium 100 oz · crypto 1 coin · oil CFDs (USOIL, UKOIL, WTI, BRENT, XTI, XBR) 1,000 bbl · natural gas CFDs (NATGAS, XNG, NGAS) 10,000 MMBtu · any futures contract (CL, NG, GC, MCX CRUDEOIL, ...) 1 contract · indices, stocks, others 1.\nBroker fixed: every symbol uses the units entered here (e.g. 100).\nLots only affect the lot display, the lot step and the per-lot commission; the $ risk sizing is the same either way.")
 unitsLot   = input.float(100.0, "", minval = 0.000001, inline = "lot", group = GRP_R)
 leverage   = input.float(100.0, "Leverage (1:x, 0 = unlimited)", minval = 0.0, step = 10.0, group = GRP_R, tooltip = "Position value (quantity x price) may not exceed equity x leverage. If the risk-based size is larger, it is reduced to fit, as your broker would. 0 = no limit.")
-lotStep    = input.float(0.0, "Lot Step (0 = auto)", minval = 0.0, step = 0.01, group = GRP_R, tooltip = "Position size is rounded DOWN to this many lots. 0 = auto: futures 1 contract, everything else 0.01 lot. If it rounds to 0 the trade is skipped.")
+lotStep    = input.float(0.0, "Lot Step (0 = auto)", minval = 0.0, step = 0.01, group = GRP_R, tooltip = "Position size is rounded DOWN to this many lots. 0 = auto: futures 1 contract, everything else 0.01 lot.")
+SMALL_FRAC = "Fractional size (backtest only)"
+SMALL_MIN  = "Trade minimum size (risks more)"
+SMALL_SKIP = "Skip the trade"
+smallMode  = input.string(SMALL_FRAC, "If Size Is Below 1 Lot Step", options = [SMALL_FRAC, SMALL_MIN, SMALL_SKIP], group = GRP_R, tooltip = "When the risk-based size rounds below one lot step (e.g. $50 risk on COMEX gold futures, where 1 contract with a $7 stop risks $700):\nFractional: trade the exact fractional size so the backtest keeps the $ risk (not possible with a real broker).\nMinimum size: trade 1 lot step and risk more; skipped if that breaks the hard cap.\nSkip: no trade.")
 
 GRP_C = "SPREAD AND COMMISSION"
 spreadIn  = input.float(0.0, "Spread (price)", minval = 0.0, step = 0.01, group = GRP_C, tooltip = "In PRICE units: gold 0.16 = 16 cents, EURUSD 0.00010 = 1 pip. Chart prices are treated as BID. Buys happen at bid + spread: a long entry needs the bid to reach entry - spread, a short's stop and targets trigger when the bid reaches the level - spread.")
@@ -560,7 +564,14 @@ if canArm and (bullDisp or bearDisp) and not keepArm
     float unitVal = entry * syminfo.pointvalue * fx
     if leverage > 0 and unitVal > 0
         q := math.min(q, strategy.equity * leverage / unitVal)
+    float qRaw = q
     q := math.floor(q / unitsPer / stepLots + 1e-9) * stepLots * unitsPer
+    if q <= 0 and qRaw > 0
+        if smallMode == SMALL_FRAC
+            q := qRaw
+        else if smallMode == SMALL_MIN
+            float qMin = stepLots * unitsPer
+            q := capOn and qMin * perUnit > hardCap ? 0.0 : qMin
     // cost per unit in price, to push the targets out when earn-back is on
     float costPx = earnBack ? commLot / unitsPer / (syminfo.pointvalue * fx) + spreadPx : 0.0
     if rp >= syminfo.mintick and q > 0 and not capStop
