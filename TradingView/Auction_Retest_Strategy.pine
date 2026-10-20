@@ -76,7 +76,12 @@ if barstate.isfirst and p1Pct + p2Pct + p3Pct >= 100.0
 
 GRP_R = "RISK AND POSITION SIZE"
 baseRisk   = input.float(50.0, "Base Risk Per Trade ($)", minval = 0.01, step = 5.0, group = GRP_R, tooltip = "Every trade risks this amount, whatever the stop size: quantity = risk / (stop distance x point value), converted to the account currency.")
-maxRisk    = input.float(0.0, "Max Risk Per Trade ($, 0 = no cap)", minval = 0.0, step = 10.0, group = GRP_R, tooltip = "Caps the risk after loss-recovery sizing.")
+CAP_CLAMP = "Clamp risk to the cap"
+CAP_STOP  = "Stop trading"
+CAP_RESET = "Start again from the base risk"
+capOn      = input.bool(false, "Hard Cap: Max Loss Per Trade ($)", inline = "cap", group = GRP_R, tooltip = "No trade may risk more than this amount (the stop-out loss incl. the commission set below). Applies to every loss-recovery mode.")
+hardCap    = input.float(500.0, "", minval = 0.01, step = 50.0, inline = "cap", group = GRP_R)
+capAction  = input.string(CAP_CLAMP, "If The Risk Would Exceed The Cap", options = [CAP_CLAMP, CAP_STOP, CAP_RESET], group = GRP_R, tooltip = "Clamp: trade at the cap.\nStop trading: take no more trades for the rest of the backtest.\nStart again: forget the carried losses / losing run and trade at the base risk.")
 unitsLot   = input.float(100000.0, "Units Per Lot (forex)", minval = 1.0, group = GRP_R, tooltip = "Forex only: how many units your broker counts as 1 lot (standard 100,000). Other symbols use 1 lot = 1 contract/unit.")
 lotStep    = input.float(0.01, "Lot Step", minval = 0.0, step = 0.01, group = GRP_R, tooltip = "Position size is rounded DOWN to this many lots (0 = no rounding). If it rounds to 0 the trade is skipped.")
 
@@ -104,11 +109,14 @@ L_EXACT = "Exact recovery at TP4"
 L_STEP  = "Step-up (+$ per loss in a row)"
 L_FIB   = "Fibonacci (1,1,2,3,5... x base)"
 L_DALE  = "D'Alembert (+1 unit per loss, -1 per win)"
-recMode  = input.string(L_OFF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nExact at TP4: base + losses / TP4 R, so a TP4 win repays the losses plus a normal win (risks less than 'All').\nStep-up: base + step $ x losses in a row.\nFibonacci: base x 1, 1, 2, 3, 5, 8... by losses in a row.\nD'Alembert: base x units; +1 unit after a loss, -1 after a win (minimum 1).\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use Max Risk to cap it.")
+L_C     = "Rule C: carry the losses"
+L_CS    = "Rule C split: carry losses + base grows with profit"
+recMode  = input.string(L_OFF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE, L_C, L_CS], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nExact at TP4: base + losses / TP4 R, so a TP4 win repays the losses plus a normal win (risks less than 'All').\nStep-up: base + step $ x losses in a row.\nFibonacci: base x 1, 1, 2, 3, 5, 8... by losses in a row.\nD'Alembert: base x units; +1 unit after a loss, -1 after a win (minimum 1).\nRule C: carried = how far closed-trade equity is below its last high (updated once per candle from that candle's closed P&L incl. commission); next risk = max(base, carried / split).\nRule C split: as Rule C, but the base steps up with total profit: 200 -> 200/3, 500 -> 500/5, 1000 -> 1000/8, then every +500 adds one part (1500/9, 2000/10 ...); base = max(base risk, min(step base, hard cap)).\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use the Hard Cap to limit it.")
 recN     = input.int(3, "N Trades (Over N)", minval = 1, group = GRP_L)
 recPct   = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.0, step = 5.0, group = GRP_L)
 recMult  = input.float(2.0, "Multiplier (Martingale)", minval = 1.0, step = 0.25, group = GRP_L)
 recStep  = input.float(25.0, "Step $ (Step-up)", minval = 0.0, step = 5.0, group = GRP_L)
+cSplit   = input.int(3, "Split The Loss Over This Many Trades (Rule C)", minval = 1, group = GRP_L, tooltip = "1 = win it all back in one trade.")
 
 GRP_D = "DISPLAY"
 showTable = input.bool(true, "Show Table", group = GRP_D)
@@ -214,6 +222,8 @@ var bool  paused    = false
 var float recPool   = 0.0    // unrecovered $ losses
 var int   recLosses = 0      // losses in a row while losses are unrecovered
 var int   dUnits    = 1      // D'Alembert units
+var float carried   = 0.0    // Rule C: closed-trade equity below its last high
+var bool  capStop   = false  // hard cap "Stop trading" fired
 var int   totW      = 0
 var int   totL      = 0
 
@@ -252,6 +262,9 @@ if closedNew
         newPnl += strategy.closedtrades.profit(k)
     nClosed := strategy.closedtrades
 trPnl += newPnl
+// Rule C: once per candle, after all of this candle's closed trades (partials included)
+if closedNew
+    carried := math.max(0.0, carried - newPnl)
 float pos     = strategy.position_size
 bool  filled  = math.abs(st) == 1 and (pos != 0 or closedNew)
 bool  longFill  = false
@@ -328,7 +341,7 @@ if math.abs(st) == 1 and pos == 0 and barstate.isconfirmed and (bar_index - armB
 
 // ── 5. arm a new setup on a confirmed displacement candle ──
 bool cooled  = na(lastExit) or bar_index - lastExit >= math.max(cooldownBars, 1)
-bool dayOpen = (dayStopR <= 0 or dayRiskR > -dayStopR) and not dayBlock and not paused
+bool dayOpen = (dayStopR <= 0 or dayRiskR > -dayStopR) and not dayBlock and not paused and not capStop
 int   legN    = na(lastFill) ? 0 : bar_index - lastFill
 bool  legOn   = legReset and math.abs(st) != 2 and legN > 0 and legN < structLen
 float brkHigh = priorHigh
@@ -365,15 +378,38 @@ if canArm and (bullDisp or bearDisp) and not keepArm
             float fc = fa + fb
             fa := fb
             fb := fc
-    float rUsd = recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : recMode == L_FIB ? baseRisk * (recLosses == 0 ? 1.0 : fb) : recMode == L_DALE ? baseRisk * dUnits : baseRisk + add
-    rUsd := maxRisk > 0 ? math.min(rUsd, maxRisk) : rUsd
-    float perUnit = rp * syminfo.pointvalue * fx
+    // Rule C split: base steps up with total closed profit (step amount / parts)
+    float prof     = strategy.netprofit
+    float stepBase = 0.0
+    if prof >= 1000
+        int kk = int(math.floor((prof - 1000) / 500))
+        stepBase := (1000.0 + 500.0 * kk) / (8 + kk)
+    else if prof >= 500
+        stepBase := 500.0 / 5
+    else if prof >= 200
+        stepBase := 200.0 / 3
+    float baseC = recMode == L_CS ? math.max(baseRisk, capOn ? math.min(stepBase, hardCap) : stepBase) : baseRisk
+    float rUsd = recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : recMode == L_FIB ? baseRisk * (recLosses == 0 ? 1.0 : fb) : recMode == L_DALE ? baseRisk * dUnits : recMode == L_C or recMode == L_CS ? math.max(baseC, carried / cSplit) : baseRisk + add
+    // hard cap
+    if capOn and rUsd > hardCap
+        if capAction == CAP_STOP
+            capStop := true
+        else if capAction == CAP_RESET
+            recPool   := 0.0
+            recLosses := 0
+            dUnits    := 1
+            carried   := 0.0
+            rUsd      := math.min(baseC, hardCap)
+        else
+            rUsd := hardCap
+    // stop-out loss per unit, incl. the round-trip commission, so the $ risk (and the hard cap) covers it
+    float perUnit = rp * syminfo.pointvalue * fx + commLot / unitsPer
     float q       = perUnit > 0 ? rUsd / perUnit : 0.0
     if lotStep > 0
         q := math.floor(q / unitsPer / lotStep + 1e-9) * lotStep * unitsPer
     // cost per unit in price, to push the targets out when earn-back is on
     float costPx = earnBack ? commLot / unitsPer / (syminfo.pointvalue * fx) + spreadPx : 0.0
-    if rp >= syminfo.mintick and q > 0
+    if rp >= syminfo.mintick and q > 0 and not capStop
         strategy.cancel_all()
         st      := isL ? 1 : -1
         armBar  := bar_index
@@ -431,7 +467,7 @@ if showTable and barstate.islast
     color  posC  = color.new(#69F0AE, 0)
     color  negC  = color.new(#FF80AB, 0)
     bool   has   = active or armed
-    string stTxt = st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" : paused ? "PAUSED (" + str.tostring(pauseLeft) + "d left)" : dayBlock ? "STREAK STOP TODAY" : not dayOpen ? "DAILY STOP HIT" : "SCANNING"
+    string stTxt = st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" : capStop ? "HARD CAP: STOPPED" : paused ? "PAUSED (" + str.tostring(pauseLeft) + "d left)" : dayBlock ? "STREAK STOP TODAY" : not dayOpen ? "DAILY STOP HIT" : "SCANNING"
     float  lots  = qty / unitsPer
     table.cell(mon, 0, 0, "AUCTION RETEST", text_color = white, bgcolor = color.new(#29A3E0, 0), text_size = size.small)
     table.cell(mon, 1, 0, "STRATEGY", text_color = white, bgcolor = color.new(#3D8FD6, 0), text_size = size.small)
@@ -439,7 +475,8 @@ if showTable and barstate.islast
     f_row(mon, 2, "ENTRY / STOP", has ? f_px(lim) + " / " + f_px(stp) : "—", white)
     f_row(mon, 3, "TP1 · TP2 · TP3 · TP4", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC)
     f_row(mon, 4, "RISK · QTY · LOTS", has ? f_usd(riskUsd) + " · " + str.tostring(qty, "#,##0.##") + " · " + str.tostring(lots, "#,##0.##") : "base " + f_usd(baseRisk), white)
-    f_row(mon, 5, "RECOVERY POOL", recMode == L_OFF ? "off" : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), recPool > 0 ? negC : white)
+    bool   isC = recMode == L_C or recMode == L_CS
+    f_row(mon, 5, isC ? "LOSSES CARRIED" : "RECOVERY POOL", recMode == L_OFF ? "off" : isC ? f_usd(carried) + " · split " + str.tostring(cSplit) : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), (isC ? carried : recPool) > 0 ? negC : white)
     f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(totW) + "W/" + str.tostring(totL) + "L", white)
     f_row(mon, 7, "DAY P&L · R · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayRiskR, "0.00") + "R · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayPnl >= 0 ? posC : negC)
     f_row(mon, 8, "PROPERTIES COMMISSION", commLot > 0 ? str.tostring(commLot / unitsPer / 2.0, "0.########") + " per contract" : "0 (no commission)", white)
