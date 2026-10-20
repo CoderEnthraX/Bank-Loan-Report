@@ -3,6 +3,7 @@
 | File | What it is |
 |---|---|
 | [`Auction_Retest_Model.pine`](Auction_Retest_Model.pine) | **Auction Retest Model**: session VWAP + displacement + time-limited retest. It reproduces the trade logic seen on the *Auction Retest Pro* reference screenshots. |
+| [`Auction_Retest_Strategy.pine`](Auction_Retest_Strategy.pine) | The same model as a **strategy** for backtesting, with money-management settings (all off by default). |
 | [`VWAP_Orderflow_Sniper.pine`](VWAP_Orderflow_Sniper.pine) | The earlier VWAP + absorption/aggression orderflow indicator. |
 
 ## Install
@@ -56,5 +57,20 @@ The model was replayed bar by bar on the same 5-minute data as the 80 original t
 - **Stops:** all 80 original stops are reproduced: 72 at 1.8 × ATR(14) and the 8 half stops at 0.9 × ATR (or just beyond the displacement candle), which the half-stop rule picks out exactly. It also explains why NIFTY and SENSEX took the same 9 Oct long with different stops: SENSEX had an earlier impulse that session, NIFTY did not.
 - **Win rate:** across the exported history the model wins 33–39 % per symbol at +2R / −1R. This is the same range as the original's LOADED BARS readings (34–38 %).
 - REGIME and BIAS are informational only. The reference trades in every regime.
+
+## Auction Retest Strategy (backtesting)
+
+Signals are the indicator's. Extra settings, all **off by default**:
+
+| Group | Settings |
+|---|---|
+| Entry price | Model limit (default) · Custom % of the signal candle measured from its close (0 = close, 50 = midpoint, 100 = low/high) · Market at the next open. The stop is measured from the chosen entry. |
+| Targets | TP1–TP4 in R; optional partial close % at TP1, TP2, TP3; optional stop moves when TP1/TP2/TP3 hit (in R: 0 = breakeven, 0.6 = TP1 level, …). |
+| Risk | Base $ risk per trade (default $50). Quantity = risk ÷ (stop distance × point value), converted to the account currency and rounded down to the lot step. Units per lot (forex, default 100,000) and max-risk cap. |
+| Costs | Spread in ticks (chart = bid; buys pay the spread). Commission $ per lot round trip, plus an option to push every target out by commission + spread. TradingView only charges commission set in **Settings → Properties**; the table shows the value to enter there. |
+| Streaks | Stop for the day after N losses in a row; stop for the day after N wins in a row; pause for 1–3 trading days after N losses in a row. |
+| Loss recovery | Off · recover all unrecovered losses on the next trade (base + total loss) · over N trades · a % of the losses · martingale multiplier. Sizing returns to base once profits repay the pool. |
+
+Note: TradingView's broker emulator decides the order of stop vs target inside a bar from the bar's open/high/low, so a few trades can exit differently from the indicator, which always assumes the stop first.
 
 For educational use only. This is not financial advice.

@@ -1,0 +1,429 @@
+//@version=6
+// ═══════════════════════════════════════════════════════════════════════════════════════
+//  AUCTION RETEST STRATEGY — the Auction Retest Model as a backtestable strategy
+//
+//  Signals are identical to Auction_Retest_Model.pine (VWAP displacement + retest, 1.8 ATR stop,
+//  half stop, TP1–TP4). On top of that this strategy adds money management for backtesting:
+//  fixed $ risk per trade with automatic position sizing, spread and commission handling,
+//  commission earn-back on targets, partial profits, stop moves after each target,
+//  entry-price modes, loss-streak stops / pauses and loss-recovery sizing.
+//  Every extra feature is OFF by default, so the defaults trade exactly like the indicator
+//  (apart from TradingView's own intrabar fill order, see the README).
+//
+//  COMMISSION: TradingView only charges commission set in Settings → Properties. Put the value
+//  shown in the table row "PROPERTIES COMMISSION" there (cash per contract) so the backtest
+//  P&L includes it. The "Commission" input below is used for sizing info and the earn-back.
+// ═══════════════════════════════════════════════════════════════════════════════════════
+strategy("Auction Retest Strategy [VWAP Displacement + Retest]", shorttitle = "ARS", overlay = true, initial_capital = 10000, currency = currency.USD, default_qty_type = strategy.fixed, default_qty_value = 1, pyramiding = 0, commission_type = strategy.commission.cash_per_contract, commission_value = 0, slippage = 0, process_orders_on_close = false, backtest_fill_limits_assumption = 0, max_lines_count = 500, max_labels_count = 500)
+
+// ═════════════════════════════════════ INPUTS ═════════════════════════════════════════
+
+GRP_M = "SIGNAL MODEL (same as the indicator)"
+sessInput    = input.session("0000-0000", "Trading Session", group = GRP_M)
+structLen    = input.int(10, "Breakout Lookback (bars)", minval = 2, maxval = 500, group = GRP_M)
+entryLen     = input.int(6, "Entry Level Lookback (bars)", minval = 1, maxval = 500, group = GRP_M)
+retestBars   = input.int(5, "Retest Window (bars)", minval = 1, maxval = 100, group = GRP_M)
+dispAtr      = input.float(0.8, "Min Displacement Range (x ATR)", minval = 0.0, step = 0.05, group = GRP_M)
+dispBodyPct  = input.float(55.0, "Min Displacement Body (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M)
+dispClosePct = input.float(25.0, "Max Close Distance From Extreme (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M)
+momLen       = input.int(10, "Momentum Lookback (bars)", minval = 1, maxval = 500, inline = "mom", group = GRP_M)
+momAtr       = input.float(0.85, "Min (x ATR)", minval = 0.0, step = 0.05, inline = "mom", group = GRP_M)
+REARM_KEEP = "Keep first"
+REARM_NEW  = "Replace with newer"
+rearmMode    = input.string(REARM_KEEP, "Same-Direction Re-arm", options = [REARM_KEEP, REARM_NEW], group = GRP_M)
+stopAtr      = input.float(1.8, "Stop Distance (x ATR)", minval = 0.1, step = 0.1, group = GRP_M)
+halfStopOn   = input.bool(true, "Half Stop On Counter-Bias First Signal", group = GRP_M)
+halfStopAtr  = input.float(0.9, "Half Stop (x ATR)", minval = 0.1, step = 0.1, inline = "hs", group = GRP_M)
+biasNet      = input.int(3, "Prev Session Net Impulses", minval = 1, inline = "hs", group = GRP_M)
+cooldownBars = input.int(2, "Cooldown After Exit (bars)", minval = 0, group = GRP_M)
+maxFills     = input.int(5, "Max Fills Per Day", minval = 1, group = GRP_M)
+dayStopR     = input.float(3.0, "Daily Stop (R lost, 0 = off)", minval = 0.0, step = 0.5, group = GRP_M)
+fillBarStopR = input.bool(false, "Count Fill-Bar Stops In Daily Stop", group = GRP_M)
+legReset     = input.bool(true, "Re-anchor Breakout After A Trade", group = GRP_M)
+atrLen       = input.int(14, "ATR Length", minval = 1, group = GRP_M)
+vwapFilter   = input.bool(true, "Longs Above VWAP / Shorts Below", group = GRP_M)
+slopeBars    = input.int(3, "VWAP Slope Bars", minval = 0, maxval = 500, group = GRP_M)
+minOpenBars  = input.int(1, "Skip First Bars After VWAP Reset", minval = 0, group = GRP_M)
+skipSunday   = input.bool(true, "Skip Sunday (UTC) Weekly Open", group = GRP_M)
+allowLong    = input.bool(true, "Longs", inline = "dir", group = GRP_M)
+allowShort   = input.bool(true, "Shorts", inline = "dir", group = GRP_M)
+
+GRP_E = "ENTRY PRICE"
+E_MODEL  = "Model (body mid or 6-bar level)"
+E_PCT    = "Custom % of signal candle"
+E_MARKET = "Market (next bar open)"
+entryMode = input.string(E_MODEL, "Entry Price", options = [E_MODEL, E_PCT, E_MARKET], group = GRP_E, tooltip = "Model: the indicator's limit price.\nCustom %: a limit measured from the signal candle's CLOSE back toward its far extreme. 0% = the close, 50% = the candle midpoint, 100% = the low (long) / high (short). E.g. 25% = between the close and the midpoint, 75% = between the midpoint and the low/high.\nMarket: enter at the next bar's open.\nThe stop is always measured from the chosen entry.")
+entryPct  = input.float(50.0, "Custom % (0 = close, 50 = mid, 100 = low/high)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_E)
+
+GRP_T = "TARGETS, PARTIALS AND STOP MOVES"
+tp1R  = input.float(0.6, "TP1 (R)", minval = 0.1, step = 0.1, inline = "t1", group = GRP_T)
+p1Pct = input.float(0.0, "Close %", minval = 0.0, maxval = 100.0, step = 5.0, inline = "t1", group = GRP_T)
+tp2R  = input.float(1.0, "TP2 (R)", minval = 0.1, step = 0.1, inline = "t2", group = GRP_T)
+p2Pct = input.float(0.0, "Close %", minval = 0.0, maxval = 100.0, step = 5.0, inline = "t2", group = GRP_T)
+tp3R  = input.float(1.5, "TP3 (R)", minval = 0.1, step = 0.1, inline = "t3", group = GRP_T)
+p3Pct = input.float(0.0, "Close %", minval = 0.0, maxval = 100.0, step = 5.0, inline = "t3", group = GRP_T)
+tp4R  = input.float(2.0, "TP4 (R, closes the rest)", minval = 0.1, step = 0.1, group = GRP_T, tooltip = "Close % at TP1-TP3 is a share of the ORIGINAL position (0 = no partial). Whatever is left exits at TP4 or the stop.")
+mv1On = input.bool(false, "When TP1 hits, move stop to (R)", inline = "m1", group = GRP_T)
+mv1R  = input.float(0.0, "", step = 0.1, inline = "m1", group = GRP_T)
+mv2On = input.bool(false, "When TP2 hits, move stop to (R)", inline = "m2", group = GRP_T)
+mv2R  = input.float(0.6, "", step = 0.1, inline = "m2", group = GRP_T)
+mv3On = input.bool(false, "When TP3 hits, move stop to (R)", inline = "m3", group = GRP_T, tooltip = "R is measured from the entry: 0 = breakeven, 0.6 = the TP1 level with the default targets, 1 = the TP2 level and so on. The stop only ever moves in the trade's favour.")
+mv3R  = input.float(1.0, "", step = 0.1, inline = "m3", group = GRP_T)
+if barstate.isfirst and (tp1R > tp2R or tp2R > tp3R or tp3R > tp4R)
+    runtime.error("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4.")
+if barstate.isfirst and p1Pct + p2Pct + p3Pct >= 100.0
+    runtime.error("Partial close % at TP1-TP3 must add up to less than 100 so something is left for TP4.")
+
+GRP_R = "RISK AND POSITION SIZE"
+baseRisk   = input.float(50.0, "Base Risk Per Trade ($)", minval = 0.01, step = 5.0, group = GRP_R, tooltip = "Every trade risks this amount, whatever the stop size: quantity = risk / (stop distance x point value), converted to the account currency.")
+maxRisk    = input.float(0.0, "Max Risk Per Trade ($, 0 = no cap)", minval = 0.0, step = 10.0, group = GRP_R, tooltip = "Caps the risk after loss-recovery sizing.")
+unitsLot   = input.float(100000.0, "Units Per Lot (forex)", minval = 1.0, group = GRP_R, tooltip = "Forex only: how many units your broker counts as 1 lot (standard 100,000). Other symbols use 1 lot = 1 contract/unit.")
+lotStep    = input.float(0.01, "Lot Step", minval = 0.0, step = 0.01, group = GRP_R, tooltip = "Position size is rounded DOWN to this many lots (0 = no rounding). If it rounds to 0 the trade is skipped.")
+
+GRP_C = "SPREAD AND COMMISSION"
+spreadTk  = input.float(0.0, "Spread (ticks)", minval = 0.0, step = 1.0, group = GRP_C, tooltip = "Chart prices are treated as BID. Buys happen at bid + spread: a long entry needs the bid to reach entry - spread, a short's stop and targets trigger when the bid reaches the level - spread. On forex 1 pip = 10 ticks.")
+commLot   = input.float(0.0, "Commission ($ per lot, round trip)", minval = 0.0, step = 0.5, group = GRP_C, tooltip = "Used for the earn-back below and to show the value to enter in Settings → Properties → Commission (cash per contract), which is what TradingView actually charges.")
+earnBack  = input.bool(false, "Extend Targets To Earn Back Commission + Spread", group = GRP_C, tooltip = "Every target is pushed further by the round-trip commission and the spread, so a target hit nets its full R after costs.")
+
+GRP_S = "STREAKS AND PAUSES"
+lStopOn   = input.bool(false, "Stop For The Day After N Losses In A Row", inline = "ls", group = GRP_S)
+lStopN    = input.int(2, "N", minval = 1, inline = "ls", group = GRP_S)
+wStopOn   = input.bool(false, "Stop For The Day After N Wins In A Row", inline = "ws", group = GRP_S)
+wStopN    = input.int(3, "N", minval = 1, inline = "ws", group = GRP_S)
+pauseOn   = input.bool(false, "Pause After N Losses In A Row", inline = "ps", group = GRP_S)
+pauseN    = input.int(3, "N", minval = 1, inline = "ps", group = GRP_S)
+pauseDays = input.int(1, "Days", minval = 1, maxval = 3, inline = "ps", group = GRP_S, tooltip = "Stops trading for the rest of today plus this many full trading days, then the streak count restarts.")
+
+GRP_L = "LOSS RECOVERY"
+L_OFF   = "Off"
+L_ALL   = "Recover all losses on the next trade"
+L_SPLIT = "Recover losses over N trades"
+L_PART  = "Recover a % of losses per trade"
+L_MART  = "Martingale (multiply after each loss)"
+recMode  = input.string(L_OFF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use Max Risk to cap it.")
+recN     = input.int(3, "N Trades (Over N)", minval = 1, group = GRP_L)
+recPct   = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.0, step = 5.0, group = GRP_L)
+recMult  = input.float(2.0, "Multiplier (Martingale)", minval = 1.0, step = 0.25, group = GRP_L)
+
+GRP_D = "DISPLAY"
+showTable = input.bool(true, "Show Table", group = GRP_D)
+tablePos  = input.string("Top Right", "Position", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = GRP_D)
+vwapCol   = input.color(#4DD0E1, "VWAP", group = GRP_D)
+
+// ═══════════════════════════════════ VWAP (session) ═══════════════════════════════════
+
+bool  chgD      = timeframe.change("D")
+bool  newDay    = chgD
+bool  hasVolume = ta.cum(nz(volume)) > 0
+float w         = hasVolume ? nz(volume) : 1.0
+var float cumPV  = 0.0
+var float cumW   = 0.0
+var float cumP   = 0.0
+var int   cumN   = 0
+var int   vwBars = 0
+if newDay
+    cumPV  := 0.0
+    cumW   := 0.0
+    cumP   := 0.0
+    cumN   := 0
+    vwBars := 0
+else
+    vwBars += 1
+cumPV += hlc3 * w
+cumW  += w
+cumP  += hlc3
+cumN  += 1
+float vwap = cumW > 0 ? cumPV / cumW : cumP / cumN
+
+// ═════════════════════════════════ SIGNAL MODEL ═══════════════════════════════════════
+
+float atr       = ta.atr(atrLen)
+bool  inSession = not na(time(timeframe.period, sessInput))
+float priorHigh = ta.highest(high, structLen)[1]
+float priorLow  = ta.lowest(low, structLen)[1]
+float entHigh   = ta.highest(high, math.min(entryLen, structLen))[1]
+float entLow    = ta.lowest(low, math.min(entryLen, structLen))[1]
+float rng       = high - low
+float body      = math.abs(close - open)
+float bodyMid   = (open + close) / 2.0
+float momMove   = close - close[momLen]
+float vwSlope   = slopeBars > 0 and vwBars >= slopeBars ? vwap - vwap[slopeBars] : na
+bool  slopeUp   = na(vwSlope) or vwSlope > 0
+bool  slopeDn   = na(vwSlope) or vwSlope < 0
+bool  bigCandle = rng > 0 and rng >= dispAtr * atr and body / rng * 100.0 >= dispBodyPct - 1e-7
+bool  bullShape = close > open and bigCandle and (high - close) / rng * 100.0 <= dispClosePct + 1e-7 and slopeUp
+bool  bearShape = close < open and bigCandle and (close - low) / rng * 100.0 <= dispClosePct + 1e-7 and slopeDn
+bool  setupOk   = vwBars >= minOpenBars and not (skipSunday and dayofweek(time, "UTC") == dayofweek.sunday)
+bool  bullBase  = allowLong and setupOk and bullShape and (not vwapFilter or close > vwap) and (momAtr <= 0 or momMove >= momAtr * atr)
+bool  bearBase  = allowShort and setupOk and bearShape and (not vwapFilter or close < vwap) and (momAtr <= 0 or -momMove >= momAtr * atr)
+
+// counter-bias half stop (per-session impulse counters)
+bool  bullImp = bullShape and high > priorHigh
+bool  bearImp = bearShape and low < priorLow
+var int bullN   = 0
+var int bearN   = 0
+var int prevNet = na
+if newDay
+    if bar_index > 0
+        prevNet := bullN - bearN
+    bullN := 0
+    bearN := 0
+bool  halfL = halfStopOn and bullN == 0 and not na(prevNet) and prevNet <= -biasNet
+bool  halfS = halfStopOn and bearN == 0 and not na(prevNet) and prevNet >= biasNet
+if bullImp
+    bullN += 1
+if bearImp
+    bearN += 1
+
+// ══════════════════════════════════ STATE ═════════════════════════════════════════════
+// st: 0 flat · 1 / -1 limit armed · 2 / -2 in a position
+
+var int   st        = 0
+var int   armBar    = na
+var int   fillBar   = na
+var int   lastExit  = na
+var int   lastFill  = na
+var int   lastDir   = 0
+var float lim       = na     // true (ask/bid-free) entry price
+var float stp0      = na     // initial stop
+var float stp       = na     // current stop (moves with the TP rules)
+var float t1        = na
+var float t2        = na
+var float t3        = na
+var float t4        = na
+var float riskPx    = na     // entry-to-initial-stop distance in price
+var float riskUsd   = na     // $ risked on the current trade
+var float qty       = na
+var int   tpHit     = 0
+var float trPnl     = 0.0
+var int   nClosed   = 0
+
+var int   dayFills  = 0
+var float dayRiskR  = 0.0
+var float dayPnl    = 0.0
+var int   lossRow   = 0
+var int   winRow    = 0
+var bool  dayBlock  = false
+var int   pauseLeft = 0
+var bool  paused    = false
+var float recPool   = 0.0    // unrecovered $ losses
+var int   recLosses = 0      // losses in a row for martingale
+var int   totW      = 0
+var int   totL      = 0
+
+if newDay
+    dayFills := 0
+    dayRiskR := 0.0
+    dayPnl   := 0.0
+    dayBlock := false
+    paused   := pauseLeft > 0
+    if pauseLeft > 0
+        pauseLeft -= 1
+
+float spreadPx = spreadTk * syminfo.mintick
+float fx       = nz(request.currency_rate(syminfo.currency, strategy.account_currency, ignore_invalid_currency = true), 1.0)
+float unitsPer = syminfo.type == "forex" ? unitsLot : 1.0
+
+// chart (bid) price at which a level triggers: buys need the bid to reach level - spread
+f_chart(float lvl, bool isBuy) => isBuy ? lvl - spreadPx : lvl
+
+f_setExits(bool isL, int fromK) =>
+    string eid = isL ? "L" : "S"
+    float  sC  = f_chart(stp, not isL)
+    if fromK <= 1 and p1Pct > 0
+        strategy.exit("X1", eid, qty = qty * p1Pct / 100.0, limit = f_chart(t1, not isL), stop = sC)
+    if fromK <= 2 and p2Pct > 0
+        strategy.exit("X2", eid, qty = qty * p2Pct / 100.0, limit = f_chart(t2, not isL), stop = sC)
+    if fromK <= 3 and p3Pct > 0
+        strategy.exit("X3", eid, qty = qty * p3Pct / 100.0, limit = f_chart(t3, not isL), stop = sC)
+    strategy.exit("X4", eid, qty_percent = 100, limit = f_chart(t4, not isL), stop = sC)
+
+// ── 1. fills and closed trades reported by the broker emulator ──
+float newPnl    = 0.0
+bool  closedNew = strategy.closedtrades > nClosed
+if closedNew
+    for k = nClosed to strategy.closedtrades - 1
+        newPnl += strategy.closedtrades.profit(k)
+    nClosed := strategy.closedtrades
+trPnl += newPnl
+float pos     = strategy.position_size
+bool  filled  = math.abs(st) == 1 and (pos != 0 or closedNew)
+bool  longFill  = false
+bool  shortFill = false
+if filled
+    bool isL = st == 1
+    st       := isL ? 2 : -2
+    fillBar  := bar_index
+    lastFill := bar_index
+    lastDir  := isL ? 1 : -1
+    dayFills += 1
+    tpHit    := 0
+    longFill  := isL
+    shortFill := not isL
+    if entryMode == E_MARKET and pos != 0
+        // market fills at the open: keep the stop/targets, measure moves from the real fill
+        lim := strategy.position_avg_price + (isL ? spreadPx : 0.0)
+
+// ── 2. manage the open trade: TP tracking and stop moves ──
+if math.abs(st) == 2 and pos != 0 and bar_index > fillBar
+    bool  isL = st == 2
+    float d   = isL ? 1.0 : -1.0
+    int   reached = (isL ? high >= f_chart(t3, false) : low <= f_chart(t3, true)) ? 3 : (isL ? high >= f_chart(t2, false) : low <= f_chart(t2, true)) ? 2 : (isL ? high >= f_chart(t1, false) : low <= f_chart(t1, true)) ? 1 : 0
+    if reached > tpHit
+        float newStp = stp
+        if reached >= 1 and mv1On
+            newStp := isL ? math.max(newStp, lim + mv1R * riskPx) : math.min(newStp, lim - mv1R * riskPx)
+        if reached >= 2 and mv2On
+            newStp := isL ? math.max(newStp, lim + mv2R * riskPx) : math.min(newStp, lim - mv2R * riskPx)
+        if reached >= 3 and mv3On
+            newStp := isL ? math.max(newStp, lim + mv3R * riskPx) : math.min(newStp, lim - mv3R * riskPx)
+        tpHit := reached
+        if newStp != stp
+            stp := newStp
+            f_setExits(isL, tpHit + 1)
+
+// ── 3. trade closed (including a stop on the fill bar) ──
+if math.abs(st) == 2 and pos == 0
+    bool sameBar = bar_index == fillBar
+    float r      = riskUsd > 0 ? trPnl / riskUsd : 0.0
+    bool  win    = trPnl > 0
+    dayPnl   += trPnl
+    dayRiskR += (sameBar and not win and not fillBarStopR) ? 0.0 : r
+    totW     += win ? 1 : 0
+    totL     += win ? 0 : 1
+    lossRow  := win ? 0 : lossRow + 1
+    winRow   := win ? winRow + 1 : 0
+    if lStopOn and lossRow >= lStopN
+        dayBlock := true
+    if wStopOn and winRow >= wStopN
+        dayBlock := true
+    if pauseOn and lossRow >= pauseN
+        dayBlock  := true
+        pauseLeft := pauseDays
+        lossRow   := 0
+    // loss-recovery pool
+    if win
+        recPool   := math.max(0.0, recPool - trPnl)
+        recLosses := recPool > 0 ? recLosses : 0
+    else
+        recPool   += -trPnl
+        recLosses += 1
+    lastExit := bar_index
+    st       := 0
+    trPnl    := 0.0
+    strategy.cancel_all()
+
+// ── 4. armed limit: expire after the retest window (at the close) or when the day cap is used up ──
+if math.abs(st) == 1 and pos == 0 and barstate.isconfirmed and (bar_index - armBar >= retestBars or dayFills >= maxFills)
+    strategy.cancel_all()
+    st := 0
+
+// ── 5. arm a new setup on a confirmed displacement candle ──
+bool cooled  = na(lastExit) or bar_index - lastExit >= math.max(cooldownBars, 1)
+bool dayOpen = (dayStopR <= 0 or dayRiskR > -dayStopR) and not dayBlock and not paused
+int   legN    = na(lastFill) ? 0 : bar_index - lastFill
+bool  legOn   = legReset and math.abs(st) != 2 and legN > 0 and legN < structLen
+float brkHigh = priorHigh
+float brkLow  = priorLow
+if legOn
+    float legHigh = high[1]
+    float legLow  = low[1]
+    for j = 1 to legN
+        legHigh := math.max(legHigh, high[j])
+        legLow  := math.min(legLow, low[j])
+    if lastDir == 1
+        brkHigh := legHigh
+    else
+        brkLow := legLow
+bool bullDisp = bullBase and close > brkHigh
+bool bearDisp = bearBase and close < brkLow
+bool canArm   = barstate.isconfirmed and inSession and math.abs(st) != 2 and pos == 0 and cooled and dayFills < maxFills and dayOpen and atr > 0
+bool keepArm  = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
+if canArm and (bullDisp or bearDisp) and not keepArm
+    bool  isL   = bullDisp
+    float d     = isL ? 1.0 : -1.0
+    float model = isL ? math.max(bodyMid, entHigh) : math.min(bodyMid, entLow)
+    float entry = entryMode == E_MODEL ? model : entryMode == E_PCT ? close - d * entryPct / 100.0 * rng : close
+    bool  half  = isL ? halfL : halfS
+    float stop  = half ? (isL ? math.min(entry - halfStopAtr * atr, low) : math.max(entry + halfStopAtr * atr, high)) : entry - d * stopAtr * atr
+    float rp    = d * (entry - stop)
+    // risk $ for this trade: base + loss recovery, capped
+    float add = recMode == L_ALL ? recPool : recMode == L_SPLIT ? recPool / recN : recMode == L_PART ? recPool * recPct / 100.0 : 0.0
+    float rUsd = recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : baseRisk + add
+    rUsd := maxRisk > 0 ? math.min(rUsd, maxRisk) : rUsd
+    float perUnit = rp * syminfo.pointvalue * fx
+    float q       = perUnit > 0 ? rUsd / perUnit : 0.0
+    if lotStep > 0
+        q := math.floor(q / unitsPer / lotStep + 1e-9) * lotStep * unitsPer
+    // cost per unit in price, to push the targets out when earn-back is on
+    float costPx = earnBack ? commLot / unitsPer / (syminfo.pointvalue * fx) + spreadPx : 0.0
+    if rp >= syminfo.mintick and q > 0
+        strategy.cancel_all()
+        st      := isL ? 1 : -1
+        armBar  := bar_index
+        lim     := entry
+        stp0    := stop
+        stp     := stop
+        riskPx  := rp
+        riskUsd := q * perUnit
+        qty     := q
+        t1      := entry + d * (tp1R * rp + costPx)
+        t2      := entry + d * (tp2R * rp + costPx)
+        t3      := entry + d * (tp3R * rp + costPx)
+        t4      := entry + d * (tp4R * rp + costPx)
+        string eid = isL ? "L" : "S"
+        if entryMode == E_MARKET
+            strategy.entry(eid, isL ? strategy.long : strategy.short, qty = q)
+        else
+            strategy.entry(eid, isL ? strategy.long : strategy.short, qty = q, limit = f_chart(entry, isL))
+        f_setExits(isL, 1)
+
+// ═══════════════════════════════════════ PLOTS ════════════════════════════════════════
+
+bool active = math.abs(st) == 2
+bool armed  = math.abs(st) == 1
+plot(vwap, "VWAP", color = vwapCol, linewidth = 2)
+plot(armed ? lim : na, "Armed Limit", color = color.new(#FFFFFF, 0), style = plot.style_linebr, linewidth = 1)
+plot(active ? lim : na, "Entry", color = color.new(#FFFFFF, 0), style = plot.style_linebr, linewidth = 2)
+plot(active or armed ? stp : na, "Stop", color = color.new(#FF4F8B, 0), style = plot.style_linebr, linewidth = 2)
+plot(active ? t1 : na, "TP1", color = color.new(#69F0AE, 40), style = plot.style_linebr)
+plot(active ? t2 : na, "TP2", color = color.new(#69F0AE, 40), style = plot.style_linebr)
+plot(active ? t3 : na, "TP3", color = color.new(#69F0AE, 40), style = plot.style_linebr)
+plot(active or armed ? t4 : na, "TP4", color = color.new(#00E676, 0), style = plot.style_linebr, linewidth = 2)
+plotshape(longFill, "Long Fill", shape.triangleup, location.belowbar, color = color.white, size = size.tiny)
+plotshape(shortFill, "Short Fill", shape.triangledown, location.abovebar, color = color.new(#FFCDD2, 0), size = size.tiny)
+
+// ═══════════════════════════════════════ TABLE ════════════════════════════════════════
+
+f_px(float p) => str.tostring(p, format.mintick)
+f_usd(float v) => (v < 0 ? "-$" : "$") + str.tostring(math.abs(v), "#,##0.00")
+f_pos(string s) =>
+    switch s
+        "Top Left"     => position.top_left
+        "Bottom Right" => position.bottom_right
+        "Bottom Left"  => position.bottom_left
+        => position.top_right
+f_row(table tb, int r, string k, string v, color vc) =>
+    table.cell(tb, 0, r, k, text_color = color.new(#D1D4DC, 0), bgcolor = color.new(#2A2E39, 0), text_size = size.small)
+    table.cell(tb, 1, r, v, text_color = vc, bgcolor = color.new(#1E222D, 0), text_size = size.small)
+
+var table mon = na
+if showTable and barstate.islast
+    if na(mon)
+        mon := table.new(f_pos(tablePos), 2, 9, border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
+    color  white = color.new(#FFFFFF, 0)
+    color  posC  = color.new(#69F0AE, 0)
+    color  negC  = color.new(#FF80AB, 0)
+    bool   has   = active or armed
+    string stTxt = st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" : paused ? "PAUSED (" + str.tostring(pauseLeft) + "d left)" : dayBlock ? "STREAK STOP TODAY" : not dayOpen ? "DAILY STOP HIT" : "SCANNING"
+    float  lots  = qty / unitsPer
+    table.cell(mon, 0, 0, "AUCTION RETEST", text_color = white, bgcolor = color.new(#29A3E0, 0), text_size = size.small)
+    table.cell(mon, 1, 0, "STRATEGY", text_color = white, bgcolor = color.new(#3D8FD6, 0), text_size = size.small)
+    f_row(mon, 1, "STATE", stTxt, white)
+    f_row(mon, 2, "ENTRY / STOP", has ? f_px(lim) + " / " + f_px(stp) : "—", white)
+    f_row(mon, 3, "TP1 · TP2 · TP3 · TP4", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC)
+    f_row(mon, 4, "RISK · QTY · LOTS", has ? f_usd(riskUsd) + " · " + str.tostring(qty, "#,##0.##") + " · " + str.tostring(lots, "#,##0.##") : "base " + f_usd(baseRisk), white)
+    f_row(mon, 5, "RECOVERY POOL", recMode == L_OFF ? "off" : f_usd(recPool) + (recMode == L_MART ? " · " + str.tostring(recLosses) + " losses" : ""), recPool > 0 ? negC : white)
+    f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(totW) + "W/" + str.tostring(totL) + "L", white)
+    f_row(mon, 7, "DAY P&L · R · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayRiskR, "0.00") + "R · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayPnl >= 0 ? posC : negC)
+    f_row(mon, 8, "PROPERTIES COMMISSION", commLot > 0 ? str.tostring(commLot / unitsPer / 2.0, "0.########") + " per contract" : "0 (no commission)", white)
