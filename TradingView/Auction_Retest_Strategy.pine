@@ -10,11 +10,14 @@
 //  Every extra feature is OFF by default, so the defaults trade exactly like the indicator
 //  (apart from TradingView's own intrabar fill order, see the README).
 //
+//  LEVERAGE: set it with the "Leverage" input (default 1:100). TradingView's own margin check is
+//  switched off (margin 0 in Properties) because with its default 100 % margin it silently rejects
+//  any order bigger than the account, which made the strategy skip most of the indicator's trades.
 //  COMMISSION: TradingView only charges commission set in Settings → Properties. Put the value
 //  shown in the table row "PROPERTIES COMMISSION" there (cash per contract) so the backtest
 //  P&L includes it. The "Commission" input below is used for sizing info and the earn-back.
 // ═══════════════════════════════════════════════════════════════════════════════════════
-strategy("Auction Retest Strategy [VWAP Displacement + Retest]", shorttitle = "ARS", overlay = true, initial_capital = 10000, currency = currency.USD, default_qty_type = strategy.fixed, default_qty_value = 1, pyramiding = 0, commission_type = strategy.commission.cash_per_contract, commission_value = 0, slippage = 0, process_orders_on_close = false, backtest_fill_limits_assumption = 0, max_lines_count = 500, max_labels_count = 500)
+strategy("Auction Retest Strategy [VWAP Displacement + Retest]", shorttitle = "ARS", overlay = true, initial_capital = 10000, currency = currency.USD, default_qty_type = strategy.fixed, default_qty_value = 1, pyramiding = 0, commission_type = strategy.commission.cash_per_contract, commission_value = 0, slippage = 0, process_orders_on_close = false, backtest_fill_limits_assumption = 0, margin_long = 0, margin_short = 0, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500)
 
 // ═════════════════════════════════════ INPUTS ═════════════════════════════════════════
 
@@ -83,6 +86,7 @@ capOn      = input.bool(false, "Hard Cap: Max Loss Per Trade ($)", inline = "cap
 hardCap    = input.float(500.0, "", minval = 0.01, step = 50.0, inline = "cap", group = GRP_R)
 capAction  = input.string(CAP_CLAMP, "If The Risk Would Exceed The Cap", options = [CAP_CLAMP, CAP_STOP, CAP_RESET], group = GRP_R, tooltip = "Clamp: trade at the cap.\nStop trading: take no more trades for the rest of the backtest.\nStart again: forget the carried losses / losing run and trade at the base risk.")
 unitsLot   = input.float(100000.0, "Units Per Lot (forex)", minval = 1.0, group = GRP_R, tooltip = "Forex only: how many units your broker counts as 1 lot (standard 100,000). Other symbols use 1 lot = 1 contract/unit.")
+leverage   = input.float(100.0, "Leverage (1:x, 0 = unlimited)", minval = 0.0, step = 10.0, group = GRP_R, tooltip = "Position value (quantity x price) may not exceed equity x leverage. If the risk-based size is larger, it is reduced to fit, as your broker would. 0 = no limit.")
 lotStep    = input.float(0.01, "Lot Step", minval = 0.0, step = 0.01, group = GRP_R, tooltip = "Position size is rounded DOWN to this many lots (0 = no rounding). If it rounds to 0 the trade is skipped.")
 
 GRP_C = "SPREAD AND COMMISSION"
@@ -254,6 +258,22 @@ f_setExits(bool isL, int fromK) =>
         strategy.exit("X3", eid, qty = qty * p3Pct / 100.0, limit = f_chart(t3, not isL), stop = sC)
     strategy.exit("X4", eid, qty_percent = 100, limit = f_chart(t4, not isL), stop = sC)
 
+// trade drawings, like the indicator: target box, stop box, TP1-TP3 lines, entry line, dashed armed limit
+var box   gBox    = na
+var box   rBox    = na
+var line  eLine   = na
+var line  l1      = na
+var line  l2      = na
+var line  l3      = na
+var line  limLine = na
+f_extend() =>
+    box.set_right(gBox, bar_index)
+    box.set_right(rBox, bar_index)
+    line.set_x2(eLine, bar_index)
+    line.set_x2(l1, bar_index)
+    line.set_x2(l2, bar_index)
+    line.set_x2(l3, bar_index)
+
 // ── 1. fills and closed trades reported by the broker emulator ──
 float newPnl    = 0.0
 bool  closedNew = strategy.closedtrades > nClosed
@@ -282,9 +302,18 @@ if filled
     if entryMode == E_MARKET and pos != 0
         // market fills at the open: keep the stop/targets, measure moves from the real fill
         lim := strategy.position_avg_price + (isL ? spreadPx : 0.0)
+    line.delete(limLine)
+    limLine := na
+    gBox  := box.new(bar_index, math.max(lim, t4), bar_index, math.min(lim, t4), border_color = color.new(#00E676, 0), border_width = 2, bgcolor = color.new(#089981, 78))
+    rBox  := box.new(bar_index, math.max(lim, stp0), bar_index, math.min(lim, stp0), border_color = color.new(#FF4F8B, 0), border_width = 2, bgcolor = color.new(#F23645, 78))
+    l1    := line.new(bar_index, t1, bar_index, t1, color = color.new(#69F0AE, 0))
+    l2    := line.new(bar_index, t2, bar_index, t2, color = color.new(#69F0AE, 0))
+    l3    := line.new(bar_index, t3, bar_index, t3, color = color.new(#69F0AE, 0))
+    eLine := line.new(bar_index, lim, bar_index, lim, color = color.white, width = 2)
 
 // ── 2. manage the open trade: TP tracking and stop moves ──
 if math.abs(st) == 2 and pos != 0 and bar_index > fillBar
+    f_extend()
     bool  isL = st == 2
     float d   = isL ? 1.0 : -1.0
     int   reached = (isL ? high >= f_chart(t3, false) : low <= f_chart(t3, true)) ? 3 : (isL ? high >= f_chart(t2, false) : low <= f_chart(t2, true)) ? 2 : (isL ? high >= f_chart(t1, false) : low <= f_chart(t1, true)) ? 1 : 0
@@ -303,6 +332,7 @@ if math.abs(st) == 2 and pos != 0 and bar_index > fillBar
 
 // ── 3. trade closed (including a stop on the fill bar) ──
 if math.abs(st) == 2 and pos == 0
+    f_extend()
     bool sameBar = bar_index == fillBar
     float r      = riskUsd > 0 ? trPnl / riskUsd : 0.0
     bool  win    = trPnl > 0
@@ -337,6 +367,8 @@ if math.abs(st) == 2 and pos == 0
 // ── 4. armed limit: expire after the retest window (at the close) or when the day cap is used up ──
 if math.abs(st) == 1 and pos == 0 and barstate.isconfirmed and (bar_index - armBar >= retestBars or dayFills >= maxFills)
     strategy.cancel_all()
+    line.delete(limLine)
+    limLine := na
     st := 0
 
 // ── 5. arm a new setup on a confirmed displacement candle ──
@@ -405,6 +437,10 @@ if canArm and (bullDisp or bearDisp) and not keepArm
     // stop-out loss per unit, incl. the round-trip commission, so the $ risk (and the hard cap) covers it
     float perUnit = rp * syminfo.pointvalue * fx + commLot / unitsPer
     float q       = perUnit > 0 ? rUsd / perUnit : 0.0
+    // leverage: position value may not exceed equity x leverage
+    float unitVal = entry * syminfo.pointvalue * fx
+    if leverage > 0 and unitVal > 0
+        q := math.min(q, strategy.equity * leverage / unitVal)
     if lotStep > 0
         q := math.floor(q / unitsPer / lotStep + 1e-9) * lotStep * unitsPer
     // cost per unit in price, to push the targets out when earn-back is on
@@ -429,19 +465,14 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         else
             strategy.entry(eid, isL ? strategy.long : strategy.short, qty = q, limit = f_chart(entry, isL))
         f_setExits(isL, 1)
+        line.delete(limLine)
+        limLine := line.new(bar_index, entry, bar_index + retestBars, entry, color = color.white, style = line.style_dashed, width = 2)
 
 // ═══════════════════════════════════════ PLOTS ════════════════════════════════════════
 
 bool active = math.abs(st) == 2
 bool armed  = math.abs(st) == 1
 plot(vwap, "VWAP", color = vwapCol, linewidth = 2)
-plot(armed ? lim : na, "Armed Limit", color = color.new(#FFFFFF, 0), style = plot.style_linebr, linewidth = 1)
-plot(active ? lim : na, "Entry", color = color.new(#FFFFFF, 0), style = plot.style_linebr, linewidth = 2)
-plot(active or armed ? stp : na, "Stop", color = color.new(#FF4F8B, 0), style = plot.style_linebr, linewidth = 2)
-plot(active ? t1 : na, "TP1", color = color.new(#69F0AE, 40), style = plot.style_linebr)
-plot(active ? t2 : na, "TP2", color = color.new(#69F0AE, 40), style = plot.style_linebr)
-plot(active ? t3 : na, "TP3", color = color.new(#69F0AE, 40), style = plot.style_linebr)
-plot(active or armed ? t4 : na, "TP4", color = color.new(#00E676, 0), style = plot.style_linebr, linewidth = 2)
 plotshape(longFill, "Long Fill", shape.triangleup, location.belowbar, color = color.white, size = size.tiny)
 plotshape(shortFill, "Short Fill", shape.triangledown, location.abovebar, color = color.new(#FFCDD2, 0), size = size.tiny)
 

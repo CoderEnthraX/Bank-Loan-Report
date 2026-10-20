@@ -71,6 +71,8 @@ Signals are the indicator's. Extra settings, all **off by default**:
 | Streaks | Stop for the day after N losses in a row; stop for the day after N wins in a row; pause for 1–3 trading days after N losses in a row. |
 | Loss recovery | Off · recover all unrecovered losses on the next trade (base + total loss) · over N trades · a % of the losses · martingale multiplier · exact recovery at TP4 (base + losses ÷ TP4 R) · step-up (+$ per loss in a row) · Fibonacci · D'Alembert. **Rule C**: carried = closed-trade equity below its last high (updated once per candle, after commission); next risk = max(base, carried ÷ split). **Rule C split**: same, but the base steps up with total profit (200→200/3, 500→500/5, 1000→1000/8, then +500 adds one part). Sizing returns to base once profits repay the pool. |
 
+**Leverage** (default 1:100): position value is limited to equity × leverage, and the size is reduced to fit. TradingView's own margin check is off, because with its default 100 % margin it silently rejects orders larger than the account. That is why an earlier version took far fewer trades than the indicator. Trades are drawn with the indicator's boxes (target, stop, TP lines, dashed armed limit).
+
 Note: TradingView's broker emulator decides the order of stop vs target inside a bar from the bar's open/high/low, so a few trades can exit differently from the indicator, which always assumes the stop first.
 
 For educational use only. This is not financial advice.
