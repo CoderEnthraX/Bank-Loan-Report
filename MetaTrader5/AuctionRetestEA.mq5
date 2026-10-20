@@ -354,7 +354,7 @@ double NextRisk(double exitR)
    double baseC = InpRec == REC_CS ? MathMax(base, InpCapOn ? MathMin(stepBase, InpHardCap) : stepBase) : base;
    double fa = 1, fb = 1;
    for(int k = 2; k <= recLosses; k++) { double fc = fa + fb; fa = fb; fb = fc; }
-   int oscNeed = (int)MathMax(1, MathCeil((base - oscP) / (base * exitR)));
+   int oscNeed = exitR > 0 ? (int)MathMax(1, MathCeil((base - oscP) / (base * exitR))) : 1;
    switch(InpRec)
    {
       case REC_ALL:   r = base + recPool; break;
@@ -513,7 +513,11 @@ void OnNewBar()
          if(reached >= 2 && InpMv2On) ns = isL ? MathMax(ns, lim + InpMv2R * riskPx) : MathMin(ns, lim - InpMv2R * riskPx);
          if(reached >= 3 && InpMv3On) ns = isL ? MathMax(ns, lim + InpMv3R * riskPx) : MathMin(ns, lim - InpMv3R * riskPx);
          tpHit = reached;
-         if(ns != stp) { stp = ns; trade.PositionModify(pTk, NormP(stp), NormP(tF)); }
+         if(ns != stp)
+         {
+            if(trade.PositionModify(pTk, NormP(ns), NormP(tF))) stp = ns;
+            else Print("Stop move rejected (", trade.ResultRetcodeDescription(), "), keeping the stop at ", DoubleToString(stp, _Digits));
+         }
       }
    }
 
@@ -612,10 +616,10 @@ void OnNewBar()
          if(InpEntryMode == ENTRY_MARKET)
             ok = isL ? trade.Buy(v, _Symbol, 0, NormP(stop), NormP(tF), "ARM") : trade.Sell(v, _Symbol, 0, NormP(stop), NormP(tF), "ARM");
          else if(isL)
-            ok = entry < ask - lvl ? trade.BuyLimit(v, NormP(entry), _Symbol, NormP(stop), NormP(tF), ORDER_TIME_GTC, 0, "ARM")
+            ok = entry < ask ? trade.BuyLimit(v, NormP(entry), _Symbol, NormP(stop), NormP(tF), ORDER_TIME_GTC, 0, "ARM")
                                    : trade.Buy(v, _Symbol, 0, NormP(stop), NormP(tF), "ARM");   // already through the limit: better price now
          else
-            ok = entry > bid + lvl ? trade.SellLimit(v, NormP(entry), _Symbol, NormP(stop), NormP(tF), ORDER_TIME_GTC, 0, "ARM")
+            ok = entry > bid ? trade.SellLimit(v, NormP(entry), _Symbol, NormP(stop), NormP(tF), ORDER_TIME_GTC, 0, "ARM")
                                    : trade.Sell(v, _Symbol, 0, NormP(stop), NormP(tF), "ARM");
          if(!ok) { st = 0; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
          else if(InpDraw)
@@ -668,15 +672,35 @@ int OnInit()
 {
    trade.SetExpertMagicNumber(InpMagic);
    trade.SetDeviationInPoints(50);
+   trade.SetTypeFillingBySymbol(_Symbol);
    LabReset();
    ArrayResize(vwHist, 0);
    // warm up the signal state on history (no trading)
    int bars = Bars(_Symbol, _Period);
-   int start = MathMin(InpWarmBars, bars - InpStructLen - InpMomLen - 5);
+   int need = InpStructLen + InpMomLen + InpAtrLen + 10;
+   if(bars < need) { Print("Not enough chart history yet (", bars, " bars); the EA will retry."); return INIT_FAILED; }
+   int start = (int)MathMin(InpWarmBars, bars - InpStructLen - InpMomLen - 5);
    for(int s = start; s >= 1; s--) ProcessBar(s);
    gLastBarTime = iTime(_Symbol, _Period, 0);
    // remember the last deal so old history is not counted
    bool c; NewDealsPnl(c);
+   // restart recovery: adopt an open position of this EA so it keeps being managed
+   ulong tk; double vol, op;
+   if(HasPosition(tk, vol, op) && PositionSelectByTicket(tk))
+   {
+      bool isL = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY;
+      st = isL ? 2 : -2; lim = op; lots = vol;
+      stp = PositionGetDouble(POSITION_SL); stp0 = stp; tF = PositionGetDouble(POSITION_TP);
+      riskPx = MathAbs(op - stp);
+      double d = isL ? 1 : -1;
+      t1 = lim + d * InpTp1R * riskPx; t2 = lim + d * InpTp2R * riskPx; t3 = lim + d * InpTp3R * riskPx; t4 = lim + d * InpTp4R * riskPx;
+      double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
+      riskUsd = TickSize() > 0 ? vol * riskPx / TickSize() * tv : 0;
+      fillBar = gBarNo - 2; lastFill = fillBar; lastDir = isL ? 1 : -1; tpHit = 0;
+      for(int q = 0; q < 4; q++) pDone[q] = false;
+      Print("Adopted open position #", tk, " after restart (partial-close progress is not restored).");
+   }
+   CancelPending();   // a pending limit from before the restart has no tracked state; it is re-armed by new signals
    return INIT_SUCCEEDED;
 }
 
