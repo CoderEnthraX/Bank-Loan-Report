@@ -460,7 +460,8 @@ f_row(table tb, int r, string k, string v, color vc) =>
     table.cell(tb, 1, r, v, text_color = vc, bgcolor = color.new(#1E222D, 0), text_size = size.small)
 
 var table mon = na
-if showTable and barstate.islast
+// last historical bar + every realtime bar (strategies calculate realtime bars only at their close)
+if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     if na(mon)
         mon := table.new(f_pos(tablePos), 2, 9, border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
     color  white = color.new(#FFFFFF, 0)
