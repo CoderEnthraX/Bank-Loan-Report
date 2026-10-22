@@ -52,6 +52,7 @@ biasNet      = input.int(3, "Prev Session Net Impulses", minval = 1, inline = "h
 impBodyPct   = input.float(50.0, "Impulse Min Body (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M, tooltip = "An impulse (counted for the half stop) is a candle with range >= the displacement range, a body of at least this share of its range, a close within the close distance of its extreme, a wick beyond the structure lookback and the VWAP sloping its way.")
 halfOpenOut  = input.bool(true, "Half Stop When Session Opens Outside Prev Range", group = GRP_M, tooltip = "Also give the half stop to the session's first impulse when the session opened below the previous session's low (long) / above its high (short).")
 halfStrict   = input.bool(false, "Strict Bias Check (optional)", group = GRP_M, tooltip = "Off by default. When on, a previous-session lean of 3-4 impulses only gives the half stop if the current session has already printed an impulse the other way; a lean of 5 or more gives it on its own. Supported by only 3 logged trades.")
+halfCap      = input.bool(false, "Half Stop Never Wider Than The Normal Stop (optional)", group = GRP_M, tooltip = "Off by default. When on, a half stop that would sit further from the entry than the normal stop (Stop Distance x ATR) - after a very tall displacement candle - is pulled in to the normal stop. Research: one more logged stop matched (NIFTY futures), 3 of 1190 trades changed, all 80 screenshot stops unchanged.")
 cooldownBars = input.int(1, "Cooldown After Exit (bars)", minval = 0, group = GRP_M, tooltip = "Bars to wait after an exit before a new setup can be armed. 0 and 1 are the same: a setup is never armed on the exit bar itself.")
 maxFills     = input.int(5, "Max Fills Per Day", minval = 1, group = GRP_M)
 dayStopR     = input.float(0.0, "Daily Stop (R lost, 0 = off)", minval = 0.0, step = 0.5, group = GRP_M, tooltip = "No new setups for the rest of the day once the day's closed trades total this many R lost. Off by default: the original keeps trading after three losses.")
@@ -100,6 +101,10 @@ GRP_F = "ACCURACY FILTERS (research, off = original)"
 noChase    = input.bool(false, "Don't Chase: Skip Signals Beyond", inline = "nc", group = GRP_F)
 noChaseSig = input.float(2.4, "σ From VWAP", minval = 0.5, step = 0.1, inline = "nc", group = GRP_F, tooltip = "Skips a long whose signal candle closes more than this many standard deviations above the session VWAP (short: below), i.e. outside the VWAP bands. The skipped setup still runs invisibly until it would have finished, so the next, even more stretched candle is not taken instead. Research: October 2R hit rate 39% -> 42%, average +0.18R -> +0.26R per trade, 75% of trades kept. Not proven yet - forward-test it.")
 lossBlock  = input.bool(false, "After A Loss, No Same-Direction Trade Until A Win", group = GRP_F, tooltip = "For the rest of the session. Research: helped in October, flat in September - unproven.")
+chopOn     = input.bool(false, "Skip Choppy Sessions: Max VWAP Crosses", inline = "ch", group = GRP_F)
+chopMax    = input.float(12.0, "Per 100 Bars", minval = 0.5, step = 0.5, inline = "ch", group = GRP_F, tooltip = "Counts how often the close has crossed the VWAP so far in this VWAP period (a cross = the close moving from more than 0.2 ATR on one side of the VWAP to more than 0.2 ATR on the other side). When there have been more crosses than this per 100 bars, a new setup is skipped. The skipped setup still runs invisibly until it would have finished (like Don't Chase), so a later, worse signal does not take its place. Research (limit 12): average +0.17R -> +0.21R per trade, October +0.20R -> +0.27R, total +197R -> +207R, 82% of trades kept, 9 of 10 instruments better, natural gas +0.28R -> +0.34R. Not proven yet - forward-test it. Do not combine with Don't Chase: they skip mostly the same trades.")
+emaOn      = input.bool(false, "Skip When The 1h EMA20 Moved More Than", inline = "em", group = GRP_F)
+emaMax     = input.float(1.65, "ATR In 3 Hours", minval = 0.1, step = 0.05, inline = "em", group = GRP_F, tooltip = "Builds 1-hour candles from the chart's bars (UTC hours) and their EMA20. When the EMA20 of the last completed hour has moved more than this many ATR (the chart's ATR) from its value 3 hours earlier - an over-extended trend - a new setup is skipped and runs invisibly like Don't Chase. Research (limit 1.65): average +0.17R -> +0.23R per trade, October +0.20R -> +0.25R, total +197R -> +199R, 72% of trades kept, 8 of 10 instruments better, but natural gas got worse (+0.28R -> +0.08R). Not proven yet - forward-test it. Use it on intraday charts.")
 
 GRP_W = "DAYS AND HOURS"
 tzIn      = input.string("Asia/Kolkata", "Time Zone", options = ["Asia/Kolkata", "Exchange", "UTC", "Europe/London", "America/New_York", "Asia/Dubai", "Asia/Singapore", "Asia/Tokyo", "Australia/Sydney"], group = GRP_W, tooltip = "Time zone for the days and hours below (and the strategy's force-close, weekend and news times).")
@@ -116,6 +121,7 @@ hoursSess = input.session("0600-2300", "", inline = "hr", group = GRP_W, tooltip
 string tzUse = tzIn == "Exchange" ? syminfo.timezone : tzIn
 
 GRP_S = "STYLE"
+showMarks  = input.bool(true, "Show Trade Markings", group = GRP_S, tooltip = "One switch for everything drawn per trade: the armed limit line, the target and stop boxes, the entry and TP lines and the fill triangles. The table has its own switch.")
 showVwap   = input.bool(true, "Show VWAP", inline = "vw", group = GRP_S)
 vwapCol    = input.color(#4DD0E1, "", inline = "vw", group = GRP_S)
 tgtFill    = input.color(color.new(#089981, 78), "Target Box", inline = "s1", group = GRP_S)
@@ -230,6 +236,7 @@ eqPct    = input.float(1.0, "Risk % Of Equity (% mode)", minval = 0.01, step = 0
 GRP_D = "DISPLAY"
 showTable = input.bool(true, "Show Table", group = GRP_D)
 tablePos  = input.string("Top Right", "Position", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = GRP_D)
+tableTz   = input.string("Asia/Kolkata", "Date Timezone", options = ["Asia/Kolkata", "Exchange", "UTC", "America/New_York", "Europe/London", "Asia/Dubai", "Asia/Singapore"], group = GRP_D, tooltip = "Timezone used for the DATA RANGE dates.")
 
 // ═══════════════════════════════════════ ENGINE ═══════════════════════════════════════
 
@@ -317,6 +324,47 @@ float erDenB    = math.sum(math.abs(close - close[1]), brkLen)
 bool  deepL     = deepOn and allowLong and setupOk and close > open and bigCandle and closeHi and sigUp and close > vwap and close > sigHigh and momB >= momAtr * atr and erDenB > 0 and momB / erDenB >= cmoMin / 100.0 and priorHigh - close >= deepFar * atr
 bool  deepS     = deepOn and allowShort and setupOk and close < open and bigCandle and closeLo and sigDn and close < vwap and close < sigLow and -momB >= momAtr * atr and erDenB > 0 and -momB / erDenB >= cmoMin / 100.0 and close - priorLow >= deepFar * atr
 
+// ── optional accuracy filters (off by default) ──
+// VWAP crosses in this VWAP period: the close moving from more than 0.2 ATR on one side of the VWAP to more than 0.2 ATR on the other
+var int vxSide = 0
+var int vxN    = 0
+if newAnchor
+    vxSide := 0
+    vxN    := 0
+float vxDev  = not na(atr) and atr > 0 ? (close - vwap) / atr : 0.0
+int   vxZ    = vxDev > 0.2 ? 1 : vxDev < -0.2 ? -1 : 0
+if vxZ != 0
+    if vxSide != 0 and vxZ != vxSide
+        vxN += 1
+    vxSide := vxZ
+float vxRate = 100.0 * vxN / (vwBars + 1)
+// 1-hour candles (UTC hours) built from the chart's bars and their EMA20; hE0..hE3 = the EMA of the last four COMPLETED hours
+var int   hK   = na
+var float hC   = na
+var int   hNum = 0
+var float hSum = 0.0
+var float hE0  = na
+var float hE1  = na
+var float hE2  = na
+var float hE3  = na
+int hKey = math.floor(time / 3600000.0)
+if not na(hK) and hKey != hK
+    // the previous hour is complete; the EMA starts from the average of the first 20 hours
+    hNum += 1
+    float hNew = na
+    if hNum <= 20
+        hSum += hC
+        hNew := hNum == 20 ? hSum / 20.0 : na
+    else
+        hNew := 2.0 / 21.0 * hC + (1.0 - 2.0 / 21.0) * hE0
+    hE3 := hE2
+    hE2 := hE1
+    hE1 := hE0
+    hE0 := hNew
+hK := hKey
+hC := close
+float emaSpd = not na(hE0) and not na(hE3) and not na(atr) and atr > 0 ? math.abs(hE0 - hE3) / atr : na
+
 // ── session counters: day stats, impulses for the half stop, session range ──
 var int   dayFills   = 0
 var int   dayW       = 0
@@ -383,10 +431,14 @@ var float t4       = na
 var float tF       = na      // final target (Final Exit At)
 var int   tpHit    = 0
 var bool  trHalf   = false   // the armed / live setup uses the half stop
-var bool  trGhost  = false   // skipped by the no-chase filter: runs invisibly, never shown or traded
+var bool  trGhost  = false   // skipped by an accuracy filter: runs invisibly, never shown or traded
+var string trSkip  = ""      // which filter skipped it
 var int   totW     = 0
 var int   totL     = 0
 var float totR     = 0.0
+var int   ghW      = 0       // results the skipped (invisible) trades would have had
+var int   ghL      = 0
+var float ghR      = 0.0
 var string lastRes = "—"
 var float bestPx   = na
 // events of this bar (shown setups / trades only)
@@ -431,6 +483,10 @@ if math.abs(st) == 2 and bar_index > fillBar
             evExit     := true
             evWin      := win
             evRes      := res
+        else
+            ghW += win ? 1 : 0
+            ghL += win ? 0 : 1
+            ghR += res
         lastExit := bar_index
         st       := 0
     else if tpHit > prevHit
@@ -475,6 +531,9 @@ if math.abs(st) == 1 and bar_index > armBar
                 evExit     := true
                 evWin      := false
                 evRes      := -1.0
+            else
+                ghL += 1
+                ghR += -1.0
             lastExit := bar_index
             st       := 0
     else if bar_index - armBar >= retestBars and barstate.isconfirmed
@@ -510,7 +569,8 @@ if lossBlock and lossDirBlk == -1
     bearDisp := false
 int  dowUse = dayofweek(time, tzUse)
 bool dayOk  = not dayOn or (dowUse == dayofweek.monday and dMon) or (dowUse == dayofweek.tuesday and dTue) or (dowUse == dayofweek.wednesday and dWed) or (dowUse == dayofweek.thursday and dThu) or (dowUse == dayofweek.friday and dFri) or (dowUse == dayofweek.saturday and dSat) or (dowUse == dayofweek.sunday and dSun)
-bool hourOk = not hoursOn or not na(time(timeframe.period, hoursSess, tzUse))
+bool inHours = not na(time(timeframe.period, hoursSess, tzUse))
+bool hourOk  = not hoursOn or inHours
 bool canArm  = barstate.isconfirmed and warm and dayOk and hourOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
 bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
 if canArm and (bullDisp or bearDisp) and not keepArm
@@ -520,13 +580,19 @@ if canArm and (bullDisp or bearDisp) and not keepArm
     bool  half  = stopMode == STOP_ATR and (isL ? halfL : halfS)
     float cStop = entry - d * stopAtr * atr
     float hStop = isL ? math.min(entry - halfStopAtr * atr, low) : math.max(entry + halfStopAtr * atr, high)
+    if halfCap
+        hStop := isL ? math.max(hStop, cStop) : math.min(hStop, cStop)
     float sStop = isL ? swingLow - stopBufAtr * atr : swingHigh + stopBufAtr * atr
     float stop  = stopMode == STOP_ATR ? (half ? hStop : cStop) : isL ? math.max(sStop, cStop) : math.min(sStop, cStop)
     float risk  = d * (entry - stop)
     if risk >= syminfo.mintick and math.round_to_mintick(stop) != math.round_to_mintick(entry)
         // no-chase filter: z = distance of the signal close from the VWAP in VWAP standard deviations
-        float z     = noChase and vwSd > 0 and vwBars >= 3 and sessN >= 1 ? d * (close - vwap) / vwSd : na
-        bool  ghost = noChase and not na(z) and z > noChaseSig
+        float z      = noChase and vwSd > 0 and vwBars >= 3 and sessN >= 1 ? d * (close - vwap) / vwSd : na
+        bool  zNo    = noChase and not na(z) and z > noChaseSig
+        // choppy session (VWAP crosses) / over-extended 1h EMA20; a skipped setup runs on invisibly like the no-chase one
+        bool  chopNo = chopOn and vxRate > chopMax
+        bool  emaNo  = emaOn and not na(emaSpd) and emaSpd > emaMax
+        bool  ghost  = zNo or chopNo or emaNo
         if math.abs(st) == 1 and not trGhost
             evCancel := "REPLACED"
         // levels stay unrounded: the reference fills and stops on the exact values
@@ -538,6 +604,7 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         trRisk  := risk
         trHalf  := half
         trGhost := ghost
+        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : ""
         t1      := lim + d * tp1R * risk
         t2      := lim + d * tp2R * risk
         t3      := lim + d * tp3R * risk
@@ -547,6 +614,41 @@ if canArm and (bullDisp or bearDisp) and not keepArm
             evArm  := true
             evArmL := isL
 // <<< ENGINE END
+
+// >>> STATS BEGIN (shared: byte-identical in Auction_Retest_Model.pine and Auction_Retest_Strategy.pine)
+// accuracy of the shown trades, credited when a trade closes. A target counts as reached when the best price after the fill
+// touched it before the stop (a bar that also hits the stop adds nothing: the order inside a bar is unknown); the final target
+// is reached exactly when the trade is a win.
+var array<int> tpHitN = array.new_int(4, 0)
+var int beN = 0      // closed at a stop moved to the entry (breakeven, 0R)
+var int lkN = 0      // closed at a stop moved into profit (locked profit)
+if evExit
+    float sd = lastDir == 1 ? 1.0 : -1.0
+    for k = 1 to 4
+        float lvl = k == 1 ? t1 : k == 2 ? t2 : k == 3 ? t3 : t4
+        if evWin ? k <= exitK : (k < exitK and sd * (bestPx - lvl) >= -syminfo.mintick * 0.001)
+            array.set(tpHitN, k - 1, array.get(tpHitN, k - 1) + 1)
+    if not evWin and stp != stp0
+        if evRes == 0.0
+            beN += 1
+        else if evRes > 0.0
+            lkN += 1
+bool mvAny  = mv1On or mv2On or mv3On
+bool fltAny = noChase or chopOn or emaOn
+f_sgnR(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
+f_share(int n, int total) => total > 0 ? str.tostring(math.round(100.0 * n / total)) + "%" : "—"
+// "77 trades · 52% (40W/37L) · +12.00R"
+f_accTxt() => str.tostring(totW + totL) + " trades · " + f_share(totW, totW + totL) + " (" + str.tostring(totW) + "W/" + str.tostring(totL) + "L) · " + f_sgnR(totR)
+// "TP1 61% (47) · TP2 49% (38) · TP3 40% (31) · TP4 34% (26)"
+f_tpTxt() =>
+    string s = ""
+    for k = 1 to 4
+        int n = array.get(tpHitN, k - 1)
+        s := s + (k > 1 ? " · " : "") + "TP" + str.tostring(k) + " " + (k > exitK ? "n/a" : f_share(n, totW + totL) + " (" + str.tostring(n) + ")")
+    s
+f_beTxt() => "BE " + str.tostring(beN) + " (" + f_share(beN, totW + totL) + ") · locked profit " + str.tostring(lkN) + " (" + f_share(lkN, totW + totL) + ")"
+f_fltTxt() => str.tostring(ghW + ghL) + " skipped · would have been " + str.tostring(ghW) + "W/" + str.tostring(ghL) + "L · " + f_sgnR(ghR)
+// <<< STATS END
 
 // >>> DRAW BEGIN (shared: byte-identical in Auction_Retest_Model.pine and Auction_Retest_Strategy.pine)
 var line  limLine = na
@@ -568,10 +670,10 @@ f_tpLine(float lvl, int k) =>
 if evCancel != "" or evFill
     line.delete(limLine)
     limLine := na
-if evArm
+if evArm and showMarks
     line.delete(limLine)
     limLine := line.new(bar_index, lim, bar_index + retestBars, lim, color = limitCol, style = line.style_dashed, width = 2)
-if evFill
+if evFill and showMarks
     gBox  := box.new(bar_index, math.max(lim, tF), bar_index, math.min(lim, tF), border_color = tgtBorder, border_width = boxBorderW, bgcolor = tgtFill)
     rBox  := box.new(bar_index, math.max(lim, stp0), bar_index, math.min(lim, stp0), border_color = stopBorder, border_width = boxBorderW, bgcolor = stopFill)
     eLine := line.new(bar_index, lim, bar_index, lim, color = entryCol, width = 2)
@@ -601,8 +703,8 @@ else if drawOn
 if evExit
     drawOn := false
 plot(showVwap ? vwap : na, "VWAP", color = vwapCol, linewidth = 2)
-plotshape(evFill and evFillL, "Long Fill", shape.triangleup, location.belowbar, color = markCol, size = size.tiny)
-plotshape(evFill and not evFillL, "Short Fill", shape.triangledown, location.abovebar, color = markColS, size = size.tiny)
+plotshape(showMarks and evFill and evFillL, "Long Fill", shape.triangleup, location.belowbar, color = markCol, size = size.tiny)
+plotshape(showMarks and evFill and not evFillL, "Short Fill", shape.triangledown, location.abovebar, color = markColS, size = size.tiny)
 // <<< DRAW END
 
 // ══════════════════════════ EXECUTION (strategy only, follows the engine) ═════════════
@@ -700,12 +802,17 @@ int   curM   = hour(time, tzUse) * 60 + minute(time, tzUse)
 int   prevM  = hour(time[1], tzUse) * 60 + minute(time[1], tzUse)
 int   fcM    = fcHour * 60 + fcMin
 bool  fcNow  = fcOn and (curM >= prevM ? (prevM < fcM and curM >= fcM) : (fcM > prevM or fcM <= curM))
-bool  wkndStart = weekendOn and dayofweek(time, tzUse) == dayofweek.saturday and dayofweek(time[1], tzUse) != dayofweek.saturday
+int   dowNow    = dayofweek(time, tzUse)
+int   dowPrev   = dayofweek(time[1], tzUse)
+bool  wkndStart = weekendOn and dowNow == dayofweek.saturday and dowPrev != dayofweek.saturday
 int   preMs  = newsPre * 60000
+int   prevT  = nz(time[1], time)
 f_nBlock(bool on, int t0, int dur) => on and time >= t0 - preMs and time < t0 + dur * 60000
-f_nStart(bool on, int t0) => on and time >= t0 and time[1] < t0
-bool  dNewsIn   = dNewsOn and not na(time(timeframe.period, dNewsSess, tzUse))
-bool  dNewsPrev = dNewsOn and not na(time(timeframe.period, dNewsSess, tzUse)[1])
+f_nStart(bool on, int t0) => on and time >= t0 and prevT < t0
+// computed on every bar (outside the and/or chains) so their history is consistent
+bool  inDNews   = not na(time(timeframe.period, dNewsSess, tzUse))
+bool  dNewsIn   = dNewsOn and inDNews
+bool  dNewsPrev = dNewsOn and inDNews[1]
 // daily window: block from newsPre minutes before its start until it ends
 bool  dPre = false
 if dNewsOn and newsPre > 0
@@ -915,18 +1022,19 @@ f_row(table tb, int r, string k, string v, color vc) =>
     table.cell(tb, 0, r, k, text_color = color.new(#D1D4DC, 0), bgcolor = color.new(#2A2E39, 0), text_size = size.small)
     table.cell(tb, 1, r, v, text_color = vc, bgcolor = color.new(#1E222D, 0), text_size = size.small)
 
+var int   firstTime = time
 var table mon = na
 // last historical bar + every realtime bar (strategies calculate realtime bars only at their close)
 if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     if na(mon)
-        mon := table.new(f_pos(tablePos), 2, 10, border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
+        mon := table.new(f_pos(tablePos), 2, 13 + (mvAny ? 1 : 0) + (fltAny ? 1 : 0), border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
     color  white = color.new(#FFFFFF, 0)
     color  posC  = color.new(#69F0AE, 0)
     color  negC  = color.new(#FF80AB, 0)
     bool   act   = math.abs(st) == 2 and not trGhost
     bool   armed = math.abs(st) == 1 and not trGhost
     bool   has   = act or armed
-    string stTxt = st != 0 and trGhost ? "SKIPPED (TOO FAR FROM VWAP)" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" : capStop ? "HARD CAP: STOPPED" : newsBlock ? "NEWS WINDOW" : paused ? "PAUSED (" + str.tostring(pauseLeft) + "d left)" : dayBlock ? "STREAK STOP TODAY" : not dayOpen ? "DAILY STOP HIT" : not dayOk ? "DAY SWITCHED OFF" : not hourOk ? "OUTSIDE HOURS" : "SCANNING"
+    string stTxt = st != 0 and trGhost ? "SKIPPED (" + trSkip + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" : capStop ? "HARD CAP: STOPPED" : newsBlock ? "NEWS WINDOW" : paused ? "PAUSED (" + str.tostring(pauseLeft) + "d left)" : dayBlock ? "STREAK STOP TODAY" : not dayOpen ? "DAILY STOP HIT" : not dayOk ? "DAY SWITCHED OFF" : not hourOk ? "OUTSIDE HOURS" : "SCANNING"
     string exTxt = exState == 2 ? " · in trade" : exState == 1 ? " · order working" : has ? " · not taken" : ""
     float  lots  = exQty / unitsPer
     table.cell(mon, 0, 0, "AUCTION RETEST", text_color = white, bgcolor = color.new(#29A3E0, 0), text_size = size.small)
@@ -941,3 +1049,15 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     f_row(mon, 7, "DAY P&L · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayPnl >= 0 ? posC : negC)
     f_row(mon, 8, "SIGNALS · TAKEN · SKIPPED", str.tostring(sigN) + " · " + str.tostring(takenN) + " · " + str.tostring(skipN) + (missN > 0 ? " · missed " + str.tostring(missN) : "") + (diffN > 0 ? " · exit differs " + str.tostring(diffN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN + diffN > 0 ? negC : white)
     f_row(mon, 9, "SET PROPERTIES COMMISSION", (costUnit > 0 ? str.tostring(costUnit / 2.0, "0.#####") + " per contract" : "0") + " · 1 lot = " + str.tostring(unitsPer, "#,##0") + " units", white)
+    // accuracy of the signals (the indicator's trades, same numbers as its table)
+    f_row(mon, 10, "SIGNAL TRADES · WIN % · R", f_accTxt() + " · last " + lastRes, totR >= 0 ? posC : negC)
+    f_row(mon, 11, "TP HIT", f_tpTxt(), posC)
+    int r = 12
+    if mvAny
+        f_row(mon, r, "BREAKEVEN", f_beTxt(), white)
+        r += 1
+    if fltAny
+        f_row(mon, r, "SKIPPED BY FILTERS", f_fltTxt(), ghR <= 0 ? posC : negC)
+        r += 1
+    string tz = tableTz == "Exchange" ? syminfo.timezone : tableTz
+    f_row(mon, r, "DATA RANGE", str.format_time(firstTime, "dd MMM yy", tz) + " → " + str.format_time(time, "dd MMM HH:mm", tz) + " · " + str.tostring(bar_index + 1) + " bars", white)

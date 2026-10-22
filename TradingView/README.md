@@ -55,15 +55,31 @@ type (optional setting below), a few logged stops that the logged exit times sho
 | Accuracy filters (research) | **Don't chase**: skip a signal more than 2.4 σ from the session VWAP; the skipped setup still runs invisibly so the next, more stretched candle is not taken instead. **After a loss, no same-direction trade until a win** (rest of the session) | Off |
 | Days and hours | **Trade only on the ticked days** (Mon ... Sun) and trade only between two times, in your time zone (default Asia/Kolkata). They stop new setups only; open trades finish | Off |
 
+### Settings added in v3.1 (all off by default; identical in the indicator, the strategy and the EA)
+
+| Group | Setting | What it does | Research result |
+|---|---|---|---|
+| Signal model | **Half stop never wider than the normal stop** | A half stop that would sit further from the entry than the 1.8 ATR stop (after a very tall signal candle) is pulled in to the normal stop | One more logged stop matched (NIFTY futures #27), 3 of 1,190 trades changed, all 80 screenshot stops unchanged |
+| Accuracy filters | **Skip choppy sessions: max VWAP crosses per 100 bars** (default limit 12) | Counts how often the close has crossed the VWAP so far in the session (from more than 0.2 ATR on one side to more than 0.2 ATR on the other). Above the limit a new setup is skipped and runs invisibly, like Don't Chase | Average +0.17R → +0.21R per trade, October +0.20R → +0.27R, total +197R → +207R, 82 % of trades kept, 9 of 10 instruments better, natural gas +0.28R → +0.34R. Not proven; it skips mostly the same trades as Don't Chase, so use one or the other |
+| Accuracy filters | **Skip when the 1h EMA20 moved more than X ATR in 3 hours** (default 1.65) | Builds 1-hour candles (UTC hours) from the chart and skips a setup when the EMA20 of the last completed hour has moved more than the limit from 3 hours earlier (an over-extended trend); runs invisibly | Average +0.17R → +0.23R, total +197R → +199R, 72 % kept, 8 of 10 instruments better, **natural gas worse** (+0.28R → +0.08R). Not proven |
+| Style | **Show trade markings** (default on) | One switch for the limit line, boxes, entry and TP lines and fill triangles | — |
+
+The tables also gained **TP HIT** (share and number of closed trades that reached TP1, TP2, TP3 and TP4 before the stop), **BREAKEVEN** (shown when a
+Move Stop setting is on: trades closed at breakeven or at a locked profit) and **SKIPPED BY FILTERS** (shown when a filter is on: how many
+setups the filters skipped and what those trades would have done, so you can judge a filter on your own charts).
+
 **Accuracy research** (separate from the clone; October data held out of every fit): the don't-chase filter raised the October 2R hit rate
 from 39 % to 42 % and the average from +0.18R to +0.26R per trade with 75 % of trades kept; the after-loss rule helped in October only;
 breakeven at +1R cut full losses from 62 % to 47 % and the longest losing streak from 20 to 8 without changing the average. Volume /
-delta / absorption / exhaustion proxies, deeper entries and trend filters did not help beyond chance. Forward-test before relying on them.
+delta / absorption / exhaustion proxies, deeper entries and trend filters did not help beyond chance. Looking back over whole days,
+sessions that keep crossing the VWAP lose (−0.13R per trade) and trend days carry the profit (+0.55R), but at the signal only about a third
+of that is visible, which is why the VWAP-cross filter above helps only a little. Flat or squeezed EMAs mark the *best* trades, not the worst,
+and EMA trend-agreement or pullback-to-EMA rules removed more winners than losers. Forward-test before relying on any filter.
 
 ## Same signals in the indicator, the strategy and the EA
 
 The indicator and the strategy contain a **byte-identical ENGINE block** (between `// >>> ENGINE BEGIN` and `// <<< ENGINE END`, plus the shared
-inputs and drawing blocks). It decides every setup, fill, stop move and exit from the chart's bars. The strategy's execution part only copies
+inputs, statistics and drawing blocks). It decides every setup, fill, stop move and exit from the chart's bars. The strategy's execution part only copies
 those decisions into orders and never feeds back into them: the entry limit and the stop are placed on the tick grid so they trigger on exactly
 the bars where the engine's levels are touched, the targets are added only after the fill bar, and if TradingView's fill simulator ever
 disagrees the engine wins (the order is cancelled or the position closed). The old strategy drove its signals from the simulator's fills and
@@ -79,6 +95,13 @@ EA setup: set **Broker server clock** (default: auto GMT+2 / GMT+3 with US dayli
 the last 3,000 bars when it starts, re-places a setup that is still armed, adopts its own open trade if the engine is in it, catches up bars
 missed during a disconnect, and closes any broker position the engine is not in.
 
+EA display (group DISPLAY): **Show trade markings** draws every engine trade like the indicator, history included: the armed limit (dashed),
+the target and stop boxes, the entry line, TP lines, a buy/sell arrow, price labels (entry, SL, final TP) and the result at the exit
+(TP4 +2.00R, STOP -1.00R, BE). **Show the table** puts the strategy's table on the chart (state, levels, risk and lots, recovery, streaks,
+day P&L, signals / taken / skipped, signal accuracy, TP HIT, BREAKEVEN, SKIPPED BY FILTERS, DATA RANGE). Each has one switch. In the
+Strategy Tester tick **Visualization** to watch both; the markings stay on the visual chart when the test ends (they are skipped in
+non-visual tests and optimisation, where nothing is drawn).
+
 ## Auction Retest Strategy (backtesting)
 
 Signals and trades are the indicator's. Strategy-only settings never change them; they only decide whether a signal is taken and how big:
@@ -93,16 +116,19 @@ Signals and trades are the indicator's. Strategy-only settings never change them
 | Loss recovery | 17 modes (all, over N, %, martingale, exact at final TP, step-up, Fibonacci, D'Alembert, Rule C, Rule C split, Labouchère, Grand Martingale, Paroli, Reverse D'Alembert, delayed, % of equity, Oscar's Grind). |
 
 The table shows SIGNALS · TAKEN · SKIPPED, so any signal that an execution setting blocked is visible. With the defaults every signal is taken.
+Below it the same accuracy rows as the indicator: SIGNAL TRADES · WIN % · R, TP HIT, BREAKEVEN (when a stop move is on), SKIPPED BY FILTERS
+(when a filter is on) and DATA RANGE (first and last bar, bar count; time zone in DISPLAY).
 **Leverage**: TradingView's own margin check is off (margin 0 in Properties); the leverage input limits the position value instead.
 The only remaining way the strategy's trade list can differ from the indicator is a single bar that touches both the stop and the target after
 the fill bar (the indicator counts the stop; TradingView's simulator decides from the bar's shape). It does not affect any later signal.
 
 ## Indicator table and alerts
 
-**Model monitor table** (10 compact rows; hover a row for its tooltip): STATE (scanning / armed / active / day cap / day switched off /
-outside hours / skipped by the don't-chase filter) · REGIME / BIAS · ENTRY / STOP (½ = half stop) · TP1 · TP2 · TP3 · TP4 · LIVE · BARS · HIT ·
-MODEL DAY (date, W/L, win %, R, fills / cap) · LOADED BARS (last result, win %, total R) · DATA RANGE · WIN 1R · 1.5R · 2R (share of closed
-trades that reached each level before the stop).
+**Model monitor table** (compact rows; hover a row for its tooltip): STATE (scanning / armed / active / day cap / day switched off /
+outside hours / skipped and by which filter) · REGIME / BIAS · ENTRY / STOP (½ = half stop) · TP1 · TP2 · TP3 · TP4 · LIVE · BARS · HIT ·
+MODEL DAY (date, W/L, win %, R, fills / cap) · LOADED BARS (closed trades, win % with W/L, total R, last result) · **TP HIT** (TP1 … TP4: share
+and number of closed trades that reached each target before the stop) · **BREAKEVEN** (when a Move Stop setting is on) · **SKIPPED BY
+FILTERS** (when a filter is on) · WIN 1R · 1.5R · 2R (share of closed trades that reached each level before the stop) · DATA RANGE.
 
 **Alerts**: fixed alerts for Buy / Sell Retest Armed, Entry Filled, Target Hit, Stop Hit and Retest Cancelled, plus one "Any alert() function
 call" alert that sends every event with its prices.
