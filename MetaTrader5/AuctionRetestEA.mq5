@@ -23,9 +23,10 @@
 //| gate, 1h EMA20 speed gate; all off), on-chart table with target  |
 //| and breakeven statistics, trade markings (entry, stop, targets,  |
 //| result). Use "Visualization" in the Strategy Tester to see them. |
+//| v3.2: optional kill zones (Indian time, four sessions, +-2 h).   |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.10"
+#property version   "3.20"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -155,6 +156,17 @@ input int    InpStartH    = 6;     //   start hour
 input int    InpStartM    = 0;     //   start minute
 input int    InpEndH      = 23;    //   end hour
 input int    InpEndM      = 0;     //   end minute
+enum ENUM_KZ_SHIFT { KZ_M2 = -2,  // -2 hours
+                     KZ_M1 = -1,  // -1 hour
+                     KZ_0  = 0,   // 0 (as listed)
+                     KZ_P1 = 1,   // +1 hour
+                     KZ_P2 = 2 }; // +2 hours
+input bool   InpKzOn      = false; // Trade only in kill zones (Indian time, IST)
+input bool   InpKzAsia    = true;  //   Asia 05:30-09:30 IST
+input bool   InpKzLon     = true;  //   London 11:30-14:30 IST
+input bool   InpKzNy      = true;  //   New York 16:30-19:30 IST
+input bool   InpKzLc      = true;  //   London close 19:30-21:30 IST
+input ENUM_KZ_SHIFT InpKzShift = KZ_0; //   shift all kill zones (daylight saving)
 
 //--- EXECUTION inputs (EA only)
 input group "PARTIAL PROFITS (EA only)"
@@ -276,7 +288,7 @@ int      beN = 0, lkN = 0;         // closed at a stop moved to the entry (break
 datetime gFirstT = 0;              // first bar the engine processed
 // events of the last processed bar (shown setups / trades only)
 bool     evArm, evArmL, evFill, evFillL, evExit, evWin, evMove, evTp; double evRes; int evCancel; // 0 none, 1 expired, 2 replaced
-bool     gNewDay = false, gDayOk = true, gHourOk = true;
+bool     gNewDay = false, gDayOk = true, gHourOk = true, gKzOk = true;
 int      lastAnchorKey = -1;
 datetime gLastDone = 0;            // open time of the last bar the engine processed
 
@@ -333,6 +345,13 @@ double   Hi(int s) { return iHigh(_Symbol, _Period, s); }
 double   Lo(int s) { return iLow(_Symbol, _Period, s); }
 double   Cl(int s) { return iClose(_Symbol, _Period, s); }
 double   Op(int s) { return iOpen(_Symbol, _Period, s); }
+// kill zone in Indian minutes of the day, moved by the shift input; the end is exclusive
+bool     InKz(int m, int startM, int endM)
+{
+   int sh = (int)InpKzShift * 60;
+   int ks = (startM + sh + 1440) % 1440, ke = (endM + sh + 1440) % 1440;
+   return ks < ke ? (m >= ks && m < ke) : (m >= ks || m < ke);
+}
 double   ExitR() { return InpExitAt == EXIT_TP1 ? InpTp1R : InpExitAt == EXIT_TP2 ? InpTp2R : InpExitAt == EXIT_TP3 ? InpTp3R : InpTp4R; }
 
 void LabReset() { ArrayResize(labSeq, 3); labSeq[0] = 1; labSeq[1] = 2; labSeq[2] = 3; }
@@ -606,7 +625,9 @@ void ProcessBar(int s)
    gDayOk = !InpDayOn || (dw == 1 && InpMon) || (dw == 2 && InpTue) || (dw == 3 && InpWed) || (dw == 4 && InpThu) || (dw == 5 && InpFri) || (dw == 6 && InpSat) || (dw == 0 && InpSun);
    int cur = MinOfDay(ut), a0 = InpStartH * 60 + InpStartM, b0 = InpEndH * 60 + InpEndM;
    gHourOk = !InpHoursOn || (a0 < b0 ? (cur >= a0 && cur < b0) : (cur >= a0 || cur < b0));
-   bool canArm = gDayOk && gHourOk && MathAbs(st) != 2 && cooled && dayFills < InpMaxFills && dayOpen && atr > 0;
+   int kzM = MinOfDay(UtcTime(t) + 19800);   // Indian Standard Time = UTC + 5:30
+   gKzOk = !InpKzOn || (InpKzAsia && InKz(kzM, 330, 570)) || (InpKzLon && InKz(kzM, 690, 870)) || (InpKzNy && InKz(kzM, 990, 1170)) || (InpKzLc && InKz(kzM, 1170, 1290));
+   bool canArm = gDayOk && gHourOk && gKzOk && MathAbs(st) != 2 && cooled && dayFills < InpMaxFills && dayOpen && atr > 0;
    bool keepArm = InpRearm == REARM_KEEP && ((st == 1 && bullDisp) || (st == -1 && bearDisp));
    if(canArm && (bullDisp || bearDisp) && !keepArm)
    {
@@ -884,7 +905,7 @@ string StateText(bool newsBlk)
    string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : "1H EMA20 TOO FAST");
    string s = st != 0 && trGhost ? "SKIPPED (" + why + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
               capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : dayBlock ? "STREAK STOP TODAY" :
-              !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : "SCANNING";
+              !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : "SCANNING";
    string ex = exState == 2 ? " (in trade)" : (exState == 1 ? (gVirt ? " (waiting for the level)" : " (order working)") : "");
    return s + ex;
 }
@@ -931,7 +952,7 @@ void UpdateTable()
    string tps = has ? DoubleToString(t1, _Digits) + " | " + DoubleToString(t2, _Digits) + " | " + DoubleToString(t3, _Digits) + " | " + DoubleToString(t4, _Digits) : "-";
    bool   isC = InpRec == REC_C || InpRec == REC_CS;
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.1", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v3.2", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -1158,7 +1179,7 @@ void ResetEngine()
    sesO = 0; sesH = 0; sesL = 0; pdH = 0; pdL = 0; haveSes = false; havePd = false;
    st = 0; armBar = -1; fillBar = -1; lastExit = -1; lastFill = -1; lastDir = 0;
    lim = 0; stp = 0; stp0 = 0; trRisk = 0; t1 = 0; t2 = 0; t3 = 0; t4 = 0; tF = 0; tpHit = 0; trHalf = false; trGhost = false;
-   totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true;
+   totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true; gKzOk = true;
    exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false;
    sigN = 0; takenN = 0; skipN = 0; missN = 0; skipWhy = "";
    gVirt = false; gDayPend = false; gPrevT = 0; capStop = false;
