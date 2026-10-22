@@ -217,6 +217,8 @@ float vwSd  = math.sqrt(math.max(vwVar, 0.0))
 
 // ── market structure and the displacement candle ──
 float atr       = ta.atr(atrLen)
+// warm-up: no impulses are counted and no setup is armed until every lookback and the ATR exist
+bool  warm      = bar_index >= math.max(structLen, brkLen, entryLen, momLen, slopeBars, stopLen) + 1 and not na(atr)
 float priorHigh = ta.highest(high, structLen)[1]
 float priorLow  = ta.lowest(low, structLen)[1]
 float sigHigh   = ta.highest(high, brkLen)[1]
@@ -298,9 +300,9 @@ if halfStrict and not na(prevNet)
 if halfOpenOut and not na(pdH)
     halfL := halfL or (halfStopOn and bullN == 0 and sesO < pdL)
     halfS := halfS or (halfStopOn and bearN == 0 and sesO > pdH)
-if bullImp
+if bullImp and warm
     bullN += 1
-if bearImp
+if bearImp and warm
     bearN += 1
 
 // ── model state ── st: 0 scanning · 1 buy armed · -1 sell armed · 2 long active · -2 short active
@@ -449,7 +451,7 @@ if lossBlock and lossDirBlk == -1
 int  dowUse = dayofweek(time, tzUse)
 bool dayOk  = not dayOn or (dowUse == dayofweek.monday and dMon) or (dowUse == dayofweek.tuesday and dTue) or (dowUse == dayofweek.wednesday and dWed) or (dowUse == dayofweek.thursday and dThu) or (dowUse == dayofweek.friday and dFri) or (dowUse == dayofweek.saturday and dSat) or (dowUse == dayofweek.sunday and dSun)
 bool hourOk = not hoursOn or not na(time(timeframe.period, hoursSess, tzUse))
-bool canArm  = barstate.isconfirmed and dayOk and hourOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
+bool canArm  = barstate.isconfirmed and warm and dayOk and hourOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
 bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
 if canArm and (bullDisp or bearDisp) and not keepArm
     bool  isL   = bullDisp
@@ -522,7 +524,8 @@ if evFill
     // keep the last maxDrawn trades whole inside the 500-object limits
     while array.size(drawnBoxes) > 2 * maxDrawn
         box.delete(array.shift(drawnBoxes))
-    while array.size(drawnLines) > 4 * maxDrawn
+    // each trade draws exitK lines: the entry line plus one TP line per target before the final exit
+    while array.size(drawnLines) > exitK * maxDrawn
         line.delete(array.shift(drawnLines))
     drawOn := true
 else if drawOn
@@ -587,7 +590,12 @@ if alertsOn
         alert(tag + "TP" + str.tostring(tpHit) + " reached" + (evMove ? " | stop moved to " + f_px(stp) : ""), alert.freq_all)
         tpSent := tpHit
     if evExit
-        alert(tag + (evWin ? "TP" + str.tostring(exitK) + " HIT " : "STOP HIT ") + f_r(evRes), evWin ? alert.freq_once_per_bar_close : alert.freq_once_per_bar)
+        string exitMsg = tag + (evWin ? "TP" + str.tostring(exitK) + " HIT " : "STOP HIT ") + f_r(evRes)
+        // a target alert waits for the close (a later stop in the same bar has priority); a stop alert goes out at once
+        if evWin
+            alert(exitMsg, alert.freq_once_per_bar_close)
+        else
+            alert(exitMsg, alert.freq_once_per_bar)
     if evCancel != ""
         alert(tag + "ARMED RETEST " + evCancel + " - cancel the working limit", alert.freq_once_per_bar_close)
 

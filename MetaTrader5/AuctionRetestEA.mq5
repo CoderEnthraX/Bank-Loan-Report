@@ -97,6 +97,13 @@ input double InpDeepFar      = 2.0;   //   min depth (x ATR)
 input bool   InpAllowLong    = true;  // Longs
 input bool   InpAllowShort   = true;  // Shorts
 
+enum ENUM_VW_ANCHOR { VW_SESSION = 0, // Session
+                      VW_WEEK    = 1, // Week
+                      VW_MONTH   = 2 };// Month
+input group "VWAP"
+input ENUM_VW_ANCHOR     InpVwapAnchor = VW_SESSION;    // Anchor
+input ENUM_APPLIED_PRICE InpVwapSrc    = PRICE_TYPICAL; // Source (typical = hlc3)
+
 input group "ENTRY PRICE"
 input ENUM_ENTRY_MODE InpEntryMode = ENTRY_MODEL; // Entry price
 input double InpEntryPct     = 50.0;  // Custom % (0 = close, 50 = mid, 100 = low/high)
@@ -120,7 +127,10 @@ input double InpNoChaseSig = 2.4;   //   sigma from VWAP
 input bool   InpLossBlock  = false; // After a loss, no same-direction trade until a win
 
 input group "DAYS AND HOURS (YOUR time zone)"
-input double InpServerGMT = 2.0;   // Broker server time zone (GMT +h; check Market Watch time)
+enum ENUM_SRV_TZ { SRV_NYCLOSE = 0,   // Auto: GMT+2 winter / GMT+3 US summer time (most FX brokers)
+                   SRV_FIXED   = 1 }; // Fixed: the GMT offset below
+input ENUM_SRV_TZ InpServerTz = SRV_NYCLOSE; // Broker server clock
+input double InpServerGMT = 2.0;   // Broker server time zone if fixed (GMT +h; check Market Watch time)
 input double InpUserGMT   = 5.5;   // Your time zone (GMT +h; India = 5.5)
 input bool   InpDayOn     = false; // Trade only on the ticked days
 input bool   InpMon       = true;  //   Monday
@@ -230,11 +240,16 @@ int      totW = 0, totL = 0; double totR = 0;
 // events of the last processed bar (shown setups / trades only)
 bool     evArm, evArmL, evFill, evFillL, evExit, evWin, evMove, evTp; double evRes; int evCancel; // 0 none, 1 expired, 2 replaced
 bool     gNewDay = false, gDayOk = true, gHourOk = true;
+int      lastAnchorKey = -1;
+datetime gLastDone = 0;            // open time of the last bar the engine processed
 
 // EXECUTION state
 int      exState = 0;              // 0 nothing, 1 entry order working, 2 in a position
 bool     exL = true;
 double   exLots = 0, exRiskAmt = 0, exCostPx = 0, exPnl = 0;
+long     exArm = -1;               // engine armBar of the setup the EA took
+bool     exSynced = false;         // the broker position is the engine's live trade
+bool     gRearm = false;           // re-place the engine's armed setup after a restart
 bool     pDone[3];
 ulong    lastDeal = 0;
 int      sigN = 0, takenN = 0, skipN = 0, missN = 0; string skipWhy = "";
@@ -250,8 +265,22 @@ double TickSize()  { double t = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE
 double FloorTick(double p) { double ts = TickSize(); return NormalizeDouble(MathFloor(p / ts + 1e-6) * ts, _Digits); }
 double CeilTick(double p)  { double ts = TickSize(); return NormalizeDouble(MathCeil(p / ts - 1e-6) * ts, _Digits); }
 double RoundTick(double p) { double ts = TickSize(); return NormalizeDouble(MathRound(p / ts) * ts, _Digits); }
-datetime UserTime(datetime server) { return server - (datetime)(InpServerGMT * 3600) + (datetime)(InpUserGMT * 3600); }
-datetime UtcTime(datetime server)  { return server - (datetime)(InpServerGMT * 3600); }
+int NthSunday(int y, int mon, int n)
+{
+   MqlDateTime d; ZeroMemory(d); d.year = y; d.mon = mon; d.day = 1;
+   MqlDateTime f; TimeToStruct(StructToTime(d), f);
+   return 1 + (7 - f.day_of_week) % 7 + 7 * (n - 1);
+}
+double SrvGMT(datetime server)
+{
+   if(InpServerTz == SRV_FIXED) return InpServerGMT;
+   MqlDateTime d; TimeToStruct(server, d);
+   int ds = NthSunday(d.year, 3, 2), de = NthSunday(d.year, 11, 1);
+   bool dst = (d.mon > 3 && d.mon < 11) || (d.mon == 3 && d.day >= ds) || (d.mon == 11 && d.day < de);
+   return dst ? 3.0 : 2.0;
+}
+datetime UserTime(datetime server) { return server - (datetime)(SrvGMT(server) * 3600) + (datetime)(InpUserGMT * 3600); }
+datetime UtcTime(datetime server)  { return server - (datetime)(SrvGMT(server) * 3600); }
 int      MinOfDay(datetime t) { MqlDateTime d; TimeToStruct(t, d); return d.hour * 60 + d.min; }
 int      DowOf(datetime t)    { MqlDateTime d; TimeToStruct(t, d); return d.day_of_week; }   // 0 = Sunday
 int      DayKey(datetime t)   { MqlDateTime d; TimeToStruct(t, d); return d.year * 1000 + d.day_of_year; }
@@ -327,14 +356,20 @@ void ProcessBar(int s)
    long   rv = iVolume(_Symbol, _Period, s);
    long   tv = iTickVolume(_Symbol, _Period, s);
    double w  = rv > 0 ? (double)rv : (tv > 0 ? (double)tv : 1.0);
-   double src = (h + l + c) / 3.0;
+   double src = InpVwapSrc == PRICE_CLOSE ? c : InpVwapSrc == PRICE_OPEN ? o : InpVwapSrc == PRICE_HIGH ? h : InpVwapSrc == PRICE_LOW ? l :
+                InpVwapSrc == PRICE_MEDIAN ? (h + l) / 2.0 : InpVwapSrc == PRICE_WEIGHTED ? (h + l + 2.0 * c) / 4.0 : (h + l + c) / 3.0;
+   gLastDone = t;
 
-   // session VWAP (reset on the broker's server date change) and its standard deviation
+   // VWAP (reset on the broker's server date change, or week / month) and its standard deviation
    int key = DayKey(t);
    bool newDay = (lastDayKey == -1) || (key != lastDayKey);
    lastDayKey = key;
    gNewDay = newDay;
-   if(newDay) { cumPV = 0; cumPV2 = 0; cumW = 0; cumP = 0; cumP2 = 0; cumN = 0; vwBars = 0; if(bi > 0) sessN++; }
+   MqlDateTime md; TimeToStruct(t, md);
+   int aKey = InpVwapAnchor == VW_WEEK ? (int)(((long)t + 3 * 86400) / (7 * 86400)) : InpVwapAnchor == VW_MONTH ? md.year * 12 + md.mon : key;   // weeks start Monday 00:00
+   bool newAnchor = (lastAnchorKey == -1) || (aKey != lastAnchorKey);
+   lastAnchorKey = aKey;
+   if(newAnchor) { cumPV = 0; cumPV2 = 0; cumW = 0; cumP = 0; cumP2 = 0; cumN = 0; vwBars = 0; if(bi > 0) sessN++; }
    else vwBars++;
    cumPV += src * w; cumPV2 += src * src * w; cumW += w; cumP += src; cumP2 += src * src; cumN++;
    double vwap = cumW > 0 ? cumPV / cumW : cumP / cumN;
@@ -496,7 +531,7 @@ void ProcessBar(int s)
    int dw = DowOf(ut);
    gDayOk = !InpDayOn || (dw == 1 && InpMon) || (dw == 2 && InpTue) || (dw == 3 && InpWed) || (dw == 4 && InpThu) || (dw == 5 && InpFri) || (dw == 6 && InpSat) || (dw == 0 && InpSun);
    int cur = MinOfDay(ut), a0 = InpStartH * 60 + InpStartM, b0 = InpEndH * 60 + InpEndM;
-   gHourOk = !InpHoursOn || (a0 <= b0 ? (cur >= a0 && cur < b0) : (cur >= a0 || cur < b0));
+   gHourOk = !InpHoursOn || (a0 < b0 ? (cur >= a0 && cur < b0) : (cur >= a0 || cur < b0));
    bool canArm = gDayOk && gHourOk && MathAbs(st) != 2 && cooled && dayFills < InpMaxFills && dayOpen && atr > 0;
    bool keepArm = InpRearm == REARM_KEEP && ((st == 1 && bullDisp) || (st == -1 && bearDisp));
    if(canArm && (bullDisp || bearDisp) && !keepArm)
@@ -624,11 +659,18 @@ double EntryPx(bool isL) { return isL ? FloorTick(lim + TickSize() * 0.001 + Spr
 double StopPx(bool isL)  { double tl = TickSize() * 0.001; return isL ? FloorTick(stp + tl) : CeilTick(stp - tl + Spr()); }
 double TgtPx(bool isL, double lvl) { double tl = TickSize() * 0.001; return isL ? CeilTick(lvl + exCostPx - tl) : FloorTick(lvl - exCostPx + tl + Spr()); }
 
+double MinDist() { return MathMax((double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL), (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_FREEZE_LEVEL)) * _Point; }
 void SetExits(bool withTarget)
 {
    ulong tk; double vol, op;
    if(!HasPosition(tk, vol, op)) return;
    double sl = StopPx(exL), tp = withTarget ? TgtPx(exL, tF) : 0;
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   double minD = MinDist();
+   // price is already through the engine's stop or target: the engine exits on this bar, so exit now
+   if(exL ? (bid <= sl || (tp > 0 && bid >= tp)) : (ask >= sl || (tp > 0 && ask <= tp))) { CloseAll(); return; }
+   if(exL) { if(bid - sl < minD) sl = FloorTick(bid - minD); if(tp > 0 && tp - bid < minD) tp = CeilTick(bid + minD); }
+   else    { if(sl - ask < minD) sl = CeilTick(ask + minD); if(tp > 0 && ask - tp < minD) tp = FloorTick(ask - minD); }
    if(!trade.PositionModify(tk, sl, tp))
       Print("Stop/target update rejected (", trade.ResultRetcodeDescription(), "): SL ", DoubleToString(sl, _Digits), " TP ", DoubleToString(tp, _Digits));
 }
@@ -658,6 +700,38 @@ void ExtendTrade(datetime t1x)
    string id = "ARM_" + IntegerToString((long)gDrawT);
    ObjectMove(0, id + "_tgt", 1, t1x, MathMin(lim, tF)); ObjectMove(0, id + "_tgt", 0, gDrawT, MathMax(lim, tF));
    ObjectMove(0, id + "_stp", 1, t1x, MathMin(lim, stp0)); ObjectMove(0, id + "_stp", 0, gDrawT, MathMax(lim, stp0));
+}
+
+//--- place the engine's setup at the broker (sizing, filters, pending or market order) ----
+void TakeSetup(bool isL, bool newsBlk, bool flatNow)
+{
+   sigN++;
+   ulong pTk; double pVol, pOpen;
+   double rAmt = NextRisk(ExitR());
+   double v = capStop ? 0 : LotsFor(rAmt, trRisk, lim, isL);
+   bool posNow = HasPosition(pTk, pVol, pOpen);
+   skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : v <= 0 ? "size 0" : "";
+   if(skipWhy != "") { skipN++; return; }
+   double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
+   double sprNow = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
+   exCostPx = InpEarnBack && tv > 0 ? InpCommLot / (tv / ts) + sprNow : 0;
+   exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((trRisk + sprNow) / ts * tv + InpCommLot);
+   for(int q = 0; q < 3; q++) pDone[q] = false;
+   CancelPending();
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double ep = EntryPx(isL), sl = StopPx(isL);
+   double minD = MinDist();
+   bool ok;
+   if(InpEntryMode == ENTRY_MARKET)
+      ok = isL ? trade.Buy(v, _Symbol, 0, sl, 0, "ARM") : trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
+   else if(isL)
+      ok = ep <= ask - minD ? trade.BuyLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM")
+                            : trade.Buy(v, _Symbol, 0, sl, 0, "ARM");     // at / through the level (or inside the stops distance): the engine fills on this bar
+   else
+      ok = ep >= bid + minD ? trade.SellLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM")
+                            : trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
+   if(ok) { exState = 1; exArm = armBar; exSynced = false; takenN++; }
+   else { skipN++; skipWhy = "order rejected"; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
 }
 
 //=== EXECUTION: runs once per new bar, after the engine processed the bar that just closed ===
@@ -713,15 +787,21 @@ void OnNewBar()
       }
       oscP += exPnl;
       if(oscP >= InpBaseRisk) { oscU = 1; oscP = 0; } else if(win) oscU++;
-      exState = 0; exPnl = 0;
+      exState = 0; exPnl = 0; exArm = -1; exSynced = false;
       CancelPending();
    }
 
-   // 3. follow the engine
-   if(exState == 1 && evCancel != 0) { CancelPending(); exState = 0; }
-   if(evFill && exState == 1 && !pos && !exClosed) { CancelPending(); exState = 0; missN++; }   // engine filled, broker did not
-   if(exState == 2 && (evFill || evMove)) SetExits(true);
-   if(evExit && exState == 2 && !InpEarnBack) CloseAll();                                       // engine exited: never stay in
+   // 3. follow the engine (only the setup the EA took)
+   bool exMine = exArm >= 0 && armBar == exArm;
+   if(exState == 1 && evCancel != 0) { CancelPending(); exState = 0; exArm = -1; }
+   if(evFill && exState == 1 && !pos && !exClosed) { CancelPending(); exState = 0; exArm = -1; missN++; }   // engine filled, broker did not
+   if(evFill && exState == 2 && exMine) exSynced = true;
+   if(exState == 2 && exMine && (evFill || evMove)) SetExits(true);
+   if(evExit && exState == 2 && exMine && (!InpEarnBack || !evWin)) CloseAll();               // engine exited: never stay in (earn-back only outlives a win)
+   // engine wins: close a broker position the engine is not in (early fill on a spread spike, a fill racing a cancel,
+   // or an engine exit on a bar caught up after a disconnect); with earn-back a synced trade may outlive the engine exit
+   bool engHolds = (MathAbs(st) == 2 && exSynced && exMine) || (MathAbs(st) == 1 && !exSynced && exState == 2 && exMine);
+   if(pos && !exClosed && !evExit && !engHolds && !(InpEarnBack && exSynced)) { CloseAll(); exState = 2; }   // its deals are counted on the next bar
 
    // 4. force-close time / weekend start / news
    bool nStart; bool newsBlk = NewsBlock(ut, nStart, utPrev);
@@ -730,41 +810,10 @@ void OnNewBar()
    bool wkndStart = InpWeekendOn && DowOf(ut) == 6 && DowOf(utPrev) != 6;
    bool flatNow = fcNow || wkndStart || nStart;
    if(flatNow && pos) CloseAll();
-   if(exState == 1 && (flatNow || newsBlk)) { CancelPending(); exState = 0; }
+   if(exState == 1 && (flatNow || newsBlk)) { CancelPending(); exState = 0; exArm = -1; }
 
    // 5. take the engine's new setup
-   if(evArm)
-   {
-      sigN++;
-      bool isL = evArmL;
-      double rAmt = NextRisk(ExitR());
-      double v = capStop ? 0 : LotsFor(rAmt, trRisk, lim, isL);
-      bool posNow = HasPosition(pTk, pVol, pOpen);
-      skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : v <= 0 ? "size 0" : "";
-      if(skipWhy == "")
-      {
-         double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
-         double sprNow = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
-         exCostPx = InpEarnBack && tv > 0 ? InpCommLot / (tv / ts) + sprNow : 0;
-         exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((trRisk + sprNow) / ts * tv + InpCommLot);
-         for(int q = 0; q < 3; q++) pDone[q] = false;
-         CancelPending();
-         double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-         double ep = EntryPx(isL), sl = StopPx(isL);
-         bool ok;
-         if(InpEntryMode == ENTRY_MARKET)
-            ok = isL ? trade.Buy(v, _Symbol, 0, sl, 0, "ARM") : trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
-         else if(isL)
-            ok = ep < ask ? trade.BuyLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM")
-                          : trade.Buy(v, _Symbol, 0, sl, 0, "ARM");     // already through the level: the engine fills on this bar
-         else
-            ok = ep > bid ? trade.SellLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM")
-                          : trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
-         if(ok) { exState = 1; takenN++; }
-         else { skipN++; skipWhy = "order rejected"; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
-      }
-      else skipN++;
-   }
+   if(evArm) TakeSetup(evArmL, newsBlk, flatNow);
 
    // status panel
    string state = st != 0 && trGhost ? "SKIPPED (too far from VWAP)" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
@@ -796,10 +845,25 @@ void ManagePartials()
       if(exL ? px >= tp[k] + exCostPx : px <= tp[k] - exCostPx)
       {
          double cv = MathFloor(exLots * pp[k] / 100.0 / step + 1e-9) * step;
-         if(cv >= vmin && cv < vol) trade.PositionClosePartial(tk, NormalizeDouble(cv, 8));
+         if(cv >= vmin && vol - cv >= vmin - 1e-9) trade.PositionClosePartial(tk, NormalizeDouble(cv, 8));
          pDone[k] = true;
       }
    }
+}
+
+//--- reset every engine / execution variable (MT5 keeps globals when inputs or the timeframe change) ---
+void ResetEngine()
+{
+   bi = -1; cumPV = 0; cumPV2 = 0; cumW = 0; cumP = 0; cumP2 = 0; cumN = 0; vwBars = 0; sessN = 0; ArrayResize(vwHist, 0);
+   atrV = 0; atrN = 0; atrSum = 0; lastDayKey = -1; lastAnchorKey = -1; gLastDone = 0;
+   dayFills = 0; dayW = 0; dayL = 0; dayR = 0; dayRiskR = 0; lossDirBlk = 0;
+   bullN = 0; bearN = 0; prevNet = 0; havePrev = false;
+   sesO = 0; sesH = 0; sesL = 0; pdH = 0; pdL = 0; haveSes = false; havePd = false;
+   st = 0; armBar = -1; fillBar = -1; lastExit = -1; lastFill = -1; lastDir = 0;
+   lim = 0; stp = 0; stp0 = 0; trRisk = 0; t1 = 0; t2 = 0; t3 = 0; t4 = 0; tF = 0; tpHit = 0; trHalf = false; trGhost = false;
+   totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true;
+   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false;
+   sigN = 0; takenN = 0; skipN = 0; missN = 0; skipWhy = "";
 }
 
 //--- events -----------------------------------------------------------------
@@ -808,14 +872,15 @@ int OnInit()
    trade.SetExpertMagicNumber(InpMagic);
    trade.SetDeviationInPoints(50);
    trade.SetTypeFillingBySymbol(_Symbol);
+   ResetEngine();
    LabReset();
-   ArrayResize(vwHist, 0);
    if(InpTp1R > InpTp2R || InpTp2R > InpTp3R || InpTp3R > InpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
    // warm up the engine on history (no orders): it ends in the same state as the TradingView engine would
    int bars = Bars(_Symbol, _Period);
-   int need = InpStructLen + InpMomLen + InpAtrLen + 10;
-   if(bars < need) { Print("Not enough chart history yet (", bars, " bars); the EA will retry."); return INIT_FAILED; }
-   int start = (int)MathMin(InpWarmBars, bars - InpStructLen - InpMomLen - 5);
+   int look = (int)MathMax(MathMax(InpStructLen, InpBrkLen + 1), MathMax(InpMomLen + 1, InpStopLen)) + 2;
+   int need = look + InpAtrLen + 10;
+   if(bars < need) { Print("Not enough chart history yet (", bars, " bars, need ", need, "); scroll the chart back or load more history, then attach the EA again."); return INIT_FAILED; }
+   int start = (int)MathMin(InpWarmBars, bars - look - 1);
    gLive = false;
    for(int s = start; s >= 1; s--) ProcessBar(s);
    gLive = true;
@@ -826,10 +891,11 @@ int OnInit()
    if(HasPosition(tk, vol, op) && PositionSelectByTicket(tk))
    {
       bool isL = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY;
-      if((isL && st == 2) || (!isL && st == -2)) { exState = 2; exL = isL; exLots = vol; Print("Adopted open position #", tk, " (engine is in the same trade)."); SetExits(true); }
-      else Print("Open position #", tk, " does not match the engine state; it is left untouched.");
+      if((isL && st == 2) || (!isL && st == -2)) { exState = 2; exL = isL; exLots = vol; exArm = armBar; exSynced = true; Print("Adopted open position #", tk, " (engine is in the same trade)."); SetExits(true); }
+      else { exState = 2; Print("Open position #", tk, " does not match the engine state; it will be closed on the next bar (the engine wins)."); }
    }
-   CancelPending();   // a pending order from before the restart has no tracked state; new signals re-arm
+   CancelPending();   // a pending order from before the restart has no tracked state
+   gRearm = MathAbs(st) == 1 && !trGhost && exState == 0;   // re-place the engine's armed setup on the first tick
    return INIT_SUCCEEDED;
 }
 
@@ -841,7 +907,21 @@ void OnTick()
    if(t0 != gLastBarTime)
    {
       gLastBarTime = t0;
+      int sh = gLastDone > 0 ? iBarShift(_Symbol, _Period, gLastDone, true) : -1;   // 1 = nothing missed
+      bool caught = false;
+      for(int s = sh - 1; s >= 2; s--) { ProcessBar(s); caught = true; }          // bars missed while offline: engine only
       OnNewBar();
+      if(caught && exState == 2 && MathAbs(st) == 2 && exArm == armBar) SetExits(true);   // re-sync stop moves of the missed bars
+   }
+   if(gRearm)
+   {
+      gRearm = false;
+      if(MathAbs(st) == 1 && !trGhost && exState == 0)
+      {
+         bool ns; datetime un = UserTime(TimeCurrent());
+         bool nb = NewsBlock(un, ns, un);
+         TakeSetup(st == 1, nb, false);
+      }
    }
    ManagePartials();
 }

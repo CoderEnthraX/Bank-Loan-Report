@@ -8,8 +8,10 @@
 //   - the entry limit and the stop sit on the tick grid so that they trigger on exactly the bars where
 //     the engine's (unrounded) levels are touched;
 //   - the targets are only added after the fill bar (the indicator never takes a target on its fill bar);
-//   - if TradingView's fill simulator ever disagrees (a missed fill, a position still open after the
-//     engine's exit), the engine wins: the order is cancelled / the position is closed.
+//   - if TradingView's fill simulator ever disagrees (a missed fill, a fill the engine does not have, a
+//     position still open after the engine's exit), the engine wins: the order is cancelled / the position closed.
+//   - a bar that touches both the stop and the target counts as the stop in the engine; TradingView fills
+//     whichever its intrabar path reaches first, so such a trade can be a win in the strategy (table: exit differs).
 //  With the default settings the strategy takes every trade the indicator shows. Execution settings
 //  (risk, costs, partials, streak stops, force-close, news) are strategy-only and OFF by default; when
 //  they block a signal it is counted in the table as SKIPPED.
@@ -275,6 +277,8 @@ float vwSd  = math.sqrt(math.max(vwVar, 0.0))
 
 // ── market structure and the displacement candle ──
 float atr       = ta.atr(atrLen)
+// warm-up: no impulses are counted and no setup is armed until every lookback and the ATR exist
+bool  warm      = bar_index >= math.max(structLen, brkLen, entryLen, momLen, slopeBars, stopLen) + 1 and not na(atr)
 float priorHigh = ta.highest(high, structLen)[1]
 float priorLow  = ta.lowest(low, structLen)[1]
 float sigHigh   = ta.highest(high, brkLen)[1]
@@ -356,9 +360,9 @@ if halfStrict and not na(prevNet)
 if halfOpenOut and not na(pdH)
     halfL := halfL or (halfStopOn and bullN == 0 and sesO < pdL)
     halfS := halfS or (halfStopOn and bearN == 0 and sesO > pdH)
-if bullImp
+if bullImp and warm
     bullN += 1
-if bearImp
+if bearImp and warm
     bearN += 1
 
 // ── model state ── st: 0 scanning · 1 buy armed · -1 sell armed · 2 long active · -2 short active
@@ -507,7 +511,7 @@ if lossBlock and lossDirBlk == -1
 int  dowUse = dayofweek(time, tzUse)
 bool dayOk  = not dayOn or (dowUse == dayofweek.monday and dMon) or (dowUse == dayofweek.tuesday and dTue) or (dowUse == dayofweek.wednesday and dWed) or (dowUse == dayofweek.thursday and dThu) or (dowUse == dayofweek.friday and dFri) or (dowUse == dayofweek.saturday and dSat) or (dowUse == dayofweek.sunday and dSun)
 bool hourOk = not hoursOn or not na(time(timeframe.period, hoursSess, tzUse))
-bool canArm  = barstate.isconfirmed and dayOk and hourOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
+bool canArm  = barstate.isconfirmed and warm and dayOk and hourOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
 bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
 if canArm and (bullDisp or bearDisp) and not keepArm
     bool  isL   = bullDisp
@@ -580,7 +584,8 @@ if evFill
     // keep the last maxDrawn trades whole inside the 500-object limits
     while array.size(drawnBoxes) > 2 * maxDrawn
         box.delete(array.shift(drawnBoxes))
-    while array.size(drawnLines) > 4 * maxDrawn
+    // each trade draws exitK lines: the entry line plus one TP line per target before the final exit
+    while array.size(drawnLines) > exitK * maxDrawn
         line.delete(array.shift(drawnLines))
     drawOn := true
 else if drawOn
@@ -636,6 +641,9 @@ var int   sigN      = 0
 var int   takenN    = 0
 var int   skipN     = 0
 var int   missN     = 0
+var int   diffN     = 0      // exits where the emulator's result differs from the engine's (stop + target in one bar)
+var int   exArm     = na     // engine armBar of the setup the strategy took
+var float exPartDone = 0.0   // quantity already closed by partial exits
 var string skipWhy  = ""
 // money management state
 var float dayPnl    = 0.0
@@ -669,15 +677,22 @@ f_tgtPx(bool isL, float lvl) => isL ? f_ceilTick(lvl + exCostPx - syminfo.mintic
 f_setExits(bool isL, bool withTargets) =>
     string eid = isL ? "L" : "S"
     float  sPx = f_stopPx(isL)
+    // created in the order X1, X2, X3, X4 from the arm on, so the partials keep their reserved quantity
     if withTargets
-        if pp1 > 0 and tpHit < 1
+        if pp1 > 0 and exPartDone < exQty * pp1 / 100.0 - 1e-9
             strategy.exit("X1", eid, qty = exQty * pp1 / 100.0, limit = f_tgtPx(isL, t1), stop = sPx)
-        if pp2 > 0 and tpHit < 2
+        if pp2 > 0 and exPartDone < exQty * (pp1 + pp2) / 100.0 - 1e-9
             strategy.exit("X2", eid, qty = exQty * pp2 / 100.0, limit = f_tgtPx(isL, t2), stop = sPx)
-        if pp3 > 0 and tpHit < 3
+        if pp3 > 0 and exPartDone < exQty * (pp1 + pp2 + pp3) / 100.0 - 1e-9
             strategy.exit("X3", eid, qty = exQty * pp3 / 100.0, limit = f_tgtPx(isL, t3), stop = sPx)
         strategy.exit("X4", eid, qty_percent = 100, limit = f_tgtPx(isL, tF), stop = sPx)
     else
+        if pp1 > 0
+            strategy.exit("X1", eid, qty = exQty * pp1 / 100.0, stop = sPx)
+        if pp2 > 0
+            strategy.exit("X2", eid, qty = exQty * pp2 / 100.0, stop = sPx)
+        if pp3 > 0
+            strategy.exit("X3", eid, qty = exQty * pp3 / 100.0, stop = sPx)
         strategy.exit("X4", eid, qty_percent = 100, stop = sPx)
 
 // ── time filters and news windows (execution only) ──
@@ -715,13 +730,18 @@ exPnl += newPnl
 if closedNew
     carried := math.max(0.0, carried - newPnl)
 float pos = strategy.position_size
-if exState == 1 and pos != 0
+bool exNewPos = exState == 1 and pos != 0
+if exNewPos
     exState := 2
 bool exClosed = (exState == 1 and pos == 0 and closedNew) or (exState == 2 and pos == 0)
+if closedNew and exState == 2 and pos != 0
+    exPartDone := math.abs(exQty) - math.abs(pos)
 
 // ── 2. an executed trade has closed: streaks, pauses and loss recovery ──
 if exClosed
     bool win = exPnl > 0
+    if evExit and win != (evRes > 0)
+        diffN += 1
     dayPnl  += exPnl
     exW     += win ? 1 : 0
     exLn    += win ? 0 : 1
@@ -763,20 +783,29 @@ if exClosed
         oscU += 1
     exState := 0
     exPnl   := 0.0
+    exArm   := na
     strategy.cancel_all()
 
-// ── 3. follow the engine ──
+// ── 3. follow the engine (only the setup the strategy took) ──
+bool exMine = not na(exArm) and armBar == exArm
+if exNewPos and not evFill
+    // the emulator filled but the engine did not (should not happen): close it, the engine wins
+    strategy.close_all(comment = "Engine: no fill")
+    missN += 1
 if exState == 1 and evCancel != ""
     strategy.cancel_all()
     exState := 0
+    exArm   := na
 if evFill and exState == 1 and pos == 0 and not exClosed
     // the engine filled but the emulator did not (should not happen): drop the order, the engine wins
     strategy.cancel_all()
     exState := 0
+    exArm   := na
     missN   += 1
-if exState == 2 and (evFill or evMove)
+if exState == 2 and exMine and (evFill or evMove)
     f_setExits(exL, true)
-if evExit and exState == 2 and not earnBack
+// the engine exited: never stay in (with earn-back only a target win may run on to the extended target)
+if evExit and exState == 2 and exMine and (not earnBack or not evWin)
     strategy.close_all(comment = "Engine exit")
 
 // ── 4. force-close time / weekend start / news: close the position, cancel a working entry ──
@@ -785,6 +814,7 @@ if flatNow and pos != 0
 if exState == 1 and (flatNow or newsBlock)
     strategy.cancel_all()
     exState := 0
+    exArm   := na
 
 // ── 5. take the engine's new setup ──
 if evArm
@@ -856,6 +886,8 @@ if evArm
         exRiskUsd := q * perUnit
         exCostPx  := earnBack and syminfo.pointvalue * fx > 0 ? costUnit / (syminfo.pointvalue * fx) : 0.0
         exPnl     := 0.0
+        exArm     := bar_index
+        exPartDone := 0.0
         string eid = isL ? "L" : "S"
         if entryMode == E_MARKET
             strategy.entry(eid, isL ? strategy.long : strategy.short, qty = q)
@@ -906,5 +938,5 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     f_row(mon, 5, isC ? "LOSSES CARRIED" : "RECOVERY POOL", recMode == L_OFF ? "off" : isC ? f_usd(carried) + " · split " + str.tostring(cSplit) : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : recMode == L_RDALE ? " · " + str.tostring(rdUnits) + " units" : recMode == L_OSC ? " · " + str.tostring(oscU) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), (isC ? carried : recPool) > 0 ? negC : white)
     f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(exW) + "W/" + str.tostring(exLn) + "L", white)
     f_row(mon, 7, "DAY P&L · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayPnl >= 0 ? posC : negC)
-    f_row(mon, 8, "SIGNALS · TAKEN · SKIPPED", str.tostring(sigN) + " · " + str.tostring(takenN) + " · " + str.tostring(skipN) + (missN > 0 ? " · missed " + str.tostring(missN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN > 0 ? negC : white)
+    f_row(mon, 8, "SIGNALS · TAKEN · SKIPPED", str.tostring(sigN) + " · " + str.tostring(takenN) + " · " + str.tostring(skipN) + (missN > 0 ? " · missed " + str.tostring(missN) : "") + (diffN > 0 ? " · exit differs " + str.tostring(diffN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN + diffN > 0 ? negC : white)
     f_row(mon, 9, "SET PROPERTIES COMMISSION", (costUnit > 0 ? str.tostring(costUnit / 2.0, "0.#####") + " per contract" : "0") + " · 1 lot = " + str.tostring(unitsPer, "#,##0") + " units", white)
