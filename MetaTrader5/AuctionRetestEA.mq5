@@ -1,24 +1,27 @@
 //+------------------------------------------------------------------+
 //| AuctionRetestEA.mq5                                              |
-//| MetaTrader 5 port of the TradingView "Auction Retest Strategy".  |
+//| MetaTrader 5 port of the TradingView "Auction Retest" model and  |
+//| strategy (v3).                                                   |
 //|                                                                  |
-//| Signal: session VWAP + displacement candle + limit retest, the   |
-//| same rules as Auction_Retest_Model.pine / _Strategy.pine.        |
-//| Money management: $ risk sizing, hard cap, leverage cap,         |
-//| commission earn-back, partials, stop moves, final-exit choice,   |
-//| streak stops / pauses, 17 loss-recovery modes, trading hours,    |
-//| force-close time, weekend filter and news windows.               |
+//| SAME SIGNALS AS THE TRADINGVIEW FILES: ProcessBar() is a line-by- |
+//| line port of the shared ENGINE block of Auction_Retest_Model.pine |
+//| and Auction_Retest_Strategy.pine. It decides every setup, fill,   |
+//| stop move and exit from closed bars only. The execution part      |
+//| copies those decisions into broker orders and never feeds back    |
+//| into them, so broker fills cannot change the signals.            |
 //|                                                                  |
-//| Differences from TradingView, by design:                         |
-//|  - Lot size, lot step and tick value come from the broker's      |
-//|    symbol specification, so every symbol sizes correctly.        |
-//|  - Spread is the broker's real Bid/Ask (no spread input).        |
+//| Differences from TradingView that come from the platform:        |
+//|  - The broker's own bars and tick volume are used (other feed).  |
 //|  - The trading day / VWAP reset is the broker's server midnight. |
+//|  - Charts are BID: with "Match bid-chart levels" on, buy limits   |
+//|    and short stops/targets are shifted by the live spread so they |
+//|    trigger at the same bid levels the engine uses.               |
+//|  - Lot size, tick value and volume step come from the broker.    |
 //|  - Partials close at market when price reaches the target.       |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "1.00"
-#property description "VWAP displacement + retest EA with money management (port of the TradingView strategy)."
+#property version   "3.00"
+#property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
 
@@ -29,6 +32,8 @@ enum ENUM_ENTRY_MODE { ENTRY_MODEL = 0,   // Model (body mid or 6-bar level)
 enum ENUM_EXIT_AT { EXIT_TP1 = 1, EXIT_TP2 = 2, EXIT_TP3 = 3, EXIT_TP4 = 4 };
 enum ENUM_REARM { REARM_KEEP = 0,  // Keep first
                   REARM_NEW  = 1 };// Replace with newer
+enum ENUM_STOP_MODE { STOP_ATR = 0,    // ATR model
+                      STOP_SWING = 1 };// Swing + buffer (ATR capped)
 enum ENUM_CAP_ACTION { CAP_CLAMP = 0,  // Clamp risk to the cap
                        CAP_STOP  = 1,  // Stop trading
                        CAP_RESET = 2 };// Start again from the base risk
@@ -53,31 +58,42 @@ enum ENUM_REC {
    REC_OSC   = 17  // Oscar's Grind
 };
 
-//--- signal model (same defaults as the indicator)
-input group "SIGNAL MODEL"
-input int    InpStructLen    = 10;    // Breakout lookback (bars)
+//--- ENGINE inputs: same names, order and defaults as the shared Pine inputs
+input group "SIGNAL MODEL (same as the indicator)"
+input int    InpStructLen    = 10;    // Structure lookback (bars)
+input int    InpBrkLen       = 6;     // Signal break lookback (bars)
 input int    InpEntryLen     = 6;     // Entry level lookback (bars)
 input int    InpRetestBars   = 5;     // Retest window (bars)
 input double InpDispAtr      = 0.8;   // Min displacement range (x ATR)
-input double InpBodyPct      = 55.0;  // Min body (% of range)
+input double InpBodyPct      = 55.0;  // Min displacement body (% of range)
 input double InpClosePct     = 25.0;  // Max close distance from extreme (% of range)
 input int    InpMomLen       = 10;    // Momentum lookback (bars)
 input double InpMomAtr       = 0.85;  // Min momentum (x ATR, 0 = off)
+input double InpCmoMin       = 20.0;  // Min CMO, clean move (0 = off)
 input ENUM_REARM InpRearm    = REARM_KEEP; // Same-direction re-arm
+input ENUM_STOP_MODE InpStopMode = STOP_ATR; // Stop mode
 input double InpStopAtr      = 1.8;   // Stop distance (x ATR)
-input bool   InpHalfStop     = true;  // Half stop on counter-bias first signal
+input int    InpStopLen      = 6;     // Swing lookback (bars)
+input double InpStopBufAtr   = 0.22;  // Swing buffer (x ATR)
+input bool   InpHalfStop     = true;  // Half stop on first counter-bias impulse
 input double InpHalfStopAtr  = 0.9;   // Half stop (x ATR)
 input int    InpBiasNet      = 3;     // Prev session net impulses
-input int    InpCooldown     = 2;     // Cooldown after exit (bars)
+input double InpImpBody      = 50.0;  // Impulse min body (% of range)
+input bool   InpHalfOpenOut  = true;  // Half stop when session opens outside prev range
+input bool   InpHalfStrict   = false; // Strict bias check (optional)
+input int    InpCooldown     = 1;     // Cooldown after exit (bars)
 input int    InpMaxFills     = 5;     // Max fills per day
-input double InpDayStopR     = 3.0;   // Daily stop (R lost, 0 = off)
+input double InpDayStopR     = 0.0;   // Daily stop (R lost, 0 = off)
 input bool   InpFillBarStopR = false; // Count fill-bar stops in daily stop
 input bool   InpLegReset     = true;  // Re-anchor breakout after a trade
 input int    InpAtrLen       = 14;    // ATR length (Wilder / RMA)
 input bool   InpVwapFilter   = true;  // Longs above VWAP / shorts below
 input int    InpSlopeBars    = 3;     // VWAP slope bars (0 = off)
-input int    InpMinOpenBars  = 1;     // Skip first bars after the daily reset
+input bool   InpSlopeCross   = true;  // Slope looks across the session start
+input int    InpMinOpenBars  = 0;     // Skip first bars after the daily reset
 input bool   InpSkipSunday   = true;  // Skip Sunday (UTC) weekly open
+input bool   InpDeepOn       = false; // Deep pullback signal (optional)
+input double InpDeepFar      = 2.0;   //   min depth (x ATR)
 input bool   InpAllowLong    = true;  // Longs
 input bool   InpAllowShort   = true;  // Shorts
 
@@ -85,21 +101,46 @@ input group "ENTRY PRICE"
 input ENUM_ENTRY_MODE InpEntryMode = ENTRY_MODEL; // Entry price
 input double InpEntryPct     = 50.0;  // Custom % (0 = close, 50 = mid, 100 = low/high)
 
-input group "TARGETS, PARTIALS AND STOP MOVES"
+input group "TARGETS, EXIT AND STOP MOVES"
 input double InpTp1R = 0.6;  // TP1 (R)
-input double InpP1   = 0.0;  // TP1 close % (0 = no partial)
 input double InpTp2R = 1.0;  // TP2 (R)
-input double InpP2   = 0.0;  // TP2 close %
 input double InpTp3R = 1.5;  // TP3 (R)
-input double InpP3   = 0.0;  // TP3 close %
 input double InpTp4R = 2.0;  // TP4 (R)
 input ENUM_EXIT_AT InpExitAt = EXIT_TP4; // Final exit at
 input bool   InpMv1On = false; // When TP1 hits, move stop
 input double InpMv1R  = 0.0;   //   ...to (R, 0 = breakeven)
-input bool   InpMv2On = false; // When TP2 hits, move stop
+input bool   InpMv2On = false; // When TP2 hits, move stop (breakeven at +1R: on, 0)
 input double InpMv2R  = 0.6;   //   ...to (R)
 input bool   InpMv3On = false; // When TP3 hits, move stop
 input double InpMv3R  = 1.0;   //   ...to (R)
+
+input group "ACCURACY FILTERS (research, off = original)"
+input bool   InpNoChase    = false; // Don't chase: skip signals beyond N sigma from VWAP
+input double InpNoChaseSig = 2.4;   //   sigma from VWAP
+input bool   InpLossBlock  = false; // After a loss, no same-direction trade until a win
+
+input group "DAYS AND HOURS (YOUR time zone)"
+input double InpServerGMT = 2.0;   // Broker server time zone (GMT +h; check Market Watch time)
+input double InpUserGMT   = 5.5;   // Your time zone (GMT +h; India = 5.5)
+input bool   InpDayOn     = false; // Trade only on the ticked days
+input bool   InpMon       = true;  //   Monday
+input bool   InpTue       = true;  //   Tuesday
+input bool   InpWed       = true;  //   Wednesday
+input bool   InpThu       = true;  //   Thursday
+input bool   InpFri       = true;  //   Friday
+input bool   InpSat       = true;  //   Saturday
+input bool   InpSun       = true;  //   Sunday
+input bool   InpHoursOn   = false; // Trade only between
+input int    InpStartH    = 6;     //   start hour
+input int    InpStartM    = 0;     //   start minute
+input int    InpEndH      = 23;    //   end hour
+input int    InpEndM      = 0;     //   end minute
+
+//--- EXECUTION inputs (EA only)
+input group "PARTIAL PROFITS (EA only)"
+input double InpP1   = 0.0;  // Close % at TP1 (0 = no partial)
+input double InpP2   = 0.0;  // Close % at TP2
+input double InpP3   = 0.0;  // Close % at TP3
 
 input group "RISK AND POSITION SIZE"
 input double InpBaseRisk = 50.0;   // Base risk per trade (account currency)
@@ -109,9 +150,10 @@ input ENUM_CAP_ACTION InpCapAction = CAP_CLAMP; // If the risk would exceed the 
 input double InpLeverage = 100.0;  // Leverage cap 1:x (0 = broker margin only)
 input double InpLotStep  = 0.0;    // Lot step (0 = broker's volume step)
 
-input group "COMMISSION"
-input double InpCommLot  = 0.0;    // Commission per lot, round trip (for sizing / earn-back)
+input group "COMMISSION AND BID/ASK"
+input double InpCommLot  = 0.0;    // Commission per lot, round trip (sizing / earn-back)
 input bool   InpEarnBack = false;  // Extend targets to earn back commission + spread
+input bool   InpBidChart = true;   // Match bid-chart levels (shift buy-side orders by the spread)
 
 input group "STREAKS AND PAUSES"
 input bool InpLStopOn = false; // Stop for the day after N losses in a row
@@ -122,18 +164,11 @@ input bool InpPauseOn = false; // Pause after N losses in a row
 input int  InpPauseN  = 3;     //   N losses
 input int  InpPauseDays = 1;   //   Days to pause (1-3)
 
-input group "TIME FILTERS AND NEWS (times in YOUR time zone)"
-input double InpServerGMT = 2.0;   // Broker server time zone (GMT +h; check Market Watch time)
-input double InpUserGMT   = 5.5;   // Your time zone (GMT +h; India = 5.5)
-input bool   InpHoursOn   = false; // Trade only between
-input int    InpStartH    = 6;     //   start hour
-input int    InpStartM    = 0;     //   start minute
-input int    InpEndH      = 23;    //   end hour
-input int    InpEndM      = 0;     //   end minute
+input group "FORCE-CLOSE, WEEKEND AND NEWS (YOUR time zone)"
 input bool   InpFcOn      = false; // Force-close open trades daily at
 input int    InpFcH       = 2;     //   hour
 input int    InpFcM       = 0;     //   minute
-input bool   InpWeekendOn = false; // No trading on Saturday and Sunday
+input bool   InpWeekendOn = false; // Close open trades when Saturday starts
 input int    InpNewsPre   = 60;    // No new trades before news (minutes)
 input bool   InpDNewsOn   = false; // Daily news window
 input int    InpDNewsH    = 18;    //   start hour
@@ -168,52 +203,63 @@ input double InpEqPct    = 1.0;    // % of equity (% mode)
 
 input group "GENERAL"
 input long   InpMagic    = 240611; // Magic number
-input int    InpWarmBars = 3000;   // Bars used to warm up VWAP / ATR / counters
+input int    InpWarmBars = 3000;   // Bars used to warm up the engine (VWAP / ATR / counters / state)
 input bool   InpDraw     = true;   // Draw trade boxes
 
 //--- globals ----------------------------------------------------------
 CTrade   trade;
 datetime gLastBarTime = 0;
-long     gBarNo = 0;            // running number of processed (closed) bars
+long     bi = -1;                  // bar_index of the last processed (closed) bar
+bool     gLive = false;            // false while warming up: no orders
 
-// signal state
-double   cumPV = 0, cumW = 0, cumP = 0; int cumN = 0; int vwBars = 0;
-double   vwHist[];             // vwap of processed bars, [0] = latest
-double   atr = 0; int atrN = 0; double atrSum = 0;
-int      bullN = 0, bearN = 0, prevNet = 0; bool havePrev = false;
+// ENGINE state (names as in the Pine engine)
+double   cumPV = 0, cumPV2 = 0, cumW = 0, cumP = 0, cumP2 = 0; int cumN = 0; int vwBars = 0; int sessN = 0;
+double   vwHist[];                 // vwap of processed bars, [0] = latest
+double   atrV = 0; int atrN = 0; double atrSum = 0;
 int      lastDayKey = -1;
-// per-bar outputs of the last processed bar
-bool     sNewDay = false, sBullBase = false, sBearBase = false, sHalfL = false, sHalfS = false;
-double   sPriorHigh = 0, sPriorLow = 0, sEntHigh = 0, sEntLow = 0, sBodyMid = 0, sAtr = 0, sRng = 0;
-
-// trade state
-int      st = 0;                // 0 flat, +-1 armed, +-2 in position
+int      dayFills = 0, dayW = 0, dayL = 0; double dayR = 0, dayRiskR = 0; int lossDirBlk = 0;
+int      bullN = 0, bearN = 0, prevNet = 0; bool havePrev = false;
+double   sesO = 0, sesH = 0, sesL = 0, pdH = 0, pdL = 0; bool haveSes = false, havePd = false;
+int      st = 0;
 long     armBar = -1, fillBar = -1, lastExit = -1, lastFill = -1;
 int      lastDir = 0;
-double   lim = 0, stp0 = 0, stp = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, tF = 0;
-double   riskPx = 0, riskUsd = 0, lots = 0;
+double   lim = 0, stp = 0, stp0 = 0, trRisk = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, tF = 0;
 int      tpHit = 0;
-bool     pDone[4];
-double   trPnl = 0;
-ulong    lastDeal = 0;
-ulong    pendTicket = 0;
-datetime gDrawT = 0;
+bool     trHalf = false, trGhost = false;
+int      totW = 0, totL = 0; double totR = 0;
+// events of the last processed bar (shown setups / trades only)
+bool     evArm, evArmL, evFill, evFillL, evExit, evWin, evMove, evTp; double evRes; int evCancel; // 0 none, 1 expired, 2 replaced
+bool     gNewDay = false, gDayOk = true, gHourOk = true;
 
-int      dayFills = 0; double dayRiskR = 0, dayPnl = 0;
-int      lossRow = 0, winRow = 0; bool dayBlock = false; int pauseLeft = 0; bool paused = false;
+// EXECUTION state
+int      exState = 0;              // 0 nothing, 1 entry order working, 2 in a position
+bool     exL = true;
+double   exLots = 0, exRiskAmt = 0, exCostPx = 0, exPnl = 0;
+bool     pDone[3];
+ulong    lastDeal = 0;
+int      sigN = 0, takenN = 0, skipN = 0, missN = 0; string skipWhy = "";
+datetime gDrawT = 0; bool gDrawOn = false;
+double   dayPnl = 0; int lossRow = 0, winRow = 0; bool dayBlock = false; int pauseLeft = 0; bool paused = false;
 double   recPool = 0; int recLosses = 0; int dUnits = 1; double carried = 0; bool capStop = false;
 double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP = 0;
-double   totalNet = 0; int totW = 0, totL = 0;
+double   totalNet = 0; int exW = 0, exLn = 0;
 
 //--- helpers ----------------------------------------------------------
 double Pt()        { return SymbolInfoDouble(_Symbol, SYMBOL_POINT); }
 double TickSize()  { double t = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE); return t > 0 ? t : Pt(); }
-double NormP(double p) { double ts = TickSize(); return NormalizeDouble(MathRound(p / ts) * ts, _Digits); }
+double FloorTick(double p) { double ts = TickSize(); return NormalizeDouble(MathFloor(p / ts + 1e-6) * ts, _Digits); }
+double CeilTick(double p)  { double ts = TickSize(); return NormalizeDouble(MathCeil(p / ts - 1e-6) * ts, _Digits); }
+double RoundTick(double p) { double ts = TickSize(); return NormalizeDouble(MathRound(p / ts) * ts, _Digits); }
 datetime UserTime(datetime server) { return server - (datetime)(InpServerGMT * 3600) + (datetime)(InpUserGMT * 3600); }
 datetime UtcTime(datetime server)  { return server - (datetime)(InpServerGMT * 3600); }
 int      MinOfDay(datetime t) { MqlDateTime d; TimeToStruct(t, d); return d.hour * 60 + d.min; }
-int      DowOf(datetime t)    { MqlDateTime d; TimeToStruct(t, d); return d.day_of_week; }
+int      DowOf(datetime t)    { MqlDateTime d; TimeToStruct(t, d); return d.day_of_week; }   // 0 = Sunday
 int      DayKey(datetime t)   { MqlDateTime d; TimeToStruct(t, d); return d.year * 1000 + d.day_of_year; }
+double   Hi(int s) { return iHigh(_Symbol, _Period, s); }
+double   Lo(int s) { return iLow(_Symbol, _Period, s); }
+double   Cl(int s) { return iClose(_Symbol, _Period, s); }
+double   Op(int s) { return iOpen(_Symbol, _Period, s); }
+double   ExitR() { return InpExitAt == EXIT_TP1 ? InpTp1R : InpExitAt == EXIT_TP2 ? InpTp2R : InpExitAt == EXIT_TP3 ? InpTp3R : InpTp4R; }
 
 void LabReset() { ArrayResize(labSeq, 3); labSeq[0] = 1; labSeq[1] = 2; labSeq[2] = 3; }
 double LabUnits() { int n = ArraySize(labSeq); if(n == 0) { LabReset(); n = 3; } return n > 1 ? labSeq[0] + labSeq[n - 1] : labSeq[0]; }
@@ -231,17 +277,6 @@ bool HasPosition(ulong &ticket, double &volume, double &openPrice)
    return false;
 }
 
-bool HasPending()
-{
-   for(int i = OrdersTotal() - 1; i >= 0; i--)
-   {
-      ulong tk = OrderGetTicket(i);
-      if(tk == 0) continue;
-      if(OrderGetString(ORDER_SYMBOL) == _Symbol && OrderGetInteger(ORDER_MAGIC) == InpMagic) return true;
-   }
-   return false;
-}
-
 void CancelPending()
 {
    for(int i = OrdersTotal() - 1; i >= 0; i--)
@@ -250,14 +285,13 @@ void CancelPending()
       if(tk == 0) continue;
       if(OrderGetString(ORDER_SYMBOL) == _Symbol && OrderGetInteger(ORDER_MAGIC) == InpMagic) trade.OrderDelete(tk);
    }
-   pendTicket = 0;
-   ObjectDelete(0, "ARM_limit");
 }
 
 void CloseAll()
 {
    ulong tk; double v, op;
-   while(HasPosition(tk, v, op)) { if(!trade.PositionClose(tk)) break; }
+   int guard = 0;
+   while(HasPosition(tk, v, op) && guard++ < 5) { if(!trade.PositionClose(tk)) break; }
 }
 
 // realised P&L of this EA's deals since the last call (profit + commission + swap + fee); closed = an exit deal was seen
@@ -267,86 +301,231 @@ double NewDealsPnl(bool &closed)
    double sum = 0;
    if(!HistorySelect(0, TimeCurrent() + 86400)) return 0;
    int n = HistoryDealsTotal();
+   ulong maxTk = lastDeal;
    for(int i = 0; i < n; i++)
    {
       ulong tk = HistoryDealGetTicket(i);
       if(tk == 0 || tk <= lastDeal) continue;
+      if(tk > maxTk) maxTk = tk;
       if(HistoryDealGetString(tk, DEAL_SYMBOL) != _Symbol || HistoryDealGetInteger(tk, DEAL_MAGIC) != InpMagic) continue;
       sum += HistoryDealGetDouble(tk, DEAL_PROFIT) + HistoryDealGetDouble(tk, DEAL_COMMISSION) + HistoryDealGetDouble(tk, DEAL_SWAP) + HistoryDealGetDouble(tk, DEAL_FEE);
       long entry = HistoryDealGetInteger(tk, DEAL_ENTRY);
       if(entry == DEAL_ENTRY_OUT || entry == DEAL_ENTRY_INOUT || entry == DEAL_ENTRY_OUT_BY) closed = true;
    }
-   for(int i = 0; i < n; i++) { ulong tk = HistoryDealGetTicket(i); if(tk > lastDeal) lastDeal = tk; }
+   lastDeal = maxTk;
    return sum;
 }
 
-//--- signal model: process one CLOSED bar (shift s), like one Pine bar --------
+//=== ENGINE: one CLOSED bar (shift s) = one Pine bar ===================
+// Port of the shared Pine ENGINE block. Every step is in the same order as in Pine.
 void ProcessBar(int s)
 {
+   bi++;
+   evArm = false; evArmL = false; evFill = false; evFillL = false; evExit = false; evWin = false; evMove = false; evTp = false; evRes = 0; evCancel = 0;
    datetime t = iTime(_Symbol, _Period, s);
-   double o = iOpen(_Symbol, _Period, s), h = iHigh(_Symbol, _Period, s), l = iLow(_Symbol, _Period, s), c = iClose(_Symbol, _Period, s);
+   double o = Op(s), h = Hi(s), l = Lo(s), c = Cl(s);
    long   rv = iVolume(_Symbol, _Period, s);
    long   tv = iTickVolume(_Symbol, _Period, s);
    double w  = rv > 0 ? (double)rv : (tv > 0 ? (double)tv : 1.0);
-   double hlc3 = (h + l + c) / 3.0;
+   double src = (h + l + c) / 3.0;
 
-   // new trading day = broker server date change (the VWAP and the daily counters reset)
+   // session VWAP (reset on the broker's server date change) and its standard deviation
    int key = DayKey(t);
-   sNewDay = (lastDayKey != -1 && key != lastDayKey);
-   if(lastDayKey == -1) sNewDay = true;
+   bool newDay = (lastDayKey == -1) || (key != lastDayKey);
    lastDayKey = key;
-
-   // VWAP
-   if(sNewDay) { cumPV = 0; cumW = 0; cumP = 0; cumN = 0; vwBars = 0; } else vwBars++;
-   cumPV += hlc3 * w; cumW += w; cumP += hlc3; cumN++;
+   gNewDay = newDay;
+   if(newDay) { cumPV = 0; cumPV2 = 0; cumW = 0; cumP = 0; cumP2 = 0; cumN = 0; vwBars = 0; if(bi > 0) sessN++; }
+   else vwBars++;
+   cumPV += src * w; cumPV2 += src * src * w; cumW += w; cumP += src; cumP2 += src * src; cumN++;
    double vwap = cumW > 0 ? cumPV / cumW : cumP / cumN;
+   double vwVar = cumW > 0 ? cumPV2 / cumW - vwap * vwap : cumP2 / cumN - vwap * vwap;
+   double vwSd = MathSqrt(MathMax(vwVar, 0.0));
    int hn = ArraySize(vwHist);
    if(hn < 600) ArrayResize(vwHist, hn + 1);
    for(int k = ArraySize(vwHist) - 1; k > 0; k--) vwHist[k] = vwHist[k - 1];
    vwHist[0] = vwap;
+   int nHist = (int)MathMin((long)ArraySize(vwHist), bi + 1);
 
-   // ATR (Wilder RMA, like ta.atr)
-   double pc = iClose(_Symbol, _Period, s + 1);
-   double tr = MathMax(h - l, MathMax(MathAbs(h - pc), MathAbs(l - pc)));
-   if(atrN < InpAtrLen) { atrSum += tr; atrN++; atr = atrN == InpAtrLen ? atrSum / InpAtrLen : 0; }
-   else atr = (atr * (InpAtrLen - 1) + tr) / InpAtrLen;
-   sAtr = atr;
+   // ATR (Wilder RMA, like ta.atr: the first value is the SMA of the first N true ranges)
+   double pc = Cl(s + 1);
+   double tr = bi == 0 ? h - l : MathMax(h - l, MathMax(MathAbs(h - pc), MathAbs(l - pc)));
+   if(atrN < InpAtrLen) { atrSum += tr; atrN++; atrV = atrN == InpAtrLen ? atrSum / InpAtrLen : 0; }
+   else atrV = (atrV * (InpAtrLen - 1) + tr) / InpAtrLen;
+   double atr = atrV;
+   bool   haveAtr = atrN >= InpAtrLen;
+   bool   warm = bi >= MathMax(MathMax(InpStructLen, InpBrkLen), MathMax(MathMax(InpEntryLen, InpMomLen), MathMax(InpSlopeBars, InpStopLen))) + 1 && haveAtr;
 
-   // structure
-   double ph = -DBL_MAX, pl = DBL_MAX, eh = -DBL_MAX, el = DBL_MAX;
-   for(int j = 1; j <= InpStructLen; j++) { ph = MathMax(ph, iHigh(_Symbol, _Period, s + j)); pl = MathMin(pl, iLow(_Symbol, _Period, s + j)); }
-   int el_n = (int)MathMin(InpEntryLen, InpStructLen);
-   for(int j = 1; j <= el_n; j++) { eh = MathMax(eh, iHigh(_Symbol, _Period, s + j)); el = MathMin(el, iLow(_Symbol, _Period, s + j)); }
-   sPriorHigh = ph; sPriorLow = pl; sEntHigh = eh; sEntLow = el;
-   double rng = h - l, body = MathAbs(c - o);
-   sRng = rng; sBodyMid = (o + c) / 2.0;
-   double mom = c - iClose(_Symbol, _Period, s + InpMomLen);
-   bool haveSlope = InpSlopeBars > 0 && vwBars >= InpSlopeBars && ArraySize(vwHist) > InpSlopeBars;
-   double slope = haveSlope ? vwap - vwHist[InpSlopeBars] : 0;
-   bool slopeUp = !haveSlope || slope > 0, slopeDn = !haveSlope || slope < 0;
-   bool big = rng > 0 && atr > 0 && rng >= InpDispAtr * atr && body / rng * 100.0 >= InpBodyPct - 1e-7;
-   bool bullShape = c > o && big && (h - c) / rng * 100.0 <= InpClosePct + 1e-7 && slopeUp;
-   bool bearShape = c < o && big && (c - l) / rng * 100.0 <= InpClosePct + 1e-7 && slopeDn;
-   bool setupOk = vwBars >= InpMinOpenBars && !(InpSkipSunday && DowOf(UtcTime(t)) == 0);
-   sBullBase = InpAllowLong  && setupOk && bullShape && (!InpVwapFilter || c > vwap) && (InpMomAtr <= 0 || mom >= InpMomAtr * atr);
-   sBearBase = InpAllowShort && setupOk && bearShape && (!InpVwapFilter || c < vwap) && (InpMomAtr <= 0 || -mom >= InpMomAtr * atr);
+   // market structure and the displacement candle
+   double priorHigh = -DBL_MAX, priorLow = DBL_MAX, sigHigh = -DBL_MAX, sigLow = DBL_MAX, entHigh = -DBL_MAX, entLow = DBL_MAX;
+   for(int j = 1; j <= InpStructLen; j++) { priorHigh = MathMax(priorHigh, Hi(s + j)); priorLow = MathMin(priorLow, Lo(s + j)); }
+   for(int j = 1; j <= InpBrkLen; j++) { sigHigh = MathMax(sigHigh, Hi(s + j)); sigLow = MathMin(sigLow, Lo(s + j)); }
+   int eln = (int)MathMin(InpEntryLen, InpStructLen);
+   for(int j = 1; j <= eln; j++) { entHigh = MathMax(entHigh, Hi(s + j)); entLow = MathMin(entLow, Lo(s + j)); }
+   double swingLow = DBL_MAX, swingHigh = -DBL_MAX;
+   for(int j = 0; j < InpStopLen; j++) { swingLow = MathMin(swingLow, Lo(s + j)); swingHigh = MathMax(swingHigh, Hi(s + j)); }
+   double rng = h - l, body = MathAbs(c - o), bodyMid = (o + c) / 2.0;
+   double momMove = c - Cl(s + InpMomLen);
+   double erDen = 0; for(int k = 0; k < InpMomLen; k++) erDen += MathAbs(Cl(s + k) - Cl(s + k + 1));
+   bool erUp = InpCmoMin <= 0 || (erDen > 0 && momMove / erDen >= InpCmoMin / 100.0);
+   bool erDn = InpCmoMin <= 0 || (erDen > 0 && -momMove / erDen >= InpCmoMin / 100.0);
+   bool haveSlope = InpSlopeBars > 0 && vwBars >= InpSlopeBars && nHist > InpSlopeBars;
+   double vwSlope = haveSlope ? vwap - vwHist[InpSlopeBars] : 0;
+   bool slopeUp = !haveSlope || vwSlope > 0, slopeDn = !haveSlope || vwSlope < 0;
+   bool haveSg = InpSlopeBars > 0 && (InpSlopeCross ? nHist > InpSlopeBars : haveSlope);
+   double sgSlope = haveSg ? vwap - vwHist[InpSlopeBars] : 0;
+   bool sigUp = !haveSg || sgSlope > 0, sigDn = !haveSg || sgSlope < 0;
+   bool bigCandle = haveAtr && rng > 0 && rng >= InpDispAtr * atr && body / rng * 100.0 >= InpBodyPct - 1e-7;
+   bool bigImp    = haveAtr && rng > 0 && rng >= InpDispAtr * atr && body / rng * 100.0 >= InpImpBody - 1e-7;
+   bool closeHi   = rng > 0 && (h - c) / rng * 100.0 <= InpClosePct + 1e-7;
+   bool closeLo   = rng > 0 && (c - l) / rng * 100.0 <= InpClosePct + 1e-7;
+   bool bullImp   = warm && c > o && h > priorHigh && bigImp && closeHi && slopeUp;
+   bool bearImp   = warm && c < o && l < priorLow && bigImp && closeLo && slopeDn;
+   bool setupOk   = vwBars >= InpMinOpenBars && !(InpSkipSunday && DowOf(UtcTime(t)) == 0);
+   bool bullBase  = warm && InpAllowLong && setupOk && c > o && bigCandle && closeHi && sigUp && (!InpVwapFilter || c > vwap) && (InpMomAtr <= 0 || momMove >= InpMomAtr * atr) && erUp;
+   bool bearBase  = warm && InpAllowShort && setupOk && c < o && bigCandle && closeLo && sigDn && (!InpVwapFilter || c < vwap) && (InpMomAtr <= 0 || -momMove >= InpMomAtr * atr) && erDn;
+   double momB = c - Cl(s + InpBrkLen);
+   double erDenB = 0; for(int k = 0; k < InpBrkLen; k++) erDenB += MathAbs(Cl(s + k) - Cl(s + k + 1));
+   bool deepL = warm && InpDeepOn && InpAllowLong && setupOk && c > o && bigCandle && closeHi && sigUp && c > vwap && c > sigHigh && momB >= InpMomAtr * atr && erDenB > 0 && momB / erDenB >= InpCmoMin / 100.0 && priorHigh - c >= InpDeepFar * atr;
+   bool deepS = warm && InpDeepOn && InpAllowShort && setupOk && c < o && bigCandle && closeLo && sigDn && c < vwap && c < sigLow && -momB >= InpMomAtr * atr && erDenB > 0 && -momB / erDenB >= InpCmoMin / 100.0 && c - priorLow >= InpDeepFar * atr;
 
-   // counter-bias half stop: per-session impulse counters
-   bool bullImp = bullShape && h > ph;
-   bool bearImp = bearShape && l < pl;
-   if(sNewDay) { if(gBarNo > 0) { prevNet = bullN - bearN; havePrev = true; } bullN = 0; bearN = 0; }
-   sHalfL = InpHalfStop && bullN == 0 && havePrev && prevNet <= -InpBiasNet;
-   sHalfS = InpHalfStop && bearN == 0 && havePrev && prevNet >= InpBiasNet;
+   // session counters: day stats, impulses for the half stop, session range
+   if(newDay)
+   {
+      dayFills = 0; dayW = 0; dayL = 0; dayR = 0; dayRiskR = 0; lossDirBlk = 0;
+      if(bi > 0) { prevNet = bullN - bearN; havePrev = true; }
+      bullN = 0; bearN = 0;
+      if(haveSes) { pdH = sesH; pdL = sesL; havePd = true; }
+      sesH = h; sesL = l; sesO = o; haveSes = true;
+   }
+   else { sesH = MathMax(sesH, h); sesL = MathMin(sesL, l); }
+   bool halfL = InpHalfStop && bullN == 0 && havePrev && prevNet <= -InpBiasNet;
+   bool halfS = InpHalfStop && bearN == 0 && havePrev && prevNet >= InpBiasNet;
+   if(InpHalfStrict && havePrev)
+   {
+      halfL = halfL && (prevNet <= -5 || (prevNet + bullN - bearN <= -1 && bearN >= 1));
+      halfS = halfS && (prevNet >= 5 || (prevNet + bullN - bearN >= 1 && bullN >= 1));
+   }
+   if(InpHalfOpenOut && havePd)
+   {
+      halfL = halfL || (InpHalfStop && bullN == 0 && sesO < pdL);
+      halfS = halfS || (InpHalfStop && bearN == 0 && sesO > pdH);
+   }
    if(bullImp) bullN++;
    if(bearImp) bearN++;
-   gBarNo++;
+
+   double exitR = ExitR();
+   // 1. live trade: stop first, then the final target, else stop moves (from the next bar)
+   if(MathAbs(st) == 2 && bi > fillBar)
+   {
+      bool isL = st == 2; double d = isL ? 1 : -1;
+      double tol = TickSize() * 0.001;   // a print exactly at a level counts (float noise of unrounded levels)
+      bool stopHit = isL ? l <= stp + tol : h >= stp - tol;
+      bool tgtHit  = isL ? h >= tF - tol : l <= tF + tol;
+      int reached = (isL ? h >= t3 : l <= t3) ? 3 : (isL ? h >= t2 : l <= t2) ? 2 : (isL ? h >= t1 : l <= t1) ? 1 : 0;
+      int prevHit = tpHit;
+      tpHit = (int)MathMax(tpHit, reached);
+      if(stopHit || tgtHit)
+      {
+         bool win = !stopHit;
+         double res = win ? exitR : (stp == stp0 ? -1.0 : d * (stp - lim) / trRisk);
+         if(!trGhost)
+         {
+            dayRiskR += res;
+            lossDirBlk = res < 0 ? (isL ? 1 : -1) : (res > 0 ? 0 : lossDirBlk);
+            totR += res; dayR += res;
+            if(win) { totW++; dayW++; } else { totL++; dayL++; }
+            evExit = true; evWin = win; evRes = res;
+         }
+         lastExit = bi; st = 0;
+      }
+      else if(tpHit > prevHit)
+      {
+         double ns = stp;
+         if(InpMv1On && tpHit >= 1) ns = isL ? MathMax(ns, lim + InpMv1R * trRisk) : MathMin(ns, lim - InpMv1R * trRisk);
+         if(InpMv2On && tpHit >= 2) ns = isL ? MathMax(ns, lim + InpMv2R * trRisk) : MathMin(ns, lim - InpMv2R * trRisk);
+         if(InpMv3On && tpHit >= 3) ns = isL ? MathMax(ns, lim + InpMv3R * trRisk) : MathMin(ns, lim - InpMv3R * trRisk);
+         if(ns != stp) { stp = ns; evMove = !trGhost; }
+         evTp = !trGhost;
+      }
+   }
+   // 2. armed setup: fill (limit touch, or the next bar for market entries) or expiry
+   if(MathAbs(st) == 1 && bi > armBar)
+   {
+      bool isL = st == 1;
+      double mt = TickSize();
+      bool touched = InpEntryMode == ENTRY_MARKET ? true : (isL ? l <= lim + mt * 0.001 : h >= lim - mt * 0.001);
+      if(touched && dayFills < InpMaxFills)
+      {
+         st = isL ? 2 : -2; fillBar = bi; lastFill = bi; lastDir = isL ? 1 : -1; tpHit = 0; dayFills++;
+         if(!trGhost) { evFill = true; evFillL = isL; }
+         if(isL ? l <= stp + mt * 0.001 : h >= stp - mt * 0.001)
+         {
+            if(!trGhost)
+            {
+               dayRiskR += InpFillBarStopR ? -1.0 : 0.0;
+               lossDirBlk = isL ? 1 : -1;
+               totR += -1.0; dayR += -1.0; totL++; dayL++;
+               evExit = true; evWin = false; evRes = -1.0;
+            }
+            lastExit = bi; st = 0;
+         }
+      }
+      else if(bi - armBar >= InpRetestBars)
+      {
+         st = 0;
+         if(!trGhost) evCancel = 1;
+      }
+   }
+   // 3. arm a new setup on the closed displacement candle
+   bool cooled = lastExit < 0 || bi - lastExit >= MathMax(InpCooldown, 1);
+   bool dayOpen = InpDayStopR <= 0 || dayRiskR > -InpDayStopR;
+   long legN = lastFill < 0 ? 0 : bi - lastFill;
+   bool legOn = InpLegReset && MathAbs(st) != 2 && legN > 0 && legN < InpStructLen;
+   double brkHigh = sigHigh, brkLow = sigLow;
+   if(legOn)
+   {
+      double lh = Hi(s + 1), ll = Lo(s + 1);
+      for(int j = 1; j <= legN; j++) { lh = MathMax(lh, Hi(s + j)); ll = MathMin(ll, Lo(s + j)); }
+      if(lastDir == 1) brkHigh = lh; else brkLow = ll;
+   }
+   bool bullDisp = (bullBase && c > brkHigh) || deepL;
+   bool bearDisp = (bearBase && c < brkLow) || deepS;
+   if(InpLossBlock && lossDirBlk == 1) bullDisp = false;
+   if(InpLossBlock && lossDirBlk == -1) bearDisp = false;
+   datetime ut = UserTime(t);
+   int dw = DowOf(ut);
+   gDayOk = !InpDayOn || (dw == 1 && InpMon) || (dw == 2 && InpTue) || (dw == 3 && InpWed) || (dw == 4 && InpThu) || (dw == 5 && InpFri) || (dw == 6 && InpSat) || (dw == 0 && InpSun);
+   int cur = MinOfDay(ut), a0 = InpStartH * 60 + InpStartM, b0 = InpEndH * 60 + InpEndM;
+   gHourOk = !InpHoursOn || (a0 <= b0 ? (cur >= a0 && cur < b0) : (cur >= a0 || cur < b0));
+   bool canArm = gDayOk && gHourOk && MathAbs(st) != 2 && cooled && dayFills < InpMaxFills && dayOpen && atr > 0;
+   bool keepArm = InpRearm == REARM_KEEP && ((st == 1 && bullDisp) || (st == -1 && bearDisp));
+   if(canArm && (bullDisp || bearDisp) && !keepArm)
+   {
+      bool isL = bullDisp; double d = isL ? 1 : -1;
+      double entry = InpEntryMode == ENTRY_MODEL ? (isL ? MathMax(bodyMid, entHigh) : MathMin(bodyMid, entLow)) : InpEntryMode == ENTRY_PCT ? c - d * InpEntryPct / 100.0 * rng : c;
+      bool half = InpStopMode == STOP_ATR && (isL ? halfL : halfS);
+      double cStop = entry - d * InpStopAtr * atr;
+      double hStop = isL ? MathMin(entry - InpHalfStopAtr * atr, l) : MathMax(entry + InpHalfStopAtr * atr, h);
+      double sStop = isL ? swingLow - InpStopBufAtr * atr : swingHigh + InpStopBufAtr * atr;
+      double stop  = InpStopMode == STOP_ATR ? (half ? hStop : cStop) : (isL ? MathMax(sStop, cStop) : MathMin(sStop, cStop));
+      double risk = d * (entry - stop);
+      if(risk >= TickSize() && RoundTick(stop) != RoundTick(entry))
+      {
+         bool haveZ = InpNoChase && vwSd > 0 && vwBars >= 3 && sessN >= 1;
+         bool ghost = haveZ && d * (c - vwap) / vwSd > InpNoChaseSig;
+         if(MathAbs(st) == 1 && !trGhost) evCancel = 2;
+         st = isL ? 1 : -1; armBar = bi; lim = entry; stp = stop; stp0 = stop; trRisk = risk; trHalf = half; trGhost = ghost;
+         t1 = lim + d * InpTp1R * risk; t2 = lim + d * InpTp2R * risk; t3 = lim + d * InpTp3R * risk; t4 = lim + d * InpTp4R * risk;
+         tF = InpExitAt == EXIT_TP1 ? t1 : InpExitAt == EXIT_TP2 ? t2 : InpExitAt == EXIT_TP3 ? t3 : t4;
+         if(!ghost) { evArm = true; evArmL = isL; }
+      }
+   }
 }
 
 //--- risk $ for the next trade (loss recovery + hard cap) -------------------
 double NextRisk(double exitR)
 {
    double base = InpBaseRisk, r = base;
-   // Rule C split step base
    double stepBase = 0;
    if(totalNet >= 1000) { int kk = (int)MathFloor((totalNet - 1000) / 500); stepBase = (1000.0 + 500.0 * kk) / (8 + kk); }
    else if(totalNet >= 500) stepBase = 100.0;
@@ -390,29 +569,28 @@ double NextRisk(double exitR)
 }
 
 //--- lots for a $ risk and a stop distance --------------------------------
-double LotsFor(double riskAmt, double stopDist, double entry)
+double LotsFor(double riskAmt, double stopDist, double entry, bool isL)
 {
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
    double ts = TickSize();
    if(tv <= 0 || ts <= 0 || stopDist <= 0) return 0;
-   double perLot = stopDist / ts * tv + InpCommLot;           // stop-out loss per lot incl. commission
+   double spr = SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double perLot = (stopDist + MathMax(spr, 0)) / ts * tv + InpCommLot;   // stop-out loss per lot incl. spread and commission
    double v = riskAmt / perLot;
-   // leverage cap: position value <= equity x leverage
    double notionalPerLot = entry / ts * tv;
    if(InpLeverage > 0 && notionalPerLot > 0) v = MathMin(v, AccountInfoDouble(ACCOUNT_EQUITY) * InpLeverage / notionalPerLot);
    double step = InpLotStep > 0 ? InpLotStep : SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
    double vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), vmax = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MAX);
    v = MathFloor(v / step + 1e-9) * step;
    v = MathMin(v, vmax);
-   // broker margin check
    double margin;
-   ENUM_ORDER_TYPE ot = ORDER_TYPE_BUY;
+   ENUM_ORDER_TYPE ot = isL ? ORDER_TYPE_BUY : ORDER_TYPE_SELL;
    while(v >= vmin && OrderCalcMargin(ot, _Symbol, v, entry, margin) && margin > AccountInfoDouble(ACCOUNT_MARGIN_FREE)) v -= step;
    if(v < vmin) return 0;
    return NormalizeDouble(v, 8);
 }
 
-//--- time filters -----------------------------------------------------------
+//--- time filters (execution only) --------------------------------------------
 bool NewsBlock(datetime ut, bool &startNow, datetime utPrev)
 {
    startNow = false;
@@ -440,14 +618,30 @@ bool NewsBlock(datetime ut, bool &startNow, datetime utPrev)
    return blk;
 }
 
-bool InHours(datetime ut)
+//--- broker order levels that trigger at the engine's (bid-chart) levels ------
+double Spr() { return InpBidChart ? MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID)) : 0.0; }
+double EntryPx(bool isL) { return isL ? FloorTick(lim + TickSize() * 0.001 + Spr()) : CeilTick(lim - TickSize() * 0.001); }
+double StopPx(bool isL)  { double tl = TickSize() * 0.001; return isL ? FloorTick(stp + tl) : CeilTick(stp - tl + Spr()); }
+double TgtPx(bool isL, double lvl) { double tl = TickSize() * 0.001; return isL ? CeilTick(lvl + exCostPx - tl) : FloorTick(lvl - exCostPx + tl + Spr()); }
+
+void SetExits(bool withTarget)
 {
-   if(!InpHoursOn) return true;
-   int cur = MinOfDay(ut), a = InpStartH * 60 + InpStartM, b = InpEndH * 60 + InpEndM;
-   return a <= b ? (cur >= a && cur < b) : (cur >= a || cur < b);
+   ulong tk; double vol, op;
+   if(!HasPosition(tk, vol, op)) return;
+   double sl = StopPx(exL), tp = withTarget ? TgtPx(exL, tF) : 0;
+   if(!trade.PositionModify(tk, sl, tp))
+      Print("Stop/target update rejected (", trade.ResultRetcodeDescription(), "): SL ", DoubleToString(sl, _Digits), " TP ", DoubleToString(tp, _Digits));
 }
 
 //--- drawing -----------------------------------------------------------------
+void DrawLimit(datetime bt, bool on)
+{
+   ObjectDelete(0, "ARM_limit");
+   if(!InpDraw || !on) return;
+   ObjectCreate(0, "ARM_limit", OBJ_TREND, 0, bt, lim, bt + PeriodSeconds() * InpRetestBars, lim);
+   ObjectSetInteger(0, "ARM_limit", OBJPROP_STYLE, STYLE_DASH); ObjectSetInteger(0, "ARM_limit", OBJPROP_COLOR, clrWhite);
+   ObjectSetInteger(0, "ARM_limit", OBJPROP_RAY_RIGHT, false);
+}
 void DrawTrade(datetime t0)
 {
    if(!InpDraw) return;
@@ -456,88 +650,56 @@ void DrawTrade(datetime t0)
    ObjectSetInteger(0, id + "_tgt", OBJPROP_COLOR, clrMediumSeaGreen); ObjectSetInteger(0, id + "_tgt", OBJPROP_FILL, true); ObjectSetInteger(0, id + "_tgt", OBJPROP_BACK, true);
    ObjectCreate(0, id + "_stp", OBJ_RECTANGLE, 0, t0, MathMax(lim, stp0), t0, MathMin(lim, stp0));
    ObjectSetInteger(0, id + "_stp", OBJPROP_COLOR, clrIndianRed); ObjectSetInteger(0, id + "_stp", OBJPROP_FILL, true); ObjectSetInteger(0, id + "_stp", OBJPROP_BACK, true);
-   gDrawT = t0;
+   gDrawT = t0; gDrawOn = true;
 }
 void ExtendTrade(datetime t1x)
 {
-   if(!InpDraw) return;
-   datetime t0 = gDrawT;
-   string id = "ARM_" + IntegerToString((long)t0);
-   ObjectMove(0, id + "_tgt", 1, t1x, MathMin(lim, tF)); ObjectMove(0, id + "_tgt", 0, t0, MathMax(lim, tF));
-   ObjectMove(0, id + "_stp", 1, t1x, MathMin(lim, stp0)); ObjectMove(0, id + "_stp", 0, t0, MathMax(lim, stp0));
+   if(!InpDraw || !gDrawOn) return;
+   string id = "ARM_" + IntegerToString((long)gDrawT);
+   ObjectMove(0, id + "_tgt", 1, t1x, MathMin(lim, tF)); ObjectMove(0, id + "_tgt", 0, gDrawT, MathMax(lim, tF));
+   ObjectMove(0, id + "_stp", 1, t1x, MathMin(lim, stp0)); ObjectMove(0, id + "_stp", 0, gDrawT, MathMax(lim, stp0));
 }
 
-//--- the per-bar trading step (runs once on the first tick of each new bar, for the bar that just closed) ---
+//=== EXECUTION: runs once per new bar, after the engine processed the bar that just closed ===
 void OnNewBar()
 {
    ProcessBar(1);
-   long     bar   = gBarNo - 1;                         // number of the bar that just closed
-   datetime bt    = iTime(_Symbol, _Period, 1);
-   datetime ut    = UserTime(bt), utPrev = UserTime(iTime(_Symbol, _Period, 2));
-   double   hi    = iHigh(_Symbol, _Period, 1), lo = iLow(_Symbol, _Period, 1), cl = iClose(_Symbol, _Period, 1);
-   double   spr   = SymbolInfoInteger(_Symbol, SYMBOL_SPREAD) * Pt();
+   datetime bt = iTime(_Symbol, _Period, 1);
+   datetime ut = UserTime(bt), utPrev = UserTime(iTime(_Symbol, _Period, 2));
 
-   if(sNewDay)
+   // drawings of the engine's shown trades (same events as the TradingView files)
+   if(evCancel != 0 || evFill) ObjectDelete(0, "ARM_limit");
+   if(evArm) DrawLimit(bt, true);
+   if(evFill) DrawTrade(bt); else ExtendTrade(bt);
+   if(evExit) gDrawOn = false;
+
+   if(gNewDay)
    {
-      dayFills = 0; dayRiskR = 0; dayPnl = 0; dayBlock = false;
+      dayPnl = 0; dayBlock = false;
       paused = pauseLeft > 0; if(pauseLeft > 0) pauseLeft--;
    }
 
-   // 1. deals since the last bar -> fills / closes / Rule C carried
+   // 1. what the broker did since the last bar
    bool closedNew; double newPnl = NewDealsPnl(closedNew);
-   bool anyDeal = newPnl != 0 || closedNew;
-   trPnl += newPnl; totalNet += newPnl;
-   if(anyDeal) carried = MathMax(0.0, carried - newPnl);
+   exPnl += newPnl; totalNet += newPnl;
+   if(newPnl != 0 || closedNew) carried = MathMax(0.0, carried - newPnl);
    ulong pTk; double pVol, pOpen; bool pos = HasPosition(pTk, pVol, pOpen);
-   bool filled = MathAbs(st) == 1 && (pos || closedNew);
-   if(filled)
-   {
-      bool isL = st == 1;
-      st = isL ? 2 : -2; fillBar = bar; lastFill = bar; lastDir = isL ? 1 : -1; dayFills++; tpHit = 0;
-      for(int q = 0; q < 4; q++) pDone[q] = false;
-      if(InpEntryMode == ENTRY_MARKET && pos) lim = pOpen;
-      ObjectDelete(0, "ARM_limit");
-      DrawTrade(bt);
-   }
+   if(exState == 1 && pos) exState = 2;
+   bool exClosed = (exState == 1 && !pos && closedNew) || (exState == 2 && !pos);
 
-   // 2. open trade: TP tracking and stop moves (on the closed bar, like the strategy)
-   if(MathAbs(st) == 2 && pos && bar > fillBar)
+   // 2. an executed trade has closed: streaks, pauses and loss recovery
+   if(exClosed)
    {
-      ExtendTrade(bt);
-      bool isL = st == 2; double d = isL ? 1 : -1;
-      int reached = (isL ? hi >= t3 : lo + spr <= t3) ? 3 : (isL ? hi >= t2 : lo + spr <= t2) ? 2 : (isL ? hi >= t1 : lo + spr <= t1) ? 1 : 0;
-      if(reached > tpHit)
-      {
-         double ns = stp;
-         if(reached >= 1 && InpMv1On) ns = isL ? MathMax(ns, lim + InpMv1R * riskPx) : MathMin(ns, lim - InpMv1R * riskPx);
-         if(reached >= 2 && InpMv2On) ns = isL ? MathMax(ns, lim + InpMv2R * riskPx) : MathMin(ns, lim - InpMv2R * riskPx);
-         if(reached >= 3 && InpMv3On) ns = isL ? MathMax(ns, lim + InpMv3R * riskPx) : MathMin(ns, lim - InpMv3R * riskPx);
-         tpHit = reached;
-         if(ns != stp)
-         {
-            if(trade.PositionModify(pTk, NormP(ns), NormP(tF))) stp = ns;
-            else Print("Stop move rejected (", trade.ResultRetcodeDescription(), "), keeping the stop at ", DoubleToString(stp, _Digits));
-         }
-      }
-   }
-
-   // 3. trade closed (including a stop on the fill bar)
-   if(MathAbs(st) == 2 && !pos)
-   {
-      ExtendTrade(bt);
-      bool sameBar = bar == fillBar;
-      double r = riskUsd > 0 ? trPnl / riskUsd : 0;
-      bool win = trPnl > 0;
-      dayPnl += trPnl;
-      dayRiskR += (sameBar && !win && !InpFillBarStopR) ? 0.0 : r;
-      if(win) totW++; else totL++;
+      bool win = exPnl > 0;
+      dayPnl += exPnl;
+      if(win) exW++; else exLn++;
       lossRow = win ? 0 : lossRow + 1; winRow = win ? winRow + 1 : 0;
       if(InpLStopOn && lossRow >= InpLStopN) dayBlock = true;
       if(InpWStopOn && winRow >= InpWStopN) dayBlock = true;
       if(InpPauseOn && lossRow >= InpPauseN) { dayBlock = true; pauseLeft = (int)MathMax(1, MathMin(3, InpPauseDays)); lossRow = 0; }
       if(win)
       {
-         recPool = MathMax(0.0, recPool - trPnl); recLosses = recPool > 0 ? recLosses : 0;
+         recPool = MathMax(0.0, recPool - exPnl); recLosses = recPool > 0 ? recLosses : 0;
          dUnits = (int)MathMax(1, dUnits - 1); rdUnits++;
          parWins = parWins + 1 >= InpParN ? 0 : parWins + 1;
          int n = ArraySize(labSeq);
@@ -546,110 +708,83 @@ void OnNewBar()
       }
       else
       {
-         recPool += -trPnl; recLosses++; dUnits++; rdUnits = (int)MathMax(1, rdUnits - 1); parWins = 0;
+         recPool += -exPnl; recLosses++; dUnits++; rdUnits = (int)MathMax(1, rdUnits - 1); parWins = 0;
          double used = LabUnits(); int n = ArraySize(labSeq); ArrayResize(labSeq, n + 1); labSeq[n] = used;
       }
-      oscP += trPnl;
+      oscP += exPnl;
       if(oscP >= InpBaseRisk) { oscU = 1; oscP = 0; } else if(win) oscU++;
-      lastExit = bar; st = 0; trPnl = 0;
+      exState = 0; exPnl = 0;
       CancelPending();
    }
 
-   // 4. time filters
+   // 3. follow the engine
+   if(exState == 1 && evCancel != 0) { CancelPending(); exState = 0; }
+   if(evFill && exState == 1 && !pos && !exClosed) { CancelPending(); exState = 0; missN++; }   // engine filled, broker did not
+   if(exState == 2 && (evFill || evMove)) SetExits(true);
+   if(evExit && exState == 2 && !InpEarnBack) CloseAll();                                       // engine exited: never stay in
+
+   // 4. force-close time / weekend start / news
    bool nStart; bool newsBlk = NewsBlock(ut, nStart, utPrev);
    int  fcM = InpFcH * 60 + InpFcM, curM = MinOfDay(ut), prvM = MinOfDay(utPrev);
    bool fcNow = InpFcOn && (curM >= prvM ? (prvM < fcM && curM >= fcM) : (fcM > prvM || fcM <= curM));
-   int  dw = DowOf(ut); bool wknd = InpWeekendOn && (dw == 6 || dw == 0);
-   int  dwp = DowOf(utPrev); bool wkndPrev = InpWeekendOn && (dwp == 6 || dwp == 0);
-   bool wkndStart = wknd && !wkndPrev;
+   bool wkndStart = InpWeekendOn && DowOf(ut) == 6 && DowOf(utPrev) != 6;
    bool flatNow = fcNow || wkndStart || nStart;
-   bool timeOk  = InHours(ut) && !wknd && !newsBlk;
-   if(flatNow && MathAbs(st) == 2 && pos) CloseAll();
+   if(flatNow && pos) CloseAll();
+   if(exState == 1 && (flatNow || newsBlk)) { CancelPending(); exState = 0; }
 
-   // armed limit: expire after the retest window, when the day cap is used up, or when trading is not allowed
-   if(MathAbs(st) == 1 && !pos && (bar - armBar >= InpRetestBars || dayFills >= InpMaxFills || !timeOk || flatNow))
+   // 5. take the engine's new setup
+   if(evArm)
    {
-      CancelPending(); st = 0;
-   }
-
-   // 5. arm a new setup
-   bool cooled  = lastExit < 0 || bar - lastExit >= MathMax(InpCooldown, 1);
-   bool dayOpen = (InpDayStopR <= 0 || dayRiskR > -InpDayStopR) && !dayBlock && !paused && !capStop;
-   long legN = lastFill < 0 ? 0 : bar - lastFill;
-   bool legOn = InpLegReset && MathAbs(st) != 2 && legN > 0 && legN < InpStructLen;
-   double brkH = sPriorHigh, brkL = sPriorLow;
-   if(legOn)
-   {
-      double lh = -DBL_MAX, ll = DBL_MAX;
-      for(int j = 1; j <= legN; j++) { lh = MathMax(lh, iHigh(_Symbol, _Period, 1 + j)); ll = MathMin(ll, iLow(_Symbol, _Period, 1 + j)); }
-      if(lastDir == 1) brkH = lh; else brkL = ll;
-   }
-   bool bullDisp = sBullBase && cl > brkH;
-   bool bearDisp = sBearBase && cl < brkL;
-   bool canArm = timeOk && !flatNow && MathAbs(st) != 2 && !pos && cooled && dayFills < InpMaxFills && dayOpen && sAtr > 0;
-   bool keepArm = InpRearm == REARM_KEEP && ((st == 1 && bullDisp) || (st == -1 && bearDisp));
-   if(canArm && (bullDisp || bearDisp) && !keepArm)
-   {
-      bool isL = bullDisp; double d = isL ? 1 : -1;
-      double model = isL ? MathMax(sBodyMid, sEntHigh) : MathMin(sBodyMid, sEntLow);
-      double entry = InpEntryMode == ENTRY_MODEL ? model : InpEntryMode == ENTRY_PCT ? cl - d * InpEntryPct / 100.0 * sRng : cl;
-      bool half = isL ? sHalfL : sHalfS;
-      double stop = half ? (isL ? MathMin(entry - InpHalfStopAtr * sAtr, lo) : MathMax(entry + InpHalfStopAtr * sAtr, hi)) : entry - d * InpStopAtr * sAtr;
-      double rp = d * (entry - stop);
-      int exitK = (int)InpExitAt;
-      double exitR = exitK == 1 ? InpTp1R : exitK == 2 ? InpTp2R : exitK == 3 ? InpTp3R : InpTp4R;
-      double rAmt = NextRisk(exitR);
-      double v = capStop ? 0 : LotsFor(rAmt, rp, entry);
-      double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
-      double costPx = InpEarnBack && tv > 0 ? InpCommLot / (tv / ts) + spr : 0;
-      if(rp >= TickSize() && v > 0)
+      sigN++;
+      bool isL = evArmL;
+      double rAmt = NextRisk(ExitR());
+      double v = capStop ? 0 : LotsFor(rAmt, trRisk, lim, isL);
+      bool posNow = HasPosition(pTk, pVol, pOpen);
+      skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : v <= 0 ? "size 0" : "";
+      if(skipWhy == "")
       {
+         double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
+         double sprNow = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
+         exCostPx = InpEarnBack && tv > 0 ? InpCommLot / (tv / ts) + sprNow : 0;
+         exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((trRisk + sprNow) / ts * tv + InpCommLot);
+         for(int q = 0; q < 3; q++) pDone[q] = false;
          CancelPending();
-         st = isL ? 1 : -1; armBar = bar; lim = entry; stp0 = stop; stp = stop; riskPx = rp; lots = v;
-         riskUsd = v * (rp / ts * tv + InpCommLot);
-         t1 = entry + d * (InpTp1R * rp + costPx); t2 = entry + d * (InpTp2R * rp + costPx);
-         t3 = entry + d * (InpTp3R * rp + costPx); t4 = entry + d * (InpTp4R * rp + costPx);
-         tF = exitK == 1 ? t1 : exitK == 2 ? t2 : exitK == 3 ? t3 : t4;
          double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-         double lvl = SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL) * Pt();
+         double ep = EntryPx(isL), sl = StopPx(isL);
          bool ok;
          if(InpEntryMode == ENTRY_MARKET)
-            ok = isL ? trade.Buy(v, _Symbol, 0, NormP(stop), NormP(tF), "ARM") : trade.Sell(v, _Symbol, 0, NormP(stop), NormP(tF), "ARM");
+            ok = isL ? trade.Buy(v, _Symbol, 0, sl, 0, "ARM") : trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
          else if(isL)
-            ok = entry < ask ? trade.BuyLimit(v, NormP(entry), _Symbol, NormP(stop), NormP(tF), ORDER_TIME_GTC, 0, "ARM")
-                                   : trade.Buy(v, _Symbol, 0, NormP(stop), NormP(tF), "ARM");   // already through the limit: better price now
+            ok = ep < ask ? trade.BuyLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM")
+                          : trade.Buy(v, _Symbol, 0, sl, 0, "ARM");     // already through the level: the engine fills on this bar
          else
-            ok = entry > bid ? trade.SellLimit(v, NormP(entry), _Symbol, NormP(stop), NormP(tF), ORDER_TIME_GTC, 0, "ARM")
-                                   : trade.Sell(v, _Symbol, 0, NormP(stop), NormP(tF), "ARM");
-         if(!ok) { st = 0; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
-         else if(InpDraw)
-         {
-            ObjectDelete(0, "ARM_limit");
-            ObjectCreate(0, "ARM_limit", OBJ_TREND, 0, bt, entry, bt + PeriodSeconds() * InpRetestBars, entry);
-            ObjectSetInteger(0, "ARM_limit", OBJPROP_STYLE, STYLE_DASH); ObjectSetInteger(0, "ARM_limit", OBJPROP_COLOR, clrWhite);
-            ObjectSetInteger(0, "ARM_limit", OBJPROP_RAY_RIGHT, false);
-         }
+            ok = ep > bid ? trade.SellLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM")
+                          : trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
+         if(ok) { exState = 1; takenN++; }
+         else { skipN++; skipWhy = "order rejected"; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
       }
+      else skipN++;
    }
 
    // status panel
-   string state = st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
-                  capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : wknd ? "WEEKEND" : !InHours(ut) ? "OUTSIDE HOURS" :
-                  paused ? "PAUSED" : dayBlock ? "STREAK STOP TODAY" : !dayOpen ? "DAILY STOP HIT" : "SCANNING";
-   Comment(StringFormat("AUCTION RETEST EA\nState: %s\nEntry/Stop: %s / %s   Final TP: %s\nRisk: %.2f  Lots: %.2f\nRecovery pool: %.2f  Carried: %.2f\nStreak W/L: %d/%d   Total %dW/%dL\nDay P&L: %.2f  R: %.2f  Fills: %d/%d",
-           state, DoubleToString(lim, _Digits), DoubleToString(stp, _Digits), DoubleToString(tF, _Digits), riskUsd, lots,
-           recPool, carried, winRow, lossRow, totW, totL, dayPnl, dayRiskR, dayFills, InpMaxFills));
+   string state = st != 0 && trGhost ? "SKIPPED (too far from VWAP)" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
+                  capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : dayBlock ? "STREAK STOP TODAY" :
+                  !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : "SCANNING";
+   string ex = exState == 2 ? " (in trade)" : exState == 1 ? " (order working)" : "";
+   Comment(StringFormat("AUCTION RETEST EA v3\nState: %s%s\nEntry/Stop: %s / %s   Exit target: %s\nRisk: %.2f  Lots: %.2f\nRecovery pool: %.2f  Carried: %.2f\nStreak W/L: %d/%d   Total %dW/%dL\nDay P&L: %.2f  Fills: %d/%d\nSignals %d · taken %d · skipped %d%s%s",
+           state, ex, DoubleToString(lim, _Digits), DoubleToString(stp, _Digits), DoubleToString(tF, _Digits), exRiskAmt, exLots,
+           recPool, carried, winRow, lossRow, exW, exLn, dayPnl, dayFills, InpMaxFills, sigN, takenN, skipN,
+           missN > 0 ? StringFormat(" · missed %d", missN) : "", skipWhy != "" ? " (last: " + skipWhy + ")" : ""));
 }
 
-//--- partial closes, intrabar ---------------------------------------------------
+//--- partial closes, intrabar (execution only) ---------------------------------
 void ManagePartials()
 {
-   if(MathAbs(st) != 2) return;
+   if(exState != 2) return;
+   int exitK = (int)InpExitAt;
    ulong tk; double vol, op;
    if(!HasPosition(tk, vol, op)) return;
-   bool isL = st == 2;
-   double px = isL ? SymbolInfoDouble(_Symbol, SYMBOL_BID) : SymbolInfoDouble(_Symbol, SYMBOL_ASK);
-   int exitK = (int)InpExitAt;
+   double px = SymbolInfoDouble(_Symbol, SYMBOL_BID);   // the engine's levels are bid-chart levels for both directions
    double tp[3]; double pp[3];
    tp[0] = t1; tp[1] = t2; tp[2] = t3;
    pp[0] = InpP1; pp[1] = InpP2; pp[2] = InpP3;
@@ -658,9 +793,9 @@ void ManagePartials()
    for(int k = 0; k < 3; k++)
    {
       if(k + 1 >= exitK || pp[k] <= 0 || pDone[k]) continue;
-      if(isL ? px >= tp[k] : px <= tp[k])
+      if(exL ? px >= tp[k] + exCostPx : px <= tp[k] - exCostPx)
       {
-         double cv = MathFloor(lots * pp[k] / 100.0 / step + 1e-9) * step;
+         double cv = MathFloor(exLots * pp[k] / 100.0 / step + 1e-9) * step;
          if(cv >= vmin && cv < vol) trade.PositionClosePartial(tk, NormalizeDouble(cv, 8));
          pDone[k] = true;
       }
@@ -675,32 +810,26 @@ int OnInit()
    trade.SetTypeFillingBySymbol(_Symbol);
    LabReset();
    ArrayResize(vwHist, 0);
-   // warm up the signal state on history (no trading)
+   if(InpTp1R > InpTp2R || InpTp2R > InpTp3R || InpTp3R > InpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
+   // warm up the engine on history (no orders): it ends in the same state as the TradingView engine would
    int bars = Bars(_Symbol, _Period);
    int need = InpStructLen + InpMomLen + InpAtrLen + 10;
    if(bars < need) { Print("Not enough chart history yet (", bars, " bars); the EA will retry."); return INIT_FAILED; }
    int start = (int)MathMin(InpWarmBars, bars - InpStructLen - InpMomLen - 5);
+   gLive = false;
    for(int s = start; s >= 1; s--) ProcessBar(s);
+   gLive = true;
    gLastBarTime = iTime(_Symbol, _Period, 0);
-   // remember the last deal so old history is not counted
-   bool c; NewDealsPnl(c);
-   // restart recovery: adopt an open position of this EA so it keeps being managed
+   bool c; NewDealsPnl(c);   // do not count old history
+   // restart: adopt this EA's open position if the engine is in the same trade, keep managing it
    ulong tk; double vol, op;
    if(HasPosition(tk, vol, op) && PositionSelectByTicket(tk))
    {
       bool isL = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY;
-      st = isL ? 2 : -2; lim = op; lots = vol;
-      stp = PositionGetDouble(POSITION_SL); stp0 = stp; tF = PositionGetDouble(POSITION_TP);
-      riskPx = MathAbs(op - stp);
-      double d = isL ? 1 : -1;
-      t1 = lim + d * InpTp1R * riskPx; t2 = lim + d * InpTp2R * riskPx; t3 = lim + d * InpTp3R * riskPx; t4 = lim + d * InpTp4R * riskPx;
-      double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
-      riskUsd = TickSize() > 0 ? vol * riskPx / TickSize() * tv : 0;
-      fillBar = gBarNo - 2; lastFill = fillBar; lastDir = isL ? 1 : -1; tpHit = 0;
-      for(int q = 0; q < 4; q++) pDone[q] = false;
-      Print("Adopted open position #", tk, " after restart (partial-close progress is not restored).");
+      if((isL && st == 2) || (!isL && st == -2)) { exState = 2; exL = isL; exLots = vol; Print("Adopted open position #", tk, " (engine is in the same trade)."); SetExits(true); }
+      else Print("Open position #", tk, " does not match the engine state; it is left untouched.");
    }
-   CancelPending();   // a pending limit from before the restart has no tracked state; it is re-armed by new signals
+   CancelPending();   // a pending order from before the restart has no tracked state; new signals re-arm
    return INIT_SUCCEEDED;
 }
 

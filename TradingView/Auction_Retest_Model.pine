@@ -2,81 +2,119 @@
 // ═══════════════════════════════════════════════════════════════════════════════════════
 //  AUCTION RETEST MODEL  —  VWAP displacement + time-limited retest
 //
-//  1. SESSION VWAP is the auction's fair value. Longs are only armed above it, shorts below it,
-//     and only while the VWAP itself slopes the same way (3 bars).
-//  2. DISPLACEMENT: a confirmed candle that closes beyond the highest high / lowest low of the
-//     previous 10 bars (structure break) with real range (≥ 0.8 ATR), a dominant body (≥ 55 %
-//     of the range), a close in the outer 25 % of its range and ≥ 0.85 ATR of net progress
-//     over those 10 bars.
-//  3. ARMED: a limit is placed at the retest level — the 6-bar high / low or 50 % of the
-//     displacement body, whichever is closer to price (shallow retest, no impulse chasing).
-//     A short dashed line marks it for the length of the retest window.
-//  4. FILLED: price trades back into the limit inside the window → ▲ / ▼ marker, the stop box
-//     (invalidation 1.8 × ATR from the entry; 0.9 × ATR, or just beyond the displacement candle,
-//     for the first impulse of a session against a previous session dominated by opposite
-//     impulses) and the target box with TP1–TP4 (0.6/1/1.5/2 R).
-//  5. The trade ends at TP4 (+2R) or the stop (−1R). One trade at a time, a 2-bar cooldown,
-//     5 fills per day and a −3R daily stop. Shortly after a trade, a new signal in its direction
-//     must break the extreme made since that trade's fill. Levels stay unrounded, like the reference.
+//  1. SESSION VWAP is the auction's fair value. Longs only above it, shorts only below it, and only
+//     while the VWAP slopes the same way (3 bars; on a session's first bars it looks back into the
+//     previous session).
+//  2. DISPLACEMENT: a confirmed candle that closes beyond the high / low of the previous 6 bars with
+//     real range (>= 0.8 ATR), a dominant body (>= 55 %), a close in the outer 25 % of its range,
+//     >= 0.85 ATR of net progress over 10 bars and a clean move (CMO(10) >= 20). It may be the
+//     session's first bar.
+//  3. ARMED: a limit at the shallower of the 50 % body level and the 6-bar high / low, for 5 bars.
+//  4. FILLED: price trades back into the limit -> stop box (1.8 ATR; a half stop of 0.9 ATR or just
+//     beyond the candle for the session's first impulse against a strongly opposite previous
+//     session or after a gap outside its range) and target box with TP1-TP4 (0.6/1/1.5/2 R).
+//  5. The trade ends at TP4 (+2R) or the stop. One trade at a time, no new setup on the exit bar,
+//     5 fills per day. Shortly after a trade, a new signal in its direction must break the extreme
+//     made since that trade's fill. Levels stay unrounded, like the reference.
+//  The engine below is byte-identical in Auction_Retest_Strategy.pine, so both show the same trades.
 // ═══════════════════════════════════════════════════════════════════════════════════════
-indicator("Auction Retest Model [VWAP Displacement + Retest]", shorttitle = "ARM", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500)
+indicator("Auction Retest Model [VWAP Displacement + Retest]", shorttitle = "ARM", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
 
 // ═════════════════════════════════════ INPUTS ═════════════════════════════════════════
 
-GRP_M = "AUCTION RETEST MODEL"
-sessInput    = input.session("0000-0000", "Trading Session", group = GRP_M, tooltip = "Setups are only armed and filled inside this session (exchange time). 0000-0000 = all day.")
-structLen    = input.int(10, "Breakout Lookback (bars)", minval = 2, maxval = 500, group = GRP_M, tooltip = "The displacement candle must close beyond the highest high (long) / lowest low (short) of this many previous bars.")
-entryLen     = input.int(6, "Entry Level Lookback (bars)", minval = 1, maxval = 500, group = GRP_M, tooltip = "Long limit = the higher of the body mid and the highest high of this many bars before the displacement (short: the lower of the body mid and the lowest low). Capped at the breakout lookback.")
+// >>> ENGINE INPUTS BEGIN (shared: byte-identical in Auction_Retest_Model.pine and Auction_Retest_Strategy.pine)
+GRP_M = "SIGNAL MODEL"
+structLen    = input.int(10, "Structure Lookback (bars)", minval = 2, maxval = 400, group = GRP_M, tooltip = "Impulses that feed the half stop must break the high (long) / low (short) of this many previous bars. Also the length of the re-anchor window after a trade.")
+brkLen       = input.int(6, "Signal Break Lookback (bars)", minval = 1, maxval = 400, group = GRP_M, tooltip = "The displacement candle must close beyond the highest high (long) / lowest low (short) of this many previous bars.")
+entryLen     = input.int(6, "Entry Level Lookback (bars)", minval = 1, maxval = 400, group = GRP_M, tooltip = "Long limit = the higher of the body mid and the highest high of this many bars before the displacement (short: the lower of the body mid and the lowest low). Capped at the structure lookback.")
 retestBars   = input.int(5, "Retest Window (bars)", minval = 1, maxval = 100, group = GRP_M, tooltip = "How many bars after the displacement the limit stays armed. Not filled in time = setup cancelled.")
 dispAtr      = input.float(0.8, "Min Displacement Range (x ATR)", minval = 0.0, step = 0.05, group = GRP_M)
 dispBodyPct  = input.float(55.0, "Min Displacement Body (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M)
 dispClosePct = input.float(25.0, "Max Close Distance From Extreme (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M, tooltip = "A bullish displacement must close in the top part of its range (bearish: bottom part).")
-momLen       = input.int(10, "Momentum Lookback (bars)", minval = 1, maxval = 500, inline = "mom", group = GRP_M)
+momLen       = input.int(10, "Momentum Lookback (bars)", minval = 1, maxval = 400, inline = "mom", group = GRP_M)
 momAtr       = input.float(0.85, "Min (x ATR)", minval = 0.0, step = 0.05, inline = "mom", group = GRP_M, tooltip = "The displacement close must be at least this many ATR beyond the close N bars earlier (long: above, short: below). 0 = off.")
+cmoMin       = input.float(20.0, "Min CMO (clean move)", minval = 0.0, maxval = 100.0, step = 1.0, group = GRP_M, tooltip = "Chande Momentum Oscillator over the momentum lookback, in the trade direction: the net move divided by the total distance travelled, x 100 (same as ta.cmo). Rejects breakouts that come out of a zig-zag. 0 = off.")
 REARM_KEEP = "Keep first"
 REARM_NEW  = "Replace with newer"
 rearmMode    = input.string(REARM_KEEP, "Same-Direction Re-arm", options = [REARM_KEEP, REARM_NEW], group = GRP_M, tooltip = "While a limit is armed, a newer displacement in the SAME direction either leaves the first limit in place (reference behaviour) or replaces it. An opposite displacement always replaces it.")
 STOP_ATR   = "ATR Model"
 STOP_SWING = "Swing + Buffer (ATR capped)"
 stopMode     = input.string(STOP_ATR, "Stop Mode", options = [STOP_ATR, STOP_SWING], group = GRP_M, tooltip = "ATR Model: stop = entry -/+ Stop Distance x ATR (matches the reference trades).\nSwing + Buffer: beyond the lowest low / highest high of the last N bars plus a buffer, never further than Stop Distance x ATR.")
-stopAtr      = input.float(1.8, "Stop Distance (x ATR)", minval = 0.1, step = 0.1, group = GRP_M)
-stopLen      = input.int(6, "Swing Lookback (bars)", minval = 1, maxval = 500, inline = "sw", group = GRP_M)
+stopAtr      = input.float(1.8, "Stop Distance (x ATR)", minval = 0.1, step = 0.1, group = GRP_M, tooltip = "Make the stop wider or tighter here (e.g. 2.2 = wider, 1.5 = tighter). All targets are R multiples of it.")
+stopLen      = input.int(6, "Swing Lookback (bars)", minval = 1, maxval = 400, inline = "sw", group = GRP_M)
 stopBufAtr   = input.float(0.22, "Buffer (x ATR)", minval = 0.0, step = 0.01, inline = "sw", group = GRP_M)
-halfStopOn   = input.bool(true, "Half Stop On Counter-Bias First Signal", group = GRP_M, tooltip = "ATR Model only. The first impulse of a session in a direction gets the tighter stop when the previous session had at least N more impulses the other way: Half Stop x ATR from the entry, or just beyond the displacement candle if that is further. Every other trade uses Stop Distance x ATR.")
+halfStopOn   = input.bool(true, "Half Stop On First Counter-Bias Impulse", group = GRP_M, tooltip = "ATR Model only. The first impulse of a session in a direction gets the tighter stop (Half Stop x ATR from the entry, or just beyond the displacement candle if that is further) when the previous session had at least N more impulses the other way, or when the session opened outside the previous session's range against the trade.")
 halfStopAtr  = input.float(0.9, "Half Stop (x ATR)", minval = 0.1, step = 0.1, inline = "hs", group = GRP_M)
 biasNet      = input.int(3, "Prev Session Net Impulses", minval = 1, inline = "hs", group = GRP_M)
-cooldownBars = input.int(2, "Cooldown After Exit (bars)", minval = 0, group = GRP_M, tooltip = "Bars to wait after an exit before a new setup can be armed. 0 and 1 are the same: a setup is never armed on the exit bar itself.")
+impBodyPct   = input.float(50.0, "Impulse Min Body (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M, tooltip = "An impulse (counted for the half stop) is a candle with range >= the displacement range, a body of at least this share of its range, a close within the close distance of its extreme, a wick beyond the structure lookback and the VWAP sloping its way.")
+halfOpenOut  = input.bool(true, "Half Stop When Session Opens Outside Prev Range", group = GRP_M, tooltip = "Also give the half stop to the session's first impulse when the session opened below the previous session's low (long) / above its high (short).")
+halfStrict   = input.bool(false, "Strict Bias Check (optional)", group = GRP_M, tooltip = "Off by default. When on, a previous-session lean of 3-4 impulses only gives the half stop if the current session has already printed an impulse the other way; a lean of 5 or more gives it on its own. Supported by only 3 logged trades.")
+cooldownBars = input.int(1, "Cooldown After Exit (bars)", minval = 0, group = GRP_M, tooltip = "Bars to wait after an exit before a new setup can be armed. 0 and 1 are the same: a setup is never armed on the exit bar itself.")
 maxFills     = input.int(5, "Max Fills Per Day", minval = 1, group = GRP_M)
-dayStopR     = input.float(3.0, "Daily Stop (R)", minval = 0.0, step = 0.5, group = GRP_M, tooltip = "No new setups for the rest of the day once the day's closed trades total this many R lost. 0 = off.")
-fillBarStopR = input.bool(false, "Count Fill-Bar Stops In Daily Stop", group = GRP_M, tooltip = "Off (reference behaviour): a trade stopped out on its own fill bar does not count toward the daily stop. It is still counted in MODEL DAY and LOADED BARS.")
-legReset     = input.bool(true, "Re-anchor Breakout After A Trade", group = GRP_M, tooltip = "Within Breakout Lookback bars of a closed trade's fill, a new signal in that trade's direction must break the high (long) / low (short) made since that fill instead of the full lookback.")
+dayStopR     = input.float(0.0, "Daily Stop (R lost, 0 = off)", minval = 0.0, step = 0.5, group = GRP_M, tooltip = "No new setups for the rest of the day once the day's closed trades total this many R lost. Off by default: the original keeps trading after three losses.")
+fillBarStopR = input.bool(false, "Count Fill-Bar Stops In Daily Stop", group = GRP_M)
+legReset     = input.bool(true, "Re-anchor Breakout After A Trade", group = GRP_M, tooltip = "Within Structure Lookback bars of a closed trade's fill, a new signal in that trade's direction must break the high (long) / low (short) made since that fill.")
 atrLen       = input.int(14, "ATR Length", minval = 1, group = GRP_M)
 vwapFilter   = input.bool(true, "Longs Above VWAP / Shorts Below", group = GRP_M)
-slopeBars    = input.int(3, "VWAP Slope Bars", minval = 0, maxval = 500, group = GRP_M, tooltip = "Longs need the VWAP higher than this many bars ago, shorts lower. Skipped in the first bars of a new VWAP period. 0 = off.")
-minOpenBars  = input.int(1, "Skip First Bars After VWAP Reset", minval = 0, group = GRP_M, tooltip = "A displacement on the very first bar(s) of a new VWAP period is ignored.")
+slopeBars    = input.int(3, "VWAP Slope Bars", minval = 0, maxval = 400, group = GRP_M, tooltip = "Longs need the VWAP higher than this many bars ago, shorts lower. 0 = off.")
+slopeCross   = input.bool(true, "Slope Looks Across The Session Start", group = GRP_M, tooltip = "On the first bars of a session the VWAP slope compares with the previous session's VWAP (reference behaviour). Off = the slope test is skipped there.")
+minOpenBars  = input.int(0, "Skip First Bars After VWAP Reset", minval = 0, group = GRP_M, tooltip = "0 = a displacement on the session's first bar can arm a setup (reference behaviour).")
 skipSunday   = input.bool(true, "Skip Sunday (UTC) Weekly Open", group = GRP_M, tooltip = "No setups are armed on bars that open on Sunday UTC, the thin weekly reopen of futures and FX.")
-
-GRP_T = "TARGETS (R MULTIPLES)"
-tp1R = input.float(0.6, "TP1", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
-tp2R = input.float(1.0, "TP2", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
-tp3R = input.float(1.5, "TP3", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
-tp4R = input.float(2.0, "TP4 (exit)", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
-if barstate.isfirst and (tp1R > tp2R or tp2R > tp3R or tp3R > tp4R)
-    runtime.error("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4 (exit).")
+deepOn       = input.bool(false, "Deep Pullback Signal (optional)", inline = "dp", group = GRP_M)
+deepFar      = input.float(2.0, "Min Depth (x ATR)", minval = 0.5, step = 0.5, inline = "dp", group = GRP_M, tooltip = "Off by default. A second signal type: a displacement that breaks the signal-break level while it is still at least this many ATR inside the structure high/low (a pullback in a bigger move). Needs its own momentum and CMO over the signal-break lookback. Supported by one logged trade.")
+allowLong    = input.bool(true, "Longs", inline = "dir", group = GRP_M)
+allowShort   = input.bool(true, "Shorts", inline = "dir", group = GRP_M)
 
 GRP_V = "VWAP"
 vwapAnchor = input.string("Session", "Anchor", options = ["Session", "Week", "Month"], group = GRP_V)
 vwapSrc    = input.source(hlc3, "Source", group = GRP_V)
-showVwap   = input.bool(true, "Show VWAP", inline = "vw", group = GRP_V)
-vwapCol    = input.color(#4DD0E1, "", inline = "vw", group = GRP_V)
 
-GRP_R = "REGIME / BIAS"
-adxLen     = input.int(14, "ADX Length", minval = 2, group = GRP_R)
-rangeAdx   = input.float(20.0, "Ranging Below ADX", minval = 1, group = GRP_R)
-trendAdx   = input.float(32.0, "Trending From ADX", minval = 1, group = GRP_R)
-biasSpread = input.float(5.0, "Bias DI Spread", minval = 0, group = GRP_R, tooltip = "+DI minus -DI needed for a BULLISH / BEARISH bias. A strong ADX with no DI spread is shown as RANGING.")
+GRP_E = "ENTRY PRICE"
+E_MODEL  = "Model (body mid or 6-bar level)"
+E_PCT    = "Custom % of signal candle"
+E_MARKET = "Market (next bar open)"
+entryMode = input.string(E_MODEL, "Entry Price", options = [E_MODEL, E_PCT, E_MARKET], group = GRP_E, tooltip = "Model: the reference limit price.\nCustom %: a limit measured from the signal candle's CLOSE back toward its far extreme. 0% = the close, 50% = the candle midpoint, 100% = the low (long) / high (short).\nMarket: enter at the next bar's open; the stop and targets keep the levels measured from the signal close.\nThe stop is measured from the chosen entry.")
+entryPct  = input.float(50.0, "Custom % (0 = close, 50 = mid, 100 = low/high)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_E)
+
+GRP_T = "TARGETS, EXIT AND STOP MOVES"
+tp1R   = input.float(0.6, "TP1", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
+tp2R   = input.float(1.0, "TP2", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
+tp3R   = input.float(1.5, "TP3", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
+tp4R   = input.float(2.0, "TP4", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T, tooltip = "Targets in R (1R = the entry-to-stop distance).")
+exitAt = input.string("TP4", "Final Exit At", options = ["TP1", "TP2", "TP3", "TP4"], group = GRP_T, tooltip = "The trade closes at this target (TP4 = 2R, the reference) or at the stop.")
+mv1On  = input.bool(false, "When TP1 Hits, Move Stop To (R)", inline = "m1", group = GRP_T)
+mv1R   = input.float(0.0, "", step = 0.1, inline = "m1", group = GRP_T)
+mv2On  = input.bool(false, "When TP2 Hits, Move Stop To (R)", inline = "m2", group = GRP_T)
+mv2R   = input.float(0.6, "", step = 0.1, inline = "m2", group = GRP_T)
+mv3On  = input.bool(false, "When TP3 Hits, Move Stop To (R)", inline = "m3", group = GRP_T, tooltip = "R is measured from the entry: 0 = breakeven, 0.6 = the TP1 level with the default targets, 1 = the TP2 level and so on. The stop only ever moves in the trade's favour; the new stop applies from the next bar.\nBreakeven at +1R (accuracy research): tick TP2 and set it to 0.")
+mv3R   = input.float(1.0, "", step = 0.1, inline = "m3", group = GRP_T)
+if barstate.isfirst and (tp1R > tp2R or tp2R > tp3R or tp3R > tp4R)
+    runtime.error("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4.")
+int   exitK = exitAt == "TP1" ? 1 : exitAt == "TP2" ? 2 : exitAt == "TP3" ? 3 : 4
+float exitR = exitK == 1 ? tp1R : exitK == 2 ? tp2R : exitK == 3 ? tp3R : tp4R
+
+GRP_F = "ACCURACY FILTERS (research, off = original)"
+noChase    = input.bool(false, "Don't Chase: Skip Signals Beyond", inline = "nc", group = GRP_F)
+noChaseSig = input.float(2.4, "σ From VWAP", minval = 0.5, step = 0.1, inline = "nc", group = GRP_F, tooltip = "Skips a long whose signal candle closes more than this many standard deviations above the session VWAP (short: below), i.e. outside the VWAP bands. The skipped setup still runs invisibly until it would have finished, so the next, even more stretched candle is not taken instead. Research: October 2R hit rate 39% -> 42%, average +0.18R -> +0.26R per trade, 75% of trades kept. Not proven yet - forward-test it.")
+lossBlock  = input.bool(false, "After A Loss, No Same-Direction Trade Until A Win", group = GRP_F, tooltip = "For the rest of the session. Research: helped in October, flat in September - unproven.")
+
+GRP_W = "DAYS AND HOURS"
+tzIn      = input.string("Asia/Kolkata", "Time Zone", options = ["Asia/Kolkata", "Exchange", "UTC", "Europe/London", "America/New_York", "Asia/Dubai", "Asia/Singapore", "Asia/Tokyo", "Australia/Sydney"], group = GRP_W, tooltip = "Time zone for the days and hours below (and the strategy's force-close, weekend and news times).")
+dayOn     = input.bool(false, "Trade Only On The Ticked Days", group = GRP_W, tooltip = "Off (default) = every day. On = new setups are only armed on the ticked days (in the time zone above); open trades and armed limits are left to finish.")
+dMon      = input.bool(true, "Mon", inline = "days", group = GRP_W)
+dTue      = input.bool(true, "Tue", inline = "days", group = GRP_W)
+dWed      = input.bool(true, "Wed", inline = "days", group = GRP_W)
+dThu      = input.bool(true, "Thu", inline = "days", group = GRP_W)
+dFri      = input.bool(true, "Fri", inline = "days", group = GRP_W)
+dSat      = input.bool(true, "Sat", inline = "days", group = GRP_W)
+dSun      = input.bool(true, "Sun", inline = "days", group = GRP_W)
+hoursOn   = input.bool(false, "Trade Only Between", inline = "hr", group = GRP_W)
+hoursSess = input.session("0600-2300", "", inline = "hr", group = GRP_W, tooltip = "New setups are only armed inside these hours (in the time zone above). Open trades and armed limits are left to finish.")
+string tzUse = tzIn == "Exchange" ? syminfo.timezone : tzIn
 
 GRP_S = "STYLE"
+showVwap   = input.bool(true, "Show VWAP", inline = "vw", group = GRP_S)
+vwapCol    = input.color(#4DD0E1, "", inline = "vw", group = GRP_S)
 tgtFill    = input.color(color.new(#089981, 78), "Target Box", inline = "s1", group = GRP_S)
 tgtBorder  = input.color(color.new(#00E676, 0), "Border", inline = "s1", group = GRP_S)
 stopFill   = input.color(color.new(#F23645, 78), "Stop Box", inline = "s2", group = GRP_S)
@@ -87,7 +125,14 @@ limitCol   = input.color(color.new(#FFFFFF, 0), "Armed Limit (dashed)", inline =
 markCol    = input.color(color.new(#FFFFFF, 0), "Long Fill ▲", inline = "s5", group = GRP_S)
 markColS   = input.color(color.new(#FFCDD2, 0), "Short Fill ▼", inline = "s5", group = GRP_S)
 boxBorderW = input.int(2, "Box Border Width", minval = 1, maxval = 4, group = GRP_S)
-maxDrawn   = input.int(100, "Trades Kept On Chart", minval = 1, maxval = 120, group = GRP_S, tooltip = "Each trade draws 2 boxes and 4 lines. Older trades are removed whole, so the 500-line limit never strips their entry and TP lines.")
+maxDrawn   = input.int(100, "Trades Kept On Chart", minval = 1, maxval = 120, group = GRP_S, tooltip = "Each trade draws 2 boxes and up to 4 lines. Older trades are removed whole, so the 500-object limits never strip their lines.")
+// <<< ENGINE INPUTS END
+
+GRP_R = "REGIME / BIAS"
+adxLen     = input.int(14, "ADX Length", minval = 2, group = GRP_R)
+rangeAdx   = input.float(20.0, "Ranging Below ADX", minval = 1, group = GRP_R)
+trendAdx   = input.float(32.0, "Trending From ADX", minval = 1, group = GRP_R)
+biasSpread = input.float(5.0, "Bias DI Spread", minval = 0, group = GRP_R, tooltip = "+DI minus -DI needed for a BULLISH / BEARISH bias. A strong ADX with no DI spread is shown as RANGING.")
 
 GRP_D = "MODEL MONITOR"
 showTable = input.bool(true, "Show Table", group = GRP_D)
@@ -126,50 +171,56 @@ f_pct(int wins, int losses) => wins + losses > 0 ? str.tostring(math.round(100.0
 
 f_rLabel(float x) => str.tostring(x, "#.##") + "R"
 
-// ═══════════════════════════════════ VWAP (session) ═══════════════════════════════════
-// Volume weighted when the symbol has volume, equal weights (TWAP) when it has none.
+// ═══════════════════════════════════════ ENGINE ═══════════════════════════════════════
 
+// >>> ENGINE BEGIN (shared: byte-identical in Auction_Retest_Model.pine and Auction_Retest_Strategy.pine)
+// The engine decides every setup, fill, stop move and exit from the chart's bars alone. The strategy only copies its decisions
+// into orders, so the indicator and the strategy always show the same signals and trades.
+
+// ── session VWAP (volume weighted; equal weights when the symbol has no volume) and its standard deviation ──
 bool  chgD      = timeframe.change("D")
 bool  chgW      = timeframe.change("W")
 bool  chgM      = timeframe.change("M")
 bool  newAnchor = vwapAnchor == "Week" ? chgW : vwapAnchor == "Month" ? chgM : chgD
+bool  newDay    = chgD
 bool  hasVolume = ta.cum(nz(volume)) > 0
-float w         = hasVolume ? nz(volume) : 1.0
+float vw_w      = hasVolume ? nz(volume) : 1.0
 var float cumPV  = 0.0
+var float cumPV2 = 0.0
 var float cumW   = 0.0
 var float cumP   = 0.0
+var float cumP2  = 0.0
 var int   cumN   = 0
 var int   vwBars = 0      // bars since the VWAP period started (0 on its first bar)
+var int   sessN  = 0      // completed VWAP periods on the chart (the first one is usually partial)
 if newAnchor
     cumPV  := 0.0
+    cumPV2 := 0.0
     cumW   := 0.0
     cumP   := 0.0
+    cumP2  := 0.0
     cumN   := 0
     vwBars := 0
+    if bar_index > 0
+        sessN += 1
 else
     vwBars += 1
-cumPV += vwapSrc * w
-cumW  += w
-cumP  += vwapSrc
-cumN  += 1
-// a period with no traded volume yet falls back to its time-weighted average
-float vwap = cumW > 0 ? cumPV / cumW : cumP / cumN
+cumPV  += vwapSrc * vw_w
+cumPV2 += vwapSrc * vwapSrc * vw_w
+cumW   += vw_w
+cumP   += vwapSrc
+cumP2  += vwapSrc * vwapSrc
+cumN   += 1
+float vwap  = cumW > 0 ? cumPV / cumW : cumP / cumN
+float vwVar = cumW > 0 ? cumPV2 / cumW - vwap * vwap : cumP2 / cumN - vwap * vwap
+float vwSd  = math.sqrt(math.max(vwVar, 0.0))
 
-// ═════════════════════════════════ MARKET STATE ═══════════════════════════════════════
-
-float atr = ta.atr(atrLen)
-[diPlus, diMinus, adx] = ta.dmi(adxLen, adxLen)
-float  diSpread = diPlus - diMinus
-string regime   = adx < rangeAdx ? "RANGING" : adx >= trendAdx ? (math.abs(diSpread) >= biasSpread ? "TRENDING" : "RANGING") : "TRANSITION"
-string bias     = diSpread > biasSpread ? "BULLISH" : diSpread < -biasSpread ? "BEARISH" : "NEUTRAL"
-
-bool inSession = not na(time(timeframe.period, sessInput))
-bool newDay    = chgD
-
-// ═════════════════════════════════ DISPLACEMENT ═══════════════════════════════════════
-
+// ── market structure and the displacement candle ──
+float atr       = ta.atr(atrLen)
 float priorHigh = ta.highest(high, structLen)[1]
 float priorLow  = ta.lowest(low, structLen)[1]
+float sigHigh   = ta.highest(high, brkLen)[1]
+float sigLow    = ta.lowest(low, brkLen)[1]
 float entHigh   = ta.highest(high, math.min(entryLen, structLen))[1]
 float entLow    = ta.lowest(low, math.min(entryLen, structLen))[1]
 float swingLow  = ta.lowest(low, stopLen)
@@ -178,207 +229,207 @@ float rng       = high - low
 float body      = math.abs(close - open)
 float bodyMid   = (open + close) / 2.0
 float momMove   = close - close[momLen]
+float erDen     = math.sum(math.abs(close - close[1]), momLen)
+bool  erUp      = cmoMin <= 0 or (erDen > 0 and momMove / erDen >= cmoMin / 100.0)
+bool  erDn      = cmoMin <= 0 or (erDen > 0 and -momMove / erDen >= cmoMin / 100.0)
 float vwSlope   = slopeBars > 0 and vwBars >= slopeBars ? vwap - vwap[slopeBars] : na
 bool  slopeUp   = na(vwSlope) or vwSlope > 0
 bool  slopeDn   = na(vwSlope) or vwSlope < 0
+float sgSlope   = slopeBars <= 0 ? na : slopeCross ? vwap - vwap[slopeBars] : vwSlope
+bool  sigUp     = na(sgSlope) or sgSlope > 0
+bool  sigDn     = na(sgSlope) or sgSlope < 0
 // percentage thresholds accept an exact tie (11/20 ticks = 55 %), whatever the float rounding
 bool  bigCandle = rng > 0 and rng >= dispAtr * atr and body / rng * 100.0 >= dispBodyPct - 1e-7
-bool  bullShape = close > open and bigCandle and (high - close) / rng * 100.0 <= dispClosePct + 1e-7 and slopeUp
-bool  bearShape = close < open and bigCandle and (close - low) / rng * 100.0 <= dispClosePct + 1e-7 and slopeDn
+bool  bigImp    = rng > 0 and rng >= dispAtr * atr and body / rng * 100.0 >= impBodyPct - 1e-7
+bool  closeHi   = rng > 0 and (high - close) / rng * 100.0 <= dispClosePct + 1e-7
+bool  closeLo   = rng > 0 and (close - low) / rng * 100.0 <= dispClosePct + 1e-7
+bool  bullImp   = close > open and high > priorHigh and bigImp and closeHi and slopeUp
+bool  bearImp   = close < open and low < priorLow and bigImp and closeLo and slopeDn
 bool  setupOk   = vwBars >= minOpenBars and not (skipSunday and dayofweek(time, "UTC") == dayofweek.sunday)
 // every displacement condition except the structure break, which is tested in step 3 (it can be re-anchored after a trade)
-bool  bullBase  = setupOk and bullShape and (not vwapFilter or close > vwap) and (momAtr <= 0 or momMove >= momAtr * atr)
-bool  bearBase  = setupOk and bearShape and (not vwapFilter or close < vwap) and (momAtr <= 0 or -momMove >= momAtr * atr)
+bool  bullBase  = allowLong and setupOk and close > open and bigCandle and closeHi and sigUp and (not vwapFilter or close > vwap) and (momAtr <= 0 or momMove >= momAtr * atr) and erUp
+bool  bearBase  = allowShort and setupOk and close < open and bigCandle and closeLo and sigDn and (not vwapFilter or close < vwap) and (momAtr <= 0 or -momMove >= momAtr * atr) and erDn
+// optional deep-pullback signal: breaks the signal level while still well inside the structure range
+float momB      = close - close[brkLen]
+float erDenB    = math.sum(math.abs(close - close[1]), brkLen)
+bool  deepL     = deepOn and allowLong and setupOk and close > open and bigCandle and closeHi and sigUp and close > vwap and close > sigHigh and momB >= momAtr * atr and erDenB > 0 and momB / erDenB >= cmoMin / 100.0 and priorHigh - close >= deepFar * atr
+bool  deepS     = deepOn and allowShort and setupOk and close < open and bigCandle and closeLo and sigDn and close < vwap and close < sigLow and -momB >= momAtr * atr and erDenB > 0 and -momB / erDenB >= cmoMin / 100.0 and close - priorLow >= deepFar * atr
 
-// ── counter-bias half stop ──
-// impulse = the displacement candle whose wick breaks the 10-bar extreme (no gates). Counted per session; the first
-// impulse of a session in a direction gets the half stop when the previous session had biasNet more impulses the other way.
-bool  bullImp = bullShape and high > priorHigh
-bool  bearImp = bearShape and low < priorLow
-var int bullN   = 0
-var int bearN   = 0
-var int prevNet = na
+// ── session counters: day stats, impulses for the half stop, session range ──
+var int   dayFills   = 0
+var int   dayW       = 0
+var int   dayL       = 0
+var float dayR       = 0.0
+var float dayRiskR   = 0.0     // R counted toward the daily stop
+var int   lossDirBlk = 0       // direction of the last loss this session (accuracy filter)
+var int   bullN      = 0
+var int   bearN      = 0
+var int   prevNet    = na
+var float sesO       = na
+var float sesH       = na
+var float sesL       = na
+var float pdH        = na
+var float pdL        = na
 if newDay
+    dayFills   := 0
+    dayW       := 0
+    dayL       := 0
+    dayR       := 0.0
+    dayRiskR   := 0.0
+    lossDirBlk := 0
     if bar_index > 0
         prevNet := bullN - bearN
     bullN := 0
     bearN := 0
-bool  halfL = halfStopOn and bullN == 0 and not na(prevNet) and prevNet <= -biasNet
-bool  halfS = halfStopOn and bearN == 0 and not na(prevNet) and prevNet >= biasNet
+    pdH   := sesH
+    pdL   := sesL
+    sesH  := high
+    sesL  := low
+    sesO  := open
+else
+    sesH := na(sesH) ? high : math.max(sesH, high)
+    sesL := na(sesL) ? low : math.min(sesL, low)
+// half stop: the first impulse of a session against a strongly opposite previous session, or after a gap outside its range
+bool halfL = halfStopOn and bullN == 0 and not na(prevNet) and prevNet <= -biasNet
+bool halfS = halfStopOn and bearN == 0 and not na(prevNet) and prevNet >= biasNet
+if halfStrict and not na(prevNet)
+    halfL := halfL and (prevNet <= -5 or (prevNet + bullN - bearN <= -1 and bearN >= 1))
+    halfS := halfS and (prevNet >= 5 or (prevNet + bullN - bearN >= 1 and bullN >= 1))
+if halfOpenOut and not na(pdH)
+    halfL := halfL or (halfStopOn and bullN == 0 and sesO < pdL)
+    halfS := halfS or (halfStopOn and bearN == 0 and sesO > pdH)
 if bullImp
     bullN += 1
 if bearImp
     bearN += 1
 
-// ══════════════════════════════════ MODEL STATE ═══════════════════════════════════════
-// st: 0 scanning · 1 buy retest armed · -1 sell retest armed · 2 long active · -2 short active
+// ── model state ── st: 0 scanning · 1 buy armed · -1 sell armed · 2 long active · -2 short active
+var int   st       = 0
+var int   armBar   = na
+var int   fillBar  = na
+var int   lastExit = na
+var int   lastFill = na      // fill bar and direction of the most recent trade (re-anchor)
+var int   lastDir  = 0
+var float lim      = na      // entry (unrounded, like the reference)
+var float stp      = na      // current stop
+var float stp0     = na      // initial stop
+var float trRisk   = na      // entry-to-initial-stop distance
+var float t1       = na
+var float t2       = na
+var float t3       = na
+var float t4       = na
+var float tF       = na      // final target (Final Exit At)
+var int   tpHit    = 0
+var bool  trHalf   = false   // the armed / live setup uses the half stop
+var bool  trGhost  = false   // skipped by the no-chase filter: runs invisibly, never shown or traded
+var int   totW     = 0
+var int   totL     = 0
+var float totR     = 0.0
+var string lastRes = "—"
+var float bestPx   = na
+// events of this bar (shown setups / trades only)
+bool   evArm     = false
+bool   evArmL    = false
+bool   evFill    = false
+bool   evFillL   = false
+bool   evExit    = false
+bool   evWin     = false
+float  evRes     = na
+bool   evMove    = false
+bool   evTp      = false
+string evCancel  = ""
 
-var int    st       = 0
-var int    armBar   = na
-var int    fillBar  = na
-var int    lastExit = na
-var float  lim      = na
-var float  stp      = na
-var float  t1       = na
-var float  t2       = na
-var float  t3       = na
-var float  t4       = na
-var int    tpHit    = 0
-var line   limLine  = na
-var box    gBox     = na
-var box    rBox     = na
-var line   eLine    = na
-var line   l1       = na
-var line   l2       = na
-var line   l3       = na
-var bool   trHalf   = false   // the armed / live trade uses the half stop
-var int    lastFill = na      // fill bar and direction of the most recent trade
-var int    lastDir  = 0
-var array<box>  drawnBoxes = array.new<box>()
-var array<line> drawnLines = array.new<line>()
-
-var int    dayFills = 0
-var int    dayW     = 0
-var int    dayL     = 0
-var float  dayR     = 0.0
-var float  dayRiskR = 0.0     // R counted toward the daily stop
-var int    totW     = 0
-var int    totL     = 0
-var float  totR     = 0.0
-var string lastRes  = "—"
-var int    firstTime = time
-
-// win rate by R level: how many closed trades reached +1R / +1.5R / +2R before the stop
-var float        trRisk = na
-var float        bestPx = na
-var array<float> rrLv   = array.from(rr1, rr2, rr3)
-var array<int>   rrHit  = array.new_int(3, 0)
-
-// called once when a trade closes: credits every R level its best price reached
-f_rrRecord(bool isL, bool win) =>
-    float d = isL ? 1.0 : -1.0
-    for k = 0 to 2
-        float lvR = array.get(rrLv, k)
-        // unrounded, like the TP4 exit: a loss counts only if its best price reached the exact level
-        if win ? lvR <= tp4R : d * (bestPx - (lim + d * lvR * trRisk)) >= 0
-            array.set(rrHit, k, array.get(rrHit, k) + 1)
-    win
-
-if newDay
-    dayFills := 0
-    dayW     := 0
-    dayL     := 0
-    dayR     := 0.0
-    dayRiskR := 0.0
-
-bool longFill   = false
-bool shortFill  = false
-bool armedLong  = false
-bool armedShort = false
-bool stopEvent  = false
-bool tp4Event   = false
-int  tpBefore   = tpHit
-string cancelTxt = ""
-
-// ── 1. manage the live trade ──
+// ── 1. manage the live trade: stop first, then the final target, else stop moves (from the next bar) ──
 if math.abs(st) == 2 and bar_index > fillBar
-    bool isL     = st == 2
-    bool stopHit = isL ? low <= stp : high >= stp
-    bool tp4Hit  = isL ? high >= t4 : low <= t4
-    int  reached = (isL ? high >= t3 : low <= t3) ? 3 : (isL ? high >= t2 : low <= t2) ? 2 : (isL ? high >= t1 : low <= t1) ? 1 : 0
+    bool  isL     = st == 2
+    float d       = isL ? 1.0 : -1.0
+    // a print exactly at a level counts (the tolerance only absorbs float noise of the unrounded levels)
+    bool  stopHit = isL ? low <= stp + syminfo.mintick * 0.001 : high >= stp - syminfo.mintick * 0.001
+    bool  tgtHit  = isL ? high >= tF - syminfo.mintick * 0.001 : low <= tF + syminfo.mintick * 0.001
+    int   reached = (isL ? high >= t3 : low <= t3) ? 3 : (isL ? high >= t2 : low <= t2) ? 2 : (isL ? high >= t1 : low <= t1) ? 1 : 0
+    int   prevHit = tpHit
     tpHit := math.max(tpHit, reached)
     // best price after the fill; the fill bar and a stop bar add nothing (order inside a bar is unknown)
     if not stopHit
         bestPx := isL ? math.max(bestPx, high) : math.min(bestPx, low)
-    box.set_right(gBox, bar_index)
-    box.set_right(rBox, bar_index)
-    line.set_x2(eLine, bar_index)
-    line.set_x2(l1, bar_index)
-    line.set_x2(l2, bar_index)
-    line.set_x2(l3, bar_index)
-    if stopHit or tp4Hit
-        // stop checked first: a bar touching both is counted as a loss
+    if stopHit or tgtHit
+        // a bar touching both counts as the stop
         bool  win = not stopHit
-        float res = win ? tp4R : -1.0
-        f_rrRecord(isL, win)
-        totR     += res
-        dayR     += res
-        dayRiskR += res
-        totW     += win ? 1 : 0
-        dayW     += win ? 1 : 0
-        totL     += win ? 0 : 1
-        dayL     += win ? 0 : 1
-        lastRes  := (win ? "TP4 " : "STOP ") + f_r(res)
+        float res = win ? exitR : stp == stp0 ? -1.0 : d * (stp - lim) / trRisk
+        if not trGhost
+            dayRiskR   += res
+            lossDirBlk := res < 0 ? (isL ? 1 : -1) : res > 0 ? 0 : lossDirBlk
+            totR       += res
+            dayR       += res
+            totW       += win ? 1 : 0
+            dayW       += win ? 1 : 0
+            totL       += win ? 0 : 1
+            dayL       += win ? 0 : 1
+            lastRes    := (win ? "TP" + str.tostring(exitK) + " " : "STOP ") + (res >= 0 ? "+" : "") + str.tostring(res, "0.00") + "R"
+            evExit     := true
+            evWin      := win
+            evRes      := res
         lastExit := bar_index
         st       := 0
-        stopEvent := not win
-        tp4Event  := win
+    else if tpHit > prevHit
+        float ns = stp
+        if mv1On and tpHit >= 1
+            ns := isL ? math.max(ns, lim + mv1R * trRisk) : math.min(ns, lim - mv1R * trRisk)
+        if mv2On and tpHit >= 2
+            ns := isL ? math.max(ns, lim + mv2R * trRisk) : math.min(ns, lim - mv2R * trRisk)
+        if mv3On and tpHit >= 3
+            ns := isL ? math.max(ns, lim + mv3R * trRisk) : math.min(ns, lim - mv3R * trRisk)
+        if ns != stp
+            stp    := ns
+            evMove := not trGhost
+        evTp := not trGhost
 
-// ── 2. manage the armed limit ──
+// ── 2. manage the armed setup: fill (limit touch, or the next bar's open for market entries) or expiry ──
 if math.abs(st) == 1 and bar_index > armBar
     bool isL     = st == 1
     // a print exactly at the limit fills (the tolerance only absorbs float noise of the unrounded level)
-    bool touched = isL ? low <= lim + syminfo.mintick * 0.001 : high >= lim - syminfo.mintick * 0.001
-    if touched and inSession and dayFills < maxFills
+    bool touched = entryMode == E_MARKET ? true : isL ? low <= lim + syminfo.mintick * 0.001 : high >= lim - syminfo.mintick * 0.001
+    if touched and dayFills < maxFills
         st       := isL ? 2 : -2
         fillBar  := bar_index
         lastFill := bar_index
         lastDir  := isL ? 1 : -1
         tpHit    := 0
-        tpBefore := 0
         dayFills += 1
         bestPx   := lim
-        longFill  := isL
-        shortFill := not isL
-        if not na(limLine)
-            line.delete(limLine)
-        limLine := na
-        gBox  := box.new(bar_index, math.max(lim, t4), bar_index, math.min(lim, t4), border_color = tgtBorder, border_width = boxBorderW, bgcolor = tgtFill)
-        rBox  := box.new(bar_index, math.max(lim, stp), bar_index, math.min(lim, stp), border_color = stopBorder, border_width = boxBorderW, bgcolor = stopFill)
-        l1    := line.new(bar_index, t1, bar_index, t1, color = tpLineCol, width = 1)
-        l2    := line.new(bar_index, t2, bar_index, t2, color = tpLineCol, width = 1)
-        l3    := line.new(bar_index, t3, bar_index, t3, color = tpLineCol, width = 1)
-        eLine := line.new(bar_index, lim, bar_index, lim, color = entryCol, width = 2)
-        // keep the last maxDrawn trades whole (2 boxes + 4 lines each) inside the 500-object limits
-        array.push(drawnBoxes, gBox)
-        array.push(drawnBoxes, rBox)
-        array.push(drawnLines, l1)
-        array.push(drawnLines, l2)
-        array.push(drawnLines, l3)
-        array.push(drawnLines, eLine)
-        while array.size(drawnBoxes) > 2 * maxDrawn
-            box.delete(array.shift(drawnBoxes))
-        while array.size(drawnLines) > 4 * maxDrawn
-            line.delete(array.shift(drawnLines))
+        if not trGhost
+            evFill  := true
+            evFillL := isL
         // the fill bar also trading through the stop is an immediate loss
-        if isL ? low <= stp : high >= stp
-            totR     += -1.0
-            dayR     += -1.0
-            dayRiskR += fillBarStopR ? -1.0 : 0.0
-            totL     += 1
-            dayL     += 1
-            lastRes  := "STOP " + f_r(-1.0)
+        if isL ? low <= stp + syminfo.mintick * 0.001 : high >= stp - syminfo.mintick * 0.001
+            if not trGhost
+                dayRiskR   += fillBarStopR ? -1.0 : 0.0
+                lossDirBlk := isL ? 1 : -1
+                totR       += -1.0
+                dayR       += -1.0
+                totL       += 1
+                dayL       += 1
+                lastRes    := "STOP -1.00R"
+                evExit     := true
+                evWin      := false
+                evRes      := -1.0
             lastExit := bar_index
             st       := 0
-            stopEvent := true
-            f_rrRecord(isL, false)
     else if bar_index - armBar >= retestBars and barstate.isconfirmed
         // expiry is final only at the close: on the live bar the limit can still fill until then
-        if not na(limLine)
-            line.delete(limLine)
-        limLine   := na
-        st        := 0
-        cancelTxt := "EXPIRED"
+        st := 0
+        if not trGhost
+            evCancel := "EXPIRED"
 
 // ── 3. arm a new setup on a confirmed displacement candle ──
 // no new setup on the exit bar itself, then the cooldown
-bool cooled  = na(lastExit) or bar_index - lastExit >= math.max(cooldownBars, 1)
-bool dayOpen = dayStopR <= 0 or dayRiskR > -dayStopR
-// structure break: the 10-bar extreme, or shortly after a closed trade the extreme since its fill (same direction only)
+bool  cooled  = na(lastExit) or bar_index - lastExit >= math.max(cooldownBars, 1)
+bool  dayOpen = dayStopR <= 0 or dayRiskR > -dayStopR
+// structure break: the signal-break extreme, or shortly after a closed trade the extreme since its fill (same direction only)
 int   legN    = na(lastFill) ? 0 : bar_index - lastFill
 bool  legOn   = legReset and math.abs(st) != 2 and legN > 0 and legN < structLen
-float brkHigh = priorHigh
-float brkLow  = priorLow
+float brkHigh = sigHigh
+float brkLow  = sigLow
 if legOn
     float legHigh = high[1]
     float legLow  = low[1]
@@ -389,14 +440,21 @@ if legOn
         brkHigh := legHigh
     else
         brkLow := legLow
-bool bullDisp = bullBase and close > brkHigh
-bool bearDisp = bearBase and close < brkLow
-bool canArm  = barstate.isconfirmed and inSession and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
+bool bullDisp = (bullBase and close > brkHigh) or deepL
+bool bearDisp = (bearBase and close < brkLow) or deepS
+if lossBlock and lossDirBlk == 1
+    bullDisp := false
+if lossBlock and lossDirBlk == -1
+    bearDisp := false
+int  dowUse = dayofweek(time, tzUse)
+bool dayOk  = not dayOn or (dowUse == dayofweek.monday and dMon) or (dowUse == dayofweek.tuesday and dTue) or (dowUse == dayofweek.wednesday and dWed) or (dowUse == dayofweek.thursday and dThu) or (dowUse == dayofweek.friday and dFri) or (dowUse == dayofweek.saturday and dSat) or (dowUse == dayofweek.sunday and dSun)
+bool hourOk = not hoursOn or not na(time(timeframe.period, hoursSess, tzUse))
+bool canArm  = barstate.isconfirmed and dayOk and hourOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
 bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
 if canArm and (bullDisp or bearDisp) and not keepArm
     bool  isL   = bullDisp
     float d     = isL ? 1.0 : -1.0
-    float entry = isL ? math.max(bodyMid, entHigh) : math.min(bodyMid, entLow)
+    float entry = entryMode == E_MODEL ? (isL ? math.max(bodyMid, entHigh) : math.min(bodyMid, entLow)) : entryMode == E_PCT ? close - d * entryPct / 100.0 * rng : close
     bool  half  = stopMode == STOP_ATR and (isL ? halfL : halfS)
     float cStop = entry - d * stopAtr * atr
     float hStop = isL ? math.min(entry - halfStopAtr * atr, low) : math.max(entry + halfStopAtr * atr, high)
@@ -404,64 +462,134 @@ if canArm and (bullDisp or bearDisp) and not keepArm
     float stop  = stopMode == STOP_ATR ? (half ? hStop : cStop) : isL ? math.max(sStop, cStop) : math.min(sStop, cStop)
     float risk  = d * (entry - stop)
     if risk >= syminfo.mintick and math.round_to_mintick(stop) != math.round_to_mintick(entry)
-        if math.abs(st) == 1
-            cancelTxt := "REPLACED"
-        if not na(limLine)
-            line.delete(limLine)
+        // no-chase filter: z = distance of the signal close from the VWAP in VWAP standard deviations
+        float z     = noChase and vwSd > 0 and vwBars >= 3 and sessN >= 1 ? d * (close - vwap) / vwSd : na
+        bool  ghost = noChase and not na(z) and z > noChaseSig
+        if math.abs(st) == 1 and not trGhost
+            evCancel := "REPLACED"
         // levels stay unrounded: the reference fills and stops on the exact values
-        st     := isL ? 1 : -1
-        armBar := bar_index
-        lim    := entry
-        stp    := stop
-        trRisk := risk
-        trHalf := half
-        t1     := lim + d * tp1R * risk
-        t2     := lim + d * tp2R * risk
-        t3     := lim + d * tp3R * risk
-        t4     := lim + d * tp4R * risk
-        limLine := line.new(bar_index, lim, bar_index + retestBars, lim, color = limitCol, style = line.style_dashed, width = 2)
-        armedLong  := isL
-        armedShort := not isL
+        st      := isL ? 1 : -1
+        armBar  := bar_index
+        lim     := entry
+        stp     := stop
+        stp0    := stop
+        trRisk  := risk
+        trHalf  := half
+        trGhost := ghost
+        t1      := lim + d * tp1R * risk
+        t2      := lim + d * tp2R * risk
+        t3      := lim + d * tp3R * risk
+        t4      := lim + d * tp4R * risk
+        tF      := exitK == 1 ? t1 : exitK == 2 ? t2 : exitK == 3 ? t3 : t4
+        if not ghost
+            evArm  := true
+            evArmL := isL
+// <<< ENGINE END
 
-bool tpEvent = math.abs(st) == 2 and tpHit > tpBefore
-// highest TP1-TP3 already alerted for the live trade (varip: not rolled back between ticks, so each level is sent once)
-varip int tpSent = 0
-if longFill or shortFill
-    tpSent := 0
-
-// ═══════════════════════════════════════ PLOTS ════════════════════════════════════════
-
+// >>> DRAW BEGIN (shared: byte-identical in Auction_Retest_Model.pine and Auction_Retest_Strategy.pine)
+var line  limLine = na
+var box   gBox    = na
+var box   rBox    = na
+var line  eLine   = na
+var line  l1      = na
+var line  l2      = na
+var line  l3      = na
+var bool  drawOn  = false
+var array<box>  drawnBoxes = array.new<box>()
+var array<line> drawnLines = array.new<line>()
+f_tpLine(float lvl, int k) =>
+    line ln = na
+    if k < exitK
+        ln := line.new(bar_index, lvl, bar_index, lvl, color = tpLineCol, width = 1)
+        array.push(drawnLines, ln)
+    ln
+if evCancel != "" or evFill
+    line.delete(limLine)
+    limLine := na
+if evArm
+    line.delete(limLine)
+    limLine := line.new(bar_index, lim, bar_index + retestBars, lim, color = limitCol, style = line.style_dashed, width = 2)
+if evFill
+    gBox  := box.new(bar_index, math.max(lim, tF), bar_index, math.min(lim, tF), border_color = tgtBorder, border_width = boxBorderW, bgcolor = tgtFill)
+    rBox  := box.new(bar_index, math.max(lim, stp0), bar_index, math.min(lim, stp0), border_color = stopBorder, border_width = boxBorderW, bgcolor = stopFill)
+    eLine := line.new(bar_index, lim, bar_index, lim, color = entryCol, width = 2)
+    array.push(drawnBoxes, gBox)
+    array.push(drawnBoxes, rBox)
+    array.push(drawnLines, eLine)
+    l1 := f_tpLine(t1, 1)
+    l2 := f_tpLine(t2, 2)
+    l3 := f_tpLine(t3, 3)
+    // keep the last maxDrawn trades whole inside the 500-object limits
+    while array.size(drawnBoxes) > 2 * maxDrawn
+        box.delete(array.shift(drawnBoxes))
+    while array.size(drawnLines) > 4 * maxDrawn
+        line.delete(array.shift(drawnLines))
+    drawOn := true
+else if drawOn
+    box.set_right(gBox, bar_index)
+    box.set_right(rBox, bar_index)
+    line.set_x2(eLine, bar_index)
+    if not na(l1)
+        line.set_x2(l1, bar_index)
+    if not na(l2)
+        line.set_x2(l2, bar_index)
+    if not na(l3)
+        line.set_x2(l3, bar_index)
+if evExit
+    drawOn := false
 plot(showVwap ? vwap : na, "VWAP", color = vwapCol, linewidth = 2)
-plotshape(longFill, "Long Fill", shape.triangleup, location.belowbar, color = markCol, size = size.tiny)
-plotshape(shortFill, "Short Fill", shape.triangledown, location.abovebar, color = markColS, size = size.tiny)
-plot(longFill ? 1 : 0, "Long Event", color = color.new(#00E676, 0), display = display.status_line + display.data_window)
-plot(shortFill ? 1 : 0, "Short Event", color = color.new(#FF5252, 0), display = display.status_line + display.data_window)
+plotshape(evFill and evFillL, "Long Fill", shape.triangleup, location.belowbar, color = markCol, size = size.tiny)
+plotshape(evFill and not evFillL, "Short Fill", shape.triangledown, location.abovebar, color = markColS, size = size.tiny)
+// <<< DRAW END
+
+// ═════════════════════════════════ INDICATOR EXTRAS ═══════════════════════════════════
+
+[diPlus, diMinus, adx] = ta.dmi(adxLen, adxLen)
+float  diSpread = diPlus - diMinus
+string regime   = adx < rangeAdx ? "RANGING" : adx >= trendAdx ? (math.abs(diSpread) >= biasSpread ? "TRENDING" : "RANGING") : "TRANSITION"
+string bias     = diSpread > biasSpread ? "BULLISH" : diSpread < -biasSpread ? "BEARISH" : "NEUTRAL"
+var int firstTime = time
+
+// win rate by R level: how many closed trades reached each level before the stop (credited when a trade closes)
+var array<float> rrLv  = array.from(rr1, rr2, rr3)
+var array<int>   rrHit = array.new_int(3, 0)
+if evExit
+    float dd = lastDir == 1 ? 1.0 : -1.0
+    for k = 0 to 2
+        float lvR = array.get(rrLv, k)
+        // unrounded, like the exit: a loss counts only if its best price reached the exact level
+        if evWin ? lvR <= exitR : dd * (bestPx - (lim + dd * lvR * trRisk)) >= 0
+            array.set(rrHit, k, array.get(rrHit, k) + 1)
+
+plot(evFill and evFillL ? 1 : 0, "Long Event", color = color.new(#00E676, 0), display = display.status_line + display.data_window)
+plot(evFill and not evFillL ? 1 : 0, "Short Event", color = color.new(#FF5252, 0), display = display.status_line + display.data_window)
 
 // ═══════════════════════════════════════ ALERTS ═══════════════════════════════════════
 
-alertcondition(armedLong, "Buy Retest Armed", "ARM: BUY retest armed on {{ticker}} ({{interval}})")
-alertcondition(armedShort, "Sell Retest Armed", "ARM: SELL retest armed on {{ticker}} ({{interval}})")
-alertcondition(longFill or shortFill, "Entry Filled", "ARM: retest entry filled on {{ticker}} ({{interval}})")
-alertcondition(tpEvent or tp4Event, "Target Hit", "ARM: target reached on {{ticker}} ({{interval}})")
-alertcondition(stopEvent, "Stop Hit", "ARM: stop hit on {{ticker}} ({{interval}})")
-alertcondition(cancelTxt != "", "Retest Cancelled", "ARM: armed retest cancelled on {{ticker}} ({{interval}})")
+alertcondition(evArm and evArmL, "Buy Retest Armed", "ARM: BUY retest armed on {{ticker}} ({{interval}})")
+alertcondition(evArm and not evArmL, "Sell Retest Armed", "ARM: SELL retest armed on {{ticker}} ({{interval}})")
+alertcondition(evFill, "Entry Filled", "ARM: retest entry filled on {{ticker}} ({{interval}})")
+alertcondition(evTp or (evExit and evWin), "Target Hit", "ARM: target reached on {{ticker}} ({{interval}})")
+alertcondition(evExit and not evWin, "Stop Hit", "ARM: stop hit on {{ticker}} ({{interval}})")
+alertcondition(evCancel != "", "Retest Cancelled", "ARM: armed retest cancelled on {{ticker}} ({{interval}})")
 
+// highest TP1-TP3 already alerted for the live trade (varip: not rolled back between ticks, so each level is sent once)
+varip int tpSent = 0
+if evFill
+    tpSent := 0
 if alertsOn
     string tag = syminfo.ticker + " [" + timeframe.period + "] "
-    if armedLong or armedShort
-        alert(tag + (armedLong ? "BUY" : "SELL") + " RETEST ARMED | Limit " + f_px(lim) + " | Stop " + f_px(stp) + (trHalf ? " (half stop)" : "") + " | TP1 " + f_px(t1) + " | TP2 " + f_px(t2) + " | TP3 " + f_px(t3) + " | TP4 " + f_px(t4), alert.freq_once_per_bar_close)
-    if longFill or shortFill
-        alert(tag + (longFill ? "LONG" : "SHORT") + " FILLED @ " + f_px(lim) + " | Stop " + f_px(stp) + " | TP4 " + f_px(t4), alert.freq_once_per_bar)
-    if tpEvent and tpHit > tpSent
-        alert(tag + "TP" + str.tostring(tpHit) + " reached", alert.freq_all)
+    if evArm
+        alert(tag + (evArmL ? "BUY" : "SELL") + " RETEST ARMED | Limit " + f_px(lim) + " | Stop " + f_px(stp) + (trHalf ? " (half stop)" : "") + " | TP1 " + f_px(t1) + " | TP2 " + f_px(t2) + " | TP3 " + f_px(t3) + " | TP4 " + f_px(t4) + " | exit at " + exitAt, alert.freq_once_per_bar_close)
+    if evFill
+        alert(tag + (evFillL ? "LONG" : "SHORT") + " FILLED @ " + f_px(lim) + " | Stop " + f_px(stp) + " | Exit target " + f_px(tF), alert.freq_once_per_bar)
+    if evTp and tpHit > tpSent
+        alert(tag + "TP" + str.tostring(tpHit) + " reached" + (evMove ? " | stop moved to " + f_px(stp) : ""), alert.freq_all)
         tpSent := tpHit
-    // at the close: a stop later in the same bar would turn the bar into a loss (stop has priority)
-    if tp4Event
-        alert(tag + "TP4 HIT " + f_r(tp4R), alert.freq_once_per_bar_close)
-    if cancelTxt != ""
-        alert(tag + "ARMED RETEST " + cancelTxt + " - cancel the working limit", alert.freq_once_per_bar_close)
-    if stopEvent
-        alert(tag + "STOP HIT " + f_r(-1.0), alert.freq_once_per_bar)
+    if evExit
+        alert(tag + (evWin ? "TP" + str.tostring(exitK) + " HIT " : "STOP HIT ") + f_r(evRes), evWin ? alert.freq_once_per_bar_close : alert.freq_once_per_bar)
+    if evCancel != ""
+        alert(tag + "ARMED RETEST " + evCancel + " - cancel the working limit", alert.freq_once_per_bar_close)
 
 // ═══════════════════════════════════ MODEL MONITOR ════════════════════════════════════
 
@@ -483,21 +611,21 @@ if showTable and barstate.islast
     color  grey   = color.new(#5D606B, 0)
     color  posC   = color.new(#69F0AE, 0)
     color  negC   = color.new(#FF80AB, 0)
-    bool   act    = math.abs(st) == 2
-    bool   armed  = math.abs(st) == 1
+    bool   act    = math.abs(st) == 2 and not trGhost
+    bool   armed  = math.abs(st) == 1 and not trGhost
     bool   has    = act or armed
-    string stTxt  = timeframe.isdwm and vwapAnchor == "Session" ? "USE AN INTRADAY CHART" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY RETEST ARMED" : st == -1 ? "SELL RETEST ARMED" : dayFills >= maxFills ? "DAY CAP REACHED" : not dayOpen ? "DAILY STOP HIT" : "SCANNING"
+    string stTxt  = timeframe.isdwm and vwapAnchor == "Session" ? "USE AN INTRADAY CHART" : st != 0 and trGhost ? "SKIPPED (TOO FAR FROM VWAP)" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY RETEST ARMED" : st == -1 ? "SELL RETEST ARMED" : dayFills >= maxFills ? "DAY CAP REACHED" : not dayOpen ? "DAILY STOP HIT" : not dayOk ? "DAY SWITCHED OFF" : not hourOk ? "OUTSIDE HOURS" : "SCANNING"
     color  stBg   = act ? (st == 2 ? green : red) : armed ? orange : grey
     color  rgBg   = regime == "TRENDING" ? green : regime == "TRANSITION" ? orange : pink
     float  liveR  = act and trRisk > 0 ? (st == 2 ? close - lim : lim - close) / trRisk : na
     string tz     = tableTz == "Exchange" ? syminfo.timezone : tableTz
-    string stopTip = has ? (trHalf ? "Half stop: first impulse of the session against a previous session dominated by opposite impulses." : stopMode == STOP_ATR ? "Stop = " + str.tostring(stopAtr, "#.##") + " x ATR from the entry." : "Swing + buffer stop.") : ""
+    string stopTip = has ? (trHalf ? "Half stop: the session's first impulse against a strongly opposite previous session or after a gap outside its range." : stopMode == STOP_ATR ? "Stop = " + str.tostring(stopAtr, "#.##") + " x ATR from the entry." : "Swing + buffer stop.") + (stp != stp0 ? " Moved from " + f_px(stp0) + "." : "") : ""
     table.cell(mon, 0, 0, "AUCTION RETEST", text_color = white, bgcolor = color.new(#29A3E0, 0), text_size = sz)
     table.cell(mon, 1, 0, "MODEL MONITOR", text_color = white, bgcolor = color.new(#3D8FD6, 0), text_size = sz)
     f_row(mon, 1, "STATE", stTxt, white, stBg, sz)
     f_row(mon, 2, "REGIME / BIAS", regime + " · ADX " + str.tostring(math.round(adx)) + " · " + bias, white, rgBg, sz)
     f_row(mon, 3, armed ? "LIMIT / STOP" : "ENTRY / STOP", has ? f_px(lim) + " / " + f_px(stp) + (trHalf ? " ½" : "") : "—", white, cellBg, sz, stopTip)
-    f_row(mon, 4, "TP1 · TP2 · TP3 · TP4", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC, cellBg, sz, "Targets at " + str.tostring(tp1R, "#.##") + " / " + str.tostring(tp2R, "#.##") + " / " + str.tostring(tp3R, "#.##") + " / " + str.tostring(tp4R, "#.##") + " R. The trade exits at TP4 or the stop.")
+    f_row(mon, 4, "TP1 · TP2 · TP3 · TP4", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC, cellBg, sz, "Targets at " + str.tostring(tp1R, "#.##") + " / " + str.tostring(tp2R, "#.##") + " / " + str.tostring(tp3R, "#.##") + " / " + str.tostring(tp4R, "#.##") + " R. The trade exits at " + exitAt + " or the stop.")
     f_row(mon, 5, "LIVE · BARS · HIT", act ? f_r(liveR) + " · " + str.tostring(bar_index - fillBar) + " · " + str.tostring(tpHit) + "/3" : "—", act ? (liveR >= 0 ? posC : negC) : white, cellBg, sz, "Current R, bars since the fill and TP1-TP3 reached.")
     f_row(mon, 6, "MODEL DAY", str.format_time(time_tradingday, "EEE dd MMM", "UTC") + " · " + str.tostring(dayW) + "W/" + str.tostring(dayL) + "L · " + f_pct(dayW, dayL) + " · " + f_r(dayR) + " · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayR >= 0 ? posC : negC, cellBg, sz, "Trading day · wins/losses · win % · R · fills / daily cap. A trade is credited on the day it exits.")
     f_row(mon, 7, "LOADED BARS", lastRes + " · " + f_pct(totW, totL) + " · " + f_r(totR), totR >= 0 ? posC : negC, cellBg, sz, "Last result · win % · total R of every closed trade in the DATA RANGE.")
@@ -508,6 +636,6 @@ if showTable and barstate.islast
         string val    = ""
         for k = 0 to 2
             float lvR = array.get(rrLv, k)
-            val := val + (k > 0 ? " · " : "") + (lvR > tp4R ? "n/a" : closed > 0 ? str.tostring(math.round(100.0 * array.get(rrHit, k) / closed)) + "%" : "—")
+            val := val + (k > 0 ? " · " : "") + (lvR > exitR ? "n/a" : closed > 0 ? str.tostring(math.round(100.0 * array.get(rrHit, k) / closed)) + "%" : "—")
         val := val + (closed > 0 ? " · n " + str.tostring(closed) : "")
-        f_row(mon, 9, key, val, white, cellBg, sz, "Share of closed trades in the DATA RANGE whose price reached that many R in profit before the stop. Trades exit at TP4 (+" + str.tostring(tp4R, "#.##") + "R) or the stop, so the TP4 level equals the model's win rate; levels above TP4 show n/a.")
+        f_row(mon, 9, key, val, white, cellBg, sz, "Share of closed trades in the DATA RANGE whose price reached that many R in profit before the stop. Levels above the final exit show n/a.")

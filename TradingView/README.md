@@ -3,8 +3,8 @@
 | File | What it is |
 |---|---|
 | [`Auction_Retest_Model.pine`](Auction_Retest_Model.pine) | **Auction Retest Model**: session VWAP + displacement + time-limited retest. It reproduces the trade logic seen on the *Auction Retest Pro* reference screenshots. |
-| [`Auction_Retest_Strategy.pine`](Auction_Retest_Strategy.pine) | The same model as a **strategy** for backtesting, with money-management settings (all off by default). |
-| [`../MetaTrader5/AuctionRetestEA.mq5`](../MetaTrader5/AuctionRetestEA.mq5) | MetaTrader 5 Expert Advisor port of the strategy (same signals and settings). |
+| [`Auction_Retest_Strategy.pine`](Auction_Retest_Strategy.pine) | The same engine as a **strategy** for backtesting (identical signals and trades), with money-management settings (all off by default). |
+| [`../MetaTrader5/AuctionRetestEA.mq5`](../MetaTrader5/AuctionRetestEA.mq5) | MetaTrader 5 Expert Advisor: a port of the same engine plus the strategy's money management. |
 | [`VWAP_Orderflow_Sniper.pine`](VWAP_Orderflow_Sniper.pine) | The earlier VWAP + absorption/aggression orderflow indicator. |
 
 ## Install
@@ -15,70 +15,91 @@
 
 ## Auction Retest Model: how a trade is built
 
-The rules below were fitted to **80 trades of the original indicator**. They were read candle by candle from 53 screenshots (original vs. this model) and matched to exported 5-minute data. The symbols are GC1!, EURUSD, US Tech 100, US30, MCX crude, Nifty, Sensex and ETHUSD, for 5–12 Oct.
+The rules below were fitted to **80 trades of the original indicator** read candle by candle from 53 screenshots, and then checked against
+**80 more trades a student logged with the real indicator** (SENSEX, MCX crude, NSE NIFTY futures, MCX natural gas, 5-16 Oct).
 
 | Step | Rule | Default |
 |---|---|---|
-| VWAP | Session VWAP, reset at each new trading day (03:30 IST for CME/ICE, 09:00 for MCX, 09:15 for NSE, 05:30 for crypto) | Session |
-| Side filter | Longs only when the displacement closes above VWAP and VWAP is higher than 3 bars ago. Shorts only when it closes below and VWAP is lower | On / 3 bars |
-| Displacement | A confirmed candle closing beyond the highest high (long) or lowest low (short) of the previous **10** bars. Its body is ≥ 55 % of its range, it closes within 25 % of its extreme, its range is ≥ 0.8 × ATR, and its close is ≥ 0.85 × ATR beyond the close 10 bars earlier | 10 / 55 % / 25 % / 0.8 / 0.85 |
-| Skipped | The first bar after a VWAP reset, and bars opening on Sunday (UTC), the thin weekly reopen | 1 bar / On |
-| Re-anchored break | Within 10 bars of a closed trade's fill, a new signal in that trade's direction must break the high (long) / low (short) made since that fill instead of the 10-bar extreme | On |
-| Armed | Limit = the shallower of the 50 % body level and the 6-bar high (long) or low (short) before the candle. A dashed line marks it for the retest window. A newer candle in the same direction does not move an armed limit; an opposite one replaces it | 5 bars |
-| Filled | Price trades back into the limit: ▲ under the bar for a long, ▼ above the bar for a short. The trade boxes start on this bar, and the stop is also checked on it | — |
-| Stop | Entry ∓ 1.8 × ATR(14) of the displacement candle (an optional *Swing + Buffer* mode is available) | 1.8 |
-| Half stop | The first impulse of a session in a direction, when the previous session had at least 3 more impulses the other way (bull minus bear), uses entry ∓ 0.9 × ATR, or just beyond the displacement candle if that is further. An *impulse* is the displacement candle whose wick breaks the 10-bar high/low, counted with no other gates | 0.9 / 3 |
-| Targets | TP1–TP4 = 0.6R / 1R / 1.5R / 2R. The trade ends at **TP4 (+2R)** or the **stop (−1R)**. Levels are kept unrounded, like the original | 0.6/1/1.5/2 |
-| Controls | One trade at a time (trades carry over to the next session); a 2-bar cooldown after an exit; at most 5 fills per day; no new setups after −3R on the day (a trade stopped out on its own fill bar does not count toward this daily stop) | 2 / 5 / 3R |
+| VWAP | Session VWAP, reset at each new trading day | Session |
+| Side filter | Longs only when the signal candle closes above VWAP and VWAP is higher than 3 bars ago; shorts the opposite. On a session's first bars the slope looks back into the previous session | On / 3 bars |
+| Displacement | A confirmed candle closing beyond the highest high (long) / lowest low (short) of the previous **6** bars. Body >= 55 % of its range, close within 25 % of its extreme, range >= 0.8 ATR, close >= 0.85 ATR beyond the close 10 bars earlier, and a clean move: **CMO(10) >= 20** (net move / total distance travelled) | 6 / 55 % / 25 % / 0.8 / 0.85 / 20 |
+| Session start | The session's first bar may signal; bars opening on Sunday (UTC), the thin weekly reopen, are skipped | 0 bars / On |
+| Re-anchored break | Within 10 bars of a closed trade's fill, a new signal in that trade's direction must break the high (long) / low (short) made since that fill | On |
+| Armed | Limit = the shallower of the 50 % body level and the 6-bar high (long) / low (short) before the candle, for 5 bars. A newer candle in the same direction does not move an armed limit; an opposite one replaces it | 5 bars |
+| Filled | Price trades back into the limit: ▲ / ▼ marker, trade boxes start on this bar, the stop is also checked on it | — |
+| Stop | Entry ∓ 1.8 × ATR(14) | 1.8 |
+| Half stop | The first impulse of a session in a direction gets entry ∓ 0.9 ATR (or just beyond the signal candle if that is further) when the previous session had >= 3 more impulses the other way, **or** the session opened outside the previous session's range against the trade. An impulse = a candle with range >= 0.8 ATR, body >= 50 %, close within 25 % of its extreme, wick beyond the 10-bar extreme and VWAP sloping its way | 0.9 / 3 |
+| Targets | TP1-TP4 = 0.6 / 1 / 1.5 / 2 R; the trade ends at **TP4 (+2R)** or the stop (stop first when a bar touches both). Levels unrounded | 0.6/1/1.5/2 |
+| Controls | One trade at a time (carried over sessions), no new setup on the exit bar, at most 5 fills per day, **no daily R stop** (the original keeps trading after three losses) | 1 / 5 / off |
 
-**Model monitor table** (10 compact rows; hover a row for its tooltip):
+**Accuracy against the original** (all numbers re-run on the final engine):
 
-1. **STATE**: SCANNING / BUY or SELL RETEST ARMED / LONG or SHORT ACTIVE / DAY CAP REACHED / DAILY STOP HIT.
-2. **REGIME / BIAS**: regime with the ADX, then the DI bias.
-3. **ENTRY / STOP** (LIMIT / STOP while armed). A **½** marks a half stop.
-4. **TP1 · TP2 · TP3 · TP4**.
-5. **LIVE · BARS · HIT**: the current R, the bars since the fill and TP1–TP3 reached.
-6. **MODEL DAY**: the trading date, W/L, win %, R and fills / daily cap. A trade counts on the day it exits.
-7. **LOADED BARS**: the last result, the win % and the total R over the loaded history.
-8. **DATA RANGE**: the first and last loaded bar and the bar count.
-9. **WIN 1R · 1.5R · 2R**: the share of closed trades that reached each profit level before the stop, plus the trade count. The levels can be changed in the settings.
+| Ground truth | Published v2 | **v3** |
+|---|---|---|
+| 80 screenshot trades | 79 exact, 1 missed, 3 extra | **80 exact, 0 missed, 1 extra; all 80 stops right** |
+| Student log SENSEX + MCX crude (42) | 32 matched | **41 matched, 38 stops right** |
+| Student log NSE NIFTY futures (20) | 15 matched | **20 matched, 18 stops right** |
+| Student log MCX natural gas (18) | 12 matched | **16 matched, 12 stops right** |
+| 6 MODEL DAY table readings | 6/6 | 6/6 |
 
-**Alerts**:
+Remaining differences: one CRUDE long on 10-06 21:00 (CMO 21.7, just above the filter), one CRUDE trade whose entry needs a second signal
+type (optional setting below), a few logged stops that the logged exit times show are student typos, and two natural gas stops.
 
-- Fixed alerts: Buy/Sell Retest Armed, Entry Filled, Target Hit, Stop Hit and Retest Cancelled (the armed limit expired or was replaced, so cancel a working order).
-- Full details: one alert with **Any alert() function call** sends every event with its prices.
+### Settings added in v3 (identical in the indicator, the strategy and the EA)
 
-### Accuracy notes
+| Group | Setting | Default |
+|---|---|---|
+| Signal model | Deep pullback signal (a second signal type, 1 supporting trade); Strict bias check for the half stop (3 supporting trades) | Off |
+| Entry price | Model · Custom % of the signal candle · Market (next bar open) | Model |
+| Targets, exit and stop moves | Final exit at TP1-TP4; move the stop when TP1 / TP2 / TP3 hits (breakeven at +1R = TP2 → 0) | TP4 / off |
+| Accuracy filters (research) | **Don't chase**: skip a signal more than 2.4 σ from the session VWAP; the skipped setup still runs invisibly so the next, more stretched candle is not taken instead. **After a loss, no same-direction trade until a win** (rest of the session) | Off |
+| Days and hours | **Trade only on the ticked days** (Mon ... Sun) and trade only between two times, in your time zone (default Asia/Kolkata). They stop new setups only; open trades finish | Off |
 
-The model was replayed bar by bar on the same 5-minute data as the 80 original trades:
+**Accuracy research** (separate from the clone; October data held out of every fit): the don't-chase filter raised the October 2R hit rate
+from 39 % to 42 % and the average from +0.18R to +0.26R per trade with 75 % of trades kept; the after-loss rule helped in October only;
+breakeven at +1R cut full losses from 62 % to 47 % and the longest losing streak from 20 to 8 without changing the average. Volume /
+delta / absorption / exhaustion proxies, deeper entries and trend filters did not help beyond chance. Forward-test before relying on them.
 
-- **79 of 80** original trades are reproduced on the exact candle, with the same direction, entry and stop. The first version matched 50.
-- **3** trades are extra (the first version had 38) and **1** original trade is missed. The remaining differences are borderline cases: an ETH long whose breakout clears the 10-bar high by only 0.15, so the model arms one bar before the original (one extra plus the one miss); a CRUDE long where the VWAP slope is barely positive; and a NIFTY short whose setup matches a SENSEX trade the original did take.
-- **Entries:** every original entry is the body mid or the 6-bar level of a breakout candle, including the US30 7 Oct shorts, which need the re-anchored break after the 05:30 trade.
-- **Stops:** all 80 original stops are reproduced: 72 at 1.8 × ATR(14) and the 8 half stops at 0.9 × ATR (or just beyond the displacement candle), which the half-stop rule picks out exactly. It also explains why NIFTY and SENSEX took the same 9 Oct long with different stops: SENSEX had an earlier impulse that session, NIFTY did not.
-- **Win rate:** across the exported history the model wins 33–39 % per symbol at +2R / −1R. This is the same range as the original's LOADED BARS readings (34–38 %).
-- REGIME and BIAS are informational only. The reference trades in every regime.
+## Same signals in the indicator, the strategy and the EA
+
+The indicator and the strategy contain a **byte-identical ENGINE block** (between `// >>> ENGINE BEGIN` and `// <<< ENGINE END`, plus the shared
+inputs and drawing blocks). It decides every setup, fill, stop move and exit from the chart's bars. The strategy's execution part only copies
+those decisions into orders and never feeds back into them: the entry limit and the stop are placed on the tick grid so they trigger on exactly
+the bars where the engine's levels are touched, the targets are added only after the fill bar, and if TradingView's fill simulator ever
+disagrees the engine wins (the order is cancelled or the position closed). The old strategy drove its signals from the simulator's fills and
+exits, which is why its trades drifted from the indicator's.
+
+The EA's `ProcessBar()` is a line-by-line port of the same engine; it runs on closed bars only and then mirrors the decisions into broker
+orders (buy limits and short stops/targets are shifted by the live spread so they trigger at the same bid-chart levels). Its signals follow
+the same rules on the broker's own data feed and server-midnight session, so expect small differences where the broker's candles differ from
+TradingView's.
 
 ## Auction Retest Strategy (backtesting)
 
-Signals are the indicator's. Extra settings, all **off by default**:
+Signals and trades are the indicator's. Strategy-only settings never change them; they only decide whether a signal is taken and how big:
 
 | Group | Settings |
 |---|---|
-| Entry price | Model limit (default) · Custom % of the signal candle measured from its close (0 = close, 50 = midpoint, 100 = low/high) · Market at the next open. The stop is measured from the chosen entry. |
-| Targets | TP1–TP4 in R; optional partial close % at TP1, TP2, TP3; optional stop moves when TP1/TP2/TP3 hit (in R: 0 = breakeven, 0.6 = TP1 level, …). |
-| Risk | Base $ risk per trade (default $50). Quantity = risk ÷ (stop distance × point value), converted to the account currency and rounded down to the lot step. Units per lot (0 = auto: forex 100,000, gold 100 oz, silver 5,000 oz, others 1). The stop-out loss used for sizing includes the commission. **Hard cap** (off by default): max $ loss per trade for every mode; if a trade would risk more, clamp to the cap, stop trading, or start again from the base risk. |
-| Costs | Spread in price units, e.g. gold 0.16 (chart = bid; buys pay the spread). Commission $ per lot round trip, plus an option to push every target out by commission + spread. TradingView only charges commission set in **Settings → Properties**; the table shows the value to enter there. |
-| Streaks | Stop for the day after N losses in a row; stop for the day after N wins in a row; pause for 1–3 trading days after N losses in a row. |
-| Loss recovery | Off · recover all unrecovered losses on the next trade (base + total loss) · over N trades · a % of the losses · martingale multiplier · exact recovery at TP4 (base + losses ÷ TP4 R) · step-up (+$ per loss in a row) · Fibonacci · D'Alembert. **Rule C**: carried = closed-trade equity below its last high (updated once per candle, after commission); next risk = max(base, carried ÷ split). **Rule C split**: same, but the base steps up with total profit (200→200/3, 500→500/5, 1000→1000/8, then +500 adds one part). Sizing returns to base once profits repay the pool. |
-| Final exit | "Final Exit At" TP1 / TP2 / TP3 / TP4: the remaining position closes at that target (e.g. TP2 = 1R); partials only before it. |
-| Lot size | Auto by ticker: forex 100,000 · gold 100 oz · silver 5,000 · platinum/palladium 100 · crypto (BTC, ETH, …) 1 coin · oil CFDs 1,000 bbl · natural gas CFDs 10,000 · any futures contract (CL, NG, MCX CRUDEOIL, …) 1 contract · others 1. Or "Broker fixed" units (e.g. 100). Lot step auto: futures 1, others 0.01. If the size is below 1 lot step (e.g. $50 risk on COMEX gold futures): fractional size (backtest only, default), trade the minimum size, or skip. |
-| Time filters | Time zone; trade only between two times; daily force-close time (closes open trades, cancels armed limits); no trading Saturday/Sunday (closes trades when Saturday starts). |
-| News | A daily news window plus 5 one-off news events (date, time, minutes). No new trades from N minutes before (default 60) until the window ends; open trades are closed and armed limits cancelled when it starts. |
-| More loss recovery | Labouchère · Grand Martingale · Paroli · Reverse D'Alembert · Delayed recovery (after N losses) · % of equity · Oscar's Grind. |
+| Partial profits | Close % at TP1 / TP2 / TP3 (share of the original position); the trade still ends at the final exit or the stop. |
+| Risk | Base $ risk per trade (default $50); quantity = risk ÷ (stop distance × point value + costs per unit), converted to the account currency and rounded down to the lot step. Units per lot: auto by ticker or a fixed broker size. Hard cap with clamp / stop / restart. Leverage cap (default 1:100). Sizes below one lot step: fractional, minimum or skip. |
+| Costs | Spread (price units) and commission per lot are counted in the sizing; the table shows the Properties commission per contract to enter (it includes the spread). Earn-back pushes the strategy's targets out by the costs (then the strategy can exit later than the indicator). |
+| Streaks | Stop for the day after N losses / N wins in a row; pause 1-3 days after N losses in a row. |
+| Force-close, weekend, news | Daily force-close time; close trades when Saturday starts; a daily news window and 5 one-off news events (no new trades from N minutes before, close at the start). |
+| Loss recovery | 17 modes (all, over N, %, martingale, exact at final TP, step-up, Fibonacci, D'Alembert, Rule C, Rule C split, Labouchère, Grand Martingale, Paroli, Reverse D'Alembert, delayed, % of equity, Oscar's Grind). |
 
-**Leverage** (default 1:100): position value is limited to equity × leverage, and the size is reduced to fit. TradingView's own margin check is off, because with its default 100 % margin it silently rejects orders larger than the account. That is why an earlier version took far fewer trades than the indicator. Trades are drawn with the indicator's boxes (target, stop, TP lines, dashed armed limit).
+The table shows SIGNALS · TAKEN · SKIPPED, so any signal that an execution setting blocked is visible. With the defaults every signal is taken.
+**Leverage**: TradingView's own margin check is off (margin 0 in Properties); the leverage input limits the position value instead.
+The only remaining way the strategy's trade list can differ from the indicator is a single bar that touches both the stop and the target after
+the fill bar (the indicator counts the stop; TradingView's simulator decides from the bar's shape). It does not affect any later signal.
 
-Note: TradingView's broker emulator decides the order of stop vs target inside a bar from the bar's open/high/low, so a few trades can exit differently from the indicator, which always assumes the stop first.
+## Indicator table and alerts
+
+**Model monitor table** (10 compact rows; hover a row for its tooltip): STATE (scanning / armed / active / day cap / day switched off /
+outside hours / skipped by the don't-chase filter) · REGIME / BIAS · ENTRY / STOP (½ = half stop) · TP1 · TP2 · TP3 · TP4 · LIVE · BARS · HIT ·
+MODEL DAY (date, W/L, win %, R, fills / cap) · LOADED BARS (last result, win %, total R) · DATA RANGE · WIN 1R · 1.5R · 2R (share of closed
+trades that reached each level before the stop).
+
+**Alerts**: fixed alerts for Buy / Sell Retest Armed, Entry Filled, Target Hit, Stop Hit and Retest Cancelled, plus one "Any alert() function
+call" alert that sends every event with its prices.
 
 For educational use only. This is not financial advice.
