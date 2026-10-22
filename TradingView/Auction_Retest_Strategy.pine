@@ -740,7 +740,8 @@ if closedNew and exState == 2 and pos != 0
 // ── 2. an executed trade has closed: streaks, pauses and loss recovery ──
 if exClosed
     bool win = exPnl > 0
-    if evExit and win != (evRes > 0)
+    // only comparable when no partial was taken and the exit is the engine exit of the setup the strategy took
+    if evExit and pp1 + pp2 + pp3 == 0 and not na(exArm) and armBar == exArm and win != (evRes > 0)
         diffN += 1
     dayPnl  += exPnl
     exW     += win ? 1 : 0
