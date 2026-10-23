@@ -24,9 +24,10 @@
 //| and breakeven statistics, trade markings (entry, stop, targets,  |
 //| result). Use "Visualization" in the Strategy Tester to see them. |
 //| v3.2: optional kill zones (Indian time, four sessions, +-2 h).   |
+//| v3.3: optional minimum distance of the signal from the VWAP.     |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.20"
+#property version   "3.30"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -136,6 +137,8 @@ input bool   InpChopOn     = false; // Skip choppy sessions (too many VWAP cross
 input double InpChopMax    = 12.0;  //   max VWAP crosses per 100 bars
 input bool   InpEmaOn      = false; // Skip when the 1h EMA20 moved too fast (natural gas: worse)
 input double InpEmaMax     = 1.65;  //   max 1h EMA20 move in 3 hours (x ATR)
+input bool   InpMinVwOn    = false; // Skip signals too close to VWAP (min distance)
+input double InpMinVwAtr   = 1.0;   //   min distance of the signal close from VWAP (x ATR)
 
 input group "DAYS AND HOURS (YOUR time zone)"
 enum ENUM_SRV_TZ { SRV_NYCLOSE = 0,   // Auto: GMT+2 winter / GMT+3 US summer time (most FX brokers)
@@ -271,7 +274,7 @@ int      lastDir = 0;
 double   lim = 0, stp = 0, stp0 = 0, trRisk = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, tF = 0;
 int      tpHit = 0;
 bool     trHalf = false, trGhost = false;
-int      trSkip = 0;               // why the setup is a ghost: 1 too far from VWAP, 2 choppy VWAP session, 3 1h EMA20 too fast
+int      trSkip = 0;               // why the setup is a ghost: 1 too far from VWAP, 2 choppy VWAP session, 3 1h EMA20 too fast, 4 too close to VWAP
 int      totW = 0, totL = 0; double totR = 0;
 string   lastRes = "-";
 double   bestPx = 0;               // best price after the fill (the fill bar and stop bars add nothing)
@@ -647,10 +650,12 @@ void ProcessBar(int s)
          // choppy session (VWAP crosses) / over-extended 1h EMA20; a skipped setup runs on invisibly like the no-chase one
          bool chopNo = InpChopOn && vxRate > InpChopMax;
          bool emaNo = InpEmaOn && haveSpd && emaSpd > InpEmaMax;
-         bool ghost = zNo || chopNo || emaNo;
+         // signal close still hugging the VWAP (less than the minimum distance in ATR on the trade's side)
+         bool nearNo = InpMinVwOn && d * (c - vwap) < InpMinVwAtr * atr;
+         bool ghost = zNo || chopNo || emaNo || nearNo;
          if(MathAbs(st) == 1 && !trGhost) evCancel = 2;
          st = isL ? 1 : -1; armBar = bi; lim = entry; stp = stop; stp0 = stop; trRisk = risk; trHalf = half; trGhost = ghost;
-         trSkip = zNo ? 1 : (chopNo ? 2 : (emaNo ? 3 : 0));
+         trSkip = zNo ? 1 : (chopNo ? 2 : (emaNo ? 3 : (nearNo ? 4 : 0)));
          t1 = lim + d * InpTp1R * risk; t2 = lim + d * InpTp2R * risk; t3 = lim + d * InpTp3R * risk; t4 = lim + d * InpTp4R * risk;
          tF = InpExitAt == EXIT_TP1 ? t1 : InpExitAt == EXIT_TP2 ? t2 : InpExitAt == EXIT_TP3 ? t3 : t4;
          if(!ghost) { evArm = true; evArmL = isL; }
@@ -902,7 +907,7 @@ void DrawBar(datetime bt)
 //--- on-chart table (rebuilt on every new bar so it stays on top of the markings) ----
 string StateText(bool newsBlk)
 {
-   string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : "1H EMA20 TOO FAST");
+   string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : (trSkip == 3 ? "1H EMA20 TOO FAST" : "TOO CLOSE TO VWAP"));
    string s = st != 0 && trGhost ? "SKIPPED (" + why + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
               capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : dayBlock ? "STREAK STOP TODAY" :
               !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : "SCANNING";
@@ -952,7 +957,7 @@ void UpdateTable()
    string tps = has ? DoubleToString(t1, _Digits) + " | " + DoubleToString(t2, _Digits) + " | " + DoubleToString(t3, _Digits) + " | " + DoubleToString(t4, _Digits) : "-";
    bool   isC = InpRec == REC_C || InpRec == REC_CS;
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.2", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v3.3", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -964,7 +969,7 @@ void UpdateTable()
    TblAdd("SIGNAL TRADES | WIN % | R", AccTxt() + " | last " + lastRes, totR >= 0 ? posC : negC, cell);
    TblAdd("TP HIT", TpTxt(), posC, cell);
    if(InpMv1On || InpMv2On || InpMv3On) TblAdd("BREAKEVEN", BeTxt(), white, cell);
-   if(InpNoChase || InpChopOn || InpEmaOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
+   if(InpNoChase || InpChopOn || InpEmaOn || InpMinVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
    TblAdd("DATA RANGE", gFirstT > 0 ? DateTxt(UserTime(gFirstT), true) + " -> " + DateTxt(UserTime(gLastDone), false) + " | " + IntegerToString(bi + 1) + " bars" : "-", white, cell);
    // column widths from the longest text in each column
    int  fs = (int)MathMax(6, InpTableFont), n = ArraySize(tblKey), kw = 0, vw = 0, th = 0;

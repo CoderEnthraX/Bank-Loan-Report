@@ -98,6 +98,8 @@ GRP_F = "ACCURACY FILTERS (research, off = original)"
 noChase    = input.bool(false, "Don't Chase: Skip Signals Beyond", inline = "nc", group = GRP_F)
 noChaseSig = input.float(2.4, "σ From VWAP", minval = 0.5, step = 0.1, inline = "nc", group = GRP_F, tooltip = "Skips a long whose signal candle closes more than this many standard deviations above the session VWAP (short: below), i.e. outside the VWAP bands. The skipped setup still runs invisibly until it would have finished, so the next, even more stretched candle is not taken instead. Research: October 2R hit rate 39% -> 42%, average +0.18R -> +0.26R per trade, 75% of trades kept. Not proven yet - forward-test it.")
 lossBlock  = input.bool(false, "After A Loss, No Same-Direction Trade Until A Win", group = GRP_F, tooltip = "For the rest of the session. Research: helped in October, flat in September - unproven.")
+minVwOn    = input.bool(false, "Skip Signals Too Close To VWAP: Min Distance", inline = "md", group = GRP_F)
+minVwAtr   = input.float(1.0, "x ATR", minval = 0.1, step = 0.1, inline = "md", group = GRP_F, tooltip = "Skips a long whose signal candle closes less than this many ATR above the VWAP (short: below), i.e. a breakout still hugging the VWAP. The skipped setup still runs invisibly until it would have finished (like Don't Chase). Research (1 ATR): 1:1 win rate 54.0% -> 54.7%, 1:2 38.9% -> 39.8%, average +0.17R -> +0.20R per trade, total +197R -> +218R, 94% of trades kept, 8 of 10 instruments better. Together with Don't Chase at 2.0 sigma (a band from 1 ATR to 2 sigma): 1:1 57.5%, 1:2 43.9%, +0.32R per trade, about half the trades. Not proven yet - forward-test it.")
 chopOn     = input.bool(false, "Skip Choppy Sessions: Max VWAP Crosses", inline = "ch", group = GRP_F)
 chopMax    = input.float(12.0, "Per 100 Bars", minval = 0.5, step = 0.5, inline = "ch", group = GRP_F, tooltip = "Counts how often the close has crossed the VWAP so far in this VWAP period (a cross = the close moving from more than 0.2 ATR on one side of the VWAP to more than 0.2 ATR on the other side). When there have been more crosses than this per 100 bars, a new setup is skipped. The skipped setup still runs invisibly until it would have finished (like Don't Chase), so a later, worse signal does not take its place. Research (limit 12): average +0.17R -> +0.21R per trade, October +0.20R -> +0.27R, total +197R -> +207R, 82% of trades kept, 9 of 10 instruments better, natural gas +0.28R -> +0.34R. Not proven yet - forward-test it. Do not combine with Don't Chase: they skip mostly the same trades.")
 emaOn      = input.bool(false, "Skip When The 1h EMA20 Moved More Than", inline = "em", group = GRP_F)
@@ -548,7 +550,9 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         // choppy session (VWAP crosses) / over-extended 1h EMA20; a skipped setup runs on invisibly like the no-chase one
         bool  chopNo = chopOn and vxRate > chopMax
         bool  emaNo  = emaOn and not na(emaSpd) and emaSpd > emaMax
-        bool  ghost  = zNo or chopNo or emaNo
+        // signal close still hugging the VWAP (less than the minimum distance in ATR on the trade's side)
+        bool  nearNo = minVwOn and d * (close - vwap) < minVwAtr * atr
+        bool  ghost  = zNo or chopNo or emaNo or nearNo
         if math.abs(st) == 1 and not trGhost
             evCancel := "REPLACED"
         // levels stay unrounded: the reference fills and stops on the exact values
@@ -560,7 +564,7 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         trRisk  := risk
         trHalf  := half
         trGhost := ghost
-        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : ""
+        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : nearNo ? "TOO CLOSE TO VWAP" : ""
         t1      := lim + d * tp1R * risk
         t2      := lim + d * tp2R * risk
         t3      := lim + d * tp3R * risk
@@ -590,7 +594,7 @@ if evExit
         else if evRes > 0.0
             lkN += 1
 bool mvAny  = mv1On or mv2On or mv3On
-bool fltAny = noChase or chopOn or emaOn
+bool fltAny = noChase or chopOn or emaOn or minVwOn
 f_sgnR(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
 f_share(int n, int total) => total > 0 ? str.tostring(math.round(100.0 * n / total)) + "%" : "—"
 // "77 trades · 52% (40W/37L) · +12.00R"
