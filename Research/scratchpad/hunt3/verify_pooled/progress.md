@@ -1,0 +1,3 @@
+- module = hunt3/pooled/pf.py (claimed module_path was a placeholder). Reran score2/extrasB on 4 option sets: erMin.2+dayStop0 A80/0/2 B39 stops34/39 provB2; erMin.2 A80/0/2 B35 provB1 (#59 lost); dayStop0 baseline A79/1/3 B36 provB5; {} A79/1/3 B32 provB4. ALL CONFIRMED.
+- ER recomputed from raw CSV closes: CR 18:30 .112, 13:40 .170, 11:40 .157, 20:55 .217, ETH 00:05 .192; taken signals 18:50 .699, 14:15 .441, 11:45 .253, ETH 00:15 .537; NIFTY .734. min taken .221 (GC 10-09 20:50), n=103. CONFIRMED.
+- ER length scan: only n=10 separates (5 rejected); n=11 1, others 0. churn dayStop0: 1102->1088 trades, 71 removed/57 added. CONFIRMED.

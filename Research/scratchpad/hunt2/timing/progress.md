@@ -1,0 +1,16 @@
+# timing hunt progress (m.py = pine_final copy + options; dbg.py/tr.py helpers)
+- baseline m.py: A 79/1/3, B 32 matched 29/32 stops
+- cooldown 1 or 0 alone: A 77/3/5 (SENSEX 10-12 09:25/11:05 extra) -> reject alone
+- rearmKeep false: A 77/3/3, B 28 -> reject. retest 4/6/7/8: all worse (6: A same, B 31). legReset off: A 76. maxFills 9: A 77/12 extra.
+- minOpenBars 0 alone: A 78/2/2, B 31 (SENSEX 10-07 09:15 first-bar short blocks 09:40 via keepArm)
+- dayStopR 0 (no daily -3R stop): A 79/1/3 unchanged, B 36/33 (fixes #48 #54 #55 #62)
+- slopeCross (VWAP slope vwap-vwap[3] across session boundary, signals only; impulse counts unchanged) + minOpenBars 0: A 79/1/2, B 32
+- slopeCross+minOpenBars0+cooldown1+dayStopR0: A 79/1/2, B 38 matched 35/38 stops  <== BEST so far
+- momAtr 0.95-1.05 (rejects CRUDE 10-15 18:30 mom .91 and 10-16 11:40 mom .95): B 40 but A 78 (loses GC 10-09 20:55 L, mom .94) -> reject; momLen 8/9/11/12 all much worse in A. #58/#60 likely feed noise at mom threshold (margins 0.06/0.10 ATR = 1-1.5 pts)
+- vrt (VWAP-retest 2nd signal type: close>6-bar high, low touched VWAP in last k bars, no mom) k=3/6/10: A 75/5/6, B 36 -> reject. #63 (10-16 18:30 candle: close < 10-bar high by 2.5 ATR, mom -2.16) unexplained
+- tightAny (tight stop for all trades vs prev-session bias): A 73/7/13 -> reject. forceTight CRUDE 10-12 11:50+13:40 (what-if): 13:45 trade stops 13:50, then 14:15 arm -> 14:20 fill e 8802 s 8759.5 exit 15:10 TP4 = #50. So #50 is a STOP-mode question (10-12 prevNet=+7, longs WITH bias yet tight), not timing
+- ablation of best: w/o slopeCross A 76/4/4 B 35; w/o minOpenBars0 A 79/1/3 B 37; w/o dayStop0 A 79/1/2 B 34; w/o cooldown1 A 79/1/2 B 36 -> all 4 parts needed
+- around best: cooldown 0 via max(.,1) == 1 (same); true arm-on-exit-bar (cdRaw 0): A 67 -> reject; cooldown 2: B 36; retest 6: tie, 4: A 72; rearmKeep false: A 77/3/5 B 33; legReset off: A 76
+- slopeCross applied to impulse counts too: breaks tight stops #66 #72 (A 78) -> keep impulses session-guarded (stop agent: impulse def likely differs anyway)
+- SENSEX: best config reproduces exactly the 17 logged trades and nothing else (17/17)
+- FINAL best.json: A 79/1/2, B 38/42 matched, 35/38 stops. Left: #50 (stop-mode), #58/#60 (mom margin .06/.10 ATR), #63 (unexplained), stops #49 #52 #56

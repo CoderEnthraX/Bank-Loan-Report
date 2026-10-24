@@ -1,0 +1,704 @@
+//@version=6
+// ═══════════════════════════════════════════════════════════════════════════════════════
+//  VWAP ORDERFLOW SNIPER  —  Absorption + Aggression signals built on top of VWAP
+//  Base: TradingView built-in "Volume-weighted average price" (VWAP + bands kept intact)
+//
+//  HOW IT WORKS
+//   • Direction comes from VWAP: BUY signals only when price closes ABOVE VWAP,
+//     SELL signals only when price closes BELOW VWAP.
+//   • Delta (aggressive buy volume − aggressive sell volume) is read from lower-timeframe
+//     intrabars (closest thing to footprint delta in Pine). If no intrabar data exists the
+//     script falls back to a candle estimate: buy volume = volume × (close − low) / range.
+//   • ABSORPTION = high effort, low result. Heavy volume that fails to move price:
+//       1) rejection wick on high relative volume (stopping volume)
+//       2) delta against the candle (sellers hit bids, candle still closes up — intrabar only)
+//       3) churn: very high volume, narrow range at a local extreme
+//       4) delta divergence: strong net delta over N bars but price did not follow
+//     Absorption at VWAP / Band #1 ARMS a setup and prints a Pre Buy / Pre Sell Warning.
+//   • AGGRESSION = initiative market orders. One side trades ≥ "Aggression Ratio" × the
+//     other side on a full-bodied candle with at least average volume.
+//   • SIGNAL (Sniper mode) = armed absorption setup → aggression in the same direction,
+//     on the correct side of VWAP, after all filters (CVD, distance, slope, session).
+//   • Each signal draws Entry / Stop / Target boxes. Entry, stop and targets are fully
+//     configurable and every trade is tracked until TP / SL / time exit.
+// ═══════════════════════════════════════════════════════════════════════════════════════
+indicator(title = "VWAP Orderflow Sniper [Absorption + Aggression]", shorttitle = "VWAP OF Sniper", overlay = true, max_boxes_count = 500, max_labels_count = 500)
+
+// ═════════════════════════════════════ INPUTS ═════════════════════════════════════════
+
+// ── Institutional flow (core orderflow thresholds) ──
+GRP_FLOW = "INSTITUTIONAL FLOW SETTINGS"
+aggRatio = input.float(2.2, "Aggression Ratio", minval = 1.0, step = 0.1, group = GRP_FLOW, tooltip = "Minimum ratio between aggressive buy and aggressive sell volume for a candle to count as AGGRESSION (initiative market orders). 2.2 = the dominant side traded at least 2.2x the other side.")
+absSens  = input.float(1.2, "Absorption Sensitivity", minval = 0.1, step = 0.1, group = GRP_FLOW, tooltip = "Relative volume (bar volume / average volume) a candle needs before it can qualify as ABSORPTION (high effort, low result). Lower = more absorption events, higher = only the heaviest absorption.")
+rrBase   = input.float(1.5, "Dynamic RR Base", minval = 0.1, step = 0.1, group = GRP_FLOW, tooltip = "Minimum reward:risk for TP1 in 'Dynamic RR' target mode. The signal score (0-100) scales it up to 1.5x: TP1 = Base x (1 + 0.5 x Score / 100), TP2 = 2 x TP1 RR, TP3 = 3 x TP1 RR.")
+
+// ── VWAP (original built-in settings) ──
+hideonDWM = input(false, title="Hide VWAP on 1D or Above", group="VWAP Settings", display = display.none)
+var anchor = input.string(defval = "Session", title="Anchor Period", options=["Session", "Week", "Month", "Quarter", "Year", "Decade", "Century", "Earnings", "Dividends", "Splits"], group="VWAP Settings")
+src = input(title = "Source", defval = hlc3, group="VWAP Settings", display = display.none)
+offset = input.int(0, title="Offset", group="VWAP Settings", display = display.none)
+
+BANDS_GROUP = "Bands Settings"
+CALC_MODE_TOOLTIP = "Determines the units used to calculate the distance of the bands. When 'Percentage' is selected, a multiplier of 1 means 1%."
+calcModeInput = input.string("Standard Deviation", "Bands Calculation Mode", options = ["Standard Deviation", "Percentage"], group = BANDS_GROUP, tooltip = CALC_MODE_TOOLTIP, display = display.none)
+showBand_1 = input(true, title = "", group = BANDS_GROUP, inline = "band_1", display = display.none)
+bandMult_1 = input.float(1.0, title = "Bands Multiplier #1", group = BANDS_GROUP, inline = "band_1", step = 0.5, minval=0, display = display.none, active = showBand_1)
+showBand_2 = input(false, title = "", group = BANDS_GROUP, inline = "band_2", display = display.none)
+bandMult_2 = input.float(2.0, title = "Bands Multiplier #2", group = BANDS_GROUP, inline = "band_2", step = 0.5, minval=0, display = display.none, active = showBand_2)
+showBand_3 = input(false, title = "", group = BANDS_GROUP, inline = "band_3", display = display.none)
+bandMult_3 = input.float(3.0, title = "Bands Multiplier #3", group = BANDS_GROUP, inline = "band_3", step = 0.5, minval=0, display = display.none, active = showBand_3)
+
+// ── Orderflow engine ──
+GRP_OF = "ORDERFLOW ENGINE"
+DS_LTF = "Intrabar (Lower TF)"
+DS_EST = "Candle Estimate"
+deltaSrc     = input.string(DS_LTF, "Delta Source", options = [DS_LTF, DS_EST], group = GRP_OF, display = display.none, tooltip = "Intrabar: every chart bar is split into lower-timeframe bars and each one is classified as buying or selling volume (closest thing to footprint delta in Pine). Falls back to the candle estimate automatically when intrabar data is not available.\nCandle Estimate: buy volume = volume x (close - low) / (high - low).")
+useCustomLtf = input(false, "Custom Lower TF", inline = "ltf", group = GRP_OF, display = display.none)
+customLtf    = input.timeframe("1", "", inline = "ltf", group = GRP_OF, tooltip = "Lower timeframe for intrabar delta. Unchecked = automatic (1m on intraday charts up to 1H, 5m up to 4H, 15m on daily, 60m above). Must be lower than the chart timeframe, otherwise the automatic one is used.")
+volLen       = input.int(20, "Volume Average Length", minval = 2, group = GRP_OF, display = display.none)
+atrLen       = input.int(14, "ATR Length", minval = 1, group = GRP_OF, display = display.none)
+absLen       = input.int(5, "Absorption Lookback (bars)", minval = 2, group = GRP_OF, display = display.none, tooltip = "Window used for delta-divergence absorption and for local highs / lows.")
+divMinPct    = input.float(15.0, "Delta Divergence Min %", minval = 1.0, maxval = 100.0, step = 1.0, group = GRP_OF, display = display.none, tooltip = "Net delta over the lookback (as % of volume) needed for divergence absorption: sellers hit bids hard but price did not fall (bullish), or buyers lifted offers but price did not rise (bearish).")
+wickPct      = input.float(40.0, "Rejection Wick Min %", minval = 10.0, maxval = 90.0, step = 5.0, group = GRP_OF, display = display.none, tooltip = "Minimum wick size (as % of the candle range) for wick-rejection absorption.")
+aggMinRelVol = input.float(1.0, "Aggression Min Rel. Volume", minval = 0.0, step = 0.1, group = GRP_OF, display = display.none)
+aggMinBody   = input.float(50.0, "Aggression Min Body %", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_OF, display = display.none)
+
+// ── Signal logic & filters ──
+GRP_SIG = "SIGNAL LOGIC & FILTERS"
+MODE_SNIPER   = "Sniper (Absorption + Aggression)"
+MODE_AGGR     = "Aggression Only"
+MODE_BREAKOUT = "Absorption Breakout"
+sigMode      = input.string(MODE_SNIPER, "Signal Mode", options = [MODE_SNIPER, MODE_AGGR, MODE_BREAKOUT], group = GRP_SIG, display = display.none, tooltip = "Sniper: absorption at VWAP arms a setup (Pre Warning), the next aggressive candle in the same direction fires the signal.\nAggression Only: every qualifying aggressive candle on the correct side of VWAP.\nAbsorption Breakout: armed setup + a candle closing beyond the absorption zone.")
+setupExpiry  = input.int(10, "Setup Expiry (bars)", minval = 1, group = GRP_SIG, display = display.none, tooltip = "How many bars an absorption setup stays armed waiting for confirmation.")
+ZONE_VWAP = "VWAP"
+ZONE_BAND = "VWAP or Band #1"
+ZONE_ANY  = "Anywhere"
+zoneMode     = input.string(ZONE_BAND, "Absorption Location", options = [ZONE_VWAP, ZONE_BAND, ZONE_ANY], group = GRP_SIG, display = display.none, tooltip = "Where absorption must happen to arm a setup. Longs use VWAP / Upper Band #1 as support, shorts use VWAP / Lower Band #1 as resistance.")
+vwapZone     = input.float(0.75, "VWAP Zone Width (ATR)", minval = 0.05, step = 0.05, group = GRP_SIG, display = display.none, tooltip = "How close (in ATR) the absorption candle must trade to the VWAP / band level.")
+maxDistAtr   = input.float(2.5, "Max Distance From VWAP (ATR)", minval = 0.0, step = 0.1, group = GRP_SIG, display = display.none, tooltip = "Blocks over-extended entries far away from VWAP. 0 = off.")
+CVD_OFF  = "Off"
+CVD_ROLL = "Rolling Delta"
+CVD_SESS = "Session CVD"
+cvdFilter    = input.string(CVD_ROLL, "CVD Confirmation", options = [CVD_OFF, CVD_ROLL, CVD_SESS], inline = "cvd", group = GRP_SIG, display = display.none)
+cvdLen       = input.int(3, "Len", minval = 1, inline = "cvd", group = GRP_SIG, display = display.none, tooltip = "Rolling Delta: sum of delta over 'Len' bars must agree with the signal.\nSession CVD: cumulative delta since the VWAP anchor must agree with the signal.")
+useSlope     = input(false, "VWAP Slope Filter", inline = "slope", group = GRP_SIG, display = display.none)
+slopeLen     = input.int(5, "Len", minval = 1, inline = "slope", group = GRP_SIG, display = display.none, tooltip = "Buys need a rising VWAP, sells a falling VWAP over 'Len' bars.")
+cooldown     = input.int(3, "Cooldown Between Signals (bars)", minval = 0, group = GRP_SIG, display = display.none)
+skipSameDir  = input(true, "Skip Same-Direction Signals While Trade Is Open", group = GRP_SIG, display = display.none, tooltip = "When on, a new BUY is ignored while a BUY trade is still running (same for SELL). An opposite signal always reverses the open trade.")
+confirmClose = input(true, "Confirm On Bar Close (No Repaint)", group = GRP_SIG, display = display.none)
+useSess      = input(false, "Session Filter", inline = "sess", group = GRP_SIG, display = display.none)
+sessInput    = input.session("0700-2000", "", inline = "sess", group = GRP_SIG)
+sessTz       = input.string("Exchange", "Session Timezone", group = GRP_SIG, display = display.none, tooltip = "'Exchange' = the symbol's exchange timezone. Or type a timezone such as UTC, GMT+3, Europe/London, America/New_York.")
+
+// ── Trade levels ──
+GRP_TRD = "TRADE LEVELS (ENTRY / STOP / TARGET)"
+ENTRY_CLOSE = "Signal Close"
+ENTRY_MID   = "Signal Bar Midpoint"
+ENTRY_VWAP  = "VWAP Retest"
+entryMode   = input.string(ENTRY_CLOSE, "Entry Price", options = [ENTRY_CLOSE, ENTRY_MID, ENTRY_VWAP], group = GRP_TRD, display = display.none, tooltip = "Signal Close: market entry at the close of the signal candle.\nSignal Bar Midpoint: limit entry at the middle of the signal candle.\nVWAP Retest: limit entry at the VWAP value of the signal candle.")
+entryOffset = input.float(0.0, "Entry Offset (price)", step = 0.1, group = GRP_TRD, display = display.none, tooltip = "Positive = better price (long entries lower, short entries higher). Any entry away from the signal close is a pending limit order that must be filled before the trade is tracked.")
+SL_STRUCT = "Absorption / Swing"
+SL_ATR    = "ATR"
+SL_POINTS = "Fixed Points"
+SL_PCT    = "Percent"
+slMode     = input.string(SL_STRUCT, "Stop Loss Mode", options = [SL_STRUCT, SL_ATR, SL_POINTS, SL_PCT], group = GRP_TRD, display = display.none, tooltip = "Absorption / Swing: beyond the absorption zone (or the recent swing when no zone is armed) plus a buffer.\nATR: entry -/+ ATR x multiplier.\nFixed Points: entry -/+ a fixed price distance (e.g. 5.0 = $5 on XAUUSD).\nPercent: entry -/+ a percentage of price.")
+slAtrMult  = input.float(1.5, "SL ATR Multiplier", minval = 0.1, step = 0.1, group = GRP_TRD, display = display.none)
+slPoints   = input.float(5.0, "SL Fixed Points (price)", minval = 0.0, step = 0.5, group = GRP_TRD, display = display.none)
+slPct      = input.float(0.25, "SL Percent %", minval = 0.01, step = 0.05, group = GRP_TRD, display = display.none)
+slBuffer   = input.float(0.15, "Structure SL Buffer (ATR)", minval = 0.0, step = 0.05, group = GRP_TRD, display = display.none)
+swingLen   = input.int(5, "Swing Lookback (bars)", minval = 1, group = GRP_TRD, display = display.none)
+minRiskAtr = input.float(0.3, "Structure Risk  Min (ATR)", minval = 0.0, step = 0.1, inline = "risk", group = GRP_TRD, display = display.none)
+maxRiskAtr = input.float(4.0, "Max (ATR)", minval = 0.1, step = 0.1, inline = "risk", group = GRP_TRD, display = display.none, tooltip = "Clamps the structural stop distance so it is never too tight or too wide.")
+TGT_DYN = "Dynamic RR"
+TGT_RR  = "Fixed RR"
+TGT_PTS = "Fixed Points"
+tgtMode = input.string(TGT_DYN, "Target Mode", options = [TGT_DYN, TGT_RR, TGT_PTS], group = GRP_TRD, display = display.none, tooltip = "Dynamic RR: uses 'Dynamic RR Base' scaled by the signal score.\nFixed RR: TP = entry + risk x RR.\nFixed Points: TP = entry + fixed price distance.")
+numTp   = input.int(3, "Number of Targets", minval = 1, maxval = 3, group = GRP_TRD, display = display.none)
+tp1RR   = input.float(1.5, "Fixed RR  TP1", minval = 0.1, step = 0.1, inline = "rr", group = GRP_TRD, display = display.none)
+tp2RR   = input.float(2.5, "TP2", minval = 0.1, step = 0.1, inline = "rr", group = GRP_TRD, display = display.none)
+tp3RR   = input.float(4.0, "TP3", minval = 0.1, step = 0.1, inline = "rr", group = GRP_TRD, display = display.none)
+tp1Pts  = input.float(5.0, "Fixed Pts  TP1", minval = 0.0, step = 0.5, inline = "pts", group = GRP_TRD, display = display.none)
+tp2Pts  = input.float(10.0, "TP2", minval = 0.0, step = 0.5, inline = "pts", group = GRP_TRD, display = display.none)
+tp3Pts  = input.float(15.0, "TP3", minval = 0.0, step = 0.5, inline = "pts", group = GRP_TRD, display = display.none)
+MGMT_NONE = "None"
+MGMT_BE   = "Breakeven after TP1"
+MGMT_STEP = "Step Trail (BE > TP1)"
+slMgmt  = input.string(MGMT_BE, "Stop Management", options = [MGMT_NONE, MGMT_BE, MGMT_STEP], group = GRP_TRD, display = display.none, tooltip = "Breakeven after TP1: stop moves to entry once TP1 is hit.\nStep Trail: stop moves to entry after TP1 and to TP1 after TP2.")
+
+// ── Buy / Sell boxes ──
+GRP_BOX = "BUY / SELL BOX SETTINGS"
+showBoxes   = input(true, "Show Trade Boxes", group = GRP_BOX, display = display.none)
+buyTgtFill  = input.color(color.new(#00C853, 85), "Buy Box   Target Fill", inline = "b1", group = GRP_BOX)
+buyTgtBord  = input.color(color.new(#00C853, 20), "Border", inline = "b1", group = GRP_BOX)
+buySlFill   = input.color(color.new(#FF1744, 85), "Buy Box   Stop Fill", inline = "b2", group = GRP_BOX)
+buySlBord   = input.color(color.new(#FF1744, 20), "Border", inline = "b2", group = GRP_BOX)
+sellTgtFill = input.color(color.new(#00C853, 85), "Sell Box   Target Fill", inline = "s1", group = GRP_BOX)
+sellTgtBord = input.color(color.new(#00C853, 20), "Border", inline = "s1", group = GRP_BOX)
+sellSlFill  = input.color(color.new(#FF1744, 85), "Sell Box   Stop Fill", inline = "s2", group = GRP_BOX)
+sellSlBord  = input.color(color.new(#FF1744, 20), "Border", inline = "s2", group = GRP_BOX)
+borderW     = input.int(1, "Border Width", minval = 0, maxval = 5, group = GRP_BOX, display = display.none)
+borderStyle = input.string("Solid", "Border Style", options = ["Solid", "Dashed", "Dotted"], group = GRP_BOX, display = display.none)
+boxLen      = input.int(30, "Box Length / Max Trade Bars", minval = 2, maxval = 400, group = GRP_BOX, display = display.none, tooltip = "How far the boxes project to the right. A trade that has not hit TP or SL after this many bars is closed as a time exit.")
+trimBoxes   = input(true, "Cut Boxes At Trade Exit", group = GRP_BOX, display = display.none)
+showBoxText = input(true, "Show Prices Inside Boxes", group = GRP_BOX, display = display.none)
+boxTxtCol   = input.color(color.new(#787B86, 0), "Box Text", inline = "bt", group = GRP_BOX)
+boxTxtSize  = input.string("Small", "Size", options = ["Tiny", "Small", "Normal", "Large"], inline = "bt", group = GRP_BOX, display = display.none)
+showAbsZones = input(true, "Show Absorption Zones", group = GRP_BOX, display = display.none)
+absBullFill = input.color(color.new(#2962FF, 85), "Absorption Zone   Bull", inline = "az", group = GRP_BOX)
+absBearFill = input.color(color.new(#FF9800, 85), "Bear", inline = "az", group = GRP_BOX)
+absZoneLen  = input.int(12, "Absorption Zone Length (bars)", minval = 1, maxval = 200, group = GRP_BOX, display = display.none)
+
+// ── Signal labels ──
+GRP_LBL = "SIGNAL LABELS"
+showLabels = input(true, "Show Signal Labels (Entry / SL / TP)", group = GRP_LBL, display = display.none)
+buyLblCol  = input.color(color.new(#00C853, 10), "Buy", inline = "l1", group = GRP_LBL)
+sellLblCol = input.color(color.new(#FF1744, 10), "Sell", inline = "l1", group = GRP_LBL)
+lblTxtCol  = input.color(color.white, "Text", inline = "l1", group = GRP_LBL)
+lblSizeIn  = input.string("Small", "Label Size", options = ["Tiny", "Small", "Normal", "Large"], group = GRP_LBL, display = display.none)
+lblOffset  = input.float(0.8, "Label Distance (ATR)", minval = 0.0, step = 0.1, group = GRP_LBL, display = display.none)
+
+// ── Dashboard ──
+GRP_DASH = "DASHBOARD"
+showDash = input(true, "Show Dashboard", group = GRP_DASH, display = display.none)
+dashPos  = input.string("Top Right", "Position", options = ["Top Right", "Top Left", "Top Center", "Middle Right", "Bottom Right", "Bottom Left"], group = GRP_DASH, display = display.none)
+dashSize = input.string("Small", "Text Size", options = ["Tiny", "Small", "Normal", "Large"], group = GRP_DASH, display = display.none)
+
+// ── Alerts ──
+GRP_ALERT = "ALERTS"
+alertsOn = input(true, "alert() Messages With Entry / SL / TP", group = GRP_ALERT, display = display.none, tooltip = "Create an alert with the condition 'Any alert() function call' to receive the full trade plan. Fixed-message alerts (Buy Signal, Sell Signal, Pre Buy Warning, Pre Sell Warning) are also available in the alert dialog.")
+
+// ═════════════════════════════════ TYPES & HELPERS ════════════════════════════════════
+
+type Trade
+    int    dir      = 0
+    int    entryBar = 0
+    float  refPx
+    float  entry
+    float  sl
+    float  tp1
+    float  tp2
+    float  tp3
+    float  rr1
+    float  rr2
+    float  rr3
+    float  score
+    int    numTp    = 1
+    int    tpHit    = 0
+    bool   filled   = false
+    bool   active   = false
+    string lblText  = ""
+    box    riskBox
+    box    tp1Box
+    box    tp2Box
+    box    tp3Box
+    label  lbl
+
+type Stats
+    int signals = 0
+    int wins    = 0
+    int losses  = 0
+    int tp1     = 0
+    int tp2     = 0
+    int tp3     = 0
+
+f_clamp(float x, float lo, float hi) => math.max(lo, math.min(hi, nz(x, lo)))
+
+f_px(float p) => str.tostring(p, format.mintick)
+
+f_size(string s) =>
+    switch s
+        "Tiny"   => size.tiny
+        "Normal" => size.normal
+        "Large"  => size.large
+        => size.small
+
+f_pos(string s) =>
+    switch s
+        "Top Left"     => position.top_left
+        "Top Center"   => position.top_center
+        "Middle Right" => position.middle_right
+        "Bottom Right" => position.bottom_right
+        "Bottom Left"  => position.bottom_left
+        => position.top_right
+
+f_bStyle(string s) =>
+    switch s
+        "Dashed" => line.style_dashed
+        "Dotted" => line.style_dotted
+        => line.style_solid
+
+f_tpText(int n, float price, float rr, bool hit) => (hit ? "✓ " : "") + "TP" + str.tostring(n) + "  " + f_px(price) + "  (" + str.tostring(rr, "#.##") + "R)"
+
+// Closes a trade: freezes its boxes at the exit bar and stamps the result on its label.
+method finish(Trade this, string result, bool trim) =>
+   this.active := false
+    if trim
+        int r = math.max(bar_index, this.entryBar + 1)
+        if not na(this.riskBox)
+            box.set_right(this.riskBox, r)
+        if not na(this.tp1Box)
+            box.set_right(this.tp1Box, r)
+        if not na(this.tp2Box)
+            box.set_right(this.tp2Box, r)
+        if not na(this.tp3Box)
+            box.set_right(this.tp3Box, r)
+    if not na(this.lbl)
+        label.set_text(this.lbl, this.lblText + "\n" + result)
+    this.active
+
+// Ticks the target box that was just reached.
+method markTp(Trade this, int n, bool showTxt) =>
+    box   b   = n == 1 ? this.tp1Box : n == 2 ? this.tp2Box : this.tp3Box
+    float lvl = n == 1 ? this.tp1 : n == 2 ? this.tp2 : this.tp3
+    float rr  = n == 1 ? this.rr1 : n == 2 ? this.rr2 : this.rr3
+    if showTxt and not na(b)
+        box.set_text(b, f_tpText(n, lvl, rr, true))
+    n
+
+// Runs once per bar: pending fill, stop (checked first = conservative), targets, trailing, time exit.
+method manage(Trade this, Stats st, string mgmt, int maxBars, bool trim, bool showTxt) =>
+    if this.active and bar_index > this.entryBar
+        bool isLong = this.dir == 1
+        if not this.filled
+            bool fillHit = this.entry <= this.refPx ? low <= this.entry : high >= this.entry
+            if fillHit
+                this.filled := true
+        if this.filled
+            bool stopHit = isLong ? low <= this.sl : high >= this.sl
+            if stopHit
+                if this.tpHit == 0
+                    st.losses := st.losses + 1
+                    this.finish("✗ STOP LOSS", trim)
+                else
+                    this.finish("■ STOPPED AFTER TP" + str.tostring(this.tpHit), trim)
+            else
+                int k = this.tpHit
+                while k < this.numTp
+                    float lvl = k == 0 ? this.tp1 : k == 1 ? this.tp2 : this.tp3
+                    bool  hit = isLong ? high >= lvl : low <= lvl
+                    if not hit
+                        break
+                    k += 1
+                    this.markTp(k, showTxt)
+                    if k == 1
+                        st.wins := st.wins + 1
+                        st.tp1  := st.tp1 + 1
+                    else if k == 2
+                        st.tp2 := st.tp2 + 1
+                    else
+                        st.tp3 := st.tp3 + 1
+                this.tpHit := k
+                if k >= this.numTp
+                    this.finish("✓ TP" + str.tostring(k) + " HIT", trim)
+                else if k >= 1 and mgmt != MGMT_NONE
+                    float newSl = mgmt == MGMT_STEP and k >= 2 ? this.tp1 : this.entry
+                    this.sl := isLong ? math.max(this.sl, newSl) : math.min(this.sl, newSl)
+        if this.active and bar_index - this.entryBar >= maxBars
+            this.finish(this.filled ? "⌛ TIME EXIT" : "○ NOT FILLED", trim)
+    this.active
+
+// ═══════════════════════════════════ VWAP (original) ══════════════════════════════════
+
+cumVolume = ta.cum(volume)
+if barstate.islast and cumVolume == 0
+    runtime.error("No volume is provided by the data vendor.")
+
+isNewPeriod = switch anchor
+    "Earnings" =>
+        new_earnings_actual = request.earnings(syminfo.tickerid, earnings.actual, barmerge.gaps_on, barmerge.lookahead_on, ignore_invalid_symbol=true)
+        new_earnings_standardized = request.earnings(syminfo.tickerid, earnings.standardized, barmerge.gaps_on, barmerge.lookahead_on, ignore_invalid_symbol=true)
+        not na(new_earnings_actual) or not na(new_earnings_standardized)
+    "Dividends" =>
+        new_dividends = request.dividends(syminfo.tickerid, dividends.gross, barmerge.gaps_on, barmerge.lookahead_on, ignore_invalid_symbol=true)
+        not na(new_dividends)
+    "Splits"    =>
+        new_split = request.splits(syminfo.tickerid, splits.denominator, barmerge.gaps_on, barmerge.lookahead_on, ignore_invalid_symbol=true)
+        not na(new_split)
+    "Session"   => timeframe.change("D")
+    "Week"      => timeframe.change("W")
+    "Month"     => timeframe.change("M")
+    "Quarter"   => timeframe.change("3M")
+    "Year"      => timeframe.change("12M")
+    "Decade"    => timeframe.change("12M") and year % 10 == 0
+    "Century"   => timeframe.change("12M") and year % 100 == 0
+    => false
+
+isEsdAnchor = anchor == "Earnings" or anchor == "Dividends" or anchor == "Splits"
+if na(src[1]) and not isEsdAnchor
+    isNewPeriod := true
+
+float vwapValue = na
+float bandBasis = na
+float upperBandValue1 = na
+float lowerBandValue1 = na
+float upperBandValue2 = na
+float lowerBandValue2 = na
+float upperBandValue3 = na
+float lowerBandValue3 = na
+
+if not (hideonDWM and timeframe.isdwm)
+    [_vwap, _stdevUpper, _] = ta.vwap(src, isNewPeriod, 1)
+    vwapValue := _vwap
+    stdevAbs = _stdevUpper - _vwap
+    bandBasis := calcModeInput == "Standard Deviation" ? stdevAbs : _vwap * 0.01
+    upperBandValue1 := _vwap + bandBasis * bandMult_1
+    lowerBandValue1 := _vwap - bandBasis * bandMult_1
+    upperBandValue2 := _vwap + bandBasis * bandMult_2
+    lowerBandValue2 := _vwap - bandBasis * bandMult_2
+    upperBandValue3 := _vwap + bandBasis * bandMult_3
+    lowerBandValue3 := _vwap - bandBasis * bandMult_3
+
+// ═══════════════════════════════════ ORDERFLOW ENGINE ═════════════════════════════════
+
+atrVal    = ta.atr(atrLen)
+avgVol    = ta.sma(volume, volLen)
+relVol    = avgVol > 0 ? volume / avgVol : 0.0
+rng       = high - low
+bodyPct   = rng > 0 ? math.abs(close - open) / rng : 0.0
+closePos  = rng > 0 ? (close - low) / rng : 0.5
+lowerWick = math.min(open, close) - low
+upperWick = high - math.max(open, close)
+
+// Intrabar volume split: up-candle / down-candle volume, tick rule on unchanged intrabars.
+f_ltfVolSplit() =>
+    float dir = close > open ? 1.0 : close < open ? -1.0 : math.sign(close - nz(close[1], close))
+    float v   = nz(volume)
+    float bv  = dir > 0 ? v : dir < 0 ? 0.0 : v * 0.5
+    float sv  = dir < 0 ? v : dir > 0 ? 0.0 : v * 0.5
+    [bv, sv]
+
+tfSec   = timeframe.in_seconds()
+autoLtf = tfSec <= 60 ? timeframe.period : tfSec <= 3600 ? "1" : tfSec <= 14400 ? "5" : tfSec <= 86400 ? "15" : "60"
+ltfTf   = useCustomLtf and timeframe.in_seconds(customLtf) < tfSec ? customLtf : autoLtf
+[ltfBuyArr, ltfSellArr] = request.security_lower_tf(syminfo.tickerid, ltfTf, f_ltfVolSplit())
+
+int  ltfCount    = array.size(ltfBuyArr)
+bool useIntrabar = deltaSrc == DS_LTF and ltfCount >= 2
+float buyVol  = 0.0
+float sellVol = 0.0
+if useIntrabar
+    buyVol  := nz(array.sum(ltfBuyArr))
+    sellVol := nz(array.sum(ltfSellArr))
+else
+    float v = nz(volume)
+    buyVol  := rng > 0 ? v * (close - low) / rng : v * 0.5
+    sellVol := v - buyVol
+
+float totVol    = buyVol + sellVol
+float delta     = buyVol - sellVol
+float buyPct    = totVol > 0 ? 100.0 * buyVol / totVol : 50.0
+float bullRatio = buyVol / math.max(sellVol, totVol * 0.01, 0.000001)
+float bearRatio = sellVol / math.max(buyVol, totVol * 0.01, 0.000001)
+
+// Cumulative delta, reset with the VWAP anchor
+var float sessCvd = 0.0
+sessCvd := isNewPeriod ? delta : sessCvd + delta
+float rollDelta = math.sum(delta, cvdLen)
+
+// AGGRESSION — initiative market orders dominate a full-bodied candle
+bool bullAggression = close > open and bullRatio >= aggRatio and relVol >= aggMinRelVol and bodyPct * 100.0 >= aggMinBody
+bool bearAggression = close < open and bearRatio >= aggRatio and relVol >= aggMinRelVol and bodyPct * 100.0 >= aggMinBody
+
+// ABSORPTION — heavy effort that fails to move price (series pre-computed for v6 lazy and/or)
+float lowestLow   = ta.lowest(low, absLen)
+float highestHigh = ta.highest(high, absLen)
+float winDelta    = math.sum(delta, absLen)
+float winVol      = math.sum(totVol, absLen)
+float winRawVol   = math.sum(nz(volume), absLen)
+float winDeltaPct = winVol > 0 ? 100.0 * winDelta / winVol : 0.0
+float winRelVol   = avgVol > 0 ? winRawVol / (avgVol * absLen) : 0.0
+float closeBack   = close[absLen]
+
+bool highEffort   = relVol >= absSens
+// 1) stopping volume: big rejection wick on heavy volume
+bool bullAbsWick  = highEffort and lowerWick >= rng * wickPct / 100.0 and closePos >= 0.5
+bool bearAbsWick  = highEffort and upperWick >= rng * wickPct / 100.0 and closePos <= 0.5
+// 2) delta against the candle: aggressive sellers absorbed by passive bids (and vice versa)
+bool bullAbsDelta = useIntrabar and highEffort and delta < 0 and close >= open
+bool bearAbsDelta = useIntrabar and highEffort and delta > 0 and close <= open
+// 3) churn: very high volume, narrow range, at a local extreme
+bool churnBar     = relVol >= absSens * 1.5 and rng <= atrVal * 0.7
+bool bullChurn    = churnBar and low <= lowestLow
+bool bearChurn    = churnBar and high >= highestHigh
+// 4) delta divergence: strong one-sided delta over N bars but price did not follow
+bool bullAbsDiv   = winDeltaPct <= -divMinPct and close >= closeBack and winRelVol >= 1.0
+bool bearAbsDiv   = winDeltaPct >= divMinPct and close <= closeBack and winRelVol >= 1.0
+
+int  bullAbsCount   = (bullAbsWick ? 1 : 0) + (bullAbsDelta ? 1 : 0) + (bullChurn ? 1 : 0) + (bullAbsDiv ? 1 : 0)
+int  bearAbsCount   = (bearAbsWick ? 1 : 0) + (bearAbsDelta ? 1 : 0) + (bearChurn ? 1 : 0) + (bearAbsDiv ? 1 : 0)
+bool bullAbsorption = bullAbsCount > 0
+bool bearAbsorption = bearAbsCount > 0
+float bullAbsQ = f_clamp(0.25 * bullAbsCount + 0.5 * f_clamp(relVol / absSens - 1.0, 0.0, 1.0), 0.0, 1.0)
+float bearAbsQ = f_clamp(0.25 * bearAbsCount + 0.5 * f_clamp(relVol / absSens - 1.0, 0.0, 1.0), 0.0, 1.0)
+
+// ═════════════════════════════════ CONTEXT & FILTERS ══════════════════════════════════
+
+bool  vwapOk = not na(vwapValue)
+float zoneW  = vwapZone * atrVal
+
+f_touch(float level, float z) => not na(level) and low <= level + z and high >= level - z
+
+bool bullLoc    = zoneMode == ZONE_ANY or f_touch(vwapValue, zoneW) or (zoneMode == ZONE_BAND and f_touch(upperBandValue1, zoneW))
+bool bearLoc    = zoneMode == ZONE_ANY or f_touch(vwapValue, zoneW) or (zoneMode == ZONE_BAND and f_touch(lowerBandValue1, zoneW))
+bool bullArmCtx = vwapOk and close >= vwapValue - zoneW and bullLoc
+bool bearArmCtx = vwapOk and close <= vwapValue + zoneW and bearLoc
+
+bool   confirmOk = not confirmClose or barstate.isconfirmed
+string tzUsed    = sessTz == "Exchange" ? syminfo.timezone : sessTz
+bool   inSessRaw = not na(time(timeframe.period, sessInput, tzUsed))
+bool   inSession = not useSess or inSessRaw
+
+float vwapDistAtr = vwapOk and atrVal > 0 ? math.abs(close - vwapValue) / atrVal : 0.0
+bool  distOk      = maxDistAtr <= 0 or vwapDistAtr <= maxDistAtr
+float vwapSlope   = vwapValue - vwapValue[slopeLen]
+bool  bullSlopeOk = not useSlope or vwapSlope > 0
+bool  bearSlopeOk = not useSlope or vwapSlope < 0
+bool  bullCvdOk   = cvdFilter == CVD_OFF or (cvdFilter == CVD_ROLL ? rollDelta > 0 : sessCvd > 0)
+bool  bearCvdOk   = cvdFilter == CVD_OFF or (cvdFilter == CVD_ROLL ? rollDelta < 0 : sessCvd < 0)
+float swingLow    = ta.lowest(low, swingLen)
+float swingHigh   = ta.highest(high, swingLen)
+
+// Signal quality 0-100: aggression strength, volume, absorption quality, CVD alignment, VWAP proximity
+f_score(float ratio, float absQ, bool cvdAligned) =>
+    float aggS = f_clamp((ratio - aggRatio) / aggRatio, 0.0, 1.0)
+    float volS = f_clamp((relVol - 1.0) / 2.0, 0.0, 1.0)
+    float locS = 1.0 - f_clamp(vwapDistAtr / math.max(maxDistAtr, 1.0), 0.0, 1.0)
+    100.0 * (0.30 * aggS + 0.20 * volS + 0.25 * absQ + 0.10 * (cvdAligned ? 1.0 : 0.0) + 0.15 * locS)
+
+// Entry / stop / targets for direction d (1 = long, -1 = short)
+f_levels(int d, bool hasZone, float zoneExt, float score) =>
+    float base  = entryMode == ENTRY_MID ? hl2 : entryMode == ENTRY_VWAP ? (d == 1 ? math.min(close, vwapValue) : math.max(close, vwapValue)) : close
+    float entry = base - d * entryOffset
+    float structStop = d == 1 ? (hasZone ? math.min(zoneExt, low) : swingLow) - slBuffer * atrVal : (hasZone ? math.max(zoneExt, high) : swingHigh) + slBuffer * atrVal
+    float risk = slMode == SL_ATR ? atrVal * slAtrMult : slMode == SL_POINTS ? slPoints : slMode == SL_PCT ? entry * slPct / 100.0 : d * (entry - structStop)
+    if slMode == SL_STRUCT
+        risk := f_clamp(risk, minRiskAtr * atrVal, maxRiskAtr * atrVal)
+    if not (risk > 0)
+        risk := math.max(nz(atrVal) * 0.5, syminfo.mintick * 10)
+    float dynRR = rrBase * (1.0 + 0.5 * score / 100.0)
+    float r1 = tgtMode == TGT_DYN ? dynRR : tgtMode == TGT_RR ? tp1RR : tp1Pts / risk
+    float r2 = tgtMode == TGT_DYN ? dynRR * 2.0 : tgtMode == TGT_RR ? tp2RR : tp2Pts / risk
+    float r3 = tgtMode == TGT_DYN ? dynRR * 3.0 : tgtMode == TGT_RR ? tp3RR : tp3Pts / risk
+    float sl = entry - d * risk
+    [entry, sl, entry + d * risk * r1, entry + d * risk * r2, entry + d * risk * r3, r1, r2, r3, risk]
+
+f_alertMsg(int d, float e, float sl, float t1, float t2, float t3, float sc) =>
+    string m = (d == 1 ? "BUY " : "SELL ") + syminfo.ticker + " [" + timeframe.period + "]  Entry " + f_px(e) + " | SL " + f_px(sl) + " | TP1 " + f_px(t1)
+    if numTp >= 2
+        m += " | TP2 " + f_px(t2)
+    if numTp >= 3
+        m += " | TP3 " + f_px(t3)
+    m + " | Score " + str.tostring(math.round(sc))
+
+// ═══════════════════════════════════ TRADE TRACKING ═══════════════════════════════════
+
+var Trade trade = Trade.new()
+var Stats stats = Stats.new()
+var int   lastSignalBar = na
+
+trade.manage(stats, slMgmt, boxLen, trimBoxes, showBoxText)
+bool longOpen  = trade.active and trade.dir == 1
+bool shortOpen = trade.active and trade.dir == -1
+
+// ════════════════════════════════ SETUP STATE MACHINE ═════════════════════════════════
+
+var int   bullArmBar  = na
+var float bullZoneLo  = na
+var float bullZoneHi  = na
+var float bullZoneQ   = 0.0
+var box   bullZoneBox = na
+var int   bearArmBar  = na
+var float bearZoneLo  = na
+var float bearZoneHi  = na
+var float bearZoneQ   = 0.0
+var box   bearZoneBox = na
+
+bool bullArmed = not na(bullArmBar) and bar_index - bullArmBar <= setupExpiry
+bool bearArmed = not na(bearArmBar) and bar_index - bearArmBar <= setupExpiry
+
+// Invalidate: price lost the VWAP side or closed through the absorption zone
+if confirmOk and bullArmed and (close < vwapValue - zoneW or close < bullZoneLo)
+    bullArmBar := na
+    bullArmed  := false
+if confirmOk and bearArmed and (close > vwapValue + zoneW or close > bearZoneHi)
+    bearArmBar := na
+    bearArmed  := false
+
+bool bullAbsEvent = confirmOk and inSession and bullAbsorption and bullArmCtx
+bool bearAbsEvent = confirmOk and inSession and bearAbsorption and bearArmCtx
+bool newBullSetup = bullAbsEvent and not bullArmed
+bool newBearSetup = bearAbsEvent and not bearArmed
+
+if bullAbsEvent
+    if bullArmed
+        bullZoneLo := math.min(bullZoneLo, low)
+        bullZoneHi := math.max(bullZoneHi, high)
+        bullZoneQ  := math.max(bullZoneQ, bullAbsQ)
+        if not na(bullZoneBox)
+            box.set_top(bullZoneBox, bullZoneHi)
+            box.set_bottom(bullZoneBox, bullZoneLo)
+            box.set_right(bullZoneBox, bar_index + absZoneLen)
+    else
+        bullZoneLo  := low
+        bullZoneHi  := high
+        bullZoneQ   := bullAbsQ
+        bullZoneBox := na
+        if showAbsZones
+            bullZoneBox := box.new(left = bar_index, top = high, right = bar_index + absZoneLen, bottom = low, border_color = color.new(absBullFill, 40), border_width = 1, border_style = line.style_dotted, bgcolor = absBullFill, text = "BULL ABSORPTION", text_size = size.tiny, text_color = color.new(absBullFill, 0), text_halign = text.align_left, text_valign = text.align_bottom)
+    bullArmBar := bar_index
+    bullArmed  := true
+
+if bearAbsEvent
+    if bearArmed
+        bearZoneLo := math.min(bearZoneLo, low)
+        bearZoneHi := math.max(bearZoneHi, high)
+        bearZoneQ  := math.max(bearZoneQ, bearAbsQ)
+        if not na(bearZoneBox)
+            box.set_top(bearZoneBox, bearZoneHi)
+            box.set_bottom(bearZoneBox, bearZoneLo)
+            box.set_right(bearZoneBox, bar_index + absZoneLen)
+    else
+        bearZoneLo  := low
+        bearZoneHi  := high
+        bearZoneQ   := bearAbsQ
+        bearZoneBox := na
+        if showAbsZones
+            bearZoneBox := box.new(left = bar_index, top = high, right = bar_index + absZoneLen, bottom = low, border_color = color.new(absBearFill, 40), border_width = 1, border_style = line.style_dotted, bgcolor = absBearFill, text = "BEAR ABSORPTION", text_size = size.tiny, text_color = color.new(absBearFill, 0), text_halign = text.align_left, text_valign = text.align_top)
+    bearArmBar := bar_index
+    bearArmed  := true
+
+// ══════════════════════════════════════ SIGNALS ═══════════════════════════════════════
+
+bool cooldownOk  = na(lastSignalBar) or bar_index - lastSignalBar >= cooldown
+bool bullFilters = confirmOk and vwapOk and close > vwapValue and distOk and bullSlopeOk and bullCvdOk and inSession and cooldownOk and not (skipSameDir and longOpen)
+bool bearFilters = confirmOk and vwapOk and close < vwapValue and distOk and bearSlopeOk and bearCvdOk and inSession and cooldownOk and not (skipSameDir and shortOpen)
+
+bool rawBuy  = sigMode == MODE_AGGR ? bullAggression : sigMode == MODE_BREAKOUT ? (bullArmed and close > bullZoneHi and close > open) : (bullArmed and bullAggression)
+bool rawSell = sigMode == MODE_AGGR ? bearAggression : sigMode == MODE_BREAKOUT ? (bearArmed and close < bearZoneLo and close < open) : (bearArmed and bearAggression)
+
+bool buySignal  = rawBuy and bullFilters
+bool sellSignal = rawSell and bearFilters
+bool preBuy     = newBullSetup and not buySignal and not longOpen
+bool preSell    = newBearSetup and not sellSignal and not shortOpen
+
+if buySignal or sellSignal
+    int d = buySignal ? 1 : -1
+    if trade.active
+        trade.finish(trade.dir == d ? "↺ REPLACED" : "⇄ REVERSED", trimBoxes)
+    bool  hasZone = d == 1 ? bullArmed : bearArmed
+    float zoneExt = d == 1 ? bullZoneLo : bearZoneHi
+    float zoneQ   = d == 1 ? bullZoneQ : bearZoneQ
+    float ratio   = d == 1 ? bullRatio : bearRatio
+    float sc      = f_score(ratio, hasZone ? zoneQ : 0.0, d == 1 ? sessCvd > 0 : sessCvd < 0)
+    [e, sl, t1, t2, t3, r1, r2, r3, rk] = f_levels(d, hasZone, zoneExt, sc)
+    Trade t = Trade.new(dir = d, entryBar = bar_index, refPx = close, entry = e, sl = sl, tp1 = t1, tp2 = t2, tp3 = t3, rr1 = r1, rr2 = r2, rr3 = r3, score = sc, numTp = numTp, tpHit = 0, filled = e == close, active = true)
+
+    if showBoxes
+        int    rgt   = bar_index + boxLen
+        string bst   = f_bStyle(borderStyle)
+        string bsz   = f_size(boxTxtSize)
+        color  tFill = d == 1 ? buyTgtFill : sellTgtFill
+        color  tBord = d == 1 ? buyTgtBord : sellTgtBord
+        color  sFill = d == 1 ? buySlFill : sellSlFill
+        color  sBord = d == 1 ? buySlBord : sellSlBord
+        string tVal  = d == 1 ? text.align_top : text.align_bottom
+        t.riskBox := box.new(left = bar_index, top = math.max(e, sl), right = rgt, bottom = math.min(e, sl), border_color = sBord, border_width = borderW, border_style = bst, bgcolor = sFill, text = showBoxText ? "Entry  " + f_px(e) + "   |   SL  " + f_px(sl) : "", text_size = bsz, text_color = boxTxtCol, text_halign = text.align_right, text_valign = text.align_center)
+        t.tp1Box  := box.new(left = bar_index, top = math.max(e, t1), right = rgt, bottom = math.min(e, t1), border_color = tBord, border_width = borderW, border_style = bst, bgcolor = tFill, text = showBoxText ? f_tpText(1, t1, r1, false) : "", text_size = bsz, text_color = boxTxtCol, text_halign = text.align_right, text_valign = tVal)
+        if numTp >= 2
+            t.tp2Box := box.new(left = bar_index, top = math.max(t1, t2), right = rgt, bottom = math.min(t1, t2), border_color = tBord, border_width = borderW, border_style = bst, bgcolor = tFill, text = showBoxText ? f_tpText(2, t2, r2, false) : "", text_size = bsz, text_color = boxTxtCol, text_halign = text.align_right, text_valign = tVal)
+        if numTp >= 3
+            t.tp3Box := box.new(left = bar_index, top = math.max(t2, t3), right = rgt, bottom = math.min(t2, t3), border_color = tBord, border_width = borderW, border_style = bst, bgcolor = tFill, text = showBoxText ? f_tpText(3, t3, r3, false) : "", text_size = bsz, text_color = boxTxtCol, text_halign = text.align_right, text_valign = tVal)
+
+    if showLabels
+        string head = (d == 1 ? "▲ BUY" : "▼ SELL") + "   Score " + str.tostring(math.round(sc))
+        string body = "\nEntry " + f_px(e) + (t.filled ? "" : " (limit)") + "\nSL    " + f_px(sl) + "\nTP1   " + f_px(t1) + (numTp >= 2 ? "\nTP2   " + f_px(t2) : "") + (numTp >= 3 ? "\nTP3   " + f_px(t3) : "")
+        string tip  = "Aggression " + str.tostring(ratio, "#.##") + "x | Rel. volume " + str.tostring(relVol, "#.##") + "x | Delta " + str.tostring(delta, format.volume) + " | Risk " + f_px(rk) + " | TP1 " + str.tostring(r1, "#.##") + "R" + (hasZone ? " | Absorption zone " + f_px(d == 1 ? bullZoneLo : bearZoneLo) + " - " + f_px(d == 1 ? bullZoneHi : bearZoneHi) : " | No absorption zone (swing stop)")
+        t.lblText := head + body
+        t.lbl     := label.new(x = bar_index, y = d == 1 ? low - lblOffset * atrVal : high + lblOffset * atrVal, text = t.lblText, xloc = xloc.bar_index, yloc = yloc.price, color = d == 1 ? buyLblCol : sellLblCol, style = d == 1 ? label.style_label_up : label.style_label_down, textcolor = lblTxtCol, size = f_size(lblSizeIn), textalign = text.align_left, tooltip = tip, text_font_family = font.family_monospace)
+
+    stats.signals := stats.signals + 1
+    trade         := t
+    lastSignalBar := bar_index
+    if d == 1
+        bullArmBar := na
+        bullArmed  := false
+    else
+        bearArmBar := na
+        bearArmed  := false
+    if alertsOn
+        alert(f_alertMsg(d, e, sl, t1, t2, t3, sc), alert.freq_once_per_bar_close)
+
+// ═══════════════════════════════════════ PLOTS ════════════════════════════════════════
+
+plotshape(buySignal, title = "Buy Bubble", style = shape.circle, location = location.belowbar, color = color.new(#089981, 15), size = size.small)
+plotshape(sellSignal, title = "Sell Bubble", style = shape.circle, location = location.abovebar, color = color.new(#F23645, 15), size = size.small)
+plotshape(preBuy, title = "Pre Buy Warning", style = shape.circle, location = location.belowbar, color = color.new(#434651, 25), size = size.tiny)
+plotshape(preSell, title = "Pre Sell Warning", style = shape.circle, location = location.abovebar, color = color.new(#434651, 25), size = size.tiny)
+
+plot(vwapValue, title = "VWAP", color = #2962FF, offset = offset)
+
+displayBand1 = showBand_1 ? display.all : display.none
+upperBand_1 = plot(upperBandValue1, title="Upper Band #1", color = color.green, offset = offset, display = displayBand1, editable = showBand_1)
+lowerBand_1 = plot(lowerBandValue1, title="Lower Band #1", color = color.green, offset = offset, display = displayBand1, editable = showBand_1)
+fill(upperBand_1, lowerBand_1,      title="Bands Fill #1", color = color.new(color.green, 95),   display = displayBand1, editable = showBand_1)
+
+displayBand2 = showBand_2 ? display.all : display.none
+upperBand_2 = plot(upperBandValue2, title="Upper Band #2", color = color.olive, offset = offset, display = displayBand2, editable = showBand_2)
+lowerBand_2 = plot(lowerBandValue2, title="Lower Band #2", color = color.olive, offset = offset, display = displayBand2, editable = showBand_2)
+fill(upperBand_2, lowerBand_2,      title="Bands Fill #2", color = color.new(color.olive, 95),   display = displayBand2, editable = showBand_2)
+
+displayBand3 = showBand_3 ? display.all : display.none
+upperBand_3 = plot(upperBandValue3, title="Upper Band #3", color = color.teal, offset = offset, display = displayBand3, editable = showBand_3)
+lowerBand_3 = plot(lowerBandValue3, title="Lower Band #3", color = color.teal, offset = offset, display = displayBand3, editable = showBand_3)
+fill(upperBand_3, lowerBand_3,      title="Bands Fill #3", color = color.new(color.teal, 95),   display = displayBand3, editable = showBand_3)
+
+// ═══════════════════════════════════════ ALERTS ═══════════════════════════════════════
+
+alertcondition(buySignal, "Buy Signal", "VWAP OF Sniper: BUY {{ticker}} ({{interval}}) at {{close}} - aggression after absorption above VWAP")
+alertcondition(sellSignal, "Sell Signal", "VWAP OF Sniper: SELL {{ticker}} ({{interval}}) at {{close}} - aggression after absorption below VWAP")
+alertcondition(preBuy, "Pre Buy Warning", "VWAP OF Sniper: bullish absorption at VWAP on {{ticker}} ({{interval}}) - watch for a BUY")
+alertcondition(preSell, "Pre Sell Warning", "VWAP OF Sniper: bearish absorption at VWAP on {{ticker}} ({{interval}}) - watch for a SELL")
+
+// ══════════════════════════════════════ DASHBOARD ═════════════════════════════════════
+
+f_row(table tb, int r, string k, string v, color kc, color vc, string sz) =>
+    table.cell(tb, 0, r, k, text_color = kc, text_size = sz, text_halign = text.align_left)
+    table.cell(tb, 1, r, v, text_color = vc, text_size = sz, text_halign = text.align_right)
+
+var table dash = na
+if showDash and barstate.islast
+    if na(dash)
+        dash := table.new(f_pos(dashPos), 2, 15, bgcolor = color.new(#0B0E14, 5), frame_color = color.new(#D4AF37, 40), frame_width = 1, border_color = color.new(#1E222D, 0), border_width = 1)
+    string sz   = f_size(dashSize)
+    color  kCol = color.new(#B2B5BE, 0)
+    color  bull = color.new(#00E676, 0)
+    color  bear = color.new(#FF5252, 0)
+    color  neu  = color.new(#D1D4DC, 0)
+    color  gold = color.new(#D4AF37, 0)
+    bool   above = vwapOk and close > vwapValue
+    bool   below = vwapOk and close < vwapValue
+
+    string aggTxt   = bullAggression ? "BUYERS " + str.tostring(bullRatio, "#.#") + "x" : bearAggression ? "SELLERS " + str.tostring(bearRatio, "#.#") + "x" : "none (" + str.tostring(math.max(bullRatio, bearRatio), "#.#") + "x)"
+    string absTxt   = bullAbsorption ? "BULLISH (" + str.tostring(bullAbsCount) + ")" : bearAbsorption ? "BEARISH (" + str.tostring(bearAbsCount) + ")" : "none"
+    string setupTxt = bullArmed ? "LONG ARMED (" + str.tostring(setupExpiry - (bar_index - bullArmBar)) + " bars)" : bearArmed ? "SHORT ARMED (" + str.tostring(setupExpiry - (bar_index - bearArmBar)) + " bars)" : "scanning..."
+    string feedTxt  = useIntrabar ? "Intrabar " + ltfTf + " (" + str.tostring(ltfCount) + " bars)" : "Candle estimate"
+    string trdTxt   = trade.active ? (trade.dir == 1 ? "LONG" : "SHORT") + (trade.filled ? "" : " (pending)") + " @ " + f_px(trade.entry) : "FLAT"
+    float  nextTp   = trade.tpHit == 0 ? trade.tp1 : trade.tpHit == 1 ? trade.tp2 : trade.tp3
+    int    closed   = stats.wins + stats.losses
+    string wrTxt    = closed > 0 ? str.tostring(100.0 * stats.wins / closed, "#.0") + "%  (" + str.tostring(stats.wins) + "W / " + str.tostring(stats.losses) + "L)" : "-"
+
+    f_row(dash, 0, "VWAP OF SNIPER", syminfo.ticker + "  " + timeframe.period, gold, gold, sz)
+    f_row(dash, 1, "VWAP", vwapOk ? f_px(vwapValue) : "n/a", kCol, color.new(#2962FF, 0), sz)
+    f_row(dash, 2, "Price vs VWAP", above ? "ABOVE ▲  BUYS ONLY" : below ? "BELOW ▼  SELLS ONLY" : "AT VWAP", kCol, above ? bull : below ? bear : neu, sz)
+    f_row(dash, 3, "Bar Delta", (delta >= 0 ? "+" : "") + str.tostring(delta, format.volume) + "  (" + str.tostring(buyPct, "#") + "% buy)", kCol, delta >= 0 ? bull : bear, sz)
+    f_row(dash, 4, "Session CVD", (sessCvd >= 0 ? "+" : "") + str.tostring(sessCvd, format.volume) + (rollDelta >= 0 ? "  ▲" : "  ▼"), kCol, sessCvd >= 0 ? bull : bear, sz)
+    f_row(dash, 5, "Aggression", aggTxt, kCol, bullAggression ? bull : bearAggression ? bear : neu, sz)
+    f_row(dash, 6, "Absorption", absTxt, kCol, bullAbsorption ? bull : bearAbsorption ? bear : neu, sz)
+    f_row(dash, 7, "Setup", setupTxt, kCol, bullArmed ? bull : bearArmed ? bear : neu, sz)
+    f_row(dash, 8, "Rel. Volume", str.tostring(relVol, "#.##") + "x", kCol, relVol >= absSens ? gold : neu, sz)
+    f_row(dash, 9, "Delta Feed", feedTxt, kCol, neu, sz)
+    f_row(dash, 10, "Trade", trdTxt, kCol, trade.active ? (trade.dir == 1 ? bull : bear) : neu, sz)
+    f_row(dash, 11, "SL / Next TP", trade.active ? f_px(trade.sl) + " / " + f_px(nextTp) : "-", kCol, neu, sz)
+    f_row(dash, 12, "Signals", str.tostring(stats.signals), kCol, neu, sz)
+    f_row(dash, 13, "Win Rate (TP1)", wrTxt, kCol, gold, sz)
+    f_row(dash, 14, "TP1 / TP2 / TP3", str.tostring(stats.tp1) + " / " + str.tostring(stats.tp2) + " / " + str.tostring(stats.tp3), kCol, neu, sz)

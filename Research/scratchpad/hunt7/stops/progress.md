@@ -1,0 +1,20 @@
+# hunt7/stops progress (combo.py = hunt4 copy + options; combo_f.py = instrumented copy; sc.sh '<opts>' scores NEW+opts)
+- baseline NEW: A 80/0/1 | B1 41 st38 p2 | B2 17 st13 p3 | B3 16 st12 p1 | MD 6 | OBJ 381
+- step1 (ex1.py/ex1.txt): exit-time checks -> NORMAL: NIFTYF #22 #27 #32, NATGAS #15, #1 (log 1.44 typo, exit=normal), SENSEX #66 (logSR 1.81, A also normal 1.77 -> task note "SENSEX #66 HALF" is wrong); HALF: CRUDE #45 #49 #51 #56, NATGAS #6 (+#13 by stop=signal high); NEITHER: NATGAS #3 (1.43), CRUDE #52 (1.57)
+- impulse looser for counter-bias count: impBody50 OBJ 386 (B2 18 st15 p2); impClose30 A 77/2/2 REJECT; body50+close30 A 77 REJECT
+- tightFirst arm/fill/disp (first armed signal / first fill / first full signal of the session instead of first impulse): OBJ 339/331/338 REJECT; imp&arm = imp (386)
+- impBody window: 48..53 all OBJ 386 (A 80/0/1, B2 18 st15 p2: fixes NIFTYF #32 normal + recovers #33; key bar NIFTYF 10-13 09:15 body 53.6%); 45/40 lose A (79/1/1)
+- impulse slope variants (cross-session slope / need defined slope / no slope / close-break): 360/360/371/383 REJECT
+- rolling-window bias (net of last N bars instead of previous session) N=50..300: OBJ 315-359 REJECT
+- step1 extra: NATGAS #3 stop 304.2 consistent with its exit (normal 1.8 ATR gives 13:00 TP2 vs log 12:55 TP3): ATR anomaly (10-12 09:00 TR 10.8 gap); needs ATR 0.37 vs ours 0.49 -> data issue, unexplained; NATGAS #13: model 13:55 signal fills 14:00 (log 14:40), it is the 3rd bear impulse of 10-14 (10:20, 11:10 blocked by the open long) -> not first-impulse; log stop 315.3 also = 14:35 high -> unreliable
+- netCur (bias = prev-session net + current-session net so far): netMin 3/4 A 77 REJ; 5: 383 (A 80/0/2, MD5); 6: OBJ 388 (B2 st17); 7/8: 376 (B2 16 p6); 9: 368
+- netCur netMin6 REJECT: A stop check (new tool astops.py; A 'exact' ignores stops!) NASDAQ 10-07 21:25 L becomes tight (prev +7, cur -13)
+- count reset at fixed clock time (00:00/03:30/05:30/09:30 IST) instead of session, netMin 3/5: all worse (381..340); netMin 5 alone (session counts) fixes NIFTYF #22 #27 but EURUSD 10-09 15:30 S (prev net 4, HALF) breaks A (77/2/2) -> NIFTYF prev counts 4 vs EURUSD 4 conflict
+- V1 = prev-against>=3 AND prev+cur-against>=netCurMin: 5/6 -> OBJ 388 (B2 st17: NIFTYF #22 #27 normal), A stops 80/80; 7 -> 376 (NIFTYF 10-05 09:20 L, prev 6, must stay half for #19/#20). V2 = prev>=5 OR (prev>=3 AND >=1 opposite impulse earlier this session) -> OBJ 388, A stops 80/80
+- mcxSplit (count reset also at 17:00 on MCX) diagnostic: fixes NATGAS #6 but OBJ 342 REJECT
+- tightFirst 'opp' (first impulse since last opposite-direction fill, session-reset or not): OBJ 365/363, A stops bad (GC 10-08 06:40 L) REJECT -> 'first' is per session
+- R2 alone (no impBody): OBJ 383. earlyK 3: 387, earlyK 5..12 + netHi 5: 388 (same as V2; data cannot separate "intraday confirmation" from "not in opening bars")
+- V2 robustness: netHi 5..6, curOppMin 1..9 all 388 (only EURUSD 10-09 15:30 S needs the moderate branch, it has 9 opposite impulses); curOppMin 10 -> 373
+- FINAL CANDIDATE: NEW + impBody 50 + netCurMin 1, netHi 5, curOppMin 1 -> A 80/0/1, A stops 80/80, B1 41 st38 p2, B2 18 st17 p2, B3 16 st12 p1, MD 6, OBJ 388 (+7 vs 381)
+- UNEXPLAINED: NATGAS #15 (normal, prev net -14 first bull impulse, twin of CRUDE #45/#51 which are HALF), NATGAS #6 (HALF, 5th bull impulse, prev net +5 in favour; twin of NASDAQ 10-07 21:25 L normal), NATGAS #3 (1.43 ATR, ATR anomaly), NATGAS #13 (timing), CRUDE #52 (1.57)
+- impBody window with V2: 47 -> 383 (A 79/1/1, NIFTY idx 10-09 13:50 L lost), 48..53 -> 388, 54 -> 383. DONE

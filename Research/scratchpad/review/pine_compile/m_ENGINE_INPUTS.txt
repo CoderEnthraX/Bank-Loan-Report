@@ -1,0 +1,103 @@
+GRP_M = "SIGNAL MODEL"
+structLen    = input.int(10, "Structure Lookback (bars)", minval = 2, maxval = 400, group = GRP_M, tooltip = "Impulses that feed the half stop must break the high (long) / low (short) of this many previous bars. Also the length of the re-anchor window after a trade.")
+brkLen       = input.int(6, "Signal Break Lookback (bars)", minval = 1, maxval = 400, group = GRP_M, tooltip = "The displacement candle must close beyond the highest high (long) / lowest low (short) of this many previous bars.")
+entryLen     = input.int(6, "Entry Level Lookback (bars)", minval = 1, maxval = 400, group = GRP_M, tooltip = "Long limit = the higher of the body mid and the highest high of this many bars before the displacement (short: the lower of the body mid and the lowest low). Capped at the structure lookback.")
+retestBars   = input.int(5, "Retest Window (bars)", minval = 1, maxval = 100, group = GRP_M, tooltip = "How many bars after the displacement the limit stays armed. Not filled in time = setup cancelled.")
+dispAtr      = input.float(0.8, "Min Displacement Range (x ATR)", minval = 0.0, step = 0.05, group = GRP_M)
+dispBodyPct  = input.float(55.0, "Min Displacement Body (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M)
+dispClosePct = input.float(25.0, "Max Close Distance From Extreme (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M, tooltip = "A bullish displacement must close in the top part of its range (bearish: bottom part).")
+momLen       = input.int(10, "Momentum Lookback (bars)", minval = 1, maxval = 400, inline = "mom", group = GRP_M)
+momAtr       = input.float(0.85, "Min (x ATR)", minval = 0.0, step = 0.05, inline = "mom", group = GRP_M, tooltip = "The displacement close must be at least this many ATR beyond the close N bars earlier (long: above, short: below). 0 = off.")
+cmoMin       = input.float(20.0, "Min CMO (clean move)", minval = 0.0, maxval = 100.0, step = 1.0, group = GRP_M, tooltip = "Chande Momentum Oscillator over the momentum lookback, in the trade direction: the net move divided by the total distance travelled, x 100 (same as ta.cmo). Rejects breakouts that come out of a zig-zag. 0 = off.")
+REARM_KEEP = "Keep first"
+REARM_NEW  = "Replace with newer"
+rearmMode    = input.string(REARM_KEEP, "Same-Direction Re-arm", options = [REARM_KEEP, REARM_NEW], group = GRP_M, tooltip = "While a limit is armed, a newer displacement in the SAME direction either leaves the first limit in place (reference behaviour) or replaces it. An opposite displacement always replaces it.")
+STOP_ATR   = "ATR Model"
+STOP_SWING = "Swing + Buffer (ATR capped)"
+stopMode     = input.string(STOP_ATR, "Stop Mode", options = [STOP_ATR, STOP_SWING], group = GRP_M, tooltip = "ATR Model: stop = entry -/+ Stop Distance x ATR (matches the reference trades).\nSwing + Buffer: beyond the lowest low / highest high of the last N bars plus a buffer, never further than Stop Distance x ATR.")
+stopAtr      = input.float(1.8, "Stop Distance (x ATR)", minval = 0.1, step = 0.1, group = GRP_M, tooltip = "Make the stop wider or tighter here (e.g. 2.2 = wider, 1.5 = tighter). All targets are R multiples of it.")
+stopLen      = input.int(6, "Swing Lookback (bars)", minval = 1, maxval = 400, inline = "sw", group = GRP_M)
+stopBufAtr   = input.float(0.22, "Buffer (x ATR)", minval = 0.0, step = 0.01, inline = "sw", group = GRP_M)
+halfStopOn   = input.bool(true, "Half Stop On First Counter-Bias Impulse", group = GRP_M, tooltip = "ATR Model only. The first impulse of a session in a direction gets the tighter stop (Half Stop x ATR from the entry, or just beyond the displacement candle if that is further) when the previous session had at least N more impulses the other way, or when the session opened outside the previous session's range against the trade.")
+halfStopAtr  = input.float(0.9, "Half Stop (x ATR)", minval = 0.1, step = 0.1, inline = "hs", group = GRP_M)
+biasNet      = input.int(3, "Prev Session Net Impulses", minval = 1, inline = "hs", group = GRP_M)
+impBodyPct   = input.float(50.0, "Impulse Min Body (% of range)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_M, tooltip = "An impulse (counted for the half stop) is a candle with range >= the displacement range, a body of at least this share of its range, a close within the close distance of its extreme, a wick beyond the structure lookback and the VWAP sloping its way.")
+halfOpenOut  = input.bool(true, "Half Stop When Session Opens Outside Prev Range", group = GRP_M, tooltip = "Also give the half stop to the session's first impulse when the session opened below the previous session's low (long) / above its high (short).")
+halfStrict   = input.bool(false, "Strict Bias Check (optional)", group = GRP_M, tooltip = "Off by default. When on, a previous-session lean of 3-4 impulses only gives the half stop if the current session has already printed an impulse the other way; a lean of 5 or more gives it on its own. Supported by only 3 logged trades.")
+cooldownBars = input.int(1, "Cooldown After Exit (bars)", minval = 0, group = GRP_M, tooltip = "Bars to wait after an exit before a new setup can be armed. 0 and 1 are the same: a setup is never armed on the exit bar itself.")
+maxFills     = input.int(5, "Max Fills Per Day", minval = 1, group = GRP_M)
+dayStopR     = input.float(0.0, "Daily Stop (R lost, 0 = off)", minval = 0.0, step = 0.5, group = GRP_M, tooltip = "No new setups for the rest of the day once the day's closed trades total this many R lost. Off by default: the original keeps trading after three losses.")
+fillBarStopR = input.bool(false, "Count Fill-Bar Stops In Daily Stop", group = GRP_M)
+legReset     = input.bool(true, "Re-anchor Breakout After A Trade", group = GRP_M, tooltip = "Within Structure Lookback bars of a closed trade's fill, a new signal in that trade's direction must break the high (long) / low (short) made since that fill.")
+atrLen       = input.int(14, "ATR Length", minval = 1, group = GRP_M)
+vwapFilter   = input.bool(true, "Longs Above VWAP / Shorts Below", group = GRP_M)
+slopeBars    = input.int(3, "VWAP Slope Bars", minval = 0, maxval = 400, group = GRP_M, tooltip = "Longs need the VWAP higher than this many bars ago, shorts lower. 0 = off.")
+slopeCross   = input.bool(true, "Slope Looks Across The Session Start", group = GRP_M, tooltip = "On the first bars of a session the VWAP slope compares with the previous session's VWAP (reference behaviour). Off = the slope test is skipped there.")
+minOpenBars  = input.int(0, "Skip First Bars After VWAP Reset", minval = 0, group = GRP_M, tooltip = "0 = a displacement on the session's first bar can arm a setup (reference behaviour).")
+skipSunday   = input.bool(true, "Skip Sunday (UTC) Weekly Open", group = GRP_M, tooltip = "No setups are armed on bars that open on Sunday UTC, the thin weekly reopen of futures and FX.")
+deepOn       = input.bool(false, "Deep Pullback Signal (optional)", inline = "dp", group = GRP_M)
+deepFar      = input.float(2.0, "Min Depth (x ATR)", minval = 0.5, step = 0.5, inline = "dp", group = GRP_M, tooltip = "Off by default. A second signal type: a displacement that breaks the signal-break level while it is still at least this many ATR inside the structure high/low (a pullback in a bigger move). Needs its own momentum and CMO over the signal-break lookback. Supported by one logged trade.")
+allowLong    = input.bool(true, "Longs", inline = "dir", group = GRP_M)
+allowShort   = input.bool(true, "Shorts", inline = "dir", group = GRP_M)
+
+GRP_V = "VWAP"
+vwapAnchor = input.string("Session", "Anchor", options = ["Session", "Week", "Month"], group = GRP_V)
+vwapSrc    = input.source(hlc3, "Source", group = GRP_V)
+
+GRP_E = "ENTRY PRICE"
+E_MODEL  = "Model (body mid or 6-bar level)"
+E_PCT    = "Custom % of signal candle"
+E_MARKET = "Market (next bar open)"
+entryMode = input.string(E_MODEL, "Entry Price", options = [E_MODEL, E_PCT, E_MARKET], group = GRP_E, tooltip = "Model: the reference limit price.\nCustom %: a limit measured from the signal candle's CLOSE back toward its far extreme. 0% = the close, 50% = the candle midpoint, 100% = the low (long) / high (short).\nMarket: enter at the next bar's open; the stop and targets keep the levels measured from the signal close.\nThe stop is measured from the chosen entry.")
+entryPct  = input.float(50.0, "Custom % (0 = close, 50 = mid, 100 = low/high)", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_E)
+
+GRP_T = "TARGETS, EXIT AND STOP MOVES"
+tp1R   = input.float(0.6, "TP1", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
+tp2R   = input.float(1.0, "TP2", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
+tp3R   = input.float(1.5, "TP3", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T)
+tp4R   = input.float(2.0, "TP4", minval = 0.1, step = 0.1, inline = "tp", group = GRP_T, tooltip = "Targets in R (1R = the entry-to-stop distance).")
+exitAt = input.string("TP4", "Final Exit At", options = ["TP1", "TP2", "TP3", "TP4"], group = GRP_T, tooltip = "The trade closes at this target (TP4 = 2R, the reference) or at the stop.")
+mv1On  = input.bool(false, "When TP1 Hits, Move Stop To (R)", inline = "m1", group = GRP_T)
+mv1R   = input.float(0.0, "", step = 0.1, inline = "m1", group = GRP_T)
+mv2On  = input.bool(false, "When TP2 Hits, Move Stop To (R)", inline = "m2", group = GRP_T)
+mv2R   = input.float(0.6, "", step = 0.1, inline = "m2", group = GRP_T)
+mv3On  = input.bool(false, "When TP3 Hits, Move Stop To (R)", inline = "m3", group = GRP_T, tooltip = "R is measured from the entry: 0 = breakeven, 0.6 = the TP1 level with the default targets, 1 = the TP2 level and so on. The stop only ever moves in the trade's favour; the new stop applies from the next bar.\nBreakeven at +1R (accuracy research): tick TP2 and set it to 0.")
+mv3R   = input.float(1.0, "", step = 0.1, inline = "m3", group = GRP_T)
+if barstate.isfirst and (tp1R > tp2R or tp2R > tp3R or tp3R > tp4R)
+    runtime.error("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4.")
+int   exitK = exitAt == "TP1" ? 1 : exitAt == "TP2" ? 2 : exitAt == "TP3" ? 3 : 4
+float exitR = exitK == 1 ? tp1R : exitK == 2 ? tp2R : exitK == 3 ? tp3R : tp4R
+
+GRP_F = "ACCURACY FILTERS (research, off = original)"
+noChase    = input.bool(false, "Don't Chase: Skip Signals Beyond", inline = "nc", group = GRP_F)
+noChaseSig = input.float(2.4, "σ From VWAP", minval = 0.5, step = 0.1, inline = "nc", group = GRP_F, tooltip = "Skips a long whose signal candle closes more than this many standard deviations above the session VWAP (short: below), i.e. outside the VWAP bands. The skipped setup still runs invisibly until it would have finished, so the next, even more stretched candle is not taken instead. Research: October 2R hit rate 39% -> 42%, average +0.18R -> +0.26R per trade, 75% of trades kept. Not proven yet - forward-test it.")
+lossBlock  = input.bool(false, "After A Loss, No Same-Direction Trade Until A Win", group = GRP_F, tooltip = "For the rest of the session. Research: helped in October, flat in September - unproven.")
+
+GRP_W = "DAYS AND HOURS"
+tzIn      = input.string("Asia/Kolkata", "Time Zone", options = ["Asia/Kolkata", "Exchange", "UTC", "Europe/London", "America/New_York", "Asia/Dubai", "Asia/Singapore", "Asia/Tokyo", "Australia/Sydney"], group = GRP_W, tooltip = "Time zone for the days and hours below (and the strategy's force-close, weekend and news times).")
+dayOn     = input.bool(false, "Trade Only On The Ticked Days", group = GRP_W, tooltip = "Off (default) = every day. On = new setups are only armed on the ticked days (in the time zone above); open trades and armed limits are left to finish.")
+dMon      = input.bool(true, "Mon", inline = "days", group = GRP_W)
+dTue      = input.bool(true, "Tue", inline = "days", group = GRP_W)
+dWed      = input.bool(true, "Wed", inline = "days", group = GRP_W)
+dThu      = input.bool(true, "Thu", inline = "days", group = GRP_W)
+dFri      = input.bool(true, "Fri", inline = "days", group = GRP_W)
+dSat      = input.bool(true, "Sat", inline = "days", group = GRP_W)
+dSun      = input.bool(true, "Sun", inline = "days", group = GRP_W)
+hoursOn   = input.bool(false, "Trade Only Between", inline = "hr", group = GRP_W)
+hoursSess = input.session("0600-2300", "", inline = "hr", group = GRP_W, tooltip = "New setups are only armed inside these hours (in the time zone above). Open trades and armed limits are left to finish.")
+string tzUse = tzIn == "Exchange" ? syminfo.timezone : tzIn
+
+GRP_S = "STYLE"
+showVwap   = input.bool(true, "Show VWAP", inline = "vw", group = GRP_S)
+vwapCol    = input.color(#4DD0E1, "", inline = "vw", group = GRP_S)
+tgtFill    = input.color(color.new(#089981, 78), "Target Box", inline = "s1", group = GRP_S)
+tgtBorder  = input.color(color.new(#00E676, 0), "Border", inline = "s1", group = GRP_S)
+stopFill   = input.color(color.new(#F23645, 78), "Stop Box", inline = "s2", group = GRP_S)
+stopBorder = input.color(color.new(#FF4F8B, 0), "Border", inline = "s2", group = GRP_S)
+tpLineCol  = input.color(color.new(#69F0AE, 0), "TP Lines", inline = "s3", group = GRP_S)
+entryCol   = input.color(color.new(#FFFFFF, 0), "Entry Line", inline = "s3", group = GRP_S)
+limitCol   = input.color(color.new(#FFFFFF, 0), "Armed Limit (dashed)", inline = "s4", group = GRP_S)
+markCol    = input.color(color.new(#FFFFFF, 0), "Long Fill ▲", inline = "s5", group = GRP_S)
+markColS   = input.color(color.new(#FFCDD2, 0), "Short Fill ▼", inline = "s5", group = GRP_S)
+boxBorderW = input.int(2, "Box Border Width", minval = 1, maxval = 4, group = GRP_S)
+maxDrawn   = input.int(100, "Trades Kept On Chart", minval = 1, maxval = 120, group = GRP_S, tooltip = "Each trade draws 2 boxes and up to 4 lines. Older trades are removed whole, so the 500-object limits never strip their lines.")

@@ -1,0 +1,66 @@
+
+M15 | default
+   exit                               trades  /day |  win % | net/tr  21-23   24-26   | yrs+ | longest W/L streak (all years; worst single year L)
+   Exit at TP1 (0.6R)                  4265  2.86 |  60.2% | -0.090 -0.116 -0.062 | 0/6 | 16 /  7  (worst-year L  7)  total net -384R
+   Exit at TP2 (1R)                    3892  2.61 |  48.5% | -0.081 -0.108 -0.053 | 0/6 | 14 /  9  (worst-year L  9)  total net -317R
+   Exit at TP3 (1.5R)                  3477  2.33 |  38.6% | -0.087 -0.121 -0.051 | 1/6 |  7 / 15  (worst-year L 15)  total net -302R
+   Exit at TP4 (2R)                    3169  2.13 |  33.2% | -0.055 -0.102 -0.007 | 1/6 |  6 / 18  (worst-year L 18)  total net -174R
+   TP4 + breakeven at TP1              3779  2.54 |  19.8% | -0.053 -0.103 +0.002 | 2/6 |  4 /  7  (worst-year L  7)  total net -199R
+   TP2 + breakeven at TP1              4101  2.75 |  37.7% | -0.073 -0.111 -0.032 | 1/6 |  9 /  7  (worst-year L  7)  total net -299R
+   TP4 + breakeven at TP2              3498  2.35 |  25.4% | -0.060 -0.096 -0.023 | 1/6 |  5 /  8  (worst-year L  8)  total net -211R
+   50% at TP1 + breakeven, rest TP4    3779  2.54 |  60.4% | -0.069 -0.111 -0.024 | 2/6 | 13 /  7  (worst-year L  7)  total net -263R
+
+M15 | Don't Chase = 1.5 sigma + stopAtr = 3.0 + momLen = 15 + VWAP anchor = month
+   exit                               trades  /day |  win % | net/tr  21-23   24-26   | yrs+ | longest W/L streak (all years; worst single year L)
+   Exit at TP1 (0.6R)                  1216  0.82 |  61.8% | -0.044 -0.021 -0.066 | 1/6 | 14 /  6  (worst-year L  6)  total net -53R
+   Exit at TP2 (1R)                    1061  0.71 |  49.8% | -0.038 -0.022 -0.054 | 1/6 |  7 /  8  (worst-year L  8)  total net -40R
+   Exit at TP3 (1.5R)                   933  0.63 |  41.1% | -0.007 -0.010 -0.005 | 3/6 |  6 / 13  (worst-year L 13)  total net -7R
+   Exit at TP4 (2R)                     841  0.56 |  35.2% | +0.022 +0.031 +0.013 | 3/6 |  6 / 16  (worst-year L 16)  total net +19R
+   TP4 + breakeven at TP1              1049  0.70 |  19.3% | -0.020 -0.018 -0.022 | 3/6 |  5 /  6  (worst-year L  6)  total net -21R
+   TP2 + breakeven at TP1              1133  0.76 |  37.6% | -0.029 +0.001 -0.058 | 2/6 |  7 /  6  (worst-year L  6)  total net -33R
+   TP4 + breakeven at TP2               954  0.64 |  25.4% | -0.025 -0.027 -0.023 | 1/6 |  6 /  8  (worst-year L  8)  total net -24R
+   50% at TP1 + breakeven, rest TP4    1049  0.70 |  62.8% | -0.024 -0.021 -0.028 | 2/6 | 14 /  6  (worst-year L  6)  total net -25R
+
+M15 | stopAtr = 3.0 + momLen = 15 + cooldownBars = 12 + VWAP anchor = month
+   exit                               trades  /day |  win % | net/tr  21-23   24-26   | yrs+ | longest W/L streak (all years; worst single year L)
+   Exit at TP1 (0.6R)                  1846  1.24 |  62.2% | -0.034 -0.023 -0.046 | 1/6 | 17 /  7  (worst-year L  7)  total net -64R
+   Exit at TP2 (1R)                    1650  1.11 |  50.3% | -0.024 -0.030 -0.019 | 3/6 |  7 /  7  (worst-year L  7)  total net -40R
+   Exit at TP3 (1.5R)                  1466  0.98 |  41.8% | +0.015 +0.019 +0.010 | 5/6 |  8 / 11  (worst-year L 11)  total net +21R
+   Exit at TP4 (2R)                    1333  0.89 |  35.0% | +0.018 +0.030 +0.006 | 3/6 |  6 / 11  (worst-year L 11)  total net +24R
+   TP4 + breakeven at TP1              1619  1.09 |  18.9% | -0.031 -0.044 -0.019 | 2/6 |  3 /  6  (worst-year L  6)  total net -51R
+   TP2 + breakeven at TP1              1767  1.19 |  38.2% | -0.024 -0.022 -0.025 | 3/6 |  6 /  7  (worst-year L  7)  total net -42R
+   TP4 + breakeven at TP2              1477  0.99 |  25.5% | -0.019 -0.038 +0.000 | 3/6 |  4 /  7  (worst-year L  7)  total net -28R
+   50% at TP1 + breakeven, rest TP4    1619  1.09 |  62.1% | -0.034 -0.032 -0.036 | 1/6 | 12 /  6  (worst-year L  6)  total net -55R
+
+M15 | stopAtr = 3.0 + momLen = 15 + VWAP anchor = month
+   exit                               trades  /day |  win % | net/tr  21-23   24-26   | yrs+ | longest W/L streak (all years; worst single year L)
+   Exit at TP1 (0.6R)                  2277  1.53 |  62.5% | -0.030 -0.020 -0.039 | 1/6 | 19 /  5  (worst-year L  5)  total net -67R
+   Exit at TP2 (1R)                    1950  1.31 |  50.3% | -0.023 -0.036 -0.011 | 2/6 |  9 /  7  (worst-year L  7)  total net -45R
+   Exit at TP3 (1.5R)                  1681  1.13 |  42.2% | +0.026 +0.012 +0.041 | 4/6 |  8 / 11  (worst-year L 11)  total net +44R
+   Exit at TP4 (2R)                    1463  0.98 |  35.8% | +0.044 +0.018 +0.071 | 5/6 |  7 / 13  (worst-year L 13)  total net +65R
+   TP4 + breakeven at TP1              1812  1.22 |  20.0% | +0.002 -0.023 +0.026 | 3/6 |  4 /  5  (worst-year L  5)  total net +4R
+   TP2 + breakeven at TP1              2079  1.40 |  38.9% | -0.010 -0.000 -0.020 | 3/6 |  6 /  5  (worst-year L  5)  total net -22R
+   TP4 + breakeven at TP2              1649  1.11 |  25.9% | -0.003 -0.042 +0.035 | 2/6 |  4 /  7  (worst-year L  7)  total net -5R
+   50% at TP1 + breakeven, rest TP4    1812  1.22 |  63.1% | -0.009 -0.018 -0.000 | 3/6 | 15 /  5  (worst-year L  5)  total net -16R
+
+M15 | stopAtr = 3.0 + VWAP anchor = month
+   exit                               trades  /day |  win % | net/tr  21-23   24-26   | yrs+ | longest W/L streak (all years; worst single year L)
+   Exit at TP1 (0.6R)                  2609  1.75 |  61.5% | -0.045 -0.049 -0.041 | 0/6 | 19 /  6  (worst-year L  6)  total net -117R
+   Exit at TP2 (1R)                    2202  1.48 |  50.8% | -0.013 -0.024 -0.002 | 2/6 | 10 / 11  (worst-year L 11)  total net -28R
+   Exit at TP3 (1.5R)                  1846  1.24 |  41.8% | +0.015 -0.022 +0.050 | 3/6 |  8 / 12  (worst-year L 12)  total net +28R
+   Exit at TP4 (2R)                    1604  1.08 |  36.2% | +0.057 +0.017 +0.096 | 5/6 |  7 / 12  (worst-year L 12)  total net +92R
+   TP4 + breakeven at TP1              2059  1.38 |  20.7% | +0.010 -0.020 +0.039 | 2/6 |  4 /  6  (worst-year L  6)  total net +20R
+   TP2 + breakeven at TP1              2366  1.59 |  39.2% | -0.012 -0.009 -0.015 | 3/6 |  8 /  6  (worst-year L  6)  total net -29R
+   TP4 + breakeven at TP2              1855  1.24 |  27.3% | +0.031 -0.018 +0.079 | 4/6 |  7 / 10  (worst-year L 10)  total net +57R
+   50% at TP1 + breakeven, rest TP4    2059  1.38 |  62.5% | -0.010 -0.027 +0.006 | 2/6 | 13 /  6  (worst-year L  6)  total net -21R
+
+M15 | stopAtr = 2.2 + Don't Chase = 1.5 sigma
+   exit                               trades  /day |  win % | net/tr  21-23   24-26   | yrs+ | longest W/L streak (all years; worst single year L)
+   Exit at TP1 (0.6R)                   688  0.46 |  61.2% | -0.061 -0.070 -0.052 | 0/6 | 13 /  7  (worst-year L  7)  total net -42R
+   Exit at TP2 (1R)                     618  0.41 |  50.2% | -0.036 +0.001 -0.069 | 2/6 |  6 /  7  (worst-year L  7)  total net -22R
+   Exit at TP3 (1.5R)                   545  0.37 |  42.4% | +0.021 +0.067 -0.019 | 4/6 |  5 /  8  (worst-year L  8)  total net +11R
+   Exit at TP4 (2R)                     485  0.33 |  35.7% | +0.033 +0.039 +0.028 | 3/6 |  5 / 11  (worst-year L 11)  total net +16R
+   TP4 + breakeven at TP1               649  0.44 |  22.5% | +0.021 +0.035 +0.009 | 3/6 |  4 /  7  (worst-year L  7)  total net +14R
+   TP2 + breakeven at TP1               680  0.46 |  40.3% | -0.022 -0.035 -0.011 | 2/6 |  5 /  7  (worst-year L  7)  total net -15R
+   TP4 + breakeven at TP2               586  0.39 |  26.5% | -0.013 +0.025 -0.046 | 4/6 |  4 /  7  (worst-year L  7)  total net -8R
+   50% at TP1 + breakeven, rest TP4     649  0.44 |  61.0% | -0.021 -0.002 -0.037 | 3/6 | 11 /  7  (worst-year L  7)  total net -13R

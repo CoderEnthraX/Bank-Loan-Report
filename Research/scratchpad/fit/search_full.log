@@ -1,0 +1,3 @@
+80 trades 31 windows
+start 136.51891976933516 {'exact': 65, 'near': 0, 'miss': 15, 'extra': 14, 'entry_err': 0.9621604613296756, 'stop_err': 8.295510051467446, 'n_px': 65, 'obj': 137} 0.35s/eval
+BEST {"brkLen": 10, "bodyPct": 55, "closePct": 25, "maxDayR": 3, "vsLag": 3, "roundLevels": false} {'exact': 68, 'near': 0, 'miss': 12, 'extra': 14, 'entry_err': 0.9621604613296756, 'stop_err': 8.31702089389065, 'n_px': 68, 'obj': 152}

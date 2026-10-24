@@ -1,0 +1,2 @@
+- 23:17 started static v6 review of Auction_Retest_Model.pine (422 lines)
+- identifier/scope check (idcheck.py): 0 undeclared, 0 used-before-declared; all built-in signatures/named args checked by hand vs v6 ref: no compile errors found; minor: retestBars no maxval (line.new >500 bars future runtime error), timeframe.change inside switch (warning only)

@@ -1,0 +1,20 @@
+# daystate progress
+- baseline ds.py (copy of pine_final): A 79/1/3, B 32 matched / 10 missed / 29/32 stops
+- dayStopR=0 (no daily stop): A 79/1/3 (identical; no in-window trade changes at all, diffcfg.py), B 36/6, 33/36 stops (+#48,#54,#55,#62)
+- dayStopR=0,maxFills=99: A 71/9/16 -> fill cap is essential, daily R stop is not
+- sameBarDayStop=true: A 78/2/3 (loses NASDAQ 10-07 21:25), B 32
+- eodFlat (close open trade on last bar of session): A 77/3/5 (SENSEX 10-12 09:40 S, 11:20 S lost), B 31 -> REJECT; open trades carry across sessions
+- eodCancel (cancel armed limit at new session): A 79/1/3, B 32 -> no effect
+- dsStrict (block only below -3R): A 79/1/3, B 36/6 33/36 (== none)
+- dsMode loss 3 (count of non-same-bar losses): A 77/3/3 (GC 10-08 11:40 S, NASDAQ 10-08 15:50 S lost), B 32 -> REJECT
+- dsMode loss 4: A 79/1/3, B 36 (== none)
+- dsMode lossDir 3 (3 losses same dir blocks that dir): A 79/1/3, B 35 (misses #62: 10-16 has 3 long losses incl carried 10-15 21:40 L stopped 10-16 09:00)
+- dsMode lossDir 2: A 76/4/3, B 32 -> REJECT
+- dsMode netR (stopped-after-TPk counts +0.5k R): A 79/1/3, B 36 (== none)
+- eveReset 17:00 / 18:00 for CRUDE (-3R rule kept): A 79/1/3, B 35 (misses #62)
+- minOpenBars=0 (all / SENSEX only): A 78 (SENSEX 10-07 09:40 S lost), B 35 (gains #77, loses #66, #78) -> REJECT, #77 not a first-bar rule
+- maxFills with dayStopR=0: 3 -> A 60/20/2 B29; 4 -> A 72/8/3 B34; 5 -> 79/1/3 B36; 6 -> 79/1/8 B36; 7 -> 78/2/11 B36 => cap 5 confirmed
+- none + eveReset 17:00 (fill cap reset at MCX evening): A 79/1/3, B 36 (no evidence either way); eveReset on all non-Indian syms: A 71/9/14 REJECT
+- d3.py: of ~100 model days reaching -3R, only SENSEX/NIFTY 10-07 after 12:25 lie in A windows and no-daystop model has no signal there -> A carries no evidence for a daily stop
+- tight-stop note: #49 (prevNet +7, first long) and #56 (prevNet +2, first short) are tight in the log but #46 (prevNet +9, first long) is full -> prevNet>=3 counter-bias does not explain; #52 stop 8839 not explained by either formula
+- CONCLUSION: drop the daily R stop (dayStopR=0): A 79/1/3 unchanged, B 32->36 matched, 29/32->33/36 stops (+#48,#54,#55,#62)

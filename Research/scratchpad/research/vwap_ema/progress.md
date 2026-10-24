@@ -1,0 +1,4 @@
+# VWAP vs EMA study progress\n- ref_side.py built (defaults == ref.py); grid.py written (warmStart 200 for all)
+- grid.py (46 configs x 1R/2R exits) -> grid.json, grid.txt; analyze.py -> analysis.json/.txt (Sep/Oct, instruments, day-bootstrap CI, random-subset null for invisible-skip filters)
+- cross-check: VWAP+close>EMA200 skip-invisibly = research/ema/ref_ema px_E200 gate: 953/964 identical trades (warm-up differences only)
+- VERDICT: VWAP best side reference (1:1 54.1% +0.082R, 1:2 39.0% +0.170R, +196R). EMA100 closest (1:1 same, 1:2 +0.150). EMA pairs replacing VWAP clearly worse. VWAP+EMA plain ~equal or worse; best VWAP+EMA100 skip-invisibly +0.187 (1:1 worse, null 93%, CI touches 0). Pullback-to-EMA50 worse, Oct negative. Standalone EMA crosses weaker/unstable. No edge -> nothing to add.

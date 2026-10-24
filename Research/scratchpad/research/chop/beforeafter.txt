@@ -1,0 +1,11 @@
+== all trades
+  crossing rate BEFORE signal (causal) tercile   lo:+0.258(n396) mid:+0.220(n396) hi:+0.020(n397)
+  crossing rate AFTER signal (hindsight) tercile lo:+0.768(n392) mid:+0.079(n392) hi:-0.351(n393)
+    TRAIN before lo:+0.193(n244) mid:+0.193(n244) hi:+0.041(n245) | after lo:+0.668(n241) mid:+0.095(n241) hi:-0.340(n241)
+    TEST before lo:+0.382(n152) mid:+0.184(n152) hi:+0.046(n152) | after lo:+1.007(n151) mid:-0.007(n151) hi:-0.388(n152)
+== trades from bar 24
+  crossing rate BEFORE signal (causal) tercile   lo:+0.182(n330) mid:+0.282(n330) hi:+0.093(n332)
+  crossing rate AFTER signal (hindsight) tercile lo:+0.739(n326) mid:+0.095(n326) hi:-0.277(n328)
+    TRAIN before lo:+0.159(n207) mid:+0.246(n207) hi:+0.053(n208) | after lo:+0.588(n204) mid:+0.147(n204) hi:-0.279(n204)
+    TEST before lo:+0.244(n123) mid:+0.268(n123) hi:+0.210(n124) | after lo:+0.943(n122) mid:+0.057(n122) hi:-0.274(n124)
+corr(before, after) crossing rate, trades from bar 24: 0.085

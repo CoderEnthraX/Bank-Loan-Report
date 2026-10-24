@@ -1,0 +1,74 @@
+subset first_vsl_R: 24 trades (8 tight), 612 features
+
+== zero-error singles: 0
+
+== best singles (min errors):
+  err 2: I_pEarmNet <= -3
+  err 2: I_pEcoreFrac <= -0.04
+  err 2: I_pEcoreNet <= -1
+  err 2: I_pEfullNet <= -3
+  err 2: I_pEvslNet <= -3
+  err 2: Im_pEarmNet <= -3
+  err 2: Im_pEcoreFrac <= -0.04
+  err 2: Im_pEcoreNet <= -1
+  err 2: Im_pEfullNet <= -3
+  err 2: Im_pEvslNet <= -3
+  err 2: R_pEarmFrac <= -0.1765
+  err 2: R_pEarmNet <= -3
+  err 2: R_pEfullNet <= -4
+  err 2: R_pEvslNet <= -4
+  err 3: I_pBodyD <= -0.4501
+  err 3: I_pBodyPct <= -0.04644
+  err 3: I_pCCD <= -0.5429
+  err 3: I_pCCPct <= -0.04644
+  err 3: I_pEarmFrac <= -0.1765
+  err 3: I_pEarmOpp >= 8
+  err 3: I_pEfullFrac <= -0.2222
+  err 3: I_pEfullOpp >= 8
+  err 3: I_pEvslFrac <= -0.2222
+  err 3: I_pEvslOpp >= 8
+  err 3: Im_pBodyD <= -0.4501
+
+== AND pairs: 192 zero-error, 3277 one-error
+  m=0.070  I_pEarmNet <= -3  AND  R_cFavExA <= 0.5456   (m_a 0.108, m_b 0.070)
+  m=0.070  I_pEfullNet <= -3  AND  R_cFavExA <= 0.5456   (m_a 0.108, m_b 0.070)
+  m=0.070  I_pEvslNet <= -3  AND  R_cFavExA <= 0.5456   (m_a 0.106, m_b 0.070)
+  m=0.070  Im_pEarmNet <= -3  AND  R_cFavExA <= 0.5456   (m_a 0.108, m_b 0.070)
+  m=0.070  Im_pEfullNet <= -3  AND  R_cFavExA <= 0.5456   (m_a 0.108, m_b 0.070)
+  m=0.070  Im_pEvslNet <= -3  AND  R_cFavExA <= 0.5456   (m_a 0.106, m_b 0.070)
+  m=0.070  R_cFavExA <= 0.5456  AND  R_pEarmFrac <= -0.1765   (m_a 0.070, m_b 0.092)
+  m=0.070  R_cFavExA <= 0.5456  AND  R_pEarmNet <= -3   (m_a 0.070, m_b 0.155)
+  m=0.070  R_cFavExA <= 0.5456  AND  R_pEfullNet <= -4   (m_a 0.070, m_b 0.155)
+  m=0.070  R_cFavExA <= 0.5456  AND  R_pEvslNet <= -4   (m_a 0.070, m_b 0.155)
+  m=0.058  I_pEcoreNet <= -1  AND  R_cFavExA <= 0.5456   (m_a 0.058, m_b 0.070)
+  m=0.058  Im_pEcoreNet <= -1  AND  R_cFavExA <= 0.5456   (m_a 0.058, m_b 0.070)
+  m=0.055  I_pEarmNet <= -3  AND  M_cFavExA <= 0.5456   (m_a 0.108, m_b 0.055)
+  m=0.055  I_pEcoreNet <= -1  AND  M_cFavExA <= 0.5456   (m_a 0.058, m_b 0.055)
+  m=0.055  I_pEfullNet <= -3  AND  M_cFavExA <= 0.5456   (m_a 0.108, m_b 0.055)
+  m=0.055  I_pEvslNet <= -3  AND  M_cFavExA <= 0.5456   (m_a 0.106, m_b 0.055)
+  m=0.055  Im_pEarmNet <= -3  AND  M_cFavExA <= 0.5456   (m_a 0.108, m_b 0.055)
+  m=0.055  Im_pEcoreNet <= -1  AND  M_cFavExA <= 0.5456   (m_a 0.058, m_b 0.055)
+  m=0.055  Im_pEfullNet <= -3  AND  M_cFavExA <= 0.5456   (m_a 0.108, m_b 0.055)
+  m=0.055  Im_pEvslNet <= -3  AND  M_cFavExA <= 0.5456   (m_a 0.106, m_b 0.055)
+  m=0.055  M_cFavExA <= 0.5456  AND  R_pEarmFrac <= -0.1765   (m_a 0.055, m_b 0.092)
+  m=0.055  M_cFavExA <= 0.5456  AND  R_pEarmNet <= -3   (m_a 0.055, m_b 0.155)
+  m=0.055  M_cFavExA <= 0.5456  AND  R_pEfullNet <= -4   (m_a 0.055, m_b 0.155)
+  m=0.055  M_cFavExA <= 0.5456  AND  R_pEvslNet <= -4   (m_a 0.055, m_b 0.155)
+  m=0.037  I_pEcoreFrac <= -0.04  AND  M_cFavExA <= 0.5456   (m_a 0.037, m_b 0.055)
+  m=0.037  I_pEcoreFrac <= -0.04  AND  R_cFavExA <= 0.5456   (m_a 0.037, m_b 0.070)
+  m=0.037  Im_pEcoreFrac <= -0.04  AND  M_cFavExA <= 0.5456   (m_a 0.037, m_b 0.055)
+  m=0.037  Im_pEcoreFrac <= -0.04  AND  R_cFavExA <= 0.5456   (m_a 0.037, m_b 0.070)
+  m=0.013  I_pEarmFrac <= -0.1765  AND  I_gapA >= -0.02609   (m_a 0.090, m_b 0.013)
+  m=0.013  I_pEarmFrac <= -0.1765  AND  Im_gapA >= -0.02609   (m_a 0.090, m_b 0.013)
+  m=0.013  I_pEarmNet <= -3  AND  I_gapA >= -0.02609   (m_a 0.162, m_b 0.013)
+  m=0.013  I_pEarmNet <= -3  AND  Im_gapA >= -0.02609   (m_a 0.162, m_b 0.013)
+  m=0.013  I_pEcoreFrac <= -0.04  AND  I_gapA >= -0.02609   (m_a 0.037, m_b 0.013)
+  m=0.013  I_pEcoreFrac <= -0.04  AND  Im_gapA >= -0.02609   (m_a 0.037, m_b 0.013)
+  m=0.013  I_pEcoreNet <= -1  AND  I_gapA >= -0.02609   (m_a 0.058, m_b 0.013)
+  m=0.013  I_pEcoreNet <= -1  AND  Im_gapA >= -0.02609   (m_a 0.058, m_b 0.013)
+  m=0.013  I_pEfullFrac <= -0.2222  AND  I_gapA >= -0.02609   (m_a 0.113, m_b 0.013)
+  m=0.013  I_pEfullFrac <= -0.2222  AND  Im_gapA >= -0.02609   (m_a 0.113, m_b 0.013)
+  m=0.013  I_pEfullNet <= -3  AND  I_gapA >= -0.02609   (m_a 0.162, m_b 0.013)
+  m=0.013  I_pEfullNet <= -3  AND  Im_gapA >= -0.02609   (m_a 0.162, m_b 0.013)
+
+== OR pairs: 0 zero-error, 4 one-error

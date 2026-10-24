@@ -1,0 +1,1 @@
+{"vwapMode":"hl2","dayStopR":0}

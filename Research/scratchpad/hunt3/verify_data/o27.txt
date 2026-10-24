@@ -1,0 +1,1 @@
+{"vwapMode":"ny","vwapSyms":["CRUDE","SENSEX"],"dayStopR":0}

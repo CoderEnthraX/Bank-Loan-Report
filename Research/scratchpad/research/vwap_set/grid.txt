@@ -1,0 +1,26 @@
+Source / weights                   Session VWAP, hlc3, slope 3 bars (current)   1:1 win 54.0% E +0.081 | 1:2 n 1189 win 38.9% E +0.166 tot +197
+Source / weights                   Session VWAP rebuilt from volume (check)     1:1 win 54.0% E +0.079 | 1:2 n 1187 win 38.9% E +0.168 tot +199
+Source / weights                   Source = close                               1:1 win 53.4% E +0.068 | 1:2 n 1200 win 38.1% E +0.142 tot +171
+Source / weights                   Source = hl2                                 1:1 win 53.7% E +0.074 | 1:2 n 1178 win 38.7% E +0.161 tot +190
+Source / weights                   Source = ohlc4                               1:1 win 53.9% E +0.078 | 1:2 n 1179 win 38.5% E +0.155 tot +183
+Source / weights                   Equal weights (time-weighted average)        1:1 win 54.0% E +0.079 | 1:2 n 1167 win 38.2% E +0.147 tot +171
+Anchor                             Weekly VWAP                                  1:1 win 51.5% E +0.030 | 1:2 n 1114 win 35.5% E +0.066 tot  +74
+Anchor                             Monthly VWAP                                 1:1 win 51.3% E +0.026 | 1:2 n 1050 win 36.0% E +0.080 tot  +84
+Slope                              Slope off (position only)                    1:1 win 53.4% E +0.068 | 1:2 n 1224 win 38.1% E +0.142 tot +174
+Slope                              Slope 1 bar                                  1:1 win 53.0% E +0.059 | 1:2 n 1213 win 37.4% E +0.123 tot +149
+Slope                              Slope 2 bars                                 1:1 win 53.5% E +0.070 | 1:2 n 1199 win 37.7% E +0.131 tot +157
+Slope                              Slope 5 bars                                 1:1 win 54.5% E +0.090 | 1:2 n 1164 win 38.0% E +0.139 tot +162
+Slope                              Slope 10 bars                                1:1 win 54.0% E +0.079 | 1:2 n 1106 win 37.7% E +0.131 tot +145
+Slope                              Slope 3, not across the session start        1:1 win 54.1% E +0.082 | 1:2 n 1190 win 38.8% E +0.165 tot +196
+Slope                              Slope only (no above/below rule)             1:1 win 54.0% E +0.081 | 1:2 n 1189 win 38.9% E +0.166 tot +197
+Slope                              No VWAP rule at all                          1:1 win 51.0% E +0.021 | 1:2 n 1291 win 35.7% E +0.071 tot  +92
+Distance (skipped run invisibly)   Max 1.5 sigma from VWAP (Don't Chase)        1:1 win 56.7% E +0.135 | 1:2 n  402 win 43.3% E +0.299 tot +120
+Distance (skipped run invisibly)   Max 2.0 sigma from VWAP (Don't Chase)        1:1 win 56.6% E +0.131 | 1:2 n  660 win 42.3% E +0.268 tot +177
+Distance (skipped run invisibly)   Max 2.4 sigma from VWAP (Don't Chase)        1:1 win 55.6% E +0.112 | 1:2 n  895 win 40.3% E +0.210 tot +188
+Distance (skipped run invisibly)   Max 3.0 sigma from VWAP (Don't Chase)        1:1 win 54.8% E +0.096 | 1:2 n 1096 win 39.5% E +0.185 tot +203
+Distance (skipped run invisibly)   Min 0.25 ATR from VWAP                       1:1 win 54.0% E +0.081 | 1:2 n 1189 win 38.9% E +0.166 tot +197
+Distance (skipped run invisibly)   Min 0.50 ATR from VWAP                       1:1 win 53.8% E +0.077 | 1:2 n 1183 win 38.8% E +0.164 tot +194
+Distance (skipped run invisibly)   Min 1.00 ATR from VWAP                       1:1 win 54.7% E +0.093 | 1:2 n 1120 win 39.8% E +0.195 tot +218
+Distance (skipped run invisibly)   Min 0.25 sigma from VWAP                     1:1 win 54.1% E +0.083 | 1:2 n 1184 win 38.9% E +0.168 tot +199
+Distance (skipped run invisibly)   Min 0.50 sigma from VWAP                     1:1 win 54.7% E +0.094 | 1:2 n 1143 win 39.4% E +0.181 tot +207
+Distance (skipped run invisibly)   Min 1.00 sigma from VWAP                     1:1 win 54.3% E +0.086 | 1:2 n 1011 win 38.6% E +0.157 tot +159

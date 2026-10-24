@@ -1,0 +1,106 @@
+N A         CRUDE  2026-10-06 14:45 S sr1.80 since 69 with5 opp0 wD4 oD0 pW1 pO5 pNet-4 pMove-0.6 gap+1.1 vsPC+8.6 vsPH+5.4 vsSO+7.5 nDay1 lt+1/2.0/43
+N A         CRUDE  2026-10-06 21:50 L sr1.80 since154 with4 opp7 wD4 oD6 pW5 pO1 pNet+4 pMove+0.7 gap-1.2 vsPC-1.9 vsPH-7.4 vsSO-0.7 nDay3 lt+1/2.0/10
+N A         CRUDE  2026-10-07 11:30 L sr1.78 since 30 with1 opp1 wD0 oD0 pW6 pO7 pNet-1 pMove-1.2 gap+4.0 vsPC+6.5 vsPH+2.6 vsSO+2.5 nDay0 lt+1/2.0/46
+N A         CRUDE  2026-10-07 13:20 L sr1.80 since 52 with3 opp2 wD1 oD0 pW6 pO7 pNet-1 pMove-1.0 gap+3.2 vsPC+6.0 vsPH+2.9 vsSO+2.8 nDay1 lt+1/-1.0/21
+N A         CRUDE  2026-10-07 19:00 L sr1.79 since120 with5 opp2 wD2 oD0 pW6 pO7 pNet-1 pMove-0.9 gap+2.8 vsPC+7.3 vsPH+4.6 vsSO+4.5 nDay2 lt+1/-1.0/67
+N AB39      CRUDE  2026-10-07 20:05 S sr1.80 since133 with2 opp6 wD0 oD3 pW7 pO6 pNet+1 pMove+0.8 gap-2.6 vsPC-1.9 vsPH-12.2 vsSO+0.8 nDay3 lt-1/-1.0/9
+N AB40      CRUDE  2026-10-07 22:35 S sr1.80 since163 with5 opp6 wD2 oD3 pW7 pO6 pNet+1 pMove+0.8 gap-2.7 vsPC+2.1 vsPH-8.6 vsSO+4.9 nDay4 lt+1/2.0/29
+N AB41      CRUDE  2026-10-08 10:45 L sr1.80 since 21 with0 opp0 wD0 oD0 pW6 pO6 pNet+0 pMove-10.3 gap+10.7 vsPC+12.7 vsPH-7.4 vsSO+2.0 nDay0 lt-1/-1.0/31
+N AB42      CRUDE  2026-10-08 12:15 L sr1.81 since 39 with1 opp0 wD1 oD0 pW6 pO6 pNet+0 pMove-10.4 gap+10.8 vsPC+17.9 vsPH-2.4 vsSO+7.1 nDay1 lt+1/2.0/17
+N AB43      CRUDE  2026-10-08 13:00 L sr1.79 since 48 with4 opp0 wD4 oD0 pW6 pO6 pNet+0 pMove-8.1 gap+8.4 vsPC+18.6 vsPH+2.9 vsSO+10.3 nDay2 lt+1/2.0/8
+N AB44      CRUDE  2026-10-08 20:20 L sr1.80 since136 with9 opp0 wD8 oD0 pW6 pO6 pNet+0 pMove-5.2 gap+5.4 vsPC+16.6 vsPH+6.4 vsSO+11.1 nDay3 lt+1/2.0/86
+T AB45      CRUDE  2026-10-09 10:25 S sr0.91 since 17 with0 opp0 wD0 oD0 pW1 pO10 pNet-9 pMove-10.3 gap+6.6 vsPC+8.9 vsPH-5.2 vsSO+2.3 nDay0 lt-1/-1.0/54
+N AB46      CRUDE  2026-10-09 11:50 L sr1.79 since 34 with0 opp1 wD0 oD1 pW10 pO1 pNet+9 pMove+10.5 gap-6.7 vsPC-5.8 vsPH-15.5 vsSO+0.9 nDay1 lt-1/-1.0/15
+N B47       CRUDE  2026-10-09 15:10 L sr1.79 since 74 with4 opp2 wD4 oD2 pW10 pO1 pNet+9 pMove+9.7 gap-6.2 vsPC-4.3 vsPH-13.2 vsSO+2.0 nDay2 lt+1/-1.0/39
+N B48       CRUDE  2026-10-09 20:25 L sr1.89 since137 with6 opp2 wD6 oD2 pW10 pO1 pNet+9 pMove+7.0 gap-4.5 vsPC+0.5 vsPH-5.9 vsSO+5.0 nDay3 lt+1/-1.0/62
+T B49       CRUDE  2026-10-12 11:50 L sr1.11 since 34 with0 opp0 wD0 oD0 pW9 pO2 pNet+7 pMove+7.5 gap-15.1 vsPC-7.7 vsPH-9.3 vsSO+7.5 nDay0 lt+1/-1.0/133
+N B50       CRUDE  2026-10-12 14:15 L sr1.78 since 63 with3 opp0 wD3 oD0 pW9 pO2 pNet+7 pMove+5.4 gap-11.0 vsPC-3.4 vsPH-4.6 vsSO+7.5 nDay2 lt+1/2.0/6
+T B51       CRUDE  2026-10-13 09:30 S sr0.88 since  6 with0 opp0 wD0 oD0 pW0 pO7 pNet-7 pMove-16.9 gap+7.2 vsPC+7.7 vsPH-10.0 vsSO+0.5 nDay0 lt-1/2.0/123
+? B52       CRUDE  2026-10-13 10:45 S sr1.57 since 21 with1 opp0 wD1 oD0 pW0 pO7 pNet-7 pMove-23.6 gap+10.0 vsPC+11.6 vsPH-13.1 vsSO+1.6 nDay1 lt+1/-1.0/14
+N B53       CRUDE  2026-10-13 15:25 S sr1.74 since 77 with2 opp0 wD2 oD0 pW0 pO7 pNet-7 pMove-24.2 gap+10.3 vsPC+15.8 vsPH-9.5 vsSO+5.6 nDay2 lt+1/-1.0/53
+N B54       CRUDE  2026-10-13 18:30 L sr1.79 since114 with0 opp4 wD0 oD4 pW7 pO0 pNet+7 pMove+19.4 gap-8.2 vsPC-7.0 vsPH-8.1 vsSO+1.2 nDay3 lt-1/-1.0/36
+N B55       CRUDE  2026-10-13 19:40 L sr1.77 since128 with3 opp4 wD3 oD4 pW7 pO0 pNet+7 pMove+16.2 gap-6.9 vsPC-3.1 vsPH-3.9 vsSO+3.8 nDay3 lt-1/-1.0/50
+T B56       CRUDE  2026-10-14 10:55 S sr0.94 since 23 with0 opp0 wD0 oD0 pW4 pO6 pNet-2 pMove-10.6 gap-4.9 vsPC-1.5 vsPH-19.7 vsSO+3.4 nDay0 lt+1/-1.0/119
+N B57       CRUDE  2026-10-15 16:05 L sr1.81 since 85 with3 opp3 wD3 oD2 pW6 pO3 pNet+3 pMove+3.9 gap-8.4 vsPC-2.2 vsPH-5.8 vsSO+6.2 nDay1 lt+1/-1.0/19
+N B58       CRUDE  2026-10-15 18:50 L sr1.14 since118 with7 opp3 wD7 oD2 pW6 pO3 pNet+3 pMove+2.9 gap-6.3 vsPC+2.5 vsPH-0.2 vsSO+8.8 nDay3 lt+1/2.0/3
+N B59       CRUDE  2026-10-15 20:10 L sr1.83 since134 with9 opp3 wD8 oD2 pW6 pO3 pNet+3 pMove+2.7 gap-5.7 vsPC+4.1 vsPH+1.6 vsSO+9.8 nDay3 lt+1/2.0/19
+N B60       CRUDE  2026-10-16 11:45 L sr2.03 since 33 with1 opp0 wD1 oD0 pW13 pO3 pNet+10 pMove+24.2 gap-5.0 vsPC-0.2 vsPH-4.4 vsSO+4.8 nDay0 lt+1/-1.0/55
+N B61       CRUDE  2026-10-16 15:30 L sr1.79 since 78 with2 opp0 wD2 oD0 pW13 pO3 pNet+10 pMove+19.9 gap-4.1 vsPC-0.4 vsPH-3.8 vsSO+3.7 nDay1 lt+1/-1.0/42
+N B62       CRUDE  2026-10-16 16:15 L sr1.78 since 87 with3 opp0 wD3 oD0 pW13 pO3 pNet+10 pMove+20.4 gap-4.2 vsPC+0.0 vsPH-3.5 vsSO+4.2 nDay2 lt+1/-1.0/7
+N B63       CRUDE  2026-10-16 18:30 L sr1.83 since114 with7 opp0 wD7 oD0 pW13 pO3 pNet+10 pMove+17.9 gap-3.7 vsPC-0.2 vsPH-3.3 vsSO+3.5 nDay2 lt+1/-1.0/34
+N A         ETH    2026-10-10 06:40 L sr1.78 since 14 with1 opp1 wD0 oD0 pW6 pO8 pNet-2 pMove+8.6 gap+0.0 vsPC+3.4 vsPH-19.7 vsSO+3.4 nDay0 lt-1/-1.0/171
+N A         ETH    2026-10-10 12:25 S sr1.80 since 83 with1 opp5 wD0 oD3 pW8 pO6 pNet+2 pMove-9.5 gap-0.0 vsPC-4.5 vsPH-17.4 vsSO-4.5 nDay1 lt-1/2.0/68
+N A         ETH    2026-10-10 17:05 L sr1.81 since139 with5 opp2 wD3 oD1 pW6 pO8 pNet-2 pMove+12.9 gap+0.0 vsPC+10.7 vsPH-23.7 vsSO+10.7 nDay2 lt-1/-1.0/55
+N A         ETH    2026-10-11 00:15 L sr1.79 since225 with10 opp2 wD7 oD1 pW6 pO8 pNet-2 pMove+7.2 gap+0.0 vsPC+14.9 vsPH-4.4 vsSO+14.9 nDay4 lt+1/2.0/1
+N A         EURUSD 2026-10-09 05:40 L sr1.80 since 26 with0 opp0 wD0 oD0 pW12 pO8 pNet+4 pMove+7.9 gap+0.0 vsPC+2.4 vsPH-4.3 vsSO+2.4 nDay0 lt-1/-1.0/248
+N A         EURUSD 2026-10-09 07:00 L sr1.80 since 42 with1 opp0 wD1 oD0 pW12 pO8 pNet+4 pMove+6.7 gap+0.0 vsPC+5.8 vsPH+0.1 vsSO+5.8 nDay1 lt+1/2.0/15
+N A         EURUSD 2026-10-09 12:45 L sr1.80 since111 with6 opp0 wD5 oD0 pW12 pO8 pNet+4 pMove+4.9 gap+0.0 vsPC+5.5 vsPH+1.3 vsSO+5.5 nDay2 lt+1/2.0/68
+T A         EURUSD 2026-10-09 15:25 S sr0.90 since143 with0 opp7 wD0 oD6 pW8 pO12 pNet-4 pMove-4.6 gap-0.0 vsPC-1.2 vsPH-11.7 vsSO-1.2 nDay3 lt-1/-1.0/30
+N A         EURUSD 2026-10-09 17:35 S sr1.80 since169 with3 opp7 wD2 oD6 pW8 pO12 pNet-4 pMove-4.8 gap-0.0 vsPC+1.7 vsPH-9.1 vsSO+1.8 nDay4 lt+1/2.0/25
+N A         EURUSD 2026-10-12 05:30 L sr1.78 since 24 with3 opp0 wD0 oD0 pW7 pO11 pNet-4 pMove-5.1 gap-5.7 vsPC+2.6 vsPH-16.8 vsSO+8.3 nDay0 lt-1/2.0/131
+N A         EURUSD 2026-10-12 10:15 S sr1.79 since 81 with0 opp7 wD0 oD3 pW11 pO7 pNet+4 pMove+6.2 gap+6.9 vsPC-3.6 vsPH-11.5 vsSO-10.5 nDay1 lt-1/2.0/56
+T A         GC     2026-10-07 05:55 S sr0.89 since 29 with0 opp0 wD0 oD0 pW6 pO17 pNet-11 pMove-8.5 gap-0.8 vsPC+1.8 vsPH-20.8 vsSO+2.6 nDay0 lt-1/-1.0/269
+N A         GC     2026-10-07 07:30 S sr1.79 since 48 with1 opp0 wD1 oD0 pW6 pO17 pNet-11 pMove-7.5 gap-0.7 vsPC+6.8 vsPH-13.1 vsSO+7.5 nDay1 lt+1/2.0/16
+N A         GC     2026-10-07 11:25 S sr1.79 since 95 with5 opp0 wD5 oD0 pW6 pO17 pNet-11 pMove-8.4 gap-0.8 vsPC+13.6 vsPH-8.6 vsSO+14.4 nDay2 lt+1/2.0/42
+N A         GC     2026-10-07 13:50 S sr1.80 since124 with6 opp0 wD6 oD0 pW6 pO17 pNet-11 pMove-6.1 gap-0.6 vsPC+10.3 vsPH-5.7 vsSO+10.9 nDay3 lt+1/-1.0/27
+T A         GC     2026-10-08 04:45 L sr0.90 since 15 with0 opp0 wD0 oD0 pW1 pO10 pNet-9 pMove-23.9 gap+1.3 vsPC-0.4 vsPH-25.4 vsSO-1.7 nDay0 lt+1/-1.0/58
+N A         GC     2026-10-08 05:35 S sr1.79 since 25 with0 opp1 wD0 oD1 pW10 pO1 pNet+9 pMove+20.3 gap-1.1 vsPC+1.8 vsPH-14.0 vsSO+3.0 nDay1 lt-1/-1.0/9
+N A         GC     2026-10-08 06:30 L sr1.80 since 36 with1 opp1 wD1 oD1 pW1 pO10 pNet-9 pMove-12.2 gap+0.7 vsPC+3.7 vsPH-9.2 vsSO+3.0 nDay2 lt-1/-1.0/10
+N A         GC     2026-10-08 09:35 L sr1.81 since 73 with5 opp1 wD5 oD1 pW1 pO10 pNet-9 pMove-16.2 gap+0.9 vsPC+7.6 vsPH-9.4 vsSO+6.7 nDay3 lt+1/2.0/35
+N A         GC     2026-10-08 11:20 S sr1.80 since 94 with1 opp6 wD1 oD6 pW10 pO1 pNet+9 pMove+14.4 gap-0.8 vsPC-1.3 vsPH-12.5 vsSO-0.5 nDay4 lt-1/-1.0/20
+N A         GC     2026-10-09 04:35 L sr1.81 since 13 with0 opp0 wD0 oD0 pW10 pO5 pNet+5 pMove+8.0 gap+0.6 vsPC+3.7 vsPH-1.7 vsSO+3.1 nDay0 lt-1/-1.0/191
+N A         GC     2026-10-09 07:25 L sr1.80 since 47 with5 opp0 wD4 oD0 pW10 pO5 pNet+5 pMove+4.3 gap+0.3 vsPC+9.7 vsPH+6.8 vsSO+9.4 nDay1 lt+1/2.0/33
+N A         GC     2026-10-09 11:00 L sr1.81 since 90 with10 opp0 wD8 oD0 pW10 pO5 pNet+5 pMove+5.0 gap+0.4 vsPC+18.3 vsPH+14.9 vsSO+17.9 nDay2 lt+1/2.0/42
+T A         GC     2026-10-09 18:20 S sr1.06 since178 with0 opp11 wD0 oD9 pW5 pO10 pNet-5 pMove-4.2 gap-0.3 vsPC-8.2 vsPH-15.1 vsSO-7.9 nDay3 lt-1/-1.0/84
+N A         GC     2026-10-09 20:50 L sr1.80 since208 with11 opp1 wD9 oD1 pW10 pO5 pNet+5 pMove+3.8 gap+0.3 vsPC+11.6 vsPH+9.1 vsSO+11.3 nDay4 lt-1/-1.0/29
+N A         GC     2026-10-12 05:50 L sr1.79 since 28 with2 opp2 wD0 oD0 pW15 pO1 pNet+14 pMove+13.3 gap+0.1 vsPC+3.3 vsPH+0.3 vsSO+3.1 nDay0 lt+1/2.0/95
+N A         GC     2026-10-12 10:30 S sr1.79 since 84 with3 opp5 wD0 oD2 pW1 pO15 pNet-14 pMove-19.6 gap-0.2 vsPC+1.3 vsPH-19.5 vsSO+1.5 nDay1 lt-1/-1.0/55
+N A         NASDAQ 2026-10-07 21:10 L sr1.78 since200 with0 opp13 wD0 oD11 pW9 pO3 pNet+6 pMove+5.0 gap-0.0 vsPC-4.5 vsPH-8.2 vsSO-4.5 nDay3 lt-1/-1.0/93
+N A         NASDAQ 2026-10-08 05:35 S sr1.78 since 13 with0 opp0 wD0 oD0 pW13 pO4 pNet+9 pMove+5.1 gap+0.0 vsPC+1.5 vsPH-21.1 vsSO+1.4 nDay0 lt-1/2.0/98
+N A         NASDAQ 2026-10-08 08:00 L sr1.82 since 42 with1 opp3 wD1 oD3 pW4 pO13 pNet-9 pMove-3.9 gap-0.0 vsPC+2.4 vsPH-3.1 vsSO+2.5 nDay1 lt-1/-1.0/28
+N A         NASDAQ 2026-10-08 08:40 S sr1.78 since 50 with3 opp2 wD3 oD2 pW13 pO4 pNet+9 pMove+3.7 gap+0.0 vsPC+2.0 vsPH-14.4 vsSO+2.0 nDay2 lt-1/-1.0/7
+N A         NASDAQ 2026-10-08 14:25 S sr1.76 since119 with9 opp2 wD8 oD2 pW13 pO4 pNet+9 pMove+2.6 gap+0.0 vsPC+8.4 vsPH-2.9 vsSO+8.4 nDay3 lt+1/2.0/67
+N A         NASDAQ 2026-10-08 15:45 S sr1.77 since135 with10 opp2 wD9 oD2 pW13 pO4 pNet+9 pMove+2.8 gap+0.0 vsPC+9.7 vsPH-2.8 vsSO+9.7 nDay4 lt+1/-1.0/15
+N A         NASDAQ 2026-10-09 04:55 S sr1.77 since  5 with0 opp0 wD0 oD0 pW21 pO5 pNet+16 pMove+25.6 gap+0.0 vsPC+2.0 vsPH-15.2 vsSO+2.0 nDay0 lt+1/2.0/157
+T A         NASDAQ 2026-10-09 06:00 L sr0.90 since 18 with0 opp1 wD0 oD1 pW5 pO21 pNet-16 pMove-17.3 gap-0.0 vsPC-0.4 vsPH-19.6 vsSO-0.4 nDay1 lt-1/2.0/12
+N A         NASDAQ 2026-10-09 09:40 L sr1.79 since 62 with2 opp2 wD2 oD1 pW5 pO21 pNet-16 pMove-23.7 gap-0.0 vsPC+6.2 vsPH-20.1 vsSO+6.2 nDay2 lt+1/-1.0/43
+N A         NASDAQ 2026-10-09 11:05 L sr1.81 since 79 with4 opp2 wD4 oD1 pW5 pO21 pNet-16 pMove-24.0 gap-0.0 vsPC+8.3 vsPH-18.3 vsSO+8.3 nDay3 lt+1/-1.0/16
+N A         NASDAQ 2026-10-09 12:50 L sr1.80 since100 with7 opp2 wD6 oD1 pW5 pO21 pNet-16 pMove-18.6 gap-0.0 vsPC+9.8 vsPH-10.8 vsSO+9.8 nDay4 lt+1/2.0/20
+N A         NASDAQ 2026-10-12 06:15 S sr1.78 since 21 with0 opp4 wD0 oD0 pW0 pO1 pNet-1 pMove-3.6 gap-0.0 vsPC-2.8 vsPH-6.5 vsSO-2.8 nDay0 lt-1/-1.0/196
+N A         NASDAQ 2026-10-12 11:10 S sr1.80 since 80 with3 opp4 wD3 oD0 pW0 pO1 pNet-1 pMove-3.5 gap-0.0 vsPC-0.8 vsPH-4.5 vsSO-0.8 nDay1 lt+1/2.0/58
+T A         NIFTY  2026-10-05 09:25 L sr0.90 since  2 with0 opp0 wD0 oD0 pW0 pO8 pNet-8 pMove-2.8 gap+2.3 vsPC+3.1 vsPH-1.0 vsSO+0.8 nDay0 lt-1/-1.0/16
+N A         NIFTY  2026-10-05 10:35 S sr1.80 since 16 with1 opp2 wD1 oD2 pW8 pO0 pNet+8 pMove+3.0 gap-2.5 vsPC-0.8 vsPH-6.9 vsSO+1.7 nDay1 lt-1/-1.0/12
+N A         NIFTY  2026-10-06 09:45 L sr1.80 since  6 with0 opp0 wD0 oD0 pW3 pO3 pNet+0 pMove-0.1 gap+2.7 vsPC+3.6 vsPH+0.4 vsSO+0.9 nDay0 lt-1/-1.0/61
+N A         NIFTY  2026-10-07 10:25 L sr1.79 since 14 with0 opp2 wD0 oD1 pW3 pO0 pNet+3 pMove+3.9 gap-0.9 vsPC-0.7 vsPH-1.3 vsSO+0.2 nDay1 lt-1/-1.0/9
+N A         NIFTY  2026-10-07 10:55 L sr1.79 since 20 with1 opp2 wD1 oD1 pW3 pO0 pNet+3 pMove+3.9 gap-0.9 vsPC-0.4 vsPH-1.0 vsSO+0.5 nDay2 lt+1/-1.0/5
+N A         NIFTY  2026-10-08 10:35 S sr1.80 since 16 with1 opp0 wD0 oD0 pW4 pO3 pNet+1 pMove+2.8 gap+0.9 vsPC+6.8 vsPH+4.3 vsSO+5.9 nDay0 lt-1/-1.0/67
+N A         NIFTY  2026-10-08 13:15 S sr1.81 since 48 with5 opp0 wD3 oD0 pW4 pO3 pNet+1 pMove+2.9 gap+0.9 vsPC+13.7 vsPH+11.2 vsSO+12.8 nDay1 lt+1/2.0/31
+T A         NIFTY  2026-10-09 10:05 L sr0.89 since 10 with0 opp0 wD0 oD0 pW0 pO7 pNet-7 pMove-10.8 gap+3.0 vsPC+7.7 vsPH-3.2 vsSO+4.7 nDay0 lt-1/-1.0/33
+N A         NIFTY  2026-10-09 13:40 L sr1.80 since 53 with3 opp0 wD2 oD0 pW0 pO7 pNet-7 pMove-20.9 gap+5.8 vsPC+17.4 vsPH-3.8 vsSO+11.6 nDay1 lt+1/-1.0/42
+N A         NIFTY  2026-10-12 09:50 S sr1.80 since  7 with1 opp0 wD0 oD0 pW0 pO7 pNet-7 pMove-6.5 gap-1.7 vsPC+1.7 vsPH-5.4 vsSO+3.5 nDay0 lt-1/2.0/24
+N B64       SENSEX 2026-10-05 11:55 S sr1.87 since 32 with2 opp3 wD2 oD3 pW7 pO1 pNet+6 pMove+2.2 gap-4.0 vsPC+0.5 vsPH-7.1 vsSO+4.5 nDay0 lt+1/-1.0/46
+N B65       SENSEX 2026-10-06 09:45 L sr1.82 since  6 with0 opp0 wD0 oD0 pW3 pO4 pNet-1 pMove-0.9 gap+2.3 vsPC+3.9 vsPH+0.0 vsSO+1.5 nDay0 lt-1/-1.0/45
+N AB66      SENSEX 2026-10-07 09:35 S sr1.77 since  4 with1 opp0 wD0 oD0 pW0 pO3 pNet-3 pMove-6.2 gap-0.4 vsPC+5.5 vsPH-2.5 vsSO+5.8 nDay0 lt-1/2.0/66
+N AB67      SENSEX 2026-10-07 10:25 L sr1.81 since 14 with0 opp2 wD0 oD1 pW3 pO0 pNet+3 pMove+5.0 gap+0.3 vsPC+0.1 vsPH-0.3 vsSO-0.2 nDay1 lt-1/-1.0/9
+N AB68      SENSEX 2026-10-07 10:55 L sr1.79 since 20 with1 opp2 wD1 oD1 pW3 pO0 pNet+3 pMove+5.0 gap+0.3 vsPC+0.5 vsPH+0.0 vsSO+0.2 nDay2 lt+1/-1.0/5
+N AB69      SENSEX 2026-10-08 10:35 S sr1.81 since 16 with1 opp0 wD0 oD0 pW4 pO3 pNet+1 pMove+3.8 gap-0.0 vsPC+6.0 vsPH+3.9 vsSO+6.1 nDay0 lt-1/-1.0/67
+N AB70      SENSEX 2026-10-08 13:15 S sr1.80 since 48 with5 opp0 wD3 oD0 pW4 pO3 pNet+1 pMove+3.6 gap-0.0 vsPC+11.7 vsPH+9.7 vsSO+11.7 nDay1 lt+1/2.0/31
+N AB71      SENSEX 2026-10-09 10:05 L sr1.80 since 10 with1 opp0 wD1 oD0 pW0 pO8 pNet-8 pMove-10.3 gap+3.4 vsPC+7.6 vsPH-3.0 vsSO+4.3 nDay0 lt-1/-1.0/33
+N AB72      SENSEX 2026-10-12 09:35 S sr1.81 since  4 with1 opp0 wD1 oD0 pW0 pO10 pNet-10 pMove-6.7 gap-2.4 vsPC+1.6 vsPH-6.2 vsSO+4.0 nDay0 lt-1/2.0/65
+N AB73      SENSEX 2026-10-12 11:10 S sr1.80 since 23 with5 opp0 wD5 oD0 pW0 pO10 pNet-10 pMove-7.9 gap-2.8 vsPC+6.9 vsPH-2.3 vsSO+9.7 nDay1 lt+1/2.0/18
+N B74       SENSEX 2026-10-13 12:15 L sr1.83 since 36 with4 opp0 wD2 oD0 pW0 pO11 pNet-11 pMove-15.5 gap+1.4 vsPC+10.8 vsPH-6.5 vsSO+9.5 nDay0 lt-1/-1.0/83
+N B75       SENSEX 2026-10-13 14:35 L sr1.79 since 64 with7 opp0 wD5 oD0 pW0 pO11 pNet-11 pMove-18.7 gap+1.6 vsPC+19.3 vsPH-1.5 vsSO+17.7 nDay1 lt+1/2.0/27
+N B76       SENSEX 2026-10-14 10:55 L sr1.82 since 20 with0 opp0 wD0 oD0 pW9 pO0 pNet+9 pMove+14.1 gap+0.6 vsPC+1.9 vsPH+1.3 vsSO+1.3 nDay0 lt+1/2.0/55
+N B77       SENSEX 2026-10-15 09:15 L sr1.81 since  0 with0 opp0 wD0 oD0 pW1 pO2 pNet-1 pMove-2.7 gap+1.8 vsPC+3.8 vsPH-0.5 vsSO+2.0 nDay0 lt+1/-1.0/51
+N B78       SENSEX 2026-10-15 10:45 L sr1.79 since 18 with6 opp0 wD5 oD0 pW1 pO2 pNet-1 pMove-2.7 gap+1.8 vsPC+12.0 vsPH+7.7 vsSO+10.2 nDay0 lt+1/-1.0/69
+N B79       SENSEX 2026-10-15 13:25 L sr1.80 since 50 with11 opp0 wD10 oD0 pW1 pO2 pNet-1 pMove-3.8 gap+2.5 vsPC+22.5 vsPH+16.3 vsSO+20.0 nDay1 lt+1/2.0/31
+N B80       SENSEX 2026-10-16 12:35 L sr1.80 since 40 with4 opp0 wD2 oD0 pW12 pO0 pNet+12 pMove+15.1 gap+6.4 vsPC+11.6 vsPH+6.0 vsSO+5.2 nDay0 lt+1/-1.0/61
+N A         US30   2026-10-07 05:15 S sr1.77 since 21 with1 opp0 wD1 oD0 pW1 pO19 pNet-18 pMove-23.4 gap-0.8 vsPC+1.7 vsPH-22.9 vsSO+2.5 nDay0 lt-1/-1.0/240
+N A         US30   2026-10-07 05:55 S sr1.73 since 29 with1 opp0 wD1 oD0 pW1 pO19 pNet-18 pMove-20.5 gap-0.7 vsPC+2.9 vsPH-18.7 vsSO+3.6 nDay1 lt+1/-1.0/5
+N A         US30   2026-10-07 10:00 S sr1.78 since 78 with3 opp0 wD4 oD0 pW1 pO19 pNet-18 pMove-25.0 gap-0.8 vsPC+8.5 vsPH-17.8 vsSO+9.3 nDay2 lt+1/2.0/47
+N A         US30   2026-10-07 11:25 S sr1.77 since 95 with4 opp0 wD5 oD0 pW1 pO19 pNet-18 pMove-21.7 gap-0.7 vsPC+7.9 vsPH-15.0 vsSO+8.6 nDay3 lt+1/-1.0/16
+N A         US30   2026-10-07 12:30 S sr1.77 since108 with6 opp0 wD7 oD0 pW1 pO19 pNet-18 pMove-14.2 gap-0.5 vsPC+9.3 vsPH-5.7 vsSO+9.7 nDay4 lt+1/2.0/12
+N A         US30   2026-10-08 06:05 S sr1.80 since 31 with0 opp1 wD0 oD1 pW20 pO0 pNet+20 pMove+28.2 gap-1.3 vsPC+2.4 vsPH-13.6 vsSO+3.7 nDay0 lt+1/-1.0/197
+N A         US30   2026-10-08 11:10 S sr1.81 since 92 with5 opp2 wD4 oD1 pW20 pO0 pNet+20 pMove+26.7 gap-1.2 vsPC+4.2 vsPH-10.9 vsSO+5.4 nDay1 lt+1/-1.0/60
+N A         US30   2026-10-08 14:45 S sr1.79 since135 with13 opp2 wD11 oD1 pW20 pO0 pNet+20 pMove+11.2 gap-0.5 vsPC+9.8 vsPH+3.4 vsSO+10.3 nDay2 lt+1/2.0/42
+N A         US30   2026-10-08 23:10 L sr1.79 since236 with5 opp16 wD3 oD14 pW0 pO20 pNet-20 pMove-7.9 gap+0.4 vsPC+1.0 vsPH-7.0 vsSO+0.7 nDay3 lt-1/2.0/99

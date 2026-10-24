@@ -1,0 +1,62 @@
+start {} A 79/1/3  B 32 m 29 s  obj 290
+sweep0 cooldownBars: 0:274 1:274 2:290 3:264
+sweep0 cdRaw: False:290 True:290
+sweep0 dayStopR: 0:298 2.0:232 3.0:290 4.0:298 5.0:298
+  -> dayStopR=0  A 79/1/3  B 36 m 33 s  obj 298  cfg={"dayStopR": 0}
+sweep0 dayLossN: 0:298 3:280 4:298 5:298
+sweep0 sameBarDayStop: False:298 True:298
+sweep0 maxFills: 4:259 5:298 6:288 99:232
+sweep0 minOpenBars: 0:293 1:298 2:298
+sweep0 retestBars: 3:206 4:245 5:298 6:296 7:285 8:283
+sweep0 rearmKeep: True:298 False:273
+sweep0 dispAtr: 0.7:241 0.75:248 0.8:298 0.85:244 0.9:206
+sweep0 dispBodyPct: 50.0:281 55.0:298 60.0:288
+sweep0 dispClosePct: 20.0:223 25.0:298 30.0:230
+sweep0 momAtr: 0.75:286 0.8:293 0.85:298 0.9:298 0.95:292 1.0:293
+sweep0 momLen: 8:261 9:256 10:298 11:236 12:239
+sweep0 structLen: 8:291 9:291 10:298 11:291 12:264
+sweep0 entryLen: 4:294 5:297 6:298 7:297 8:293
+sweep0 legReset: True:298 False:277
+sweep0 legBars: None:298 5:277 8:298 12:298 15:298
+sweep0 slopeBars: 0:262 2:283 3:298 4:289 5:267
+sweep0 slopeCross: False:298 True:298
+sweep0 vwapFilter: True:298 False:298
+sweep0 impNoSlope: False:298 True:285
+sweep0 stopAtr: 1.6:239 1.7:277 1.8:298 1.9:257 2.0:185
+sweep0 tightOn: True:298 False:246
+sweep0 tightAtr: 0.8:281 0.85:291 0.9:298 0.95:298 1.0:283
+sweep0 netMin: 1:294 2:299 3:298 4:298 5:284
+  -> netMin=2  A 79/1/3  B 36 m 34 s  obj 299  cfg={"dayStopR": 0, "netMin": 2}
+sweep0 tightCond: net:299 netAbs:282 first:276 firstAny:274
+sweep0 tightStop: minAtrCandle:299 candle:279 atr:299 maxAtrCandle:279
+sweep0 skipSunday: True:299 False:299
+sweep1 cooldownBars: 0:283 1:283 2:299 3:271
+sweep1 cdRaw: False:299 True:299
+sweep1 dayStopR: 0:299 2.0:233 3.0:291 4.0:299 5.0:299
+sweep1 dayLossN: 0:299 3:281 4:299 5:299
+sweep1 sameBarDayStop: False:299 True:299
+sweep1 maxFills: 4:260 5:299 6:289 99:233
+sweep1 minOpenBars: 0:294 1:299 2:299
+sweep1 retestBars: 3:206 4:246 5:299 6:297 7:286 8:284
+sweep1 rearmKeep: True:299 False:274
+sweep1 dispAtr: 0.7:242 0.75:249 0.8:299 0.85:242 0.9:204
+sweep1 dispBodyPct: 50.0:282 55.0:299 60.0:289
+sweep1 dispClosePct: 20.0:237 25.0:299 30.0:231
+sweep1 momAtr: 0.75:285 0.8:294 0.85:299 0.9:299 0.95:293 1.0:294
+sweep1 momLen: 8:260 9:255 10:299 11:237 12:240
+sweep1 structLen: 8:292 9:292 10:299 11:290 12:265
+sweep1 entryLen: 4:295 5:298 6:299 7:298 8:294
+sweep1 legReset: True:299 False:278
+sweep1 legBars: None:299 5:278 8:299 12:299 15:299
+sweep1 slopeBars: 0:262 2:283 3:299 4:290 5:268
+sweep1 slopeCross: False:299 True:299
+sweep1 vwapFilter: True:299 False:299
+sweep1 impNoSlope: False:299 True:285
+sweep1 stopAtr: 1.6:240 1.7:278 1.8:299 1.9:258 2.0:186
+sweep1 tightOn: True:299 False:246
+sweep1 tightAtr: 0.8:282 0.85:292 0.9:299 0.95:299 1.0:284
+sweep1 netMin: 1:294 2:299 3:298 4:298 5:284
+sweep1 tightCond: net:299 netAbs:282 first:276 firstAny:274
+sweep1 tightStop: minAtrCandle:299 candle:279 atr:299 maxAtrCandle:279
+sweep1 skipSunday: True:299 False:299
+FINAL {"dayStopR": 0, "netMin": 2} A 79/1/3  B 36 m 34 s  obj 299 ['AEXTRA CRUDE 2026-10-06 21:00 L', 'AEXTRA ETH 2026-10-11 00:10 L', 'AEXTRA NIFTY 2026-10-07 09:40 S', 'AMISS ETH 2026-10-11 00:25 L', 'B#50', 'B#58', 'B#60', 'B#63', 'B#75', 'B#77', 'Bstop#49', 'Bstop#52']

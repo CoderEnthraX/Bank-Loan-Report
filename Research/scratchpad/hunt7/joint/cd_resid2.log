@@ -1,0 +1,1 @@
+[RESID2] start {"cancelBlock": 1, "cooldownBars": 1, "dayStopR": 0, "erMin": 0.22, "legFrom": "arm", "minOpenBars": 0, "s2Far": 2.0, "s2Len": 6, "slopeCross": true, "tightOut": true} -> A 80/0/0 | B1 42 st39 p1 | B2 17 st13 p2 | B3 16 st12 p1 | MD 6 | OBJ 389

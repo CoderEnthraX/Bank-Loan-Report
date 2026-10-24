@@ -1,0 +1,6 @@
+confirmHold: ALL n=741 kept 62% tot +87 hit1 50.2% hit15 43.0% hit2 37.2% E1 +0.004 E15 +0.076 E2 +0.117 | TRAIN n=468 E1 +0.009 E15 +0.052 E2 +0.077 | TEST n=273 E1 -0.004 E15 +0.117 E2 +0.187 dE2 +0.007 CI[-0.207,+0.235] | syms improved 4/10
+     GC +0.19>+0.16 | EURUSD +0.28>+0.00 | NASDAQ +0.14>+0.12 | US30 +0.13>+0.26 | CRUDE +0.12>+0.02 | NIFTY +0.11>+0.20 | SENSEX +0.26>+0.45 | ETH -0.07>-0.09 | NSE_NI +0.55>+0.24 | MCX_NA +0.28>+0.41
+confirmHoldWait: ALL n=918 kept 77% tot +102 hit1 51.2% hit15 43.0% hit2 37.0% E1 +0.024 E15 +0.076 E2 +0.111 | TRAIN n=577 E1 +0.040 E15 +0.057 E2 +0.066 | TEST n=341 E1 -0.003 E15 +0.107 E2 +0.188 dE2 +0.007 CI[-0.197,+0.219] | syms improved 5/10
+     GC +0.19>+0.21 | EURUSD +0.28>-0.02 | NASDAQ +0.14>+0.10 | US30 +0.13>+0.15 | CRUDE +0.12>+0.05 | NIFTY +0.11>+0.27 | SENSEX +0.26>+0.15 | ETH -0.07>+0.01 | NSE_NI +0.55>+0.35 | MCX_NA +0.28>+0.30
+confirmHoldVol1: ALL n=514 kept 43% tot +59 hit1 49.2% hit15 43.0% hit2 37.2% E1 -0.016 E15 +0.075 E2 +0.115 | TRAIN n=321 E1 +0.016 E15 +0.114 E2 +0.121 | TEST n=193 E1 -0.067 E15 +0.010 E2 +0.104 dE2 -0.077 CI[-0.314,+0.181] | syms improved 4/10
+     GC +0.19>+0.20 | EURUSD +0.28>+0.18 | NASDAQ +0.14>+0.10 | US30 +0.13>+0.27 | CRUDE +0.12>-0.05 | NIFTY +0.11>-0.17 | SENSEX +0.26>+0.33 | ETH -0.07>-0.22 | NSE_NI +0.55>+0.29 | MCX_NA +0.28>+0.50

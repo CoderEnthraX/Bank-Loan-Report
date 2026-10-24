@@ -1,0 +1,1 @@
+{"vwapMode":"utc","dayStopR":0}

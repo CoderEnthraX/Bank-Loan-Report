@@ -1,0 +1,8 @@
+CRUDE   @2026-10-09 13:40  orig 35% +24R | model all-data from 2026-08-31: N=106 41% +23R | closest start 2026-09-01: N=105 41% +24R err=6
+ETH     @2026-10-12 06:00  orig 37% +34R | model all-data from 2026-08-31: N=167 32% -8R | closest start 2026-09-28: N=54 37% +6R err=28
+GC      @2026-10-12 13:00  orig 36% +32R | model all-data from 2026-08-31: N=142 40% +29R | closest start 2026-08-31: N=142 40% +29R err=7
+NASDAQ  @2026-10-09 13:40  orig 38% +52R | model all-data from 2026-08-31: N=147 37% +18R | closest start 2026-09-07: N=122 39% +22R err=31
+NASDAQ  @2026-10-12 12:45  orig 38% +51R | model all-data from 2026-08-31: N=149 38% +19R | closest start 2026-09-08: N=120 40% +24R err=29
+NIFTY   @2026-10-12 12:40  orig 35% +22R | model all-data from 2026-08-27: N=52 37% +5R | closest start 2026-08-31: N=51 37% +6R err=18
+SENSEX  @2026-10-12 12:40  orig 34% +13R | model all-data from 2026-08-31: N=49 41% +11R | closest start 2026-08-31: N=49 41% +11R err=9
+US30    @2026-10-12 13:00  orig 36% +27R | model all-data from 2026-08-31: N=144 37% +15R | closest start 2026-09-07: N=121 40% +26R err=5

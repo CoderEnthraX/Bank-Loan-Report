@@ -1,0 +1,1 @@
+{"vwapMode":"hl2"}

@@ -1,0 +1,1 @@
+{"minOpenBars":0,"maxRngAtr":5,"firstBarOnly":true}

@@ -1,0 +1,1 @@
+{"cooldownBars":3,"dayStopR":0}

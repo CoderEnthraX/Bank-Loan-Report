@@ -1,0 +1,188 @@
+CAND                   A 80/0/1  B 41/42 stop 38/41 provB 2  | full data: 1101 trades, vs CANDIDATE -0 +0
+       A screenshots (80): {'exact': 80, 'near': 0, 'miss': 0, 'extra': 1}
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       B student log SENSEX+CRUDE (42): time-matched 41, missed 1, stop correct 38/41
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B STOP CRUDE 58 2026-10-15 18:55 model 9083.27 vs log 9098.0 (-0.64 ATR)
+       B STOP CRUDE 60 2026-10-16 11:50 model 9236.18 vs log 9234.0 (+0.16 ATR)
+       B MISS CRUDE 63 2026-10-16 18:35 L
+noER                   A 79/1/2  B 38/42 stop 37/38 provB 5  | full data: 1113 trades, vs CANDIDATE -65 +77
+       A screenshots (80): {'exact': 79, 'near': 0, 'miss': 1, 'extra': 2}
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       B student log SENSEX+CRUDE (42): time-matched 38, missed 4, stop correct 37/38
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B MISS CRUDE 58 2026-10-15 18:55 L
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+erC11>=0.09            A 79/1/2  B 39/42 stop 37/39 provB 4  | full data: 1112 trades, vs CANDIDATE -66 +77
+       A screenshots (80): {'exact': 79, 'near': 0, 'miss': 1, 'extra': 2}
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       B student log SENSEX+CRUDE (42): time-matched 39, missed 3, stop correct 37/39
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B STOP CRUDE 58 2026-10-15 18:55 model 9083.27 vs log 9098.0 (-0.64 ATR)
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+erHL2_10>=0.04         A 79/1/2  B 39/42 stop 37/39 provB 4  | full data: 1111 trades, vs CANDIDATE -62 +72
+       A screenshots (80): {'exact': 79, 'near': 0, 'miss': 1, 'extra': 2}
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       B student log SENSEX+CRUDE (42): time-matched 39, missed 3, stop correct 37/39
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B STOP CRUDE 58 2026-10-15 18:55 model 9083.27 vs log 9098.0 (-0.64 ATR)
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+erO4_10>=0.04          A 79/1/2  B 39/42 stop 37/39 provB 4  | full data: 1111 trades, vs CANDIDATE -63 +73
+       A screenshots (80): {'exact': 79, 'near': 0, 'miss': 1, 'extra': 2}
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       B student log SENSEX+CRUDE (42): time-matched 39, missed 3, stop correct 37/39
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B STOP CRUDE 58 2026-10-15 18:55 model 9083.27 vs log 9098.0 (-0.64 ATR)
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+cci14>=82              A 79/1/2  B 39/42 stop 37/39 provB 4  | full data: 1108 trades, vs CANDIDATE -76 +83
+       A screenshots (80): {'exact': 79, 'near': 0, 'miss': 1, 'extra': 2}
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       B student log SENSEX+CRUDE (42): time-matched 39, missed 3, stop correct 37/39
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B STOP CRUDE 58 2026-10-15 18:55 model 9083.27 vs log 9098.0 (-0.64 ATR)
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+rsi7>=61.8             A 79/1/2  B 38/42 stop 36/38 provB 5  | full data: 1107 trades, vs CANDIDATE -75 +81
+       A screenshots (80): {'exact': 79, 'near': 0, 'miss': 1, 'extra': 2}
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       B student log SENSEX+CRUDE (42): time-matched 38, missed 4, stop correct 36/38
+       B MISS SENSEX 64 2026-10-05 12:00 S
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B STOP CRUDE 58 2026-10-15 18:55 model 9083.27 vs log 9098.0 (-0.64 ATR)
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+momZvol>=0.38          A 79/1/2  B 38/42 stop 37/38 provB 5  | full data: 1110 trades, vs CANDIDATE -69 +78
+       A screenshots (80): {'exact': 79, 'near': 0, 'miss': 1, 'extra': 2}
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       B student log SENSEX+CRUDE (42): time-matched 38, missed 4, stop correct 37/38
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B MISS CRUDE 58 2026-10-15 18:55 L
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+momZvol>=0.5           A 78/2/2  B 39/42 stop 36/39 provB 3  | full data: 1099 trades, vs CANDIDATE -59 +57
+       A screenshots (80): {'exact': 78, 'near': 0, 'miss': 2, 'extra': 2}
+       A MISS CRUDE 2026-10-09 10:35 S
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       B student log SENSEX+CRUDE (42): time-matched 39, missed 3, stop correct 36/39
+       B MISS CRUDE 45 2026-10-09 10:35 S
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B STOP CRUDE 58 2026-10-15 18:55 model 9083.27 vs log 9098.0 (-0.64 ATR)
+       B STOP CRUDE 60 2026-10-16 11:50 model 9236.18 vs log 9234.0 (+0.16 ATR)
+       B MISS CRUDE 63 2026-10-16 18:35 L
+bodyEff10>=0.16        A 78/2/2  B 37/42 stop 35/37 provB 5  | full data: 1099 trades, vs CANDIDATE -66 +64
+       A screenshots (80): {'exact': 78, 'near': 0, 'miss': 2, 'extra': 2}
+       A MISS CRUDE 2026-10-07 13:25 L
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       B student log SENSEX+CRUDE (42): time-matched 37, missed 5, stop correct 35/37
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B MISS CRUDE 51 2026-10-13 09:35 S
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B STOP CRUDE 53 2026-10-13 15:30 model 8776.14 vs log 8785.0 (-0.61 ATR)
+       B MISS CRUDE 58 2026-10-15 18:55 L
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+adx14>=20              A 58/22/14  B 30/42 stop 29/30 provB 2  | full data: 918 trades, vs CANDIDATE -462 +279
+       A screenshots (80): {'exact': 58, 'near': 0, 'miss': 22, 'extra': 14}
+       A MISS CRUDE 2026-10-06 22:10 L
+       A MISS CRUDE 2026-10-07 11:35 L
+       A MISS CRUDE 2026-10-07 13:25 L
+       A MISS CRUDE 2026-10-08 20:25 L
+       A EXTRA CRUDE 2026-10-06 21:15 L
+       A EXTRA CRUDE 2026-10-06 22:55 L
+       A EXTRA CRUDE 2026-10-07 09:05 L
+       A MISS ETH 2026-10-10 17:30 L
+       A MISS ETH 2026-10-11 00:25 L
+       A MISS ETH 2026-10-10 06:45 L
+       A EXTRA ETH 2026-10-10 07:35 L
+       A EXTRA ETH 2026-10-10 20:00 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       A MISS EURUSD 2026-10-12 10:20 S
+       A MISS EURUSD 2026-10-09 05:45 L
+       A MISS GC 2026-10-07 06:10 S
+       A MISS GC 2026-10-07 13:55 S
+       A MISS GC 2026-10-08 04:50 L
+       A MISS GC 2026-10-08 05:40 S
+       A MISS GC 2026-10-09 18:25 S
+       A MISS GC 2026-10-09 20:55 L
+       A EXTRA GC 2026-10-07 15:05 S
+       A EXTRA GC 2026-10-08 22:50 L
+       A MISS NASDAQ 2026-10-08 15:50 S
+       A MISS NASDAQ 2026-10-12 11:15 S
+       A EXTRA NASDAQ 2026-10-08 20:00 L
+       A EXTRA NIFTY 2026-10-07 09:40 S
+       A MISS US30 2026-10-07 05:30 S
+       A MISS US30 2026-10-07 06:05 S
+       A MISS US30 2026-10-07 10:05 S
+       A MISS US30 2026-10-07 11:30 S
+       A MISS US30 2026-10-08 11:15 S
+       A EXTRA US30 2026-10-07 07:35 S
+       A EXTRA US30 2026-10-07 16:15 S
+       A EXTRA US30 2026-10-07 17:10 S
+       A EXTRA US30 2026-10-07 19:40 S
+       B student log SENSEX+CRUDE (42): time-matched 30, missed 12, stop correct 29/30
+       B MISS SENSEX 74 2026-10-13 12:20 L
+       B MISS SENSEX 75 2026-10-13 14:40 L
+       B MISS CRUDE 44 2026-10-08 20:25 L
+       B MISS CRUDE 47 2026-10-09 15:15 L
+       B MISS CRUDE 48 2026-10-09 20:30 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B MISS CRUDE 53 2026-10-13 15:30 S
+       B MISS CRUDE 56 2026-10-14 11:15 S
+       B MISS CRUDE 58 2026-10-15 18:55 L
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 61 2026-10-16 15:40 L
+       B MISS CRUDE 62 2026-10-16 16:30 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+chop14<=61.8           A 72/7/6  B 38/42 stop 37/38 provB 5  | full data: 1092 trades, vs CANDIDATE -121 +112
+       A screenshots (80): {'exact': 72, 'near': 1, 'miss': 7, 'extra': 6}
+       A EXTRA CRUDE 2026-10-06 21:00 L
+       A MISS ETH 2026-10-11 00:25 L
+       A EXTRA ETH 2026-10-11 00:10 L
+       A off+2 EURUSD 2026-10-12 05:35 L entry 1.12096/1.120545 stop 1.12053/1.12016
+       A MISS EURUSD 2026-10-12 10:20 S
+       A MISS EURUSD 2026-10-09 12:55 L
+       A MISS EURUSD 2026-10-09 15:30 S
+       A MISS EURUSD 2026-10-09 17:40 S
+       A EXTRA EURUSD 2026-10-09 15:50 S
+       A EXTRA EURUSD 2026-10-09 18:05 S
+       A MISS GC 2026-10-09 20:55 L
+       A EXTRA GC 2026-10-09 23:25 L
+       A MISS US30 2026-10-07 10:05 S
+       A EXTRA US30 2026-10-07 16:15 S
+       B student log SENSEX+CRUDE (42): time-matched 38, missed 4, stop correct 37/38
+       B MISS CRUDE 50 2026-10-12 14:20 L
+       B STOP CRUDE 52 2026-10-13 11:00 model 8842.43 vs log 8839.0 (+0.23 ATR)
+       B MISS CRUDE 58 2026-10-15 18:55 L
+       B MISS CRUDE 60 2026-10-16 11:50 L
+       B MISS CRUDE 63 2026-10-16 18:35 L
+CANDIDATE full-data trades: 1101

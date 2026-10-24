@@ -1,0 +1,4 @@
+- abl.py ablation done -> abl.txt (CANDIDATE A80/0/1 B41 st38 prov2 MD6; drops: slopeCross A77/3/3 B38 MD5; minOpen A80/0/2 B40; cooldown B39 prov3; dayStopR B37 prov1; tightOut st36; erMin A79/1/2 B38 prov5; baseline A79/1/3 B32 st29 prov4)
+- perm.py done -> perm.txt: 10000 perms, uniform null, any of 169 feats (153 + ER5-20) sep>=4/5 w/o taken loss: 2/10000; S30: 1/10000; ==5/5: 0/10000; observed only ER10 (5/5), no other feat >=2 (mom10 1)
+- loso.py done -> loso.txt: rule mid (max-extras-removed, midpoint) held-out totals A 79/1/2 (GC loses 10-09 20:50 thr .2231), rule low A 80/0/1; CRUDE held-out thr .2064/.1937 B 24/25 (none 21/25); ETH heldout A 4/0/0 (none 3/1/1); other 6 symbols unaffected by erMin (no extras)
+- churn.py done -> churn.txt (cand 1100 trades/37.7%/+145R vs cur 1003/36.7%/+101R; 100 removed 197 added of ~1000); loaded_cur/cand.txt

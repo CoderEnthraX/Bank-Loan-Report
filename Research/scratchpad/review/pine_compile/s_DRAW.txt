@@ -1,0 +1,53 @@
+var line  limLine = na
+var box   gBox    = na
+var box   rBox    = na
+var line  eLine   = na
+var line  l1      = na
+var line  l2      = na
+var line  l3      = na
+var bool  drawOn  = false
+var array<box>  drawnBoxes = array.new<box>()
+var array<line> drawnLines = array.new<line>()
+f_tpLine(float lvl, int k) =>
+    line ln = na
+    if k < exitK
+        ln := line.new(bar_index, lvl, bar_index, lvl, color = tpLineCol, width = 1)
+        array.push(drawnLines, ln)
+    ln
+if evCancel != "" or evFill
+    line.delete(limLine)
+    limLine := na
+if evArm
+    line.delete(limLine)
+    limLine := line.new(bar_index, lim, bar_index + retestBars, lim, color = limitCol, style = line.style_dashed, width = 2)
+if evFill
+    gBox  := box.new(bar_index, math.max(lim, tF), bar_index, math.min(lim, tF), border_color = tgtBorder, border_width = boxBorderW, bgcolor = tgtFill)
+    rBox  := box.new(bar_index, math.max(lim, stp0), bar_index, math.min(lim, stp0), border_color = stopBorder, border_width = boxBorderW, bgcolor = stopFill)
+    eLine := line.new(bar_index, lim, bar_index, lim, color = entryCol, width = 2)
+    array.push(drawnBoxes, gBox)
+    array.push(drawnBoxes, rBox)
+    array.push(drawnLines, eLine)
+    l1 := f_tpLine(t1, 1)
+    l2 := f_tpLine(t2, 2)
+    l3 := f_tpLine(t3, 3)
+    // keep the last maxDrawn trades whole inside the 500-object limits
+    while array.size(drawnBoxes) > 2 * maxDrawn
+        box.delete(array.shift(drawnBoxes))
+    while array.size(drawnLines) > 4 * maxDrawn
+        line.delete(array.shift(drawnLines))
+    drawOn := true
+else if drawOn
+    box.set_right(gBox, bar_index)
+    box.set_right(rBox, bar_index)
+    line.set_x2(eLine, bar_index)
+    if not na(l1)
+        line.set_x2(l1, bar_index)
+    if not na(l2)
+        line.set_x2(l2, bar_index)
+    if not na(l3)
+        line.set_x2(l3, bar_index)
+if evExit
+    drawOn := false
+plot(showVwap ? vwap : na, "VWAP", color = vwapCol, linewidth = 2)
+plotshape(evFill and evFillL, "Long Fill", shape.triangleup, location.belowbar, color = markCol, size = size.tiny)
+plotshape(evFill and not evFillL, "Short Fill", shape.triangledown, location.abovebar, color = markColS, size = size.tiny)

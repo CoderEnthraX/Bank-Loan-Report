@@ -1,0 +1,21 @@
+null ghost keep0.62: n=250 TEST d mean -0.009 p95 +0.094 | TRAIN d mean +0.001 p95 +0.082 | tot mean +120
+null ghost keep0.7: n=250 TEST d mean -0.006 p95 +0.075 | TRAIN d mean +0.001 p95 +0.057 | tot mean +137
+null ghost keep0.8: n=250 TEST d mean -0.005 p95 +0.054 | TRAIN d mean +0.001 p95 +0.041 | tot mean +156
+null ghost keep0.9: n=250 TEST d mean -0.002 p95 +0.035 | TRAIN d mean +0.001 p95 +0.025 | tot mean +177
+null veto keep0.7: n=250 TEST d mean -0.055 p95 +0.047 | TRAIN d mean -0.037 p95 +0.007 | tot mean +129
+null veto keep0.8: n=250 TEST d mean -0.041 p95 +0.034 | TRAIN d mean -0.031 p95 -0.002 | tot mean +146
+finalist: null(keep nearest) TEST-pct TRAIN-pct both-beat-share instr-pct
+F1 near1S<=0.525 (hyp-family TRAIN-best) | ghost             keep 62% vs null0.62: TEST pct 68.4% TRAIN pct 91.6% P(null beats both) 0.000 instr-better pct 100%
+F1 near1S<=0.525 (hyp-family TRAIN-best) | veto              keep 81% vs null0.8: TEST pct 68.0% TRAIN pct 61.6% P(null beats both) 0.096 instr-better pct 53%
+F2 rngS>=6.97 (same-session chop TRAIN-best) | ghost         keep 60% vs null0.62: TEST pct 58.0% TRAIN pct 92.8% P(null beats both) 0.000 instr-better pct 72%
+F2 rngS>=6.97 (same-session chop TRAIN-best) | veto          keep 82% vs null0.8: TEST pct 75.2% TRAIN pct 99.2% P(null beats both) 0.000 instr-better pct 76%
+F3 pEff<=0.561 (overall TRAIN-best, prev day) | ghost        keep 61% vs null0.62: TEST pct 52.0% TRAIN pct 94.4% P(null beats both) 0.020 instr-better pct 93%
+F3 pEff<=0.561 (overall TRAIN-best, prev day) | veto         keep 61% vs null0.7: TEST pct 53.6% TRAIN pct 100.0% P(null beats both) 0.000 instr-better pct 95%
+F4 xR2<=15.79 & rngS>=5.99 (composite TRAIN-best) | ghost    keep 68% vs null0.7: TEST pct 85.6% TRAIN pct 95.6% P(null beats both) 0.000 instr-better pct 85%
+F4 xR2<=15.79 & rngS>=5.99 (composite TRAIN-best) | veto     keep 88% vs null0.8: TEST pct 68.0% TRAIN pct 94.8% P(null beats both) 0.008 instr-better pct 24%
+F5 xR2<=9.73 (crossing-family TRAIN-best) | ghost            keep 72% vs null0.7: TEST pct 77.2% TRAIN pct 91.6% P(null beats both) 0.004 instr-better pct 94%
+F5 xR2<=9.73 (crossing-family TRAIN-best) | veto             keep 86% vs null0.8: TEST pct 41.2% TRAIN pct 34.0% P(null beats both) 0.316 instr-better pct 95%
+F5b xR2<=11.8 (pre-look, 20% veto) | ghost                   keep 81% vs null0.8: TEST pct 99.6% TRAIN pct 83.2% P(null beats both) 0.000 instr-better pct 97%
+F5b xR2<=11.8 (pre-look, 20% veto) | veto                    keep 91% vs null0.8: TEST pct 86.4% TRAIN pct 76.4% P(null beats both) 0.020 instr-better pct 95%
+F6 xR2+rngRel 10/20 (post-hoc, not TRAIN-best) | ghost       keep 74% vs null0.7: TEST pct 98.0% TRAIN pct 93.6% P(null beats both) 0.004 instr-better pct 94%
+F6 xR2+rngRel 10/20 (post-hoc, not TRAIN-best) | veto        keep 90% vs null0.8: TEST pct 86.4% TRAIN pct 86.0% P(null beats both) 0.012 instr-better pct 53%

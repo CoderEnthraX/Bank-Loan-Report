@@ -1,0 +1,10 @@
+- reproduced via lib.py: base / skipLossDir / pdRoom numbers match analyst exactly (TEST dE2 +0.089 CI[-0.105,+0.293]; +0.017 CI[-0.179,+0.225]). ~7s per full run.
+- code read: lastLoss/sesLoss set in step1 (exit bar<=signal bar) and step2 same-bar stop; pdH/pdL from sesH at newDay; feats pdRoom uses C[i], ATR[i], pdH/pdL -> no lookahead found.
+- NEXT: combo_v.py (copy + randRej, skipLossOpp, skipLossAny), stability grids, 300 random filters
+- stab.py/stab.txt done: skipLossDir N-grid TEST d: N6 +.005, 12 +.028, 24 +.043, 48 +.046, 100 +.056, 1000 +.089; TRAIN d -.024..+.020 (N48 best TRAIN). opp-direction block collapses (tot +35); pdRoom thresholds -2..-8: TEST d within +-0.007 except -3.4 (+0.017); TRAIN best -4.5 (+0.031).
+- NEXT: random filters (randRej q=.2 -> ~80% kept; q=.12 ~88%), baseline-trade conditional analysis
+- cond.py: baseline trades flagged 'same dir after unresolved loss': E2 +0.008 (n265) vs rest +0.190; diff -0.183 se .100 (TRAIN -0.081 se .128, TEST -0.346 se .158). opposite-dir flagged +0.221.
+- clus.py (day-cluster paired bootstrap): skipLossDir TEST d+0.089 CI[-0.023,+0.180] P(<=0)=.057; TRAIN +0.007 [-0.063,+0.075]; pdRoom TEST +0.017 [-0.034,+0.066], TRAIN +0.019. Weekly total R diff skipLossDir: wk40 -12, wk41 -9, wk42 +19 (gain is one week).
+- random filter runs in background: rnd20.pkl/rnd12.pkl (rnd.py)
+- first random run (q .2/.12) was miscalibrated (kept 93%/96%); recalibrated q=.41 (~947) and q=.28 (~1046), files rnd41.pkl rnd28.pkl
+- DONE: random q=.41 (n~974) TEST dE2 mean -0.055 sd .051, obs skipLossDir +0.089 (p<1/240; vs zero-centred null z=1.75); q=.28 (n~1066) mean -0.043 sd .042, pdRoom obs +0.017 p=.10. Verdict skipLossDir partly, pdRoom refuted.

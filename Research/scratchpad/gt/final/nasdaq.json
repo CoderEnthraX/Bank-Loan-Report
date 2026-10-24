@@ -1,0 +1,434 @@
+{
+ "group": "nasdaq",
+ "windows": [
+  {
+   "image": "33f61af2",
+   "symbol": "NASDAQ",
+   "first_bar": "2026-10-07 20:35",
+   "last_bar": "2026-10-08 09:20",
+   "anchor": "crosshair x=1323 header O31163.8 H31164.1 L31144.2 C31147.2 = 2026-10-08 05:55; spacing 11.12 px; price y=102.5->31320, y=828->31000 (2.2672 px/pt); last price 31116.1 = 09:20 close (live bar). 952800b0 = identical geometry (duplicate). Table on image is from Mon 12 (ignored)."
+  },
+  {
+   "image": "952800b0",
+   "symbol": "NASDAQ",
+   "first_bar": "2026-10-07 20:35",
+   "last_bar": "2026-10-08 09:20",
+   "anchor": "duplicate of 33f61af2 (identical box geometry)"
+  },
+  {
+   "image": "1d1eef0a",
+   "symbol": "NASDAQ",
+   "first_bar": "2026-10-08 07:45",
+   "last_bar": "2026-10-08 20:20",
+   "anchor": "crosshair x=876 header O31003.1 H31022.5 L31003.1 C31021.0 = 2026-10-08 13:35; spacing 11.09 px; price y130.5=31240, y945.5=30880 (2.2639 px/pt); last price 31016.5 = 20:20 close. Table overlay is Mon 12 (ignored)."
+  },
+  {
+   "image": "f5f38768",
+   "symbol": "NASDAQ",
+   "first_bar": "2026-10-09 03:05",
+   "last_bar": "2026-10-09 15:50",
+   "anchor": "crosshair x=981 header O30895.9 H30900.2 L30889.9 C30891.1 = 2026-10-09 09:55; spacing 11.12 px; price y130=31060, y946.5=30700 (2.2681 px/pt); last price 30980.3 = 15:50 close. Table overlay is Mon 12 (ignored)."
+  },
+  {
+   "image": "2022bd5c",
+   "symbol": "NASDAQ",
+   "first_bar": "2026-10-09 06:25",
+   "last_bar": "2026-10-09 19:10",
+   "anchor": "crosshair x=778 header O30920.0 H30926.7 L30917.0 C30925.8 = 2026-10-09 11:40; spacing 11.10 px; price y116.5=31100, y930.5=30740 (2.2611 px/pt); last price 30805.9 = 19:10 close, VWAP label 30908.5"
+  },
+  {
+   "image": "39f7f90d",
+   "symbol": "NASDAQ",
+   "first_bar": "2026-10-12 03:30",
+   "last_bar": "2026-10-12 12:45",
+   "anchor": "crosshair x=1352 header O30948.3 H30956.2 L30943.8 C30952.0 = 2026-10-12 12:10; spacing 12.35 px; price y99.5=31090, y931=30900 (4.3763 px/pt); live bar 12:45 (VWAP label 30991.5 = 12:45 VWAP, price 30956.3 with countdown 04:38, 12:40 last closed bar). First bar = Mon week open 03:30."
+  },
+  {
+   "image": "d6895f2d",
+   "symbol": "NASDAQ",
+   "first_bar": "2026-10-09 04:45",
+   "last_bar": "2026-10-09 13:40",
+   "anchor": "monitor photo; header O31003.5 H31007.9 L30989.7 C30992.8 = 2026-10-09 13:40 (crosshair/last bar); approximate edges from thumbnail"
+  },
+  {
+   "image": "ff13bd75",
+   "symbol": "NASDAQ",
+   "first_bar": "2026-10-09 04:00",
+   "last_bar": "2026-10-09 13:40",
+   "anchor": "monitor photo; crosshair Fri 09 12:10 (header O30959.6 H30972.6 L30958.7 C30969.9); same table as d6895f2d"
+  }
+ ],
+ "orig_trades": [
+  {
+   "symbol": "NASDAQ",
+   "dir": "long",
+   "fill_bar": "2026-10-07 21:25",
+   "entry_measured": 31088.0,
+   "entry_exact": 31088.2,
+   "entry_exact_source": "21:10 body mid (O31076.8 C31099.6); 21:15 L31094.8, 21:20 L31105.6 did not reach; 21:25 L31085.6",
+   "stop_measured": 31030.4,
+   "r_from_green_box": 57.8,
+   "exit_bar": "2026-10-08 04:45",
+   "outcome": "tp4",
+   "confidence": "high",
+   "notes": "TP lines y549/497/431.5 -> R~57.7; TP4~31203.6-31203.8: 04:35 H31203.2 not enough, 04:45 H31210.6 hit (box ends x1167=04:45). Overnight hold ~7h20m.",
+   "images": [
+    "33f61af2",
+    "952800b0"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "short",
+   "fill_bar": "2026-10-08 05:40",
+   "entry_measured": 31171.3,
+   "entry_exact": 31171.5,
+   "entry_exact_source": "05:35 body mid (O31180.8 C31162.2); 05:40 H31173.4",
+   "stop_measured": 31193.9,
+   "r_from_green_box": 22.7,
+   "exit_bar": "2026-10-08 07:00",
+   "outcome": "stop",
+   "confidence": "high",
+   "notes": "TP4 measured 31125.9; 06:10 L31126.6 missed TP4 by 0.7 => R>22.45; stop hit 07:00 H31194.2 => R<=22.7. R~22.6.",
+   "images": [
+    "33f61af2",
+    "952800b0"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "long",
+   "fill_bar": "2026-10-08 08:05",
+   "entry_measured": 31208.0,
+   "entry_exact": 31208.1,
+   "entry_exact_source": "07:55 high 31208.1 (alt 08:00 body mid 31207.25, 0.75 off = 1.7px; measured E y356.5 -> 31208.0 favours 07:55 H); impulse 08:00 bull O31193.8 C31220.7; 08:05 L31195.1",
+   "stop_measured": 31178.2,
+   "r_from_green_box": null,
+   "exit_bar": "2026-10-08 08:20",
+   "outcome": "stop",
+   "confidence": "high",
+   "notes": "green box hidden by table; R~29.8 from stop; stop hit 08:20 L31169.5 (box ends x1647=08:20); entry 31208.1 also confirmed by the 8-9 bar breakout rule (07:55 H is the prior-8-bar high, > 08:00 body mid 31207.25); R/ATR14 1.82",
+   "images": [
+    "1d1eef0a",
+    "33f61af2",
+    "952800b0"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "short",
+   "fill_bar": "2026-10-08 08:50",
+   "entry_measured": 31154.6,
+   "entry_exact": 31154.75,
+   "entry_exact_source": "08:40 body mid",
+   "stop_measured": 31185.5,
+   "r_from_green_box": 31.1,
+   "exit_bar": "2026-10-08 11:25",
+   "outcome": "tp4",
+   "confidence": "high",
+   "notes": "TP4 ~31092.5; 11:20 L31094.1 not enough, 11:25 L31076.3 hit (box ends x586). max high after fill 08:55 H31173.7",
+   "images": [
+    "1d1eef0a",
+    "33f61af2"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "short",
+   "fill_bar": "2026-10-08 14:30",
+   "entry_measured": 30975.0,
+   "entry_exact": 30975.5,
+   "entry_exact_source": "14:25 body mid (O30981.8 C30969.2); 14:30 H30999.8",
+   "stop_measured": 31019.5,
+   "r_from_green_box": 44.9,
+   "exit_bar": "2026-10-08 14:40",
+   "outcome": "stop",
+   "confidence": "high",
+   "notes": "narrow 3-bar box missed by boxes.py (found by fill scan); TP lines y791/831/882/932.5 -> R~44.6; 14:35 H31018 did not stop, 14:40 H31022.1 did => R in (42.5,46.6]",
+   "images": [
+    "1d1eef0a"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "short",
+   "fill_bar": "2026-10-08 15:50",
+   "entry_measured": 30964.1,
+   "entry_exact": 30964.5,
+   "entry_exact_source": "15:35 low 30964.5 (lowest low of the range broken by 15:45 bear impulse O30976.1 C30960.9; impulse body mid 30968.5 does NOT fit); 15:50 H30965.4 trades through it",
+   "stop_measured": 31004.7,
+   "r_from_green_box": 40.9,
+   "exit_bar": "2026-10-08 16:00",
+   "outcome": "tp4",
+   "confidence": "high",
+   "notes": "TP lines y811/848/893.5/939.5 -> R 41.2/41.1/40.8/40.8; TP4~30882.6 hit 16:00 L30874.5 (15:55 L30906.9 no). Narrow box missed by boxes.py.",
+   "images": [
+    "1d1eef0a"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "short",
+   "fill_bar": "2026-10-09 05:00",
+   "entry_measured": 30782.0,
+   "entry_exact": 30781.75,
+   "entry_exact_source": "04:55 body mid (O30788.8 C30774.7); 05:00 H30788.2",
+   "stop_measured": 30807.8,
+   "r_from_green_box": 26.5,
+   "exit_bar": "2026-10-09 05:30",
+   "outcome": "tp4",
+   "confidence": "high",
+   "notes": "TP2/TP3 lines -> R 26.4; TP4~30728.9: 05:20 L30740 no, 05:30 L30725.5 hit",
+   "images": [
+    "f5f38768"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "long",
+   "fill_bar": "2026-10-09 06:05",
+   "entry_measured": 30780.2,
+   "entry_exact": 30780.2,
+   "entry_exact_source": "06:00 body mid (O30765.1 C30795.3); 06:05 L30776.7",
+   "stop_measured": 30760.6,
+   "r_from_green_box": 19.4,
+   "exit_bar": "2026-10-09 06:25",
+   "outcome": "stop",
+   "confidence": "high",
+   "notes": "R~19.5 (small); 06:20 L30773.9 no, 06:25 L30758.9 hit stop; R/ATR14(at impulse 06:00)=0.90 = HALF the usual 1.8 (all other 12 trades R=1.78-1.82 x ATR14 RMA)",
+   "images": [
+    "f5f38768"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "long",
+   "fill_bar": "2026-10-09 09:45",
+   "entry_measured": 30896.65,
+   "entry_exact": 30896.7,
+   "entry_exact_source": "09:40 body mid (O30891.7 C30901.7); 09:45 L30882.9",
+   "stop_measured": 30868.2,
+   "r_from_green_box": 28.4,
+   "exit_bar": "2026-10-09 10:20",
+   "outcome": "stop",
+   "confidence": "high",
+   "notes": "10:15 L30874.7 no, 10:20 L30866.9 hit",
+   "images": [
+    "2022bd5c",
+    "f5f38768"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "long",
+   "fill_bar": "2026-10-09 11:10",
+   "entry_measured": 30927.95,
+   "entry_exact": 30928.35,
+   "entry_exact_source": "11:05 body mid (O30922.9 C30933.8); 11:10 L30926.7",
+   "stop_measured": 30899.95,
+   "r_from_green_box": 28.0,
+   "exit_bar": "2026-10-09 12:15",
+   "outcome": "tp4",
+   "confidence": "high",
+   "notes": "TP4~30984.4 hit 12:15 H30989.4 (12:10 H30972.8 no); 11:50 L30902.8 stayed above stop",
+   "images": [
+    "2022bd5c",
+    "f5f38768"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "long",
+   "fill_bar": "2026-10-09 12:55",
+   "entry_measured": 31000.05,
+   "entry_exact": 31000.2,
+   "entry_exact_source": "TABLE ENTRY 31000.2 (d6895f2d) = 12:35 high, the prior-8-bar high broken by the 12:50 bull impulse (O30979.9 C31001.8; body mid 30990.85 not used)",
+   "stop_measured": 30963.8,
+   "r_from_green_box": 36.4,
+   "exit_bar": "2026-10-09 16:00",
+   "outcome": "stop",
+   "confidence": "high",
+   "notes": "box x946-1357 ends 16:00; max high 12:55-15:50 = 31038.9 < TP4 ~31072.6; 15:55 L30974.8 no, 16:00 L30962.8 hit stop (~30964.0)",
+   "images": [
+    "f5f38768",
+    "2022bd5c",
+    "d6895f2d",
+    "ff13bd75"
+   ],
+   "table_values": "LONG ACTIVE, ADX 36, ENTRY 31000.2, STOP 30963.8, TP1 31022.1, TP2 31036.6, TP3 31054.9, TP4 31073.1, LIVE/BARS -0.20R 9, TARGETS 0/3, MODEL DAY 2W/2L 50% +2.00R, FILLS/CAP 5/5"
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "short",
+   "fill_bar": "2026-10-12 06:20",
+   "entry_measured": 31006.6,
+   "entry_exact": 31006.7,
+   "entry_exact_source": "05:45 low 31006.7 = lowest low of the prior range, broken by the 06:15 bear impulse (O31020.9 C31006.1 L31005.7; its body mid 31013.5 does NOT fit and was never reached: 06:20 H31008.4)",
+   "stop_measured": 31035.85,
+   "r_from_green_box": 29.3,
+   "exit_bar": "2026-10-12 06:55",
+   "outcome": "tp4",
+   "confidence": "high",
+   "notes": "TP4 30948.1: 06:50 L30951.4 no, 06:55 L30929.3 hit (box ends x573=06:55). R~29.2",
+   "images": [
+    "39f7f90d"
+   ]
+  },
+  {
+   "symbol": "NASDAQ",
+   "dir": "short",
+   "fill_bar": "2026-10-12 11:15",
+   "entry_measured": 30984.1,
+   "entry_exact": 30984.1,
+   "entry_exact_source": "table ENTRY 30984.1 = 11:10 body mid (O30994.5 C30973.7); 11:15 H30997.9",
+   "stop_measured": 31014.2,
+   "r_from_green_box": 30.0,
+   "exit_bar": "",
+   "outcome": "open",
+   "confidence": "high",
+   "notes": "table: SHORT ACTIVE ENTRY 30984.1 STOP 31014.2 TP1 30966.0 TP2 30954.0 TP3 30938.9 TP4 30923.9, LIVE/BARS +1.11R 19, TARGETS HIT 3/3, MODEL DAY 1W/0L 100% +2.00R, FILLS/CAP 2/5, REGIME RANGING ADX 32, BIAS NEUTRAL. R=30.1. TP3 touched 11:35 L30938.8. Live at 12:45.",
+   "images": [
+    "39f7f90d",
+    "33f61af2",
+    "952800b0",
+    "f5f38768",
+    "1d1eef0a",
+    "2022bd5c"
+   ],
+   "table_values": "SHORT ACTIVE, RANGING ADX 32, BIAS NEUTRAL, ENTRY 30984.1, STOP 31014.2, TP1 30966.0, TP2 30954.0, TP3 30938.9, TP4 30923.9, LIVE/BARS +1.11R 19, TARGETS HIT 3/3, MODEL DAY 1W/0L 100% +2.00R, FILLS/CAP 2/5"
+  }
+ ],
+ "my_vs_orig": [
+  {
+   "symbol": "NASDAQ",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-07 21:25",
+   "notes": "orig long 21:25 Wed (yellow line on 12038036 at Wed 07 21:25); no MY fill in 20:00-05:35"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 05:40",
+   "orig_fill_bar": "2026-10-08 05:40",
+   "notes": "my stop 31193.5 vs orig 31193.9 (within 1px); my TP4 31125.9 = orig; both stopped 07:00"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 08:05",
+   "orig_fill_bar": "2026-10-08 08:05",
+   "notes": "my box hidden under table in 12038036 | my stop 31178.0 vs orig 31178.0-31178.2; my entry 31207.8; both stopped 08:20"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 08:50",
+   "orig_fill_bar": "2026-10-08 08:50",
+   "notes": "my TP4 31092.4 = orig TP4 31092.4 (MINE 12038036 G y496); box runs to chart edge in that image | my stop 31185.6 vs orig 31185.5-31185.7; TP4 31092.3 = orig; both TP4 at 11:25"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 13:30",
+   "notes": "my short entry 30990.5 (13:25 body mid 30990.8) stop 31034.0 TP4 30903.1, stopped 13:45; orig has no trade here"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 14:30",
+   "orig_fill_bar": "2026-10-08 14:30",
+   "notes": "my stop 31020.25 vs orig 31019.5 (both within 1px); my TP4 30885.0 vs orig 30885.7; both stopped 14:40 (yellow 14:35 on 48e5c22c refers to this trade)"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-08 15:50",
+   "notes": "orig short 15:50 entry 30964.5 (15:35 low), TP4 at 16:00; yellow 15:50 on 48e5c22c"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-09 05:00",
+   "orig_fill_bar": "2026-10-09 05:00",
+   "notes": "my stop 30807.8 vs orig 30807.8-30808.2; my TP4 30728.2; both TP4 05:30"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 06:05",
+   "orig_fill_bar": "2026-10-09 06:05",
+   "notes": "STOP DIFFERS: my stop 30740.7 (R 39.3, TP4 30857.8) vs orig 30760.6 (R 19.5, TP4 30819.0); orig stopped 06:25, mine stopped 06:45 (L30736.7)"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 07:10",
+   "notes": "my long entry 30786.5 (06:55 H30786.7 broken by 07:05 impulse O30764.8 C30789.2 which opened BELOW VWAP 30766.7), stop 30745.2, TP4 30868.85 hit 09:20; orig no trade (yellow 08:20 on 928e2bb3 sits inside this box) | no orig box at 07:10 in this image either (see f5f38768)"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 09:45",
+   "orig_fill_bar": "2026-10-09 09:45",
+   "notes": "my stop 30867.85 vs orig 30868.2; TP4 30953.4 vs 30953.5"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 11:10",
+   "orig_fill_bar": "2026-10-09 11:10",
+   "notes": "my stop 30899.9 vs orig 30899.95; TP4 30984.5 vs 30984.4"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-09 12:55",
+   "notes": "orig long 12:55 entry 31000.2 stop ~30964; yellow 12:55 on 928e2bb3 | orig long 12:55 stopped 16:00"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-12 05:10",
+   "notes": "my long entry 31043.45 (05:00 body mid 31043.5), stop 31013.15, TP4 31103.5 (R~30.2); orig none (yellow 05:25 on cfbe61c3). Impulse 05:00 O31031.2 C31055.7 body 24.5, fully above VWAP 31011; 90 min after Monday open"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-12 06:20",
+   "orig_fill_bar": "2026-10-12 06:20",
+   "notes": "my stop 31035.9 vs orig 31035.85; my entry 31006.7; TP4 30947.6 vs 30948.1"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-12 08:50",
+   "notes": "my short entry 30993.4, stop 31020.9, TP4 30937.1; orig none (yellow 09:30 on cfbe61c3). Impulse 08:45 O31003.0 C30990.1 body 12.9 OPENED ABOVE VWAP 30997.2 and closed below"
+  },
+  {
+   "symbol": "NASDAQ",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-12 11:15",
+   "orig_fill_bar": "2026-10-12 11:15",
+   "notes": "my stop 31013.85 vs orig 31014.2 (table); my entry 30983.9 vs 30984.1; TP4 30923.5 vs 30923.9 (all within 1px at 2.85px/pt)"
+  }
+ ],
+ "observations": "NASDAQ 13 unique orig trades (Wed7 21:25 - Mon12 12:45). Findings, tested on all 13 + the 4 extra_mine setups:\n1) SETUP = BREAKOUT CLOSE: impulse bar closes beyond the highest high (long, bull bar) / lowest low (short, bear bar) of the PRIOR 8-9 bars (N=8 or 9 reproduces all 13 orig setups; N<=5 misses Mon 06:15, N>=10 breaks Fri 06:00/Thu 14:25).\n2) ENTRY (limit, exact on all 13): long = max(impulse body mid, prior-N-bar high); short = min(body mid, prior-N-bar low), i.e. the broken range edge when it is nearer the close than the body mid. Examples: Thu 08:00 -> 31208.1 (07:55 H), Thu 15:45 -> 30964.5 (15:35 L), Fri 12:50 -> 31000.2 (12:35 H, table-confirmed), Mon 06:15 -> 31006.7 (05:45 L); all others = body mid.\n3) FILL: first later bar trading through the entry; pending order can wait at least 3 bars (Wed 21:10 impulse -> 21:25 fill; Thu 08:40 -> 08:50). A later weak breakout bar (Wed 21:15, body 7.1) did NOT replace the pending 21:10 entry.\n4) STOP: R = 1.80 x ATR(14, RMA/Wilder) of the impulse bar on 12/13 trades (1.78-1.82). Exception Fri 06:05 long: R=19.5 = 0.90 x ATR (half stop); my clone used 1.8xATR there (stop 30740.7 vs orig 30760.6) - the only stop mismatch; all other matched trades have my stop within 1 px of orig. TP = entry +/- 0.6/1/1.5/2 R; exits at TP4 or stop only.\n5) One position at a time (Wed 21:25 long held to Thu 04:45 TP4; breakouts in between ignored). DAILY CAP 5 FILLS: Fri table FILLS/CAP 5/5 after 12:55 (05:00,06:05,09:45,11:10,12:55) -> no orig trades rest of Fri (incl. 19:00-19:10 crash); Thu also had 5 fills (05:40,08:05,08:50,14:30,15:50) -> nothing after 15:50 (19:50/19:55 breakouts skipped). Mon table FILLS 2/5 with 06:20, 11:15. Day apparently starts ~03:30-04:30 IST (Thu 05:40 counts in Thu).\n6) SKIPPED setups (my extra trades): Thu 13:25 short (MY 13:30) - close 30979.8 did NOT break the prior-8-bar low (12:45 L30968.4), only a shorter lookback; Fri 07:05 long (MY 07:10) - did not break prior-8-bar high (06:15 H30804.7) and opened BELOW VWAP (straddle); Mon 08:45 short (MY 08:50) - breakout yes but bar opened ABOVE VWAP (+5.8) and closed below (-7.1) -> straddling-VWAP impulse rejected (all 13 taken impulses opened on the trade side of VWAP or within 0.2 of it: Mon 06:15 o-vwap -0.2, Fri 06:00 +1.4); Mon 05:00 long (MY 05:10) - breakout, fully above VWAP, 90 min after Monday open, but impulse range/ATR = 2.00 (largest; taken ones <=1.79) and body/ATR 1.46 -> possible over-extension filter or Monday warm-up; cause unconfirmed.\n7) Missed by mine: Wed 21:25 long (21:10 impulse, body 22.8 = 0.70 ATR, close 59 above VWAP, fill 3 bars later), Thu 15:50 short (entry = 15:35 low, not body mid), Fri 12:55 long (entry = 12:35 high) - the latter two need rule 2.\n8) Blue circles on the orig VWAP line every 11 bars are cosmetic. Narrow 2-3 bar boxes (Thu 14:30, 15:50) are missed by boxes.py; found with a fill-colour column scan.",
+ "table_readings": [
+  "39f7f90d / overlay on 33f61af2,952800b0,1d1eef0a,f5f38768,2022bd5c (Mon 12, 12:45): STATE SHORT ACTIVE; REGIME RANGING ADX 32; BIAS NEUTRAL; ENTRY 30984.1; STOP 31014.2; TP1 30966.0; TP2 30954.0; TP3 30938.9; TP4 30923.9; LIVE/BARS +1.11R 19 (+1.09R in another frame); TARGETS HIT 3/3 reached; MODEL DAY 1W/0L 100% +2.00R; FILLS/CAP 2/5; LOADED BARS TP4 +2.00R 38% +51.00R",
+  "d6895f2d & ff13bd75 (Fri 9, 13:40): STATE LONG ACTIVE; RANGING ADX 36; BIAS NEUTRAL; ENTRY 31000.2; STOP 30963.8; TP1 31022.1; TP2 31036.6; TP3 31054.9; TP4 31073.1; LIVE/BARS -0.20R 9; TARGETS HIT 0/3 reached; MODEL DAY 2W/2L 50% +2.00R; FILLS/CAP 5/5; LOADED BARS TP4 +2.00R 38% +52.00R"
+ ]
+}

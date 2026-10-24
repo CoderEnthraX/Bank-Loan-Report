@@ -1,0 +1,3 @@
+- verifier started; reran baseline/legFrom=exit x dayStop on/off: confirmed A 79/1/3, B 32->33, 36->37; provable on: 4(13:40,18:30,21:35,11:40)->3(13:40,11:40,NEW 10-16 19:00 inside #63; 21:35 vanishes); off: 5->4
+- verifier: with dayStop ON, legFrom=exit LOSES logged #59 (20:15 L matched in baseline -> MISS; daily -3R stop kills it after new 18:55 loser) and gains #58,#62: net 32->33 but a previously matched B trade is lost. With dayStopR=0 no loss (36->37, +#58 only)
+- verifier: momAtr .93 (dayStop on) A 79/1/3, B 33, prov 3 (13:40,11:40,19:00); .94 A 78/2/4; 14 A/B-confirmed trades lie in exit-anchored window and survive legFrom=exit; B log DOES contain some losers (SL) but omits CRUDE 10-07 11:35/13:25/19:20 that A shows -> student omits some losers (confirmed)

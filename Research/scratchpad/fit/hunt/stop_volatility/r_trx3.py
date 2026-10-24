@@ -1,0 +1,6 @@
+# tight when the displacement bar's true range <= 0.8 x mean TR of the previous 3 bars (no range expansion)
+import sys; sys.path.insert(0, '/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_volatility')
+from rulebase import *
+def stop_fn(P, i, d, entry, stop, A, ctx):
+    tr = P['tr']
+    return tight_stop(P, i, d, entry, A) if tr[i] <= 0.8 * sum(tr[i - 3:i]) / 3 else stop

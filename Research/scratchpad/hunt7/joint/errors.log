@@ -1,0 +1,144 @@
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legLossOnly": true, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legLossOnly": true, "legSameDay": true, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legSameDay": true, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legSameDay": true, "legWin": 6, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legLossOnly": true, "legWin": 6, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legWin": 6, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legLossOnly": true, "legSameDay": true, "legWin": 6, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legWin": 15, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legLossOnly": true, "legWin": 15, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legLossOnly": true, "legSameDay": true, "legWin": 15, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+
+{"cooldownBars": 1, "dayStopR": 0, "erMin": 0.2, "legFrom": "arm", "legSameDay": true, "legWin": 15, "minOpenBars": 0, "slopeCross": true, "tightOut": true}
+ratchpad/fit/gtscore.py", line 47, in score
+    mine = [m for m in run(P, cfg) if covered(windows, s, T[m['fill']])]
+                       ~~~^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/xl/score2.py", line 24, in _r
+    return M.run(P['sym'], inp)
+           ~~~~~^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt7/joint/j.py", line 80, in run
+    else: brkL = min(L[cur['fill']:i])
+                 ~~~^^^^^^^^^^^^^^^^^^
+ValueError: min() iterable argument is empty
+

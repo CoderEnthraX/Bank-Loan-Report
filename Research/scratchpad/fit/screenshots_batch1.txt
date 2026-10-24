@@ -1,0 +1,21 @@
+# Batch 1 (20 screenshots). "mine" = user's TradingView with my ARM indicator (yellow lines = discrepancy marks); "orig" = original ARP from the YouTube video.
+33b07bdc-image.png  mine  NIFTY 5m  5-6 Oct (table: short active, entry 22367 stop 22407.70)
+1bde1d4a-image.png  orig  NIFTY 5m  5-6 Oct
+eeb9f471-image.png  mine  CRUDEOIL1! 5m  6-7 Oct (yellow: Tue 06 21:00, Wed 07 11:35-ish, 13:05)
+18d03c77-image.png  orig  CRUDEOIL1! 5m  6-7 Oct
+6023409d-image.png  mine  CRUDEOIL1! 5m  7-8 Oct (yellow: Wed 07 ~18:xx, 19:20, Thu 08 14:15)
+9a510e48-image.png  orig  CRUDEOIL1! 5m  7-8 Oct
+37bd5600-image.png  mine  CRUDEOIL1! 5m  8-9 Oct (yellow: Thu 08 14:15)
+5c1c0b1b-image.png  orig  CRUDEOIL1! 5m  8-9 Oct
+199401e9-image.png  orig  SENSEX 5m  7-8 Oct
+5d6383b3-image.png  mine  SENSEX 5m  7-8 Oct (yellow: Wed 07 13:55, Thu 08 10:40)
+06c042b4-image.png  orig  SENSEX 5m  (duplicate of 199401e9)
+4f84653c-image.png  mine  SENSEX 5m  8-12 Oct (yellow: Thu 08 13:15, 15:05)
+e0514981-image.png  orig  SENSEX 5m  8-12 Oct
+f0411b87-image.png  mine  NIFTY 5m  9-12 Oct (yellow: Fri 09 13:50)
+de06f3d8-image.png  orig  NIFTY 5m  9-12 Oct
+56af2287-image.png  mine  NIFTY 5m  7-8 Oct (yellow: Wed 07 10:00, 13:50, Thu 08 13:20, 14:35)
+5f988fe1-image.png  orig  NIFTY 5m  7-8 Oct
+7b9104ee-image.png  mine  NIFTY 5m  5-6 Oct
+9cc9233b-image.png  orig  NIFTY 5m  5-6 Oct
+c52b0da8-image.png  mine  GC1! 5m  7 Oct (yellow: Wed 07 ~05:2x, 05:45, 06:10, 13:55)

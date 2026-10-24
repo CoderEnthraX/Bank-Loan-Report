@@ -1,0 +1,554 @@
+{
+ "group": "sensex_us30",
+ "windows": [
+  {
+   "symbol": "SENSEX",
+   "first_bar": "2026-10-06 12:50",
+   "last_bar": "2026-10-08 13:35",
+   "anchor": "crosshair header O72248.08 H72295.24 L72235.36 C72279.90 = 2026-10-08 09:55 (idx1856, dashed line x=1022); legend ARP 72360.14 0.00 0.00 = VWAP 09:55; x(idx)=1099.9+8.675*(idx-1865); price y=134+(74000-p)*0.43619 (labels 74000@134, 72900@614, 71900@1050), boxes drawn ~+1.5px lower. VWAP axis label 72109.98 = VWAP of 10-08 13:35 (last bar at right edge); 10-08 12:35-13:35 candles are below the visible bottom. Table is the LIVE state of 2026-10-12 ~12:40 (vendor scrolled back), not of the visible window.",
+   "image": "199401e9"
+  },
+  {
+   "symbol": "SENSEX",
+   "first_bar": "2026-10-06 12:50",
+   "last_bar": "2026-10-08 13:35",
+   "anchor": "identical duplicate of 199401e9",
+   "image": "06c042b4"
+  },
+  {
+   "symbol": "SENSEX",
+   "first_bar": "2026-10-08 11:55",
+   "last_bar": "2026-10-12 12:40",
+   "anchor": "crosshair header O71975.36 H71991.25 L71952.56 C71972.28 = 2026-10-12 12:35 (idx2032, dashed line x=1387); legend ARP 72196.18 0.00 0.00 = VWAP 12:35; last bar 12:40 is live (VWAP label 72195.88, price 71980.55). x(idx)=1386.0+8.675*(idx-2032); price y=121.5+(73200-p)*0.43643 (labels 73200@121.5 .. 71100@1038); boxes ~+1.2px lower.",
+   "image": "e0514981"
+  },
+  {
+   "symbol": "US30",
+   "first_bar": "2026-10-07 04:00",
+   "last_bar": "2026-10-08 01:05",
+   "anchor": "crosshair header O51512 H51513 L51502 = 2026-10-07 06:35 (idx7270); legend ARP 51544.91 0.00 0.00 = VWAP 06:35 (US30 VWAP resets 03:30 IST). x(idx)=278.5+6.65*(idx-7270); y=105+(51680-p)*1.7802 (labels 51680@105 .. 51200@959.5); boxes ~+1.5px lower. 10-07 17:50-21:50 candles are below the visible bottom (<51140).",
+   "image": "758aa07c"
+  },
+  {
+   "symbol": "US30",
+   "first_bar": "2026-10-07 23:15",
+   "last_bar": ">= 2026-10-09 02:15 (exact last bar not confirmable: after 10-09 00:45 all candles are above the visible top (y85=51152) and the right part is behind the table; the live long box reaches at least x1513 = 10-09 02:15; chart x-extent ends ~idx 7833 = 10-09 07:30)",
+   "anchor": "crosshair header = 2026-10-08 16:55 (idx7670, x=970.5) O50716 H50735 L50711 C50729; legend ARP VWAP 50901.37 = VWAP 16:55. x(idx)=970.5+4.835*(idx-7670); y=107+(51140-p)*1.7815; box lines ~+1.5px lower than candle scale. Candles left of x~317 (before 10-08 05:40) mostly above the visible top.",
+   "image": "dd1c136a"
+  }
+ ],
+ "orig_trades": [
+  {
+   "symbol": "SENSEX",
+   "dir": "short",
+   "fill_bar": "2026-10-07 09:40",
+   "entry_measured": 72588.5,
+   "entry_exact": 72590.74,
+   "entry_exact_source": "LOW of 2026-10-07 09:20 (session low; impulse 09:35 O72624.89 C72559.13 closed below it). Alternative body mid of 09:35 = 72592.01 (1.3 pts away, indistinguishable)",
+   "stop_measured": 72715.5,
+   "r_from_green_box": 126.8,
+   "exit_bar": "2026-10-07 10:15",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "199401e9",
+    "06c042b4"
+   ],
+   "notes": "Box x 372-432; lines stop y694.5, E 750, TP1 783, TP2 806, TP4 860.5 -> r=55.3px=126.8pt. Fill 09:40 H72672.23. Exit 10:15 H72855.12 >= stop ~72717.",
+   "table_values": ""
+  },
+  {
+   "symbol": "SENSEX",
+   "dir": "long",
+   "fill_bar": "2026-10-07 10:30",
+   "entry_measured": 72898.4,
+   "entry_exact": 72899.365,
+   "entry_exact_source": "body mid of impulse 2026-10-07 10:25 (O72843.12 C72955.61); impulse closed above recent highs but BELOW the 09:15 high 72969.57",
+   "stop_measured": 72742.0,
+   "r_from_green_box": 157.0,
+   "exit_bar": "2026-10-07 10:35",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "199401e9",
+    "06c042b4"
+   ],
+   "notes": "Narrow box x 458-466 (1 bar). Column scan: TP4 y479, TP3 513, TP2 547.5, TP1 574.5, entry 616, stop 684 -> r=68.5px=157pt; stop ~72742. Fill 10:30 L72830.65; exit 10:35 L72715.42.",
+   "table_values": ""
+  },
+  {
+   "symbol": "SENSEX",
+   "dir": "long",
+   "fill_bar": "2026-10-07 11:00",
+   "entry_measured": 72957.0,
+   "entry_exact": 72956.83,
+   "entry_exact_source": "HIGH of 2026-10-07 10:30 (=10:25 H72956.81; highest high of the last ~19 bars, excluding the 09:15 open bar H72969.57); impulse 10:55 C72984.93 closed above it. Body mid 72948.155 is ~4px off -> rejected",
+   "stop_measured": 72801.0,
+   "r_from_green_box": 155.9,
+   "exit_bar": "2026-10-07 12:25",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "199401e9",
+    "06c042b4"
+   ],
+   "notes": "Box x 510-657; TP4 y454.5, TP3 488, TP2 522, TP1 549, E 590.5, stop 658 -> r=68px. Fill 11:00 L72920.66. Exit 12:25 L72791.6 <= stop ~72801.",
+   "table_values": ""
+  },
+  {
+   "symbol": "SENSEX",
+   "dir": "short",
+   "fill_bar": "2026-10-08 10:40",
+   "entry_measured": 72144.2,
+   "entry_exact": 72145.09,
+   "entry_exact_source": "LOW of 2026-10-08 10:30 (session low; impulse 10:35 O72201.37 C72133.89 closed below it). Body mid 72167.63 rejected (9px off)",
+   "stop_measured": 72299.0,
+   "r_from_green_box": 154.7,
+   "exit_bar": "2026-10-08 12:15",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "199401e9",
+    "06c042b4"
+   ],
+   "notes": "Box x 1100-1265, short triangle above 10:40. Lines stop y~876-878, E 943.5, TP1 984, TP2 1011, TP3 1044, TP4 1078 -> r=67.5px=154.7pt; TP4 ~71835.7. Fill 10:40 H72200.6; exit 12:15 L71832.1 (11:25 L71853.9 did not reach TP4).",
+   "table_values": ""
+  },
+  {
+   "symbol": "SENSEX",
+   "dir": "short",
+   "fill_bar": "2026-10-08 13:20",
+   "entry_measured": 71640.0,
+   "entry_exact": 71639.64,
+   "entry_exact_source": "LOW of 2026-10-08 13:00 (session low; 12:55 L71641.94); impulse 13:15 O71699.30 C71607.25 closed below it; body mid 71653.275 is further from close -> entry = min(mid, broken low)",
+   "stop_measured": 71800.0,
+   "r_from_green_box": 160.4,
+   "exit_bar": "2026-10-09 09:15",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "e0514981"
+   ],
+   "notes": "Box x 216-414. Lines stop y733.5, E ~804, TP1 845.5, TP2 874, TP3 909, TP4 943.5 -> r~70px=160.4pt; TP4 ~71318.8 never reached (10-08 low after fill 71327.75, 10 pts short). Held OVERNIGHT; stopped by the 10-09 09:15 gap (O71852.8 > stop ~71800). Fill 13:20 H71673.85.",
+   "table_values": ""
+  },
+  {
+   "symbol": "SENSEX",
+   "dir": "long",
+   "fill_bar": "2026-10-09 10:10",
+   "entry_measured": 72339.0,
+   "entry_exact": 72338.57,
+   "entry_exact_source": "HIGH of 2026-10-09 09:55 (session high); impulse 10:05 O72269.92 C72345.72 closed above it; body mid 72307.82 lower -> entry = max(mid, broken high)",
+   "stop_measured": 72130.7,
+   "r_from_green_box": 207.9,
+   "exit_bar": "2026-10-12 09:15",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "e0514981"
+   ],
+   "notes": "Box x 510-1039. TP4 y317.5, TP3 363, TP2 408, TP1 444.5, E 499, stop 589.5 -> r=90.75px=207.9pt; TP4 ~72754.4. 10-09 range after fill 72234.84-72669.2 (neither hit). Held over the weekend; TP4 hit by 10-12 09:15 gap open (O72768.74). Counted as a 10-12 win in MODEL DAY 2W/0L. Fill 10:10 L72316.78.",
+   "table_values": ""
+  },
+  {
+   "symbol": "SENSEX",
+   "dir": "short",
+   "fill_bar": "2026-10-12 09:40",
+   "entry_measured": 72392.0,
+   "entry_exact": 72392.22,
+   "entry_exact_source": "LOW of 2026-10-12 09:20 (session low); impulse 09:35 O72445.99 C72368.04 closed below; body mid 72407.015 higher -> entry = min(mid, broken low)",
+   "stop_measured": 72574.4,
+   "r_from_green_box": 182.2,
+   "exit_bar": "2026-10-12 11:00",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "e0514981"
+   ],
+   "notes": "Box x 1083-1221. stop y395.5, E 475, TP1 522, TP2 554.5, TP3 594.5, TP4 634 -> r=79.5px=182.2pt; TP4 ~72027.8: 10:55 L72068 no, 11:00 L71996.64 yes. Fill 09:40 H72417.12.",
+   "table_values": ""
+  },
+  {
+   "symbol": "SENSEX",
+   "dir": "short",
+   "fill_bar": "2026-10-12 11:20",
+   "entry_measured": 71975.3,
+   "entry_exact": 71977.95,
+   "entry_exact_source": "TABLE; = body mid of impulse 2026-10-12 11:10 (O72017.82 C71938.08). Broken low 11:05 L71978.71 is 0.76 higher -> entry = min(mid, broken low) = mid",
+   "stop_measured": 72131.62,
+   "r_from_green_box": 153.67,
+   "exit_bar": "open (live at 12:40)",
+   "outcome": "open",
+   "confidence": "high",
+   "images": [
+    "e0514981",
+    "199401e9"
+   ],
+   "notes": "Box x 1256-1395 (live). Fill 11:20 H71984.21 (11:15 H71971.65 did not reach). TP1 hit 11:45 L71863. Table values exact.",
+   "table_values": "SHORT ACTIVE, TRANSITION ADX 38, BEARISH; ENTRY 71977.95 STOP 72131.62 TP1 71885.75 TP2 71824.28 TP3 71747.44 TP4 71670.61; LIVE/BARS -0.02R 16; TARGETS 1/3 reached; MODEL DAY 2W/0L 100% +4.00R; FILLS/CAP 2/5; LOADED BARS TP4 +2.00R 34% +13.00R"
+  },
+  {
+   "symbol": "US30",
+   "dir": "short",
+   "fill_bar": "2026-10-07 05:30",
+   "entry_measured": 51539.5,
+   "entry_exact": 51539.5,
+   "entry_exact_source": "inferred: body mid of 2026-10-07 05:25 (O51544 C51535); with R=1.8*ATR14(10.27)=18.49 the stop 51557.99 is hit by the fill bar itself (05:30 H51558) -> zero-width box, which is what the image shows (triangle, no box)",
+   "stop_measured": 51557.99,
+   "r_from_green_box": null,
+   "exit_bar": "2026-10-07 05:30",
+   "outcome": "stop",
+   "confidence": "low",
+   "images": [
+    "758aa07c"
+   ],
+   "notes": "Short triangle above 05:30 (x192.5, y308-317) but NO box at all (column scan) -> fill and stop on the same bar. The 05:10 impulse alternative (entry 51548.5, R 16.8, stop 51565.3) would not be stopped on 05:30 and would show a box -> rejected. [entry/stop_measured are INFERRED values (no box to measure)]",
+   "table_values": ""
+  },
+  {
+   "symbol": "US30",
+   "dir": "short",
+   "fill_bar": "2026-10-07 06:05",
+   "entry_measured": 51528.6,
+   "entry_exact": 51529.5,
+   "entry_exact_source": "body mid of impulse 2026-10-07 05:55 (O51535 C51524); it did not close below the session low 51522 (05:15) -> mid",
+   "stop_measured": 51550.2,
+   "r_from_green_box": 21.35,
+   "exit_bar": "2026-10-07 07:30",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "758aa07c"
+   ],
+   "notes": "Box x 238-351. stop y336, E 374.5, TP2 412, TP3 431.5, TP4 450.5 -> r=38px=21.35pt = 1.787*ATR14(11.95). 06:00 H51528 did not reach the entry; 06:05 H51534 filled. TP4 ~51486.8 hit 07:30 L51481 (07:25 L51495 no).",
+   "table_values": ""
+  },
+  {
+   "symbol": "US30",
+   "dir": "short",
+   "fill_bar": "2026-10-07 10:05",
+   "entry_measured": 51482.4,
+   "entry_exact": 51483.0,
+   "entry_exact_source": "body mid of impulse 2026-10-07 10:00 (O51490 C51476); session low 51468 (08:30) not broken",
+   "stop_measured": 51500.5,
+   "r_from_green_box": 17.5,
+   "exit_bar": "2026-10-07 10:35",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "758aa07c"
+   ],
+   "notes": "Box x 558-597. stop y425.5, E 457, TP1 476, TP2 488.5, TP3 504.5, TP4 519.5 -> r=31.2px=17.5pt (=1.784*ATR 9.81). Fill 10:05 H51484. Stop ~51500.7 hit 10:35 H51501 (10:20 H51498 no).",
+   "table_values": ""
+  },
+  {
+   "symbol": "US30",
+   "dir": "short",
+   "fill_bar": "2026-10-07 11:30",
+   "entry_measured": 51474.0,
+   "entry_exact": 51474.5,
+   "entry_exact_source": "body mid of impulse 2026-10-07 11:25 (O51479 C51470); session low 51468 not broken",
+   "stop_measured": 51494.5,
+   "r_from_green_box": 20.5,
+   "exit_bar": "2026-10-07 11:50",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "758aa07c"
+   ],
+   "notes": "Box x 670-698 (TP lines hidden by candles; frame stop y436, E 472.5 -> r 36.5px=20.5pt =1.8*ATR 11.28). Fill 11:30 H51480. TP4 ~51433.5 hit 11:50 L51428.",
+   "table_values": ""
+  },
+  {
+   "symbol": "US30",
+   "dir": "short",
+   "fill_bar": "2026-10-07 12:40",
+   "entry_measured": 51410.4,
+   "entry_exact": 51411.0,
+   "entry_exact_source": "body mid of impulse 2026-10-07 12:30 (O51423 C51399); it broke the session low 51420 (12:20) but mid 51411 < 51420 -> entry = min(mid, broken low) = mid",
+   "stop_measured": 51441.5,
+   "r_from_green_box": 31.2,
+   "exit_bar": "2026-10-07 13:25",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "758aa07c"
+   ],
+   "notes": "Box x 764-823. stop y529.5, E 585, TP1 618.5, TP2 640.5, TP3 668, TP4 696 -> r=55.5px=31.2pt (=1.808*ATR 17.26). 12:35 H51410 missed the entry by 1 pt; filled 12:40 H51422. Stop ~51442.1 hit 13:25 H51444.",
+   "table_values": ""
+  },
+  {
+   "symbol": "US30",
+   "dir": "short",
+   "fill_bar": "2026-10-08 06:10",
+   "entry_measured": 51109.6,
+   "entry_exact": 51110.0,
+   "entry_exact_source": "LOW of 2026-10-08 06:00 (session low since 03:30) broken by impulse 06:05 (O51121 C51107, mid 51114); entry = min(mid 51114, broken low 51110) = 51110 (mid would be 6 px higher, rejected)",
+   "stop_measured": 51137.0,
+   "r_from_green_box": 27.13,
+   "exit_bar": "2026-10-08 07:00",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "dd1c136a"
+   ],
+   "notes": "Pink tri x346.6. Box x 347-394; stop y113, TP2 209.5, TP3 234, TP4 258 -> r=48.3px=27.13pt; R=1.8*ATR14(06:05 15.031)=27.06 -> stop 51137.06, TP4 51055.88. Fill 06:10 H51114. Stop hit 07:00 H51148 (06:55 H51130 no).",
+   "table_values": ""
+  },
+  {
+   "symbol": "US30",
+   "dir": "short",
+   "fill_bar": "2026-10-08 11:15",
+   "entry_measured": 51089.8,
+   "entry_exact": 51089.5,
+   "entry_exact_source": "body mid of impulse 2026-10-08 11:10 (O51103 C51076). It broke the prior bar low 51100 and recent lows 51094 (11:00) but NOT entry=session low 51081 (06:45): entry is the mid, so the 'min(mid, broken low)' rule must use a recent/prev-bar low, not the session low",
+   "stop_measured": 51118.2,
+   "r_from_green_box": 28.6,
+   "exit_bar": "2026-10-08 11:25",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "dd1c136a"
+   ],
+   "notes": "Pink tri x642 (idx7602). Narrow box x~642-652 (boxes.py misses it; column scan x644/647): stop y147.5, entry 198 (light line), TP2 249.5, TP3 274.5, TP4 300 -> r=50.8px=28.5pt = 1.8*ATR14(11:10 15.864)=28.56 -> stop 51118.06, TP4 51032.44. Fill 11:15 H51090 (0.5 pt through). TP4 hit 11:25 L51026 (11:20 L51050 no).",
+   "table_values": ""
+  },
+  {
+   "symbol": "US30",
+   "dir": "short",
+   "fill_bar": "2026-10-08 14:55",
+   "entry_measured": 50786.6,
+   "entry_exact": 50787.5,
+   "entry_exact_source": "body mid of impulse 2026-10-08 14:45 (O50802 C50773); it broke session low 50788 (mid 50787.5 < 50788 -> mid). 14:50 was a further bearish bar (O50774 C50754, mid 50764) but the order was NOT re-armed to it (R 68.2 matches 14:45 ATR, entry matches 14:45 mid)",
+   "stop_measured": 50855.0,
+   "r_from_green_box": 68.2,
+   "exit_bar": "2026-10-08 16:00",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "dd1c136a"
+   ],
+   "notes": "Pink tri x854.6. Box x 855-917; stop y615, E 736.5, TP2 857, TP3 918, TP4 977.5 -> r=121.5px=68.2pt = 1.8*ATR14(14:45 37.71)=67.88 -> stop 50855.38, TP4 50651.74. 14:50 H50782 did not reach entry; fill 14:55 H50788. TP4 hit 16:00 L50637 (15:55 L50669 no); max H after fill 50812 (no stop).",
+   "table_values": ""
+  },
+  {
+   "symbol": "US30",
+   "dir": "long",
+   "fill_bar": "2026-10-08 23:15",
+   "entry_measured": 51174.9,
+   "entry_exact": 51174.5,
+   "entry_exact_source": "body mid of impulse 2026-10-08 23:10 (O51152 C51197); session high 51220 not broken. Entry line itself is above the visible top; inferred from stop line + R",
+   "stop_measured": 51078.5,
+   "r_from_green_box": null,
+   "exit_bar": "none (still open: no TP4 51367.34 / stop 51078.08 through 2026-10-09 12:00; box extends behind the table)",
+   "outcome": "open",
+   "confidence": "medium",
+   "images": [
+    "dd1c136a"
+   ],
+   "notes": "Green tri x1336 (idx 7745.6 -> 23:15; box x-start 1338 = 7746.0). Only the red box bottom (stop) is visible: y218 x1338->1513+ = 51077.7 (+1.5px adj 51078.5). R=1.8*ATR14(23:10 53.564)=96.42 -> stop 51078.08 matches. Fill 23:15 L51135. Min low afterwards 23:50 L51089 > stop. [entry_measured = measured stop 51078.5 + R 96.42; entry line not visible]",
+   "table_values": "table (state at chart end / realtime, NOT matching this window): STATE SCANNING; REGIME RANGING \u00b7 ADX 29; BIAS NEUTRAL; ENTRY \u2014; STOP \u2014; TP1-4 \u2014; LIVE/BARS \u2014; TARGETS HIT \u2014; MODEL DAY 1W/1L \u00b7 50% \u00b7 +1.00R; FILLS/CAP 2/5; LOADED BARS STOP -1.00R \u00b7 36% \u00b7 +27.00R"
+  }
+ ],
+ "my_vs_orig": [
+  {
+   "symbol": "SENSEX",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 09:40",
+   "orig_fill_bar": "2026-10-07 09:40",
+   "notes": "my stop ~72715 (R 127.2) vs orig ~72716 (R 126.8): same; same exit 10:15"
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-07 10:30",
+   "orig_fill_bar": "2026-10-07 10:30",
+   "notes": "my entry ~72898 R 157.3 vs orig R 157.0: same; exit 10:35"
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-07 11:00",
+   "orig_fill_bar": "2026-10-07 11:00",
+   "notes": "my entry ~72955 (=72956.83) R 155.3 vs orig R 155.9: same; exit 12:25"
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 13:15",
+   "notes": "impulse 13:05 (mid 72605.9). Orig had already 3 losses that day (09:40, 10:30, 11:00 all stopped) -> likely daily loss cap = 3. Yellow line Wed 07 13:55 on MINE."
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 09:45",
+   "notes": "impulse 09:40 (O72327.55 C72246.54) closed 7.7 below session low 72254.23 (09:25); 09:45 H72255.36 touched it by only 1.13 pts. Orig no trade at 09:45 or later on this signal. Mine stayed in this trade until 11:25 TP4, so it missed orig's 10:40."
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-08 10:40",
+   "notes": "orig short 10:40 entry 72145.09 TP4 12:15; mine was busy in the 09:45 short (yellow Thu 08 10:40 on MINE)."
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 12:35",
+   "notes": "impulse 12:30 (C71773.08 below 12:25 low 71789.46), my entry ~71789, R 174, TP4 14:20. Orig had exited its 10:40 short at TP4 12:15 (3 bars before the signal) and did NOT take it; orig instead shorted 13:20 (impulse 13:15). Yellow 'Thu 08 13:15' on MINE."
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-08 13:20",
+   "notes": "mine was still in its 12:35 short (until 14:20)."
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 15:00",
+   "notes": "my entry ~71422, stop ~71578, stopped 15:10. Orig was still holding the 13:20 short (overnight). Yellow 'Thu 08 15:05' on MINE."
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 10:10",
+   "orig_fill_bar": "2026-10-09 10:10",
+   "notes": "my stop ~72124.6 (R 207.6) vs orig ~72130.7 (R 207.9): same within pixel error; both TP4 at 10-12 09:15 gap"
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-12 09:40",
+   "orig_fill_bar": "2026-10-12 09:40",
+   "notes": "my stop ~72569 (R 181.3) vs orig ~72574 (R 182.2): same; both TP4 11:00"
+  },
+  {
+   "symbol": "SENSEX",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-12 11:20",
+   "orig_fill_bar": "2026-10-12 11:20",
+   "notes": "my stop ~72127.5 (R 153) vs orig 72131.62 (R 153.67, table): same"
+  },
+  {
+   "symbol": "US30",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 05:30",
+   "orig_fill_bar": "2026-10-07 05:30",
+   "notes": "same fill bar but a DIFFERENT ORDER: mine used the 05:10 impulse (entry 51548.5, R 16.73, my stop ~51565.2, TP4 at 06:30); orig apparently re-armed on the newer 05:25 impulse (entry 51539.5, stop ~51557.99) and was stopped on the 05:30 bar itself. My stop 51565.2 vs orig ~51558.0."
+  },
+  {
+   "symbol": "US30",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-07 06:05",
+   "notes": "mine still in its 05:30 short until 06:30 (yellow 06:00 on MINE)."
+  },
+  {
+   "symbol": "US30",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 07:35",
+   "notes": "impulse 07:30 (mid 51489.5, R 22.6) = the bar on which orig's 06:05 short hit TP4; orig did not take it. Mine held it until TP4 11:50, which blocked orig's 10:05 and 11:30 trades (yellow 08:55)."
+  },
+  {
+   "symbol": "US30",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-07 10:05",
+   "notes": "mine busy in 07:35 short"
+  },
+  {
+   "symbol": "US30",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-07 11:30",
+   "notes": "mine busy in 07:35 short"
+  },
+  {
+   "symbol": "US30",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-07 12:40",
+   "notes": "impulse 12:30; yellow 12:40 on MINE. Mine had no trade here (after its 07:35 short ended 11:50)."
+  },
+  {
+   "symbol": "US30",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-07 13:40",
+   "notes": "impulse 13:30 (mid 51461, R 42.9). Orig had already 5 fills (05:30,06:05,10:05,11:30,12:40; 3 losses) in the session that started 03:30 -> blocked by fill cap 5 or loss cap 3. Yellow 14:20."
+  },
+  {
+   "symbol": "US30",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 15:30",
+   "notes": "orig capped for the session (no trade during the whole 14:35-17:45 selloff); mine TP4 16:15"
+  },
+  {
+   "symbol": "US30",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 16:40",
+   "notes": "orig capped; yellow ~16:xx/17:00"
+  },
+  {
+   "symbol": "US30",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 06:10",
+   "orig_fill_bar": "2026-10-08 06:10",
+   "notes": "my stop 51137.0 vs orig 51137.06 (MINE box stop y234.5, TP4 334.5; entry 51110 both); both stopped 07:00"
+  },
+  {
+   "symbol": "US30",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 08:05",
+   "notes": "impulse 08:00 (O51157 C51174 body 17 = 1.07*ATR 15.84, close 30 pts above VWAP 51144.8, 270 min after 03:30 open); MINE box x510-522: entry ~51170.5, stop ~51141.9 (R 28.6), stopped 08:10 L51140. Orig flat (its 06:10 short ended 07:00) yet did not trade. Yellow 08:05."
+  },
+  {
+   "symbol": "US30",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 08:45",
+   "notes": "impulse 08:40 (O51103 C51097, body 6 only, H51106 L51093; close 45 pts below VWAP). MINE box entry ~51110 (y267.5), stop ~51139.4, TP4 hit 11:20 (L51050). Orig no trade; this blocked orig's 11:15 short."
+  },
+  {
+   "symbol": "US30",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-08 11:15",
+   "notes": "mine busy in 08:45 short until 11:20 (yellow 11:15)."
+  },
+  {
+   "symbol": "US30",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 14:55",
+   "orig_fill_bar": "2026-10-08 14:55",
+   "notes": "my stop 50855.0 vs orig 50855.38 (MINE stop y579.5, entry y662.5=50787.4, TP4 829.5); both TP4 16:00"
+  },
+  {
+   "symbol": "US30",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 23:15",
+   "orig_fill_bar": "2026-10-08 23:15",
+   "notes": "outside MINE image 19c9562c (ends ~10-08 16:45) -> my stop not measurable; orig stop 51078.08 (entry 51174.5)"
+  }
+ ],
+ "observations": "RISK: every measured orig trade has R = 1.8 x ATR14 (Wilder/RMA) of the IMPULSE bar (US30 R/ATR 1.78-1.81, SENSEX 1.795-1.822); TPs at 0.6/1/1.5/2 R; my clone matches R and stops on all matched trades within pixel error (US30 10-08: 51137.0 vs 51137.06, 50855.0 vs 50855.38; SENSEX within ~5 pts).\nENTRY: limit = the level CLOSER to the impulse close among {body mid of impulse, the recent extreme the impulse broke}: short = min(mid, broken low), long = max(mid, broken high). The 'broken extreme' is a ROLLING ~19-20 bar extreme, not the true session extreme: US30 10-08 11:10 impulse broke the session low 51081 (06:45, 53 bars back) but the entry was the mid 51089.5 (no low <= mid in the last ~20 bars); SENSEX 10-07 10:55 used the 19-bar high excluding the 09:15 open bar. Cases: US30 10-08 06:05 -> 51110 = 06:00 low (mid 51114); SENSEX 10-08 10:35/13:15, 10-12 09:35 -> broken low; 10-09 10:05 -> broken high.\nFILL: first bar AFTER the impulse that trades through the limit (exact touch counts: US30 11:15 H51090 vs 51089.5; 14:50 H50782 missed 50787.5 by 5.5, filled 14:55). The pending order is NOT re-armed by a following same-direction impulse while pending (US30 10-08 14:50 bearish bar ignored, 14:45 order kept). Exception low-confidence: US30 10-07 05:30 may have re-armed on 05:25.\nEXITS: TP4 or stop by high/low; a trade stays open across sessions (SENSEX 10-08 13:20 short held overnight to 10-09 09:15; US30 10-08 23:15 long still open past the 02:25 session break). Only one position at a time.\nCAPS: FILLS/CAP x/5 => max 5 fills per model day (US30 10-07: 5 fills 05:30-12:40 then no trades through the 14:35-17:45 selloff where mine took 13:40/15:30/16:40). SENSEX 10-07: after 3 straight losses (09:40,10:30,11:00) orig took nothing more (mine shorted 13:15) -> loss cap 3 (or 3 consecutive losses) per day.\nSKIPPED IMPULSES (orig no trade, mine traded): (a) right after an exit: SENSEX 10-08 12:30 impulse 3 bars after orig TP4 12:15; US30 10-07 07:30 impulse on the very bar orig hit TP4 -> suggests a cooldown of a few bars after an exit / no signal on the exit bar. (b) weak bars: US30 10-08 08:40 body only 6 pts (0.38 ATR) - mine shorted 08:45 with an OLD level 51110 as entry (bug: my clone reused a stale broken level); US30 10-08 08:00 bull bar body 17 = 1.07 ATR, close 30 pts above VWAP, 12 bars after orig's 07:00 stop - orig skipped, mine long 08:05 stopped 08:10. (c) SENSEX 10-08 09:40 impulse closed only 7.7 below the session low; mine filled 09:45 with a 1.13-pt touch, orig did not trade (possibly orig's entry slightly different or minimum-break filter) - this then cascaded (mine busy until 11:25, missed orig 10:40). Cascades: most 'missed_mine' are caused by my extra trades occupying the single position slot (SENSEX 10-08 10:40 and 13:20, US30 10-07 06:05/10:05/11:30, US30 10-08 11:15).\nSessions: US30 VWAP/session resets 03:30 IST (data gap 02:30-03:25); SENSEX 09:15-15:30.",
+ "table_readings": [
+  "199401e9/06c042b4 (SENSEX, live state 2026-10-12 ~12:40, not the visible window): STATE SHORT ACTIVE; REGIME TRANSITION \u00b7 ADX 38; BIAS BEARISH; ENTRY 71977.95; STOP 72131.62; TP1 71885.75; TP2 71824.28; TP3 71747.44; TP4 71670.61; LIVE/BARS -0.09R \u00b7 16; TARGETS HIT 1/3 reached; MODEL DAY 2W/0L \u00b7 100% \u00b7 +4.00R; FILLS/CAP 2/5; LOADED BARS TP4 +2.00R \u00b7 34% \u00b7 +13.00R",
+  "e0514981 (SENSEX, live at 2026-10-12 12:40): SHORT ACTIVE; TRANSITION \u00b7 ADX 38; BEARISH; ENTRY 71977.95; STOP 72131.62; TP1 71885.75; TP2 71824.28; TP3 71747.44; TP4 71670.61; LIVE/BARS -0.02R \u00b7 16; TARGETS HIT 1/3 reached; MODEL DAY 2W/0L \u00b7 100% \u00b7 +4.00R; FILLS/CAP 2/5; LOADED BARS TP4 +2.00R \u00b7 34% \u00b7 +13.00R",
+  "758aa07c (US30): see checkpoint (no table values recorded for the window)",
+  "dd1c136a (US30, state at chart end/realtime, does NOT match the visible 10-08 trades which show a live long): STATE SCANNING; REGIME RANGING \u00b7 ADX 29; BIAS NEUTRAL; ENTRY \u2014; STOP \u2014; TP1-TP4 \u2014; LIVE/BARS \u2014; TARGETS HIT \u2014; MODEL DAY 1W/1L \u00b7 50% \u00b7 +1.00R; FILLS/CAP 2/5; LOADED BARS STOP -1.00R \u00b7 36% \u00b7 +27.00R"
+ ]
+}

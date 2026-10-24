@@ -1,0 +1,52 @@
+
+== family A
+VWAP side (the model)                                              | 1:1 win 54.1% E +0.082 (Sep +0.076 Oct +0.091) 0/10 | 1:2 n 1154 win 39.0% E +0.170 (Sep +0.160 Oct +0.185) 0/10 tot +196 CI [+0.000,+0.000]
+No side filter                                                     | 1:1 win 51.0% E +0.021 (Sep +0.003 Oct +0.048) 3/10 | 1:2 n 1251 win 35.5% E +0.065 (Sep +0.069 Oct +0.059) 1/10 tot  +81 CI [-0.168,-0.048]
+EMA50 side (close vs EMA50 + slope)                                | 1:1 win 52.1% E +0.041 (Sep +0.038 Oct +0.047) 2/10 | 1:2 n 1169 win 37.5% E +0.124 (Sep +0.123 Oct +0.126) 2/10 tot +145 CI [-0.095,+0.004]
+EMA100 side (close vs EMA100 + slope)                              | 1:1 win 54.1% E +0.082 (Sep +0.088 Oct +0.074) 5/10 | 1:2 n 1127 win 38.3% E +0.150 (Sep +0.141 Oct +0.164) 6/10 tot +169 CI [-0.067,+0.025]
+EMA200 side (close vs EMA200 + slope)                              | 1:1 win 53.4% E +0.067 (Sep +0.070 Oct +0.064) 3/10 | 1:2 n 1095 win 37.6% E +0.129 (Sep +0.126 Oct +0.133) 3/10 tot +141 CI [-0.101,+0.023]
+EMA50 side, position only                                          | 1:1 win 52.3% E +0.045 (Sep +0.035 Oct +0.061) 4/10 | 1:2 n 1213 win 36.9% E +0.106 (Sep +0.127 Oct +0.074) 3/10 tot +128 CI [-0.117,-0.011]
+EMA100 side, position only                                         | 1:1 win 53.1% E +0.062 (Sep +0.072 Oct +0.048) 4/10 | 1:2 n 1164 win 37.0% E +0.111 (Sep +0.115 Oct +0.105) 3/10 tot +129 CI [-0.111,-0.012]
+EMA200 side, position only                                         | 1:1 win 53.6% E +0.071 (Sep +0.070 Oct +0.072) 5/10 | 1:2 n 1128 win 38.0% E +0.141 (Sep +0.133 Oct +0.153) 3/10 tot +159 CI [-0.092,+0.033]
+
+== family B
+EMA50>EMA100, close>EMA50                                          | 1:1 win 53.2% E +0.064 (Sep +0.082 Oct +0.037) 4/10 | 1:2 n  987 win 36.4% E +0.091 (Sep +0.099 Oct +0.079) 3/10 tot  +90 CI [-0.147,-0.005]
+EMA100>EMA200, close>EMA100                                        | 1:1 win 51.1% E +0.022 (Sep +0.040 Oct -0.005) 2/10 | 1:2 n  926 win 36.1% E +0.082 (Sep +0.095 Oct +0.062) 3/10 tot  +76 CI [-0.165,-0.006]
+EMA50>EMA200, close>EMA50                                          | 1:1 win 51.7% E +0.034 (Sep +0.048 Oct +0.012) 1/10 | 1:2 n  963 win 36.3% E +0.090 (Sep +0.103 Oct +0.070) 4/10 tot  +87 CI [-0.161,-0.004]
+EMA50>100>200, close>EMA50                                         | 1:1 win 51.1% E +0.021 (Sep +0.062 Oct -0.041) 1/10 | 1:2 n  831 win 35.5% E +0.065 (Sep +0.077 Oct +0.046) 1/10 tot  +54 CI [-0.192,-0.025]
+
+== family C
+VWAP + close>EMA200                                                | 1:1 win 53.6% E +0.073 (Sep +0.067 Oct +0.081) 4/10 | 1:2 n 1084 win 38.5% E +0.154 (Sep +0.150 Oct +0.160) 5/10 tot +167 CI [-0.061,+0.033]
+VWAP + close>EMA200 (skipped run invisibly)                        | 1:1 win 53.8% E +0.076 (Sep +0.073 Oct +0.080) 4/10 | 1:2 n  963 win 39.6% E +0.187 (Sep +0.183 Oct +0.194) 5/10 tot +180 CI [-0.021,+0.051] null 82%
+VWAP + close>EMA100                                                | 1:1 win 54.2% E +0.084 (Sep +0.092 Oct +0.071) 4/10 | 1:2 n 1124 win 39.1% E +0.172 (Sep +0.169 Oct +0.175) 3/10 tot +193 CI [-0.029,+0.034]
+VWAP + close>EMA100 (skipped run invisibly)                        | 1:1 win 53.8% E +0.075 (Sep +0.077 Oct +0.072) 4/10 | 1:2 n 1079 win 39.6% E +0.187 (Sep +0.181 Oct +0.197) 7/10 tot +202 CI [-0.004,+0.039] null 93%
+VWAP + close>EMA50                                                 | 1:1 win 54.2% E +0.084 (Sep +0.081 Oct +0.090) 5/10 | 1:2 n 1138 win 39.2% E +0.176 (Sep +0.167 Oct +0.189) 4/10 tot +200 CI [-0.015,+0.027]
+VWAP + close>EMA50 (skipped run invisibly)                         | 1:1 win 53.9% E +0.077 (Sep +0.078 Oct +0.077) 2/10 | 1:2 n 1127 win 39.3% E +0.179 (Sep +0.164 Oct +0.203) 6/10 tot +202 CI [-0.002,+0.021] null 88%
+VWAP + EMA50>EMA200                                                | 1:1 win 52.1% E +0.042 (Sep +0.050 Oct +0.031) 4/10 | 1:2 n  918 win 36.4% E +0.092 (Sep +0.095 Oct +0.085) 4/10 tot  +84 CI [-0.149,+0.001]
+VWAP + EMA50>EMA200 (skipped run invisibly)                        | 1:1 win 53.0% E +0.060 (Sep +0.067 Oct +0.049) 3/10 | 1:2 n  711 win 39.2% E +0.177 (Sep +0.211 Oct +0.122) 5/10 tot +126 CI [-0.055,+0.074] null 58%
+VWAP + EMA50>EMA100                                                | 1:1 win 52.7% E +0.055 (Sep +0.065 Oct +0.039) 1/10 | 1:2 n  965 win 36.1% E +0.082 (Sep +0.086 Oct +0.075) 4/10 tot  +79 CI [-0.154,-0.020]
+VWAP + EMA50>EMA100 (skipped run invisibly)                        | 1:1 win 53.0% E +0.060 (Sep +0.056 Oct +0.066) 3/10 | 1:2 n  761 win 38.4% E +0.151 (Sep +0.156 Oct +0.144) 3/10 tot +115 CI [-0.077,+0.040] null 27%
+VWAP + EMA100>EMA200                                               | 1:1 win 51.1% E +0.023 (Sep +0.049 Oct -0.019) 2/10 | 1:2 n  876 win 36.0% E +0.079 (Sep +0.104 Oct +0.038) 4/10 tot  +69 CI [-0.163,-0.009]
+VWAP + EMA100>EMA200 (skipped run invisibly)                       | 1:1 win 52.5% E +0.051 (Sep +0.077 Oct +0.008) 3/10 | 1:2 n  673 win 38.6% E +0.159 (Sep +0.191 Oct +0.104) 5/10 tot +107 CI [-0.079,+0.060] null 37%
+
+== family D
+pullback to EMA50 (6 bars, 0.0 ATR) in EMA200 trend, no VWAP       | 1:1 win 47.2% E -0.056 (Sep -0.034 Oct -0.093) 2/10 | 1:2 n  529 win 34.2% E +0.026 (Sep +0.064 Oct -0.035) 3/10 tot  +14 CI [-0.256,-0.027]
+pullback to EMA50 (6 bars, 0.0 ATR) in EMA200 trend, + VWAP        | 1:1 win 48.5% E -0.030 (Sep +0.007 Oct -0.094) 2/10 | 1:2 n  445 win 35.5% E +0.065 (Sep +0.109 Oct -0.012) 3/10 tot  +29 CI [-0.224,+0.017]
+pullback to EMA50 (6 bars, 0.0 ATR) in EMA200 trend, + VWAP (skipp | 1:1 win 47.4% E -0.053 (Sep -0.031 Oct -0.089) 1/10 | 1:2 n  294 win 38.1% E +0.143 (Sep +0.168 Oct +0.101) 4/10 tot  +42 CI [-0.163,+0.118] null 33%
+pullback to EMA50 (12 bars, 0.0 ATR) in EMA200 trend, no VWAP      | 1:1 win 49.0% E -0.021 (Sep +0.028 Oct -0.104) 2/10 | 1:2 n  655 win 35.3% E +0.058 (Sep +0.111 Oct -0.033) 2/10 tot  +38 CI [-0.215,-0.018]
+pullback to EMA50 (12 bars, 0.0 ATR) in EMA200 trend, + VWAP       | 1:1 win 50.6% E +0.013 (Sep +0.064 Oct -0.079) 2/10 | 1:2 n  573 win 36.5% E +0.094 (Sep +0.146 Oct +0.000) 5/10 tot  +54 CI [-0.183,+0.034]
+pullback to EMA50 (12 bars, 0.0 ATR) in EMA200 trend, + VWAP (skip | 1:1 win 50.6% E +0.012 (Sep +0.060 Oct -0.074) 2/10 | 1:2 n  401 win 38.7% E +0.160 (Sep +0.228 Oct +0.035) 5/10 tot  +64 CI [-0.113,+0.102] null 40%
+pullback to EMA50 (6 bars, 0.5 ATR) in EMA200 trend, no VWAP       | 1:1 win 48.0% E -0.040 (Sep +0.005 Oct -0.114) 2/10 | 1:2 n  640 win 34.7% E +0.041 (Sep +0.102 Oct -0.062) 2/10 tot  +26 CI [-0.234,-0.025]
+pullback to EMA50 (6 bars, 0.5 ATR) in EMA200 trend, + VWAP        | 1:1 win 49.3% E -0.013 (Sep +0.041 Oct -0.110) 2/10 | 1:2 n  557 win 35.9% E +0.077 (Sep +0.138 Oct -0.030) 3/10 tot  +43 CI [-0.198,+0.012]
+pullback to EMA50 (6 bars, 0.5 ATR) in EMA200 trend, + VWAP (skipp | 1:1 win 49.5% E -0.010 (Sep +0.039 Oct -0.097) 1/10 | 1:2 n  384 win 38.3% E +0.148 (Sep +0.200 Oct +0.052) 3/10 tot  +57 CI [-0.131,+0.093] null 34%
+pullback to EMA50 (12 bars, 0.5 ATR) in EMA200 trend, no VWAP      | 1:1 win 49.2% E -0.017 (Sep +0.029 Oct -0.094) 2/10 | 1:2 n  744 win 36.4% E +0.093 (Sep +0.147 Oct +0.000) 3/10 tot  +69 CI [-0.170,+0.017]
+pullback to EMA50 (12 bars, 0.5 ATR) in EMA200 trend, + VWAP       | 1:1 win 50.7% E +0.013 (Sep +0.057 Oct -0.063) 2/10 | 1:2 n  666 win 37.5% E +0.126 (Sep +0.180 Oct +0.029) 6/10 tot  +84 CI [-0.137,+0.055]
+pullback to EMA50 (12 bars, 0.5 ATR) in EMA200 trend, + VWAP (skip | 1:1 win 51.4% E +0.028 (Sep +0.058 Oct -0.028) 2/10 | 1:2 n  486 win 39.7% E +0.191 (Sep +0.248 Oct +0.079) 6/10 tot  +93 CI [-0.067,+0.110] null 66%
+
+== family E
+EMA50 bounce in EMA200 trend (standalone)                          | 1:1 win 51.2% E +0.025 (Sep +0.063 Oct -0.037) 2/10 | 1:2 n 1067 win 35.1% E +0.052 (Sep +0.094 Oct -0.017) 1/10 tot  +55 CI [-0.237,-0.004]
+EMA50 bounce in EMA200 trend + VWAP side (standalone)              | 1:1 win 51.2% E +0.024 (Sep +0.052 Oct -0.022) 1/10 | 1:2 n  865 win 34.5% E +0.034 (Sep +0.094 Oct -0.063) 2/10 tot  +29 CI [-0.252,-0.024]
+EMA50/EMA200 cross (standalone)                                    | 1:1 win 54.3% E +0.087 (Sep +0.103 Oct +0.064) 6/10 | 1:2 n  331 win 35.6% E +0.069 (Sep +0.084 Oct +0.050) 2/10 tot  +23 CI [-0.256,+0.059]
+EMA50/EMA100 cross (standalone)                                    | 1:1 win 52.9% E +0.058 (Sep +0.067 Oct +0.043) 5/10 | 1:2 n  495 win 38.2% E +0.145 (Sep +0.163 Oct +0.115) 5/10 tot  +72 CI [-0.168,+0.121]
+EMA20/EMA50 cross (standalone)                                     | 1:1 win 52.8% E +0.056 (Sep +0.091 Oct +0.000) 5/10 | 1:2 n  823 win 38.8% E +0.163 (Sep +0.208 Oct +0.093) 7/10 tot +134 CI [-0.118,+0.106]
+EMA20/EMA50 cross + VWAP side (standalone)                         | 1:1 win 53.3% E +0.066 (Sep +0.112 Oct -0.007) 5/10 | 1:2 n  693 win 38.4% E +0.152 (Sep +0.229 Oct +0.033) 5/10 tot +105 CI [-0.142,+0.111]

@@ -1,0 +1,17 @@
+H1 seeded 337 engine runs
+H1 170 moves
+
+H1 profit:default start: default | A -0.103 (n 461, L 15) B +0.019
+round 1: VWAP anchor = month | A -0.018 (n 322, win 33.9%, W/L 5/12) | B +0.082 (n 341, W/L 4/13) | yrs+ 4 | score -0.31
+round 2: Don't Chase = 1.25 sigma | A +0.257 (n 116, win 43.1%, W/L 5/7) | B +0.038 (n 126, W/L 3/12) | yrs+ 5 | score 2.78
+round 3: stopAtr = 2.2 | A +0.355 (n 104, win 46.2%, W/L 3/8) | B +0.157 (n 103, W/L 10/7) | yrs+ 6 | score 3.62
+round 4: structLen = 20 | A +0.412 (n 102, win 48.0%, W/L 4/7) | B +0.157 (n 103, W/L 10/8) | yrs+ 6 | score 4.16
+round 5: dispAtr = 0.5 | A +0.443 (n 110, win 49.1%, W/L 5/9) | B +0.120 (n 117, W/L 5/9) | yrs+ 6 | score 4.65
+round 6: TP4 = 3.0R | A +0.570 (n 95, win 40.0%, W/L 3/10) | B +0.001 (n 107, W/L 3/9) | yrs+ 4 | score 5.56
+round 7: dispBodyPct = 45.0 | A +0.601 (n 103, win 40.8%, W/L 3/9) | B -0.035 (n 111, W/L 4/14) | yrs+ 4 | score 6.10
+round 8: TP4 = 2.5R | A +0.610 (n 111, win 46.8%, W/L 7/7) | B +0.042 (n 120, W/L 4/14) | yrs+ 5 | score 6.44
+final profit:default: {'vwAnchorG': 'month', 'noChase': True, 'noChaseSig': 1.25, 'stopAtr': 2.2, 'structLen': 20, 'dispAtr': 0.5, 'tp4R': 2.5, 'dispBodyPct': 45.0}
+
+H1 profit:bestB start: Don't Chase = 2.0 sigma + dispAtr = 0.65 + stopAtr = 2.2 + cooldownBars = 12 | A +0.296 (n 104, L 7) B +0.078
+round 1: momLen = 5 | A +0.358 (n 108, win 46.3%, W/L 7/9) | B +0.133 (n 100, W/L 5/8) | yrs+ 5 | score 3.72
+round 2: dispBodyPct = 60.0 | A +0.439 (n 100, win 49.0%, W/L 11/8) | B +0.117 (n 96, W/L 5/8) | yrs+ 5 | score 4.40

@@ -1,0 +1,218 @@
+# location research progress (key=location)
+- start: copied combo.py -> combo_loc.py; baseline reproduced ALL n=1190 E2 +0.150 TRAIN +0.131 TEST +0.180
+- TRAINgrid {"loc": [["vwSig", "le", 1.8]]} | TRAIN n=471 E1 +0.083 E15 +0.136 E2 +0.185 symsTR 4/8
+- TRAINgrid {"loc": [["vwSig", "le", 2.0]]} | TRAIN n=530 E1 +0.072 E15 +0.132 E2 +0.177 symsTR 4/8
+- TRAINgrid {"loc": [["vwSig", "le", 2.15]]} | TRAIN n=575 E1 +0.078 E15 +0.122 E2 +0.148 symsTR 4/8
+- TRAINgrid {"loc": [["vwSig", "le", 2.3]]} | TRAIN n=608 E1 +0.062 E15 +0.102 E2 +0.140 symsTR 5/8
+- TRAINgrid {"loc": [["vwSig", "le", 2.5]]} | TRAIN n=637 E1 +0.068 E15 +0.103 E2 +0.130 symsTR 4/8
+- TRAINgrid {"loc": [["adx", "le", 28]]} | TRAIN n=570 E1 +0.077 E15 +0.096 E2 +0.142 symsTR 5/8
+- TRAINgrid {"loc": [["adx", "le", 30]]} | TRAIN n=599 E1 +0.062 E15 +0.081 E2 +0.122 symsTR 4/8
+- TRAINgrid {"loc": [["adx", "le", 32]]} | TRAIN n=622 E1 +0.071 E15 +0.081 E2 +0.119 symsTR 3/8
+- TRAINgrid {"loc": [["adx", "le", 34]]} | TRAIN n=648 E1 +0.077 E15 +0.100 E2 +0.125 symsTR 3/8
+- TRAINgrid {"loc": [["adx", "le", 36]]} | TRAIN n=662 E1 +0.076 E15 +0.095 E2 +0.119 symsTR 1/8
+- TRAINgrid {"loc": [["consecC", "le", 2]]} | TRAIN n=571 E1 +0.058 E15 +0.081 E2 +0.088 symsTR 2/8
+- TRAINgrid {"loc": [["consec", "le", 2]]} | TRAIN n=578 E1 +0.035 E15 +0.055 E2 +0.054 symsTR 3/8
+- TRAINgrid {"loc": [["consecC", "le", 3]]} | TRAIN n=654 E1 +0.064 E15 +0.059 E2 +0.101 symsTR 4/8
+- TRAINgrid {"loc": [["consec", "le", 3]]} | TRAIN n=664 E1 +0.045 E15 +0.035 E2 +0.066 symsTR 1/8
+- TRAINgrid {"loc": [["consecC", "le", 4]]} | TRAIN n=698 E1 +0.072 E15 +0.071 E2 +0.113 symsTR 2/8
+- TRAINgrid {"loc": [["consec", "le", 4]]} | TRAIN n=701 E1 +0.041 E15 +0.027 E2 +0.066 symsTR 1/8
+- TRAINgrid {"loc": [["vwSlope", "le", 0.2]]} | TRAIN n=630 E1 +0.063 E15 +0.095 E2 +0.133 symsTR 4/8
+- TRAINgrid {"loc": [["vwSlope", "le", 0.25]]} | TRAIN n=669 E1 +0.052 E15 +0.084 E2 +0.126 symsTR 4/8
+- TRAINgrid {"loc": [["vwSlope", "le", 0.3]]} | TRAIN n=687 E1 +0.066 E15 +0.092 E2 +0.135 symsTR 6/8
+- TRAINgrid {"loc": [["vwSlope", "le", 0.35]]} | TRAIN n=695 E1 +0.079 E15 +0.108 E2 +0.153 symsTR 6/8
+- TRAINgrid {"loc": [["vwExtA", "le", 3.0]]} | TRAIN n=471 E1 +0.074 E15 +0.093 E2 +0.121 symsTR 2/8
+- TRAINgrid {"loc": [["vwExtA", "le", 3.5]]} | TRAIN n=523 E1 +0.071 E15 +0.095 E2 +0.130 symsTR 4/8
+- TRAINgrid {"loc": [["vwExtA", "le", 4.0]]} | TRAIN n=570 E1 +0.070 E15 +0.096 E2 +0.142 symsTR 3/8
+- TRAINgrid {"loc": [["vwExtA", "le", 4.5]]} | TRAIN n=612 E1 +0.095 E15 +0.115 E2 +0.137 symsTR 4/8
+- TRAINgrid {"loc": [["adx", "le", 34]], "locBlock": 3} | TRAIN n=648 E1 +0.077 E15 +0.100 E2 +0.130 symsTR 4/8
+- TRAINgrid {"loc": [["adx", "le", 34]], "locBlock": 6} | TRAIN n=646 E1 +0.077 E15 +0.099 E2 +0.124 symsTR 3/8
+- TRAINgrid {"loc": [["adx", "le", 34]], "locBlock": 12} | TRAIN n=643 E1 +0.073 E15 +0.093 E2 +0.124 symsTR 3/8
+- TRAINgrid {"loc": [["adx", "le", 34]], "locBlock": 24} | TRAIN n=634 E1 +0.063 E15 +0.080 E2 +0.107 symsTR 3/8
+- TRAINgrid {"loc": [["vwSig", "le", 2.15]], "locBlock": 3} | TRAIN n=575 E1 +0.071 E15 +0.117 E2 +0.153 symsTR 4/8
+- TRAINgrid {"loc": [["vwSig", "le", 2.15]], "locBlock": 6} | TRAIN n=572 E1 +0.073 E15 +0.119 E2 +0.154 symsTR 3/8
+- TRAINgrid {"loc": [["vwSig", "le", 2.15]], "locBlock": 12} | TRAIN n=565 E1 +0.058 E15 +0.102 E2 +0.142 symsTR 4/8
+- TRAINgrid {"loc": [["vwSig", "le", 2.15]], "locBlock": 24} | TRAIN n=543 E1 +0.042 E15 +0.091 E2 +0.133 symsTR 4/8
+- TRAINgrid {"loc": [["consecC", "le", 3]], "locBlock": 3} | TRAIN n=649 E1 +0.057 E15 +0.055 E2 +0.105 symsTR 4/8
+- TRAINgrid {"loc": [["consecC", "le", 3]], "locBlock": 6} | TRAIN n=630 E1 +0.057 E15 +0.052 E2 +0.086 symsTR 4/8
+- TRAINgrid {"loc": [["consecC", "le", 3]], "locBlock": 12} | TRAIN n=599 E1 +0.072 E15 +0.068 E2 +0.107 symsTR 3/8
+- TRAINgrid {"loc": [["consecC", "le", 3]], "locBlock": 24} | TRAIN n=555 E1 +0.063 E15 +0.072 E2 +0.119 symsTR 3/8
+- TRAINgrid {"loc": [["vwSlope", "le", 0.25]], "locBlock": 3} | TRAIN n=668 E1 +0.048 E15 +0.078 E2 +0.118 symsTR 4/8
+- TRAINgrid {"loc": [["vwSlope", "le", 0.25]], "locBlock": 6} | TRAIN n=663 E1 +0.041 E15 +0.075 E2 +0.113 symsTR 2/8
+- TRAINgrid {"loc": [["vwSlope", "le", 0.25]], "locBlock": 12} | TRAIN n=652 E1 +0.037 E15 +0.077 E2 +0.118 symsTR 3/8
+- TRAINgrid {"loc": [["vwSlope", "le", 0.25]], "locBlock": 24} | TRAIN n=635 E1 +0.027 E15 +0.075 E2 +0.110 symsTR 3/8
+- TRAINsweep {"loc": [["vwExtA", "le", 5.428224502194008]]} | TRAIN n=660 E1 +0.109 E15 +0.121 E2 +0.150 symsTR 5/8
+- TRAINsweep {"loc": [["vwExtA", "ge", 1.3954119447643474]]} | TRAIN n=698 E1 +0.092 E15 +0.107 E2 +0.117 symsTR 4/8
+- TRAINsweep {"loc": [["vwExtA", "le", 4.067538693647232]]} | TRAIN n=575 E1 +0.082 E15 +0.104 E2 +0.143 symsTR 3/8
+- TRAINsweep {"loc": [["vwExtA", "ge", 1.8718480012380023]]} | TRAIN n=658 E1 +0.012 E15 +0.060 E2 +0.090 symsTR 2/8
+- TRAINsweep {"loc": [["vwSig", "le", 2.8071959428779083]]} | TRAIN n=691 E1 +0.068 E15 +0.093 E2 +0.120 symsTR 4/8
+- TRAINsweep {"loc": [["vwSig", "ge", 0.9360426436876074]]} | TRAIN n=683 E1 +0.081 E15 +0.087 E2 +0.120 symsTR 3/8
+- TRAINsweep {"loc": [["vwSig", "le", 2.4014657741631145]]} | TRAIN n=627 E1 +0.069 E15 +0.112 E2 +0.144 symsTR 5/8
+- TRAINsweep {"loc": [["vwSig", "ge", 1.4280019522448966]]} | TRAIN n=612 E1 +0.036 E15 +0.029 E2 +0.054 symsTR 2/8
+- TRAINsweep {"loc": [["donPos20", "le", 0.996591683708248]]} | TRAIN n=692 E1 +0.072 E15 +0.102 E2 +0.140 symsTR 6/8
+- TRAINsweep {"loc": [["donPos20", "ge", 0.8805765271105136]]} | TRAIN n=700 E1 +0.051 E15 +0.071 E2 +0.097 symsTR 2/8
+- TRAINsweep {"loc": [["donPos20", "le", 0.98425196850401]]} | TRAIN n=642 E1 +0.028 E15 +0.063 E2 +0.112 symsTR 3/8
+- TRAINsweep {"loc": [["donPos20", "ge", 0.9428571428571428]]} | TRAIN n=647 E1 +0.029 E15 +0.039 E2 +0.076 symsTR 3/8
+- TRAINsweep {"loc": [["donPos50", "le", 0.9921875]]} | TRAIN n=698 E1 +0.057 E15 +0.085 E2 +0.126 symsTR 4/8
+- TRAINsweep {"loc": [["donPos50", "ge", 0.6468401486988847]]} | TRAIN n=691 E1 +0.068 E15 +0.100 E2 +0.142 symsTR 6/8
+- TRAINsweep {"loc": [["donPos50", "le", 0.9803149606299213]]} | TRAIN n=621 E1 +0.027 E15 +0.027 E2 +0.048 symsTR 1/8
+- TRAINsweep {"loc": [["donPos50", "ge", 0.8268156424581006]]} | TRAIN n=639 E1 +0.052 E15 +0.099 E2 +0.141 symsTR 3/8
+- TRAINsweep {"loc": [["donRng20", "le", 6.521068014224383]]} | TRAIN n=685 E1 +0.060 E15 +0.058 E2 +0.086 symsTR 2/8
+- TRAINsweep {"loc": [["donRng20", "ge", 3.5871295535511756]]} | TRAIN n=688 E1 +0.061 E15 +0.072 E2 +0.129 symsTR 4/8
+- TRAINsweep {"loc": [["donRng20", "le", 5.62121666235161]]} | TRAIN n=613 E1 +0.064 E15 +0.060 E2 +0.072 symsTR 2/8
+- TRAINsweep {"loc": [["donRng20", "ge", 4.060201803288459]]} | TRAIN n=643 E1 +0.054 E15 +0.077 E2 +0.129 symsTR 5/8
+- TRAINsweep {"loc": [["donRng50", "le", 10.345779602604877]]} | TRAIN n=668 E1 +0.057 E15 +0.070 E2 +0.100 symsTR 2/8
+- TRAINsweep {"loc": [["donRng50", "ge", 5.206717591863299]]} | TRAIN n=697 E1 +0.044 E15 +0.069 E2 +0.098 symsTR 4/8
+- TRAINsweep {"loc": [["donRng50", "le", 8.668766007026239]]} | TRAIN n=600 E1 +0.030 E15 +0.037 E2 +0.060 symsTR 1/8
+- TRAINsweep {"loc": [["donRng50", "ge", 6.143196119058236]]} | TRAIN n=630 E1 +0.029 E15 +0.036 E2 +0.071 symsTR 2/8
+- TRAINsweep {"loc": [["leg20", "le", 6.3401289176236375]]} | TRAIN n=683 E1 +0.063 E15 +0.058 E2 +0.085 symsTR 1/8
+- TRAINsweep {"loc": [["leg20", "ge", 3.1483326141438135]]} | TRAIN n=698 E1 +0.063 E15 +0.092 E2 +0.143 symsTR 5/8
+- TRAINsweep {"loc": [["leg20", "le", 5.351290385672965]]} | TRAIN n=614 E1 +0.042 E15 +0.055 E2 +0.065 symsTR 2/8
+- TRAINsweep {"loc": [["leg20", "ge", 3.6807293790565425]]} | TRAIN n=638 E1 +0.066 E15 +0.070 E2 +0.133 symsTR 4/8
+- TRAINsweep {"loc": [["leg50", "le", 9.10035282992121]]} | TRAIN n=672 E1 +0.054 E15 +0.045 E2 +0.071 symsTR 1/8
+- TRAINsweep {"loc": [["leg50", "ge", 4.140208443894178]]} | TRAIN n=697 E1 +0.059 E15 +0.094 E2 +0.132 symsTR 5/8
+- TRAINsweep {"loc": [["leg50", "le", 7.338684013523253]]} | TRAIN n=590 E1 +0.031 E15 +0.034 E2 +0.058 symsTR 1/8
+- TRAINsweep {"loc": [["leg50", "ge", 4.940887889405501]]} | TRAIN n=638 E1 +0.060 E15 +0.097 E2 +0.133 symsTR 5/8
+- TRAINsweep {"loc": [["sesPos", "le", 0.9933110367893037]]} | TRAIN n=688 E1 +0.061 E15 +0.094 E2 +0.121 symsTR 3/8
+- TRAINsweep {"loc": [["sesPos", "ge", 0.7033898305084029]]} | TRAIN n=693 E1 +0.062 E15 +0.082 E2 +0.087 symsTR 0/8
+- TRAINsweep {"loc": [["sesPos", "le", 0.9800101214574862]]} | TRAIN n=613 E1 +0.060 E15 +0.081 E2 +0.101 symsTR 2/8
+- TRAINsweep {"loc": [["sesPos", "ge", 0.84905660377383]]} | TRAIN n=628 E1 +0.025 E15 +0.039 E2 +0.056 symsTR 1/8
+- TRAINsweep {"loc": [["sesMove", "le", 8.775236853883955]]} | TRAIN n=647 E1 +0.082 E15 +0.090 E2 +0.108 symsTR 3/8
+- TRAINsweep {"loc": [["sesMove", "ge", 0.3192159244389172]]} | TRAIN n=679 E1 +0.081 E15 +0.082 E2 +0.113 symsTR 5/8
+- TRAINsweep {"loc": [["sesMove", "le", 5.977462081912466]]} | TRAIN n=562 E1 +0.057 E15 +0.063 E2 +0.100 symsTR 1/8
+- TRAINsweep {"loc": [["sesMove", "ge", 1.7779795581068332]]} | TRAIN n=629 E1 +0.056 E15 +0.073 E2 +0.087 symsTR 3/8
+- TRAINsweep {"loc": [["consec", "le", 4]]} | TRAIN n=701 E1 +0.041 E15 +0.027 E2 +0.066 symsTR 1/8
+- TRAINsweep {"loc": [["consec", "ge", 1]]} | TRAIN n=735 E1 +0.075 E15 +0.095 E2 +0.131 symsTR 0/8
+- TRAINsweep {"loc": [["consec", "le", 3]]} | TRAIN n=664 E1 +0.045 E15 +0.035 E2 +0.066 symsTR 1/8
+- TRAINsweep {"loc": [["consec", "ge", 2]]} | TRAIN n=664 E1 +0.057 E15 +0.099 E2 +0.152 symsTR 4/8
+- TRAINsweep {"loc": [["consecC", "le", 4]]} | TRAIN n=698 E1 +0.072 E15 +0.071 E2 +0.113 symsTR 2/8
+- TRAINsweep {"loc": [["consecC", "ge", 1]]} | TRAIN n=735 E1 +0.075 E15 +0.095 E2 +0.131 symsTR 0/8
+- TRAINsweep {"loc": [["consecC", "le", 3]]} | TRAIN n=654 E1 +0.064 E15 +0.059 E2 +0.101 symsTR 4/8
+- TRAINsweep {"loc": [["consecC", "ge", 2]]} | TRAIN n=671 E1 +0.049 E15 +0.077 E2 +0.122 symsTR 3/8
+- TRAINsweep {"loc": [["swMove", "le", 5.646342683375781]]} | TRAIN n=687 E1 +0.045 E15 +0.055 E2 +0.092 symsTR 1/8
+- TRAINsweep {"loc": [["swMove", "ge", 2.5405309905603883]]} | TRAIN n=695 E1 +0.050 E15 +0.068 E2 +0.122 symsTR 3/8
+- TRAINsweep {"loc": [["swMove", "le", 4.6053958010765434]]} | TRAIN n=623 E1 +0.037 E15 +0.043 E2 +0.064 symsTR 2/8
+- TRAINsweep {"loc": [["swMove", "ge", 3.0843164928762605]]} | TRAIN n=634 E1 +0.044 E15 +0.065 E2 +0.107 symsTR 2/8
+- TRAINsweep {"loc": [["swBars", "le", 13]]} | TRAIN n=693 E1 +0.065 E15 +0.086 E2 +0.117 symsTR 4/8
+- TRAINsweep {"loc": [["swBars", "ge", 4]]} | TRAIN n=716 E1 +0.059 E15 +0.103 E2 +0.135 symsTR 4/8
+- TRAINsweep {"loc": [["swBars", "le", 10]]} | TRAIN n=645 E1 +0.057 E15 +0.070 E2 +0.102 symsTR 3/8
+- TRAINsweep {"loc": [["swBars", "ge", 5]]} | TRAIN n=692 E1 +0.032 E15 +0.073 E2 +0.123 symsTR 4/8
+- TRAINsweep {"loc": [["ext30Bars", "le", 28]]} | TRAIN n=701 E1 +0.087 E15 +0.077 E2 +0.113 symsTR 3/8
+- TRAINsweep {"loc": [["ext30Bars", "ge", 8]]} | TRAIN n=703 E1 +0.067 E15 +0.092 E2 +0.127 symsTR 6/8
+- TRAINsweep {"loc": [["ext30Bars", "le", 25]]} | TRAIN n=614 E1 +0.081 E15 +0.071 E2 +0.129 symsTR 4/8
+- TRAINsweep {"loc": [["ext30Bars", "ge", 13]]} | TRAIN n=642 E1 +0.050 E15 +0.040 E2 +0.051 symsTR 2/8
+- TRAINsweep {"loc": [["rsi14", "le", 75.17190449402653]]} | TRAIN n=686 E1 +0.087 E15 +0.101 E2 +0.124 symsTR 4/8
+- TRAINsweep {"loc": [["rsi14", "ge", 60.146556543448185]]} | TRAIN n=691 E1 +0.065 E15 +0.096 E2 +0.133 symsTR 4/8
+- TRAINsweep {"loc": [["rsi14", "le", 70.549051223962]]} | TRAIN n=614 E1 +0.039 E15 +0.063 E2 +0.085 symsTR 3/8
+- TRAINsweep {"loc": [["rsi14", "ge", 62.818130371163406]]} | TRAIN n=647 E1 +0.017 E15 +0.066 E2 +0.127 symsTR 3/8
+- TRAINsweep {"loc": [["rsi7", "le", 84.3478303547335]]} | TRAIN n=693 E1 +0.062 E15 +0.079 E2 +0.108 symsTR 3/8
+- TRAINsweep {"loc": [["rsi7", "ge", 68.98963748669478]]} | TRAIN n=695 E1 +0.056 E15 +0.101 E2 +0.140 symsTR 6/8
+- TRAINsweep {"loc": [["rsi7", "le", 79.96257326448207]]} | TRAIN n=624 E1 +0.032 E15 +0.038 E2 +0.062 symsTR 2/8
+- TRAINsweep {"loc": [["rsi7", "ge", 71.82718510485341]]} | TRAIN n=645 E1 +0.054 E15 +0.074 E2 +0.116 symsTR 3/8
+- TRAINsweep {"loc": [["stoch", "le", 94.22333463031174]]} | TRAIN n=695 E1 +0.073 E15 +0.083 E2 +0.109 symsTR 3/8
+- TRAINsweep {"loc": [["stoch", "ge", 69.96345918438156]]} | TRAIN n=704 E1 +0.062 E15 +0.083 E2 +0.125 symsTR 3/8
+- TRAINsweep {"loc": [["stoch", "le", 91.09816208340096]]} | TRAIN n=629 E1 +0.040 E15 +0.045 E2 +0.049 symsTR 1/8
+- TRAINsweep {"loc": [["stoch", "ge", 79.40182974764875]]} | TRAIN n=658 E1 +0.067 E15 +0.087 E2 +0.167 symsTR 7/8
+- TRAINsweep {"loc": [["htf15", "le", 2.7038408911150227]]} | TRAIN n=670 E1 +0.075 E15 +0.101 E2 +0.128 symsTR 3/8
+- TRAINsweep {"loc": [["htf15", "ge", -1.4768321056824067]]} | TRAIN n=689 E1 +0.054 E15 +0.074 E2 +0.102 symsTR 4/8
+- TRAINsweep {"loc": [["htf15", "le", 1.5457233582425065]]} | TRAIN n=588 E1 +0.078 E15 +0.093 E2 +0.117 symsTR 2/8
+- TRAINsweep {"loc": [["htf15", "ge", -0.52608127912403]]} | TRAIN n=627 E1 +0.033 E15 +0.041 E2 +0.081 symsTR 4/8
+- TRAINsweep {"loc": [["htf60", "le", 5.766335425378301]]} | TRAIN n=675 E1 +0.073 E15 +0.085 E2 +0.120 symsTR 4/8
+- TRAINsweep {"loc": [["htf60", "ge", -5.5258422245753875]]} | TRAIN n=674 E1 +0.059 E15 +0.072 E2 +0.113 symsTR 4/8
+- TRAINsweep {"loc": [["htf60", "le", 2.449612526377428]]} | TRAIN n=597 E1 +0.075 E15 +0.080 E2 +0.136 symsTR 5/8
+- TRAINsweep {"loc": [["htf60", "ge", -2.299565977643602]]} | TRAIN n=607 E1 +0.048 E15 +0.067 E2 +0.117 symsTR 4/8
+- TRAINsweep {"loc": [["htf15px", "le", 4.878323830823134]]} | TRAIN n=674 E1 +0.077 E15 +0.091 E2 +0.117 symsTR 3/8
+- TRAINsweep {"loc": [["htf15px", "ge", 1.3375520698728334]]} | TRAIN n=690 E1 +0.061 E15 +0.069 E2 +0.113 symsTR 3/8
+- TRAINsweep {"loc": [["htf15px", "le", 3.831177530408202]]} | TRAIN n=597 E1 +0.079 E15 +0.080 E2 +0.090 symsTR 4/8
+- TRAINsweep {"loc": [["htf15px", "ge", 2.0606664802435826]]} | TRAIN n=635 E1 +0.046 E15 +0.091 E2 +0.120 symsTR 4/8
+- TRAINsweep {"loc": [["htf60px", "le", 8.704084740615537]]} | TRAIN n=674 E1 +0.083 E15 +0.105 E2 +0.135 symsTR 4/8
+- TRAINsweep {"loc": [["htf60px", "ge", -0.777227924308974]]} | TRAIN n=691 E1 +0.042 E15 +0.078 E2 +0.116 symsTR 4/8
+- TRAINsweep {"loc": [["htf60px", "le", 6.456403835375339]]} | TRAIN n=607 E1 +0.068 E15 +0.071 E2 +0.097 symsTR 3/8
+- TRAINsweep {"loc": [["htf60px", "ge", 1.593634279415083]]} | TRAIN n=654 E1 +0.006 E15 +0.028 E2 +0.055 symsTR 1/8
+- TRAINsweep {"loc": [["pdRoom", "le", 15.626642027019116]]} | TRAIN n=682 E1 +0.062 E15 +0.092 E2 +0.113 symsTR 5/8
+- TRAINsweep {"loc": [["pdRoom", "ge", -3.3993564657207047]]} | TRAIN n=650 E1 +0.086 E15 +0.112 E2 +0.149 symsTR 5/8
+- TRAINsweep {"loc": [["pdRoom", "le", 9.886839248297068]]} | TRAIN n=610 E1 +0.049 E15 +0.057 E2 +0.082 symsTR 3/8
+- TRAINsweep {"loc": [["pdRoom", "ge", 0.20623944454532261]]} | TRAIN n=558 E1 +0.054 E15 +0.071 E2 +0.124 symsTR 3/8
+- TRAINsweep {"loc": [["pdC", "le", 9.79655351383869]]} | TRAIN n=652 E1 +0.080 E15 +0.089 E2 +0.127 symsTR 3/8
+- TRAINsweep {"loc": [["pdC", "ge", -0.23145606878162442]]} | TRAIN n=679 E1 +0.049 E15 +0.060 E2 +0.096 symsTR 3/8
+- TRAINsweep {"loc": [["pdC", "le", 6.378499035014653]]} | TRAIN n=565 E1 +0.080 E15 +0.084 E2 +0.126 symsTR 3/8
+- TRAINsweep {"loc": [["pdC", "ge", 1.6045426988259386]]} | TRAIN n=635 E1 +0.049 E15 +0.063 E2 +0.101 symsTR 4/8
+- TRAINsweep {"loc": [["gap", "le", 0.9638586232825878]]} | TRAIN n=645 E1 +0.082 E15 +0.093 E2 +0.130 symsTR 2/8
+- TRAINsweep {"loc": [["gap", "ge", -0.7597435888578321]]} | TRAIN n=653 E1 +0.057 E15 +0.091 E2 +0.126 symsTR 1/8
+- TRAINsweep {"loc": [["gap", "le", 0.15810376199171214]]} | TRAIN n=558 E1 +0.057 E15 +0.048 E2 +0.059 symsTR 1/8
+- TRAINsweep {"loc": [["gap", "ge", -0.09185456987079955]]} | TRAIN n=572 E1 +0.021 E15 +0.058 E2 +0.101 symsTR 2/8
+- TRAINgrid {"skipLossDir": 12} | TRAIN n=721 E1 +0.068 E15 +0.089 E2 +0.107 symsTR 0/8
+- TRAINsweep {"loc": [["orLoc", "le", 7.577899683494006]]} | TRAIN n=653 E1 +0.090 E15 +0.099 E2 +0.126 symsTR 5/8
+- TRAINgrid {"skipLossDir": 24} | TRAIN n=700 E1 +0.066 E15 +0.082 E2 +0.110 symsTR 3/8
+- TRAINsweep {"loc": [["orLoc", "ge", -0.7496807568581701]]} | TRAIN n=684 E1 +0.053 E15 +0.071 E2 +0.101 symsTR 3/8
+- TRAINgrid {"skipLossDir": 1000} | TRAIN n=583 E1 +0.057 E15 +0.089 E2 +0.137 symsTR 7/8
+- TRAINsweep {"loc": [["orLoc", "le", 4.651785051157903]]} | TRAIN n=569 E1 +0.047 E15 +0.059 E2 +0.102 symsTR 3/8
+- TRAINgrid {"after2Loss": true} | TRAIN n=520 E1 +0.058 E15 +0.072 E2 +0.113 symsTR 5/8
+- TRAINsweep {"loc": [["orLoc", "ge", 0.5517843587519737]]} | TRAIN n=626 E1 +0.073 E15 +0.074 E2 +0.112 symsTR 4/8
+- TRAINgrid {"skipLossDir": 1000, "after2Loss": true} | TRAIN n=470 E1 +0.085 E15 +0.101 E2 +0.149 symsTR 6/8
+- TRAINsweep {"loc": [["hour", "le", 18.0]]} | TRAIN n=656 E1 +0.055 E15 +0.075 E2 +0.130 symsTR 3/8
+- TRAINsweep {"loc": [["hour", "ge", 6.416666666666667]]} | TRAIN n=689 E1 +0.077 E15 +0.110 E2 +0.145 symsTR 2/8
+- TRAINgrid {"deepExt": ["vwSig", 2.15, 0.3]} | TRAIN n=714 E1 +0.059 E15 +0.099 E2 +0.101 symsTR 1/8
+- TRAINsweep {"loc": [["hour", "le", 14.583333333333334]]} | TRAIN n=560 E1 +0.064 E15 +0.103 E2 +0.130 symsTR 3/8
+- TRAINgrid {"deepExt": ["vwSig", 2.15, 0.5]} | TRAIN n=698 E1 +0.040 E15 +0.085 E2 +0.105 symsTR 2/8
+- TRAINsweep {"loc": [["hour", "ge", 9.166666666666666]]} | TRAIN n=631 E1 +0.078 E15 +0.105 E2 +0.141 symsTR 3/8
+- TRAINgrid {"deepExt": ["vwSig", 1.7, 0.3]} | TRAIN n=689 E1 +0.068 E15 +0.085 E2 +0.084 symsTR 1/8
+- TRAINsweep {"loc": [["vb", "le", 160]]} | TRAIN n=634 E1 +0.079 E15 +0.116 E2 +0.155 symsTR 4/8
+- TRAINgrid {"deepExt": ["vwExtA", 3.5, 0.3]} | TRAIN n=704 E1 +0.060 E15 +0.076 E2 +0.095 symsTR 2/8
+- TRAINsweep {"loc": [["vb", "ge", 22]]} | TRAIN n=700 E1 +0.060 E15 +0.100 E2 +0.127 symsTR 2/8
+- TRAINgrid {"deepExt": ["vwExtA", 3.5, 0.5]} | TRAIN n=686 E1 +0.044 E15 +0.075 E2 +0.098 symsTR 2/8
+- TRAINsweep {"loc": [["vb", "le", 117]]} | TRAIN n=529 E1 +0.081 E15 +0.115 E2 +0.157 symsTR 2/8
+- TRAINgrid {"deepExt": ["adx", 34, 0.3]} | TRAIN n=720 E1 +0.069 E15 +0.090 E2 +0.117 symsTR 4/8
+- TRAINsweep {"loc": [["vb", "ge", 42]]} | TRAIN n=640 E1 +0.025 E15 +0.074 E2 +0.116 symsTR 3/8
+- TRAINgrid {"deepExt": ["consecC", 3, 0.3]} | TRAIN n=717 E1 +0.091 E15 +0.105 E2 +0.105 symsTR 3/8
+- TRAINsweep {"loc": [["atrReg", "le", 1.370180031861317]]} | TRAIN n=687 E1 +0.077 E15 +0.084 E2 +0.127 symsTR 4/8
+- TRAINsweep {"loc": [["atrReg", "ge", 0.7011714822720964]]} | TRAIN n=695 E1 +0.050 E15 +0.072 E2 +0.105 symsTR 3/8
+- TRAINsweep {"loc": [["atrReg", "le", 1.1942115714521346]]} | TRAIN n=614 E1 +0.088 E15 +0.087 E2 +0.119 symsTR 3/8
+- TRAINsweep {"loc": [["atrReg", "ge", 0.8625730079117008]]} | TRAIN n=614 E1 +0.062 E15 +0.071 E2 +0.070 symsTR 2/8
+- TRAINsweep {"loc": [["adx", "le", 37.973964814114865]]} | TRAIN n=678 E1 +0.065 E15 +0.077 E2 +0.115 symsTR 1/8
+- TRAINsweep {"loc": [["adx", "ge", 15.62985823538926]]} | TRAIN n=696 E1 +0.055 E15 +0.088 E2 +0.151 symsTR 4/8
+- TRAINsweep {"loc": [["adx", "le", 29.372619102151425]]} | TRAIN n=598 E1 +0.070 E15 +0.095 E2 +0.144 symsTR 4/8
+- TRAINsweep {"loc": [["adx", "ge", 18.990718724036622]]} | TRAIN n=611 E1 +0.011 E15 +0.039 E2 +0.110 symsTR 3/8
+- TRAINsweep {"loc": [["cmo", "le", 75.0000000000185]]} | TRAIN n=702 E1 +0.054 E15 +0.051 E2 +0.068 symsTR 1/8
+- TRAINsweep {"loc": [["cmo", "ge", 30.481862479695266]]} | TRAIN n=691 E1 +0.071 E15 +0.114 E2 +0.129 symsTR 2/8
+- TRAINsweep {"loc": [["cmo", "le", 62.500000000017344]]} | TRAIN n=645 E1 +0.011 E15 +0.000 E2 -0.005 symsTR 1/8
+- TRAINsweep {"loc": [["cmo", "ge", 39.39393939393939]]} | TRAIN n=638 E1 +0.063 E15 +0.105 E2 +0.124 symsTR 2/8
+- TRAINsweep {"loc": [["rngA", "le", 1.9523149035244096]]} | TRAIN n=697 E1 +0.059 E15 +0.072 E2 +0.102 symsTR 2/8
+- TRAINsweep {"loc": [["rngA", "ge", 0.9716007480236156]]} | TRAIN n=698 E1 +0.080 E15 +0.085 E2 +0.113 symsTR 3/8
+- TRAINsweep {"loc": [["rngA", "le", 1.6143409402014537]]} | TRAIN n=652 E1 +0.015 E15 +0.039 E2 +0.063 symsTR 1/8
+- TRAINsweep {"loc": [["rngA", "ge", 1.1267720579924523]]} | TRAIN n=636 E1 +0.053 E15 +0.061 E2 +0.080 symsTR 3/8
+- TRAINsweep {"loc": [["mom10", "le", 4.151737441031562]]} | TRAIN n=698 E1 +0.043 E15 +0.053 E2 +0.083 symsTR 3/8
+- TRAINsweep {"loc": [["mom10", "ge", 1.5881425358803396]]} | TRAIN n=686 E1 +0.050 E15 +0.086 E2 +0.102 symsTR 3/8
+- TRAINsweep {"loc": [["mom10", "le", 3.412099199778194]]} | TRAIN n=640 E1 +0.037 E15 +0.051 E2 +0.083 symsTR 2/8
+- TRAINsweep {"loc": [["mom10", "ge", 2.03615512903358]]} | TRAIN n=623 E1 +0.088 E15 +0.136 E2 +0.175 symsTR 4/8
+- TRAINsweep {"loc": [["vwSlope", "le", 0.350009916528945]]} | TRAIN n=695 E1 +0.079 E15 +0.108 E2 +0.153 symsTR 6/8
+- TRAINsweep {"loc": [["vwSlope", "ge", 0.02636792720211902]]} | TRAIN n=691 E1 +0.080 E15 +0.078 E2 +0.085 symsTR 1/8
+- TRAINsweep {"loc": [["vwSlope", "le", 0.21177388350292806]]} | TRAIN n=640 E1 +0.066 E15 +0.102 E2 +0.139 symsTR 4/8
+- TRAINsweep {"loc": [["vwSlope", "ge", 0.06540005850792922]]} | TRAIN n=617 E1 +0.031 E15 +0.053 E2 +0.099 symsTR 4/8
+- TRAINsweep {"loc": [["wick", "le", 0.2268041237113402]]} | TRAIN n=689 E1 +0.054 E15 +0.078 E2 +0.093 symsTR 3/8
+- TRAINsweep {"loc": [["wick", "ge", 0.0]]} | TRAIN n=735 E1 +0.075 E15 +0.095 E2 +0.131 symsTR 0/8
+- TRAINsweep {"loc": [["wick", "le", 0.14999999999993938]]} | TRAIN n=634 E1 +0.076 E15 +0.092 E2 +0.098 symsTR 3/8
+- TRAINsweep {"loc": [["wick", "ge", 0.03571428571441332]]} | TRAIN n=643 E1 +0.070 E15 +0.096 E2 +0.143 symsTR 3/8
+- stochFloor {"loc": [["stoch", "ge", 79.4]]} | TRAIN n=658 E1 +0.067 E15 +0.087 E2 +0.167 | TEST n=392 E1 +0.061 E15 +0.103 E2 +0.133 CI[-0.237,+0.150] | ALL keep 88% tot +162 syms 5/10
+- mom10Floor {"loc": [["mom10", "ge", 2.036]]} | TRAIN n=623 E1 +0.088 E15 +0.136 E2 +0.175 | TEST n=398 E1 +0.005 E15 +0.036 E2 +0.070 CI[-0.302,+0.083] | ALL keep 86% tot +137 syms 3/10
+- vwSlopeCap {"loc": [["vwSlope", "le", 0.35]]} | TRAIN n=695 E1 +0.079 E15 +0.108 E2 +0.153 | TEST n=427 E1 +0.026 E15 +0.030 E2 +0.124 CI[-0.244,+0.138] | ALL keep 94% tot +159 syms 5/10
+- stoch+vwSlope {"loc": [["stoch", "ge", 79.4], ["vwSlope", "le", 0.35]]} | TRAIN n=602 E1 +0.053 E15 +0.084 E2 +0.176 | TEST n=353 E1 +0.020 E15 +0.027 E2 +0.079 CI[-0.293,+0.106] | ALL keep 80% tot +134 syms 6/10
+- vwSigCap {"loc": [["vwSig", "le", 2.4]]} | TRAIN n=625 E1 +0.066 E15 +0.108 E2 +0.138 | TEST n=383 E1 +0.023 E15 +0.057 E2 +0.175 CI[-0.198,+0.196] | ALL keep 85% tot +153 syms 6/10
+- vwExtCap {"loc": [["vwExtA", "le", 4.07]]} | TRAIN n=575 E1 +0.082 E15 +0.104 E2 +0.143 | TEST n=343 E1 -0.003 E15 +0.020 E2 +0.120 CI[-0.262,+0.155] | ALL keep 77% tot +123 syms 5/10
+- adxCap {"loc": [["adx", "le", 29.4]]} | TRAIN n=598 E1 +0.070 E15 +0.095 E2 +0.144 | TEST n=358 E1 -0.011 E15 +0.020 E2 +0.098 CI[-0.282,+0.113] | ALL keep 80% tot +121 syms 2/10
+- don20notTop {"loc": [["donPos20", "le", 0.997]]} | TRAIN n=693 E1 +0.071 E15 +0.100 E2 +0.139 | TEST n=430 E1 +0.042 E15 +0.076 E2 +0.158 CI[-0.223,+0.173] | ALL keep 94% tot +164 syms 4/10
+- lossRules {"skipLossDir": 1000, "after2Loss": true} | TRAIN n=470 E1 +0.085 E15 +0.101 E2 +0.149 | TEST n=292 E1 +0.103 E15 +0.164 E2 +0.223 CI[-0.178,+0.256] | ALL keep 64% tot +135 syms 7/10
+- skipLossDir {"skipLossDir": 1000} | TRAIN n=583 E1 +0.057 E15 +0.089 E2 +0.137 | TEST n=364 E1 +0.099 E15 +0.168 E2 +0.269 CI[-0.105,+0.293] | ALL keep 80% tot +178 syms 8/10
+- htf15agree {"loc": [["htf15", "ge", 0]]} | TRAIN n=579 E1 +0.043 E15 +0.054 E2 +0.088 | TEST n=349 E1 -0.020 E15 -0.004 E2 +0.074 CI[-0.304,+0.098] | ALL keep 78% tot +77 syms 3/10
+- htf60agree {"loc": [["htf60", "ge", 0]]} | TRAIN n=514 E1 +0.058 E15 +0.070 E2 +0.115 | TEST n=303 E1 -0.003 E15 -0.002 E2 +0.030 CI[-0.358,+0.064] | ALL keep 69% tot +68 syms 3/10
+- htf15pxSide {"loc": [["htf15px", "ge", 0]]} | TRAIN n=725 E1 +0.073 E15 +0.100 E2 +0.138 | TEST n=446 E1 +0.036 E15 +0.087 E2 +0.177 CI[-0.197,+0.188] | ALL keep 98% tot +179 syms 6/10
+- pdRoom {"loc": [["pdRoom", "ge", -3.4]]} | TRAIN n=650 E1 +0.086 E15 +0.112 E2 +0.149 | TEST n=396 E1 +0.071 E15 +0.111 E2 +0.197 CI[-0.179,+0.225] | ALL keep 88% tot +175 syms 7/10
+- orLocCap {"loc": [["orLoc", "le", 7.58]]} | TRAIN n=653 E1 +0.090 E15 +0.099 E2 +0.126 | TEST n=399 E1 +0.063 E15 +0.115 E2 +0.203 CI[-0.165,+0.227] | ALL keep 88% tot +163 syms 6/10
+- hourNotAsiaNight {"loc": [["hour", "ge", 6.42]]} | TRAIN n=686 E1 +0.076 E15 +0.119 E2 +0.150 | TEST n=432 E1 +0.051 E15 +0.111 E2 +0.188 CI[-0.181,+0.198] | ALL keep 94% tot +184 syms 3/10
+- atrRegCap {"loc": [["atrReg", "le", 1.37]]} | TRAIN n=686 E1 +0.076 E15 +0.082 E2 +0.124 | TEST n=415 E1 +0.031 E15 +0.042 E2 +0.135 CI[-0.242,+0.148] | ALL keep 93% tot +141 syms 4/10
+- cmoFloor30 {"loc": [["cmo", "ge", 30.5]]} | TRAIN n=691 E1 +0.071 E15 +0.114 E2 +0.129 | TEST n=430 E1 +0.056 E15 +0.058 E2 +0.109 CI[-0.266,+0.126] | ALL keep 94% tot +136 syms 3/10
+- consecCcap3 {"loc": [["consecC", "le", 3]]} | TRAIN n=654 E1 +0.064 E15 +0.059 E2 +0.101 | TEST n=408 E1 +0.015 E15 +0.091 E2 +0.162 CI[-0.219,+0.183] | ALL keep 89% tot +132 syms 5/10
+- rsi7cap {"loc": [["rsi7", "le", 84.3]]} | TRAIN n=692 E1 +0.064 E15 +0.080 E2 +0.105 | TEST n=424 E1 +0.057 E15 +0.108 E2 +0.203 CI[-0.158,+0.216] | ALL keep 94% tot +159 syms 4/10
+- after2Loss {"after2Loss": true} | TRAIN n=520 E1 +0.058 E15 +0.072 E2 +0.113 | TEST n=313 E1 +0.061 E15 +0.094 E2 +0.141 CI[-0.250,+0.170] | ALL keep 70% tot +103 syms 3/10
+- swMoveCap {"loc": [["swMove", "le", 5.65]]} | TRAIN n=687 E1 +0.045 E15 +0.055 E2 +0.092 | TEST n=416 E1 +0.024 E15 +0.082 E2 +0.197 CI[-0.182,+0.220] | ALL keep 93% tot +145 syms 4/10
+- posthoc_skipLoss+pdRoom {"skipLossDir": 1000, "loc": [["pdRoom", "ge", -3.4]]} | TRAIN n=526 E1 +0.065 E15 +0.098 E2 +0.152 | TEST n=308 E1 +0.123 E15 +0.177 E2 +0.256 CI[-0.135,+0.284] | ALL keep 70% tot +159 syms 6/10
+- SUMMARY: ~804 variants (576 baseline-list screens, ~205 TRAIN-only full-model runs, 23 TEST-visible). Only skipLossDir (TEST +0.089, TRAIN +0.006) and pdRoom>=-3.4 (TRAIN +0.018/TEST +0.017) were positive on TEST; extension caps, momentum floors, HTF agreement, ADX/ATR regime, time, deep entry, after2Loss = no-effect or hurt. Removed signals get replaced by later signals with E2 about -0.13 (one-trade-at-a-time).

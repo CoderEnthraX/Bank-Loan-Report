@@ -1,0 +1,26 @@
+# stop_levels progress (key stop_levels)
+- started: read hookeval/tightdata/engine2. Plan: feature table of price levels (VWAP+bands, session O/H/L, prevday HLC, OR, round numbers, target feasibility) for all 80 trades.
+- single-level interval search (dir-normalised d*(level-entry)/A, best interval tight-vs-normal) for VWAP, VWAP +-1/2/3 sigma (recovered vsd), session open/high/low (incl/excl bar), prev-session H/L/C/O/mid, opening range N=1,2,3,6,12 bars, disp extreme, session range, bars since start: NO separator. best = adverse 2-sigma band in (-3.10,-2.40): 4/8 tight, 0 normal; adverse 1-sigma (-2.19,-1.61) 4/8 +1 normal. All others <=2/8 clean.
+- observed: tight stop = max(0.9A, dist to disp-candle extreme) holds for all 8 (GC 10-09 = 1.06 = disp high).
+- added round numbers (steps mag/10^k*m, k=1..3, m=1,2,2.5,5; nearest fav/adv), weekly open, week fav/adv extreme, prior-week H/L: NO separator (best 3/8 clean).
+- ADR/daily-ATR (5/10/14/20 sessions) room-to-projected-extreme, range used: NO separator (best 2/8 clean).
+- AND of covering intervals over ALL level features (pairs): best pair still leaves 9 normals (pdo & rf2_2) -> bar-level price levels cannot separate.
+- noticed NIFTY vs SENSEX 10-09 10:05: SENSEX VWAP jumps +47 at disp bar (huge volume), NIFTY +4.7 -> testing recovered volume features next.
+- recovered volume features (rel vol 1..50 bars, session share, VWAP jump): NO separator.
+- STATELESS previous-displacement features (dispser.py, best-model criteria w/o state): all 8 tight have n_same_sess=0 (no earlier same-dir displacement in session) and n_same24=0; SENSEX 10-09 had a same-dir disp at 09:35 (armed, unfilled), NIFTY none -> fits paradox! But ~19+ normals also have 0. Investigating.
+- union-of-levels test (nearest level of a SET in natural zones stop(-1.8,0),(-1.8,-0.9),(-0.9,0), target(0,3.6),(1.8,3.6),(0,1.8),(0,5.4),(-2.7,0)): clean features catch only 1/8 tight each; union <=2/8. FAIL.
+- same level set evaluated at fill bar and fill-1 (+fill penetration, fill close vs VWAP): NO separator (best 3-4/8 clean).
+- move-origin structure stops clamp(dist to origin,0.9,1.8) for origin = same-colour run, VWAP-side run, since last opp disp, higher-low run, close-run, since broken-extreme bar, N-bar box (3/5/10/20), buffers 0/0.1/0.2: best 72/80 (= all-1.8 baseline, 0 tight caught). FAIL.
+- overfit check over ~250 features (levels, ADR, volume, prev-disp, disp props): no PAIR of clean intervals covers all 8 tight; only 1 triple. => bar-level features (my families) cannot separate; switch is likely stateful.
+- GT observations: original table shows REGIME (TRENDING/RANGING/TRANSITION + ADX) and BIAS; on 10-12 12:40 NIFTY=TRENDING ADX36 BEARISH while SENSEX=TRANSITION ADX38 BEARISH -> a regime state can differ between NIFTY/SENSEX (possible paradox explanation; outside my level family, noted for orchestrator).
+- next: moving averages as PRICE LEVELS (EMA/SMA 9..2400 on 5m) crossing stop / target zones.
+- MA levels (EMA/SMA 9..2400 on 5m) as stop/target obstacles: NO separator (best 3/8 clean; sma200 in target zone 5T/11N).
+- read stop_sequence/progress.md: regime/sequence handled there (no overlap needed).
+- next: natural-threshold rule table (TP/FP) + hookeval modules for best level rules.
+- natural thresholds (zones stop(-1.8,0),(-0.9,0),(-1.8,-0.9),(-3.6,-1.8), target (0,3.6),(1.8,3.6),(0,1.8); ADR room <1.8/3.6/5.4) on 46 levels: best TP-FP = +1 (1 tight, 0 normal). High-recall: VWAP inside 1.8 stop 6T/22N. FAIL.
+- hookeval FULL ENGINE (tight=max(0.9A,disp ext) when level in zone): vwap_cross18 67/13/14; band2_zone (adv 2sd band in (-3.10,-2.40)A) 72/8/8 (4T 0N, overfit interval); band1_zone (-2.19,-1.61) 71/9/10; tgt_beyond_sess (sfav<3.6) 64/16/23; sessopen_cross18 67/13/13; pd_fav_tgt 70/10/12.
+- market-profile levels (prior-session & developing TPO/volume POC, VAH, VAL 70%, bins A/4; prior-session final VWAP): best prior TPO POC in (-0.86,-0.11)A: 4T/1N; stop18 zone 4T/6N. no separator.
+- clamp test: stop = clamp(dist to level + buf(0..0.3), 0.9, 1.8) over all ~120 level features (stop-side or abs): best 73/80 with only 1 tight matched. FAIL.
+- move-origin levels as classification features (interval search): best 3/8 clean. FAIL.
+- the only OR-triple of clean intervals covering all 8 = adr10/ATR in a 0.08-wide band | ba2 (-3.07,-2.48) | pdadv in a 0.004-wide band -> pure overfit.
+- CONCLUSION: price-level / target-feasibility family exhausted; no simple rule. Best numeric candidate r_band2_zone.py 72/8/8 (4T/0N, overfit interval, not plausible). Reported.

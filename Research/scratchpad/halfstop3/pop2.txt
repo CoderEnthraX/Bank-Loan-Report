@@ -1,0 +1,156 @@
+A       CRUDE  2026-10-06 14:50 S norm  mn k 69 net -4 imp1 sameBefore5 sesOpp 0 oppRun 0 gap +1.1
+A       CRUDE  2026-10-06 22:10 L norm  mn k154 net +4 imp1 sameBefore4 sesOpp 8 oppRun 0 gap -1.2
+A       CRUDE  2026-10-07 11:35 L norm  mn k 30 net -2 imp1 sameBefore1 sesOpp 1 oppRun 1 gap +4.0
+A       CRUDE  2026-10-07 13:25 L norm  mn k 52 net -2 imp1 sameBefore3 sesOpp 3 oppRun 2 gap +3.2
+A       CRUDE  2026-10-07 19:20 L norm  mn k120 net -2 imp1 sameBefore5 sesOpp 3 oppRun 0 gap +2.8
+A       CRUDE  2026-10-07 20:10 S norm  mn k133 net +2 imp1 sameBefore3 sesOpp 6 oppRun 3 gap -2.6
+A       CRUDE  2026-10-07 22:40 S norm  mn k163 net +2 imp1 sameBefore6 sesOpp 6 oppRun 0 gap -2.7
+A       CRUDE  2026-10-08 10:50 L norm  mn k 21 net -1 imp1 sameBefore0 sesOpp 0 oppRun 4 gap+10.7
+A       CRUDE  2026-10-08 12:20 L norm  mn k 39 net -1 imp1 sameBefore1 sesOpp 0 oppRun 0 gap+10.8
+A       CRUDE  2026-10-08 13:10 L norm  mn k 48 net -1 imp1 sameBefore4 sesOpp 0 oppRun 0 gap +8.4
+A       CRUDE  2026-10-08 20:25 L norm  mn k136 net -1 imp1 sameBefore9 sesOpp 0 oppRun 0 gap +5.4
+A       CRUDE  2026-10-09 10:35 S HALF  mH k 17 net -9 imp1 sameBefore0 sesOpp 0 oppRun 0 gap +6.6
+A       CRUDE  2026-10-09 11:55 L norm  mn k 34 net +9 imp1 sameBefore0 sesOpp 1 oppRun 2 gap -6.7
+A       ETH    2026-10-10 06:45 L norm  mn k 14 net -2 imp1 sameBefore1 sesOpp 1 oppRun 0 gap +0.0
+A       ETH    2026-10-10 12:30 S norm  mn k 83 net +2 imp1 sameBefore1 sesOpp 5 oppRun 5 gap -0.0
+A       ETH    2026-10-10 17:30 L norm  mn k139 net -2 imp1 sameBefore5 sesOpp 3 oppRun 2 gap +0.0
+A       ETH    2026-10-11 00:25 L norm  mn k225 net -2 imp1 sameBefore10 sesOpp 3 oppRun 0 gap +0.0
+A       EURUSD 2026-10-09 05:45 L norm  mn k 26 net +4 imp1 sameBefore0 sesOpp 0 oppRun 0 gap +0.0
+A       EURUSD 2026-10-09 07:05 L norm  mn k 42 net +4 imp1 sameBefore2 sesOpp 0 oppRun 0 gap +0.0
+A       EURUSD 2026-10-09 12:55 L norm  mn k111 net +4 imp1 sameBefore8 sesOpp 0 oppRun 0 gap +0.0
+A       EURUSD 2026-10-09 15:30 S HALF  mH k143 net -4 imp1 sameBefore0 sesOpp 9 oppRun11 gap -0.0
+A       EURUSD 2026-10-09 17:40 S norm  mn k169 net -4 imp1 sameBefore3 sesOpp 9 oppRun 0 gap -0.0
+A       EURUSD 2026-10-12 05:35 L norm  mn k 24 net -2 imp1 sameBefore3 sesOpp 0 oppRun 0 gap -5.7
+A       EURUSD 2026-10-12 10:20 S norm  mn k 81 net +2 imp1 sameBefore0 sesOpp 7 oppRun 7 gap +6.9
+A       GC     2026-10-07 06:10 S HALF  mH k 29 net-12 imp1 sameBefore0 sesOpp 0 oppRun16 gap -0.8
+A       GC     2026-10-07 07:55 S norm  mn k 48 net-12 imp1 sameBefore1 sesOpp 0 oppRun 0 gap -0.7
+A       GC     2026-10-07 11:35 S norm  mn k 95 net-12 imp1 sameBefore5 sesOpp 0 oppRun 0 gap -0.8
+A       GC     2026-10-07 13:55 S norm  mn k124 net-12 imp1 sameBefore6 sesOpp 0 oppRun 0 gap -0.6
+A       GC     2026-10-08 04:50 L HALF  mH k 15 net -9 imp1 sameBefore0 sesOpp 0 oppRun 0 gap +1.3
+A       GC     2026-10-08 05:40 S norm  mn k 25 net +9 imp1 sameBefore0 sesOpp 1 oppRun 2 gap -1.1
+A       GC     2026-10-08 06:40 L norm  mn k 36 net -9 imp1 sameBefore1 sesOpp 1 oppRun 1 gap +0.7
+A       GC     2026-10-08 09:40 L norm  mn k 73 net -9 imp1 sameBefore5 sesOpp 1 oppRun 0 gap +0.9
+A       GC     2026-10-08 11:40 S norm  mn k 94 net +9 imp1 sameBefore1 sesOpp 6 oppRun 5 gap -0.8
+A       GC     2026-10-09 04:40 L norm  mn k 13 net +5 imp1 sameBefore0 sesOpp 0 oppRun 0 gap +0.6
+A       GC     2026-10-09 07:30 L norm  mn k 47 net +5 imp1 sameBefore5 sesOpp 0 oppRun 0 gap +0.3
+A       GC     2026-10-09 11:20 L norm  mn k 90 net +5 imp1 sameBefore10 sesOpp 0 oppRun 0 gap +0.4
+A       GC     2026-10-09 18:25 S HALF  mH k178 net -5 imp1 sameBefore0 sesOpp12 oppRun14 gap -0.3
+A       GC     2026-10-09 20:55 L norm  mn k208 net +5 imp1 sameBefore12 sesOpp 1 oppRun 1 gap +0.3
+A       GC     2026-10-12 05:55 L norm  mn k 28 net+16 imp1 sameBefore2 sesOpp 2 oppRun 0 gap +0.1
+A       GC     2026-10-12 10:35 S norm  mn k 84 net-16 imp1 sameBefore3 sesOpp 5 oppRun 0 gap -0.2
+A       NASDAQ 2026-10-07 21:25 L norm  mn k200 net +7 imp1 sameBefore0 sesOpp13 oppRun15 gap -0.0
+A       NASDAQ 2026-10-08 05:40 S norm  mn k 13 net +9 imp1 sameBefore0 sesOpp 0 oppRun 4 gap +0.0
+A       NASDAQ 2026-10-08 08:05 L norm  mn k 42 net -9 imp1 sameBefore1 sesOpp 3 oppRun 0 gap -0.0
+A       NASDAQ 2026-10-08 08:50 S norm  mn k 50 net +9 imp1 sameBefore3 sesOpp 2 oppRun 2 gap +0.0
+A       NASDAQ 2026-10-08 14:30 S norm  mn k119 net +9 imp1 sameBefore9 sesOpp 2 oppRun 0 gap +0.0
+A       NASDAQ 2026-10-08 15:50 S norm  mn k135 net +9 imp1 sameBefore11 sesOpp 2 oppRun 0 gap +0.0
+A       NASDAQ 2026-10-09 05:00 S norm  mn k  5 net+17 imp1 sameBefore0 sesOpp 0 oppRun 0 gap +0.0
+A       NASDAQ 2026-10-09 06:05 L HALF  mH k 18 net-17 imp1 sameBefore0 sesOpp 1 oppRun 8 gap -0.0
+A       NASDAQ 2026-10-09 09:45 L norm  mn k 62 net-17 imp1 sameBefore2 sesOpp 2 oppRun 0 gap -0.0
+A       NASDAQ 2026-10-09 11:10 L norm  mn k 79 net-17 imp1 sameBefore4 sesOpp 2 oppRun 0 gap -0.0
+A       NASDAQ 2026-10-09 12:55 L norm  mn k100 net-17 imp1 sameBefore7 sesOpp 2 oppRun 0 gap -0.0
+A       NASDAQ 2026-10-12 06:20 S norm  mn k 21 net -1 imp1 sameBefore0 sesOpp 4 oppRun 6 gap -0.0
+A       NASDAQ 2026-10-12 11:15 S norm  mn k 80 net -1 imp1 sameBefore3 sesOpp 4 oppRun 0 gap -0.0
+A       NIFTY  2026-10-05 09:35 L HALF  mH k  2 net -9 imp1 sameBefore0 sesOpp 0 oppRun13 gap +2.3
+A       NIFTY  2026-10-05 10:40 S norm  mn k 16 net +9 imp1 sameBefore1 sesOpp 2 oppRun 0 gap -2.5
+A       NIFTY  2026-10-06 09:50 L norm  mn k  6 net +0 imp1 sameBefore0 sesOpp 0 oppRun 0 gap +2.7
+A       NIFTY  2026-10-07 10:30 L norm  mn k 14 net +3 imp1 sameBefore0 sesOpp 2 oppRun 2 gap -0.9
+A       NIFTY  2026-10-07 11:00 L norm  mn k 20 net +3 imp1 sameBefore1 sesOpp 2 oppRun 0 gap -0.9
+A       NIFTY  2026-10-08 10:40 S norm  mn k 16 net +2 imp1 sameBefore1 sesOpp 0 oppRun 0 gap +0.9
+A       NIFTY  2026-10-08 13:20 S norm  mn k 48 net +2 imp1 sameBefore6 sesOpp 0 oppRun 0 gap +0.9
+A       NIFTY  2026-10-09 10:10 L HALF  mH k 10 net -8 imp1 sameBefore0 sesOpp 0 oppRun11 gap +3.0
+A       NIFTY  2026-10-09 13:50 L norm  mn k 53 net -8 imp1 sameBefore3 sesOpp 0 oppRun 0 gap +5.8
+A       NIFTY  2026-10-12 09:55 S norm  mn k  7 net -7 imp1 sameBefore1 sesOpp 0 oppRun 0 gap -1.7
+A       SENSEX 2026-10-07 09:40 S norm  mn k  4 net -3 imp1 sameBefore1 sesOpp 0 oppRun 0 gap -0.4
+A       SENSEX 2026-10-07 10:30 L norm  mn k 14 net +3 imp1 sameBefore0 sesOpp 2 oppRun 2 gap +0.3
+A       SENSEX 2026-10-07 11:00 L norm  mn k 20 net +3 imp1 sameBefore1 sesOpp 2 oppRun 0 gap +0.3
+A       SENSEX 2026-10-08 10:40 S norm  mn k 16 net +1 imp1 sameBefore1 sesOpp 0 oppRun 0 gap -0.0
+A       SENSEX 2026-10-08 13:20 S norm  mn k 48 net +1 imp1 sameBefore5 sesOpp 0 oppRun 0 gap -0.0
+A       SENSEX 2026-10-09 10:10 L norm  mn k 10 net -8 imp1 sameBefore1 sesOpp 0 oppRun 0 gap +3.4
+A       SENSEX 2026-10-12 09:40 S norm  mn k  4 net-10 imp1 sameBefore1 sesOpp 0 oppRun 0 gap -2.4
+A       SENSEX 2026-10-12 11:20 S norm  mn k 23 net-10 imp1 sameBefore5 sesOpp 0 oppRun 0 gap -2.8
+A       US30   2026-10-07 05:30 S HALF  mH k 20 net-18 imp1 sameBefore0 sesOpp 0 oppRun18 gap -0.9
+A       US30   2026-10-07 06:05 S norm  mn k 29 net-18 imp0 sameBefore1 sesOpp 0 oppRun 0 gap -0.7
+A       US30   2026-10-07 10:05 S norm  mn k 78 net-18 imp1 sameBefore3 sesOpp 0 oppRun 0 gap -0.8
+A       US30   2026-10-07 11:30 S norm  mn k 95 net-18 imp1 sameBefore4 sesOpp 0 oppRun 0 gap -0.7
+A       US30   2026-10-07 12:40 S norm  mn k108 net-18 imp1 sameBefore6 sesOpp 0 oppRun 0 gap -0.5
+A       US30   2026-10-08 06:10 S norm  mn k 31 net+22 imp1 sameBefore0 sesOpp 1 oppRun 1 gap -1.3
+A       US30   2026-10-08 11:15 S norm  mn k 92 net+22 imp1 sameBefore5 sesOpp 2 oppRun 0 gap -1.2
+A       US30   2026-10-08 14:55 S norm  mn k135 net+22 imp1 sameBefore13 sesOpp 2 oppRun 0 gap -0.5
+A       US30   2026-10-08 23:15 L norm  mn k236 net-22 imp1 sameBefore6 sesOpp17 oppRun 0 gap +0.4
+BNA#1   MCX_NA 2026-10-09 18:25 L other mn k112 net -7 imp1 sameBefore3 sesOpp 3 oppRun 0 gap -1.4
+BNA#2   MCX_NA 2026-10-09 19:45 L norm  mn k128 net -7 imp1 sameBefore5 sesOpp 3 oppRun 0 gap -1.4
+BNA#3   MCX_NA 2026-10-12 11:10 L other mn k 25 net +5 imp1 sameBefore0 sesOpp 0 oppRun 0 gap-21.1
+BNA#4   MCX_NA 2026-10-12 13:10 S norm  mn k 49 net -5 imp1 sameBefore2 sesOpp 3 oppRun 0 gap+22.5
+BNA#5   MCX_NA 2026-10-12 16:55 S norm  mn k 93 net -5 imp1 sameBefore7 sesOpp 3 oppRun 0 gap+17.3
+BNA#6   MCX_NA 2026-10-12 20:40 L HALF  mn k139 net +5 imp1 sameBefore4 sesOpp10 oppRun 0 gap-10.5
+BNA#7   MCX_NA 2026-10-13 10:50 S norm  mn k 21 net +4 imp1 sameBefore0 sesOpp 0 oppRun 3 gap -1.9
+BNA#8   MCX_NA 2026-10-13 11:20 L norm  mn k 27 net -4 imp1 sameBefore1 sesOpp 1 oppRun 0 gap +1.9
+BNA#9   MCX_NA 2026-10-13 13:00 S norm  mn k 47 net +4 imp1 sameBefore1 sesOpp 3 oppRun 3 gap -1.7
+BNA#10  MCX_NA 2026-10-13 14:45 S norm  mn k 68 net +4 imp1 sameBefore4 sesOpp 3 oppRun 0 gap -1.8
+BNA#11  MCX_NA 2026-10-13 16:05 S norm  mn k 84 net +4 imp1 sameBefore8 sesOpp 3 oppRun 0 gap -1.8
+BNA#12  MCX_NA 2026-10-14 09:25 L norm  mn k  4 net +3 imp1 sameBefore0 sesOpp 0 oppRun 0 gap +3.4
+BNA#14  MCX_NA 2026-10-14 19:10 S norm  mn k121 net -3 imp1 sameBefore8 sesOpp 1 oppRun 0 gap -2.2
+BNA#15  MCX_NA 2026-10-15 09:50 L norm  mH k  8 net-14 imp1 sameBefore0 sesOpp 0 oppRun15 gap +6.7
+BNA#16  MCX_NA 2026-10-15 14:35 L norm  mn k 65 net-14 imp1 sameBefore1 sesOpp 1 oppRun 1 gap+12.6
+BNA#17  MCX_NA 2026-10-15 18:00 S norm  mn k107 net+14 imp1 sameBefore1 sesOpp 5 oppRun 4 gap -4.1
+BNI#19  NSE_NI 2026-10-05 10:30 S norm  mn k 13 net +6 imp1 sameBefore0 sesOpp 2 oppRun 2 gap -2.5
+BNI#20  NSE_NI 2026-10-06 09:50 L norm  mn k  6 net +0 imp1 sameBefore1 sesOpp 0 oppRun 0 gap +1.7
+BNI#21  NSE_NI 2026-10-06 15:20 L norm  mn k 72 net +0 imp0 sameBefore3 sesOpp 0 oppRun 0 gap +2.6
+BNI#22  NSE_NI 2026-10-07 09:40 S norm  mH k  4 net -4 imp1 sameBefore0 sesOpp 0 oppRun 4 gap +3.3
+BNI#23  NSE_NI 2026-10-07 10:30 L norm  mn k 14 net +4 imp1 sameBefore0 sesOpp 1 oppRun 1 gap -2.7
+BNI#24  NSE_NI 2026-10-07 11:00 L norm  mn k 20 net +4 imp1 sameBefore1 sesOpp 1 oppRun 0 gap -2.7
+BNI#25  NSE_NI 2026-10-07 13:15 S norm  mn k 46 net -4 imp1 sameBefore1 sesOpp 2 oppRun 2 gap +3.0
+BNI#26  NSE_NI 2026-10-08 14:05 S norm  mn k 57 net +0 imp1 sameBefore3 sesOpp 0 oppRun 0 gap +0.9
+BNI#27  NSE_NI 2026-10-09 09:30 L both  mH k  2 net -4 imp1 sameBefore0 sesOpp 0 oppRun 5 gap +2.2
+BNI#28  NSE_NI 2026-10-09 13:00 L norm  mn k 42 net -4 imp0 sameBefore3 sesOpp 0 oppRun 0 gap +3.2
+BNI#29  NSE_NI 2026-10-12 09:55 S norm  mn k  7 net -5 imp1 sameBefore2 sesOpp 0 oppRun 0 gap -0.6
+BNI#30  NSE_NI 2026-10-12 12:10 S norm  mn k 34 net -5 imp1 sameBefore6 sesOpp 0 oppRun 0 gap -0.8
+BNI#31  NSE_NI 2026-10-12 14:15 S norm  mn k 59 net -5 imp1 sameBefore7 sesOpp 0 oppRun 0 gap -0.9
+BNI#32  NSE_NI 2026-10-13 12:20 L norm  mn k 36 net-10 imp1 sameBefore1 sesOpp 0 oppRun 0 gap +0.9
+BNI#33  NSE_NI 2026-10-13 14:40 L norm  mn k 64 net-10 imp1 sameBefore4 sesOpp 0 oppRun 0 gap +1.1
+BNI#34  NSE_NI 2026-10-14 11:00 L norm  mn k 20 net +6 imp1 sameBefore0 sesOpp 1 oppRun 1 gap -2.3
+BNI#35  NSE_NI 2026-10-14 12:20 L norm  mn k 36 net +6 imp1 sameBefore1 sesOpp 2 oppRun 1 gap -2.6
+BNI#36  NSE_NI 2026-10-15 09:30 L norm  mn k  2 net -2 imp1 sameBefore1 sesOpp 0 oppRun 0 gap +1.6
+BNI#37  NSE_NI 2026-10-15 10:50 L norm  mn k 18 net -2 imp1 sameBefore5 sesOpp 0 oppRun 0 gap +1.6
+BNI#38  NSE_NI 2026-10-16 12:40 L norm  mn k 40 net +9 imp1 sameBefore2 sesOpp 1 oppRun 0 gap +2.3
+BCR#39  CRUDE  2026-10-07 20:10 S norm  mn k133 net +2 imp1 sameBefore3 sesOpp 6 oppRun 3 gap -2.6
+BCR#40  CRUDE  2026-10-07 22:40 S norm  mn k163 net +2 imp1 sameBefore6 sesOpp 6 oppRun 0 gap -2.7
+BCR#41  CRUDE  2026-10-08 10:50 L norm  mn k 21 net -1 imp1 sameBefore0 sesOpp 0 oppRun 4 gap+10.7
+BCR#42  CRUDE  2026-10-08 12:20 L norm  mn k 39 net -1 imp1 sameBefore1 sesOpp 0 oppRun 0 gap+10.8
+BCR#43  CRUDE  2026-10-08 13:10 L norm  mn k 48 net -1 imp1 sameBefore4 sesOpp 0 oppRun 0 gap +8.4
+BCR#44  CRUDE  2026-10-08 20:25 L norm  mn k136 net -1 imp1 sameBefore9 sesOpp 0 oppRun 0 gap +5.4
+BCR#45  CRUDE  2026-10-09 10:35 S HALF  mH k 17 net -9 imp1 sameBefore0 sesOpp 0 oppRun 0 gap +6.6
+BCR#46  CRUDE  2026-10-09 11:55 L norm  mn k 34 net +9 imp1 sameBefore0 sesOpp 1 oppRun 2 gap -6.7
+BCR#47  CRUDE  2026-10-09 15:15 L norm  mn k 74 net +9 imp1 sameBefore4 sesOpp 2 oppRun 1 gap -6.2
+BCR#48  CRUDE  2026-10-09 20:30 L norm  mn k137 net +9 imp1 sameBefore7 sesOpp 2 oppRun 0 gap -4.5
+BCR#49  CRUDE  2026-10-12 11:55 L HALF  mH k 34 net +8 imp1 sameBefore0 sesOpp 0 oppRun 0 gap-15.1
+BCR#50  CRUDE  2026-10-12 14:20 L norm  mn k 63 net +8 imp1 sameBefore3 sesOpp 0 oppRun 0 gap-11.0
+BCR#51  CRUDE  2026-10-13 09:35 S HALF  mH k  6 net -8 imp1 sameBefore0 sesOpp 0 oppRun14 gap +7.2
+BCR#52  CRUDE  2026-10-13 11:00 S other mn k 21 net -8 imp1 sameBefore1 sesOpp 0 oppRun 0 gap+10.0
+BCR#53  CRUDE  2026-10-13 15:30 S norm  mn k 77 net -8 imp1 sameBefore2 sesOpp 0 oppRun 0 gap+10.3
+BCR#54  CRUDE  2026-10-13 18:55 L norm  mn k114 net +8 imp1 sameBefore0 sesOpp 4 oppRun 4 gap -8.2
+BCR#55  CRUDE  2026-10-13 19:45 L norm  mn k128 net +8 imp1 sameBefore3 sesOpp 4 oppRun 0 gap -6.9
+BCR#56  CRUDE  2026-10-14 11:15 S HALF  mH k 23 net -2 imp1 sameBefore0 sesOpp 0 oppRun 6 gap -4.9
+BCR#57  CRUDE  2026-10-15 16:15 L norm  mn k 85 net +3 imp1 sameBefore3 sesOpp 3 oppRun 0 gap -8.4
+BCR#58  CRUDE  2026-10-15 18:55 L other mn k118 net +3 imp1 sameBefore7 sesOpp 3 oppRun 0 gap -6.3
+BCR#59  CRUDE  2026-10-15 20:15 L norm  mn k134 net +3 imp1 sameBefore9 sesOpp 3 oppRun 0 gap -5.7
+BCR#60  CRUDE  2026-10-16 11:50 L other mn k 33 net+10 imp1 sameBefore1 sesOpp 0 oppRun 0 gap -5.0
+BCR#61  CRUDE  2026-10-16 15:40 L norm  mn k 78 net+10 imp1 sameBefore2 sesOpp 0 oppRun 0 gap -4.1
+BCR#62  CRUDE  2026-10-16 16:30 L norm  mn k 87 net+10 imp1 sameBefore3 sesOpp 0 oppRun 0 gap -4.2
+BSE#64  SENSEX 2026-10-05 12:00 S norm  mn k 32 net +6 imp1 sameBefore2 sesOpp 3 oppRun 0 gap -4.0
+BSE#65  SENSEX 2026-10-06 10:00 L norm  mn k  6 net -1 imp1 sameBefore0 sesOpp 0 oppRun 4 gap +2.3
+BSE#67  SENSEX 2026-10-07 10:30 L norm  mn k 14 net +3 imp1 sameBefore0 sesOpp 2 oppRun 2 gap +0.3
+BSE#68  SENSEX 2026-10-07 11:00 L norm  mn k 20 net +3 imp1 sameBefore1 sesOpp 2 oppRun 0 gap +0.3
+BSE#69  SENSEX 2026-10-08 10:40 S norm  mn k 16 net +1 imp1 sameBefore1 sesOpp 0 oppRun 0 gap -0.0
+BSE#70  SENSEX 2026-10-08 13:20 S norm  mn k 48 net +1 imp1 sameBefore5 sesOpp 0 oppRun 0 gap -0.0
+BSE#71  SENSEX 2026-10-09 10:05 L norm  mn k 10 net -8 imp1 sameBefore1 sesOpp 0 oppRun 0 gap +3.4
+BSE#72  SENSEX 2026-10-12 09:40 S norm  mn k  4 net-10 imp1 sameBefore1 sesOpp 0 oppRun 0 gap -2.4
+BSE#73  SENSEX 2026-10-12 11:20 S norm  mn k 23 net-10 imp1 sameBefore5 sesOpp 0 oppRun 0 gap -2.8
+BSE#74  SENSEX 2026-10-13 12:20 L norm  mn k 36 net-11 imp1 sameBefore5 sesOpp 0 oppRun 0 gap +1.4
+BSE#75  SENSEX 2026-10-13 14:40 L norm  mn k 64 net-11 imp1 sameBefore8 sesOpp 0 oppRun 0 gap +1.6
+BSE#76  SENSEX 2026-10-14 11:00 L norm  mn k 20 net+10 imp1 sameBefore0 sesOpp 0 oppRun 0 gap +0.6
+BSE#77  SENSEX 2026-10-15 09:20 L both  mn k  0 net -1 imp1 sameBefore0 sesOpp 0 oppRun 2 gap +1.8
+BSE#78  SENSEX 2026-10-15 10:50 L norm  mn k 18 net -1 imp1 sameBefore6 sesOpp 0 oppRun 0 gap +1.8
+BSE#79  SENSEX 2026-10-15 13:30 L norm  mn k 50 net -1 imp1 sameBefore11 sesOpp 0 oppRun 0 gap +2.5
+BSE#80  SENSEX 2026-10-16 12:40 L norm  mn k 40 net+12 imp1 sameBefore4 sesOpp 0 oppRun 0 gap +6.4

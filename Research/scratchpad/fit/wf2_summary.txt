@@ -1,0 +1,350 @@
+===== pine_compile review out? True
+ - minor L27 Retest window input has no upper bound, so a large value can make line.new throw a runtime error
+    DETAIL: Line 332 draws the armed-limit line to x2 = bar_index + retestBars. TradingView throws a runtime error ('Objects positioned using xloc.bar_index cannot be drawn further than 500 bars into the future') when x2 is more than 500 bars ahead. retestBars only has minval = 1, so a user who types 501 or more gets the error on the first arm. With the default of 5 this never happens.
+    FIX: retestBars   = input.int(5, "Retest Window (bars)", minval = 1, maxval = 500, group = GRP_M, tooltip = "How many bars after the displacement the limit stays armed. Not filled in time = setup cancelled.")
+ - minor L121 timeframe.change() inside switch branches probably gives a consistency warning (it still compiles)
+    DETAIL: timeframe.change() depends on bar history and is called inside switch branches (lines 122-124). The Pine compiler usually warns about this ('should be called on each calculation for consistency'). This is a warning, not an error, and the results are still correct: vwapAnchor is an input, so the same branch runs on every bar. Moving the calls to global scope removes the warning without changing behaviour, and lets line 149 reuse the daily flag.
+    FIX: bool chgD = timeframe.change("D")
+bool chgW = timeframe.change("W")
+bool chgM = timeframe.change("M")
+bool newAnchor = vwapAnchor == "Week" ? chgW : vwapAnchor == "Month" ? chgM : chgD
+// and on line 149:
+bool newDay    = chgD
+ SUMMARY: I found nothing that should stop /home/user/Bank-Loan-Report/TradingView/Auction_Retest_Model.pine (422 lines) from compiling or throw a runtime error in Pine v6 with the default inputs. This is a manual review only. I did not run the script through TradingView's compiler, so the first real test is pasting it into TradingView.
+
+What I checked, line by line:
+- **Built-in calls and named arguments:** all match v6, including ta.highest/ta.lowest(...)[1], ta.atr, ta.dmi tuple unpacking, ta.cum, timeframe.change, time(tf, session), dayofweek(time, "UTC"), str.format_time, all input.* calls (options are const strings, color.new defaults), line.new, box.new, table.new and table.cell (tooltip is a valid argument), plot/plotshape including display arithmetic, alertcondition (global scope, literal strings) and alert().
+- **Type and assignment rules:** var / := / += usage and types are consistent. No function assigns to a global: f_rrRecord only changes a global array through array.set, which is allowed. f_row's default argument (tip = "") is valid.
+- **No implicit int-to-bool casts:** every if, ternary, and/or/not operand is a real bool. No bool is ever na, and na() is only used on int/float/line/table values.
+- **Syntax and identifiers:** switch syntax and indentation are correct (all multiples of 4, no tabs). The only history reference inside a ternary is vwap[slopeBars], which is a variable, so that is fine. A script check of all identifiers found none undeclared or used before declaration, and no local variable shadows a global.
+- **Runtime limits:** array indexes stay within 0-2. Table rows 0-19 fit the 20/17 rows allocated. Box and line counts stay within the 500 limits, and history offsets come only from inputs.
+
+Two minor items, neither blocking:
+1. **Retest window, line 27:** the input has no maxval. A value above 500 makes line.new on line 332 throw a runtime error, because a line can't be drawn more than 500 bars into the future. The default of 5 is fine.
+2. **VWAP anchor, lines 121-124:** calling timeframe.change() inside switch branches will probably trigger a consistency warning. It is only a warning and the results are correct, since the anchor is an input.
+
+My working notes are in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/pine_compile/progress.md, and the identifier checker is /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/pine_compile/idcheck.py.
+===== pine_parity review out? True
+ - parity_mismatch L166 Ties at exactly the body % / close % threshold: Python decides them by float rounding noise, TradingView treats them as passing
+    DETAIL: Lines 166, 168 and 169 compare body/rng*100 >= 55 and (high-close)/rng*100 <= 25 (and close-low for shorts). On few-tick instruments the ratio often lands exactly on the threshold in decimal terms, for example 11/20 ticks = 55% or 5/20 = 25%. Python gets these from float noise: 24.99999999998 passes and 25.00000000002 fails. TradingView has been shown to treat them as passing. Proof: hunt/pine_parity/oldtie.py replays the Pine version that produced the CSV export (763bf6f, replicated by engine.py) against the Long Fill / Short Fill flags TradingView exported. It matches all 965/965 fills after bar 1500 on all 8 symbols only when ties pass (eps +1e-7). With raw floats EURUSD has 3-10 mismatches. The first is 2026-09-08 08:05, close% = 30.000000000051: Python rejects it, TradingView armed it and filled at 08:10. Making ties fail instead (eps -1e-7) breaks GC, EURUSD and US30. For the BEST config there are about 100+ such tie checks across the data and about 18 in Oct 5-12. Ties made to pass in Python (eps_eng.py, pine_v3.py): the full-engine score stays 71/9/9. In Oct 5-12 TradingView would show one extra trade, EURUSD 10-12 20:55 S (armed 20:50, computed close% 25.00000000002); no GT screenshot covers it. Outside the window 7 EURUSD and 2 NASDAQ trades differ. The Pine already behaves this way on TradingView, so the required change is in Python. Adding the epsilon to the Pine as well makes it explicit and independent of float noise.
+    FIX: Pine L166: bool  bigCandle = rng > 0 and rng >= dispAtr * atr and body / rng * 100.0 >= dispBodyPct - 1e-7
+Pine L168: replace '(high - close) / rng * 100.0 <= dispClosePct' with '(high - close) / rng * 100.0 <= dispClosePct + 1e-7'
+Pine L169: replace '(close - low) / rng * 100.0 <= dispClosePct' with '(close - low) / rng * 100.0 <= dispClosePct + 1e-7'
+engine2.py L80: if rng < c['dispAtr'] * A or body / rng * 100 < c['bodyPct'] - 1e-7 or body < c['bodyAtr'] * A: continue
+engine2.py L84: if up and (h - cl) / rng * 100 <= c['closePct'] + 1e-7:
+engine2.py L87: if dn and (cl - l) / rng * 100 <= c['closePct'] + 1e-7:
+pine_v2.py L48/L50/L51: same '- 1e-7' on dispBodyPct and '+ 1e-7' on dispClosePct
+ - parity_mismatch L269 Fill touch at exactly the limit: an unrounded body-mid limit can be 1 ulp off the touching bar's high/low
+    DETAIL: lim is unrounded, and when lim = (open+close)/2 it can sit exactly on a tick that a later bar's low (long) or high (short) equals in decimal. The double (o+c)/2 can be 1 ulp above or below the parsed price, so Python's low <= lim / high >= lim decides the touch by noise. The export replay shows TradingView counts exact touches as fills; for example ETH 2026-10-11 08:55 with high == limit 2503.1 was filled by TradingView. In the BEST run there are about 80 exact-touch checks over the data, 3 of them in the window (EURUSD 10-06 09:20, EURUSD 10-09 18:05, CRUDE 10-09 10:35). Making exact touches count as fills (epsF = 1e-3 tick) changes no trade in Oct 5-12 and leaves 71/9/9; with eps 1e-6 tick, 1 NIFTY trade outside the window changes. Making them not count drops the score to 70/9/9. A tolerance of 0.001 tick is far below half a tick, so it only decides exact ties.
+    FIX: Pine L269: bool touched = isL ? low <= lim + syminfo.mintick * 0.001 : high >= lim - syminfo.mintick * 0.001
+engine2.py L53: touched = (L[i] < lim if isL else H[i] > lim) if c['fillTouchStrict'] else (L[i] <= lim + 1e-3 * mt if isL else H[i] >= lim - 1e-3 * mt)
+pine_v2.py L31: touched = L[i] <= lim + 1e-3 * mt if isL else H[i] >= lim - 1e-3 * mt
+ - minor L319 engine.rtick does not round the way TradingView's math.round_to_mintick does (k*mintick and half-tick cases)
+    DETAIL: engine.py rtick = floor(x/mt+0.5)*mt. It returns values like 2503.1000000000004 (ETH) or 1.1610500000000001 (EURUSD), so a bar whose high equals the rounded level does not count as a touch. It also rounds half ticks down when x/mt evaluates to 114370.49999999999 (EURUSD 2026-09-23 07:35: rtick gives 1.14370, TradingView gave 1.14371, and the fills diverge). TradingView rounds half-up to the clean decimal value. The export replay matches everything only with rtick = floor(x/mt*(1+1e-12)+0.5)/round(1/mt). This does not affect the BEST config (roundLevels=False). The only remaining use is the guard math.round_to_mintick(stop) != math.round_to_mintick(entry) on Pine L319 / engine2 L134, which is always true at 1.8 ATR. It would matter if rounded levels were ever tried again.
+    FIX: engine.py L16-17: def rtick(x, mt):
+    return math.floor(x / mt * (1 + 1e-12) + 0.5) / round(1 / mt) if mt < 1 else math.floor(x / mt + 0.5) * mt
+ - minor L149 engine.day_starts detects two false VWAP resets (flat bar right after the real reset)
+    DETAIL: EURUSD 2026-09-11 03:35 and 2026-09-16 03:35 come right after the real 03:30 reset; their hlc3 equals the 03:30 hlc3, so VWAP == hlc3 again. TradingView's newDay / newAnchor = timeframe.change("D") fires only at 03:30. In Python this restarts the sinceStart count (minOpenBars and the slope skip) one bar late. Tested by removing them: 0 trade changes on EURUSD (147 = 147). All other resets line up with session gaps or TradingView's trading-day boundary. The Labor Day merges (GC/NASDAQ 09-08 03:30 with no reset) and EURUSD 10-10 are not resets in TradingView either, so they stay consistent. No Pine change is needed.
+    FIX: engine.py day_starts L37: if i and not st[i - 1] and r['vwap'] is not None and abs(r['vwap'] - (r['h'] + r['l'] + r['c']) / 3) <= 1e-9 * max(1, abs(r['vwap'])) * 10:
+ SUMMARY: Verdict: the Pine and the Python model agree except in one area — values that land exactly on a threshold. pine_v2.py matches engine2(BEST) trade for trade on all 8 symbols. A stronger check also passed. The CSVs were exported by this same indicator, not the original: the plot names match, the VWAP code has not changed since 5a24a24, and the CSV fills are not the 80 original trades. That gave a real TradingView test. engine.py replays the version that produced the export (763bf6f), and with the tie and rounding fixes below it reproduces 965 of 965 TradingView-exported fills after bar 1500 on all 8 symbols.
+
+What holds:
+- **Step order:** daily reset, then manage the live trade, then the armed limit, then arming.
+- **Lookbacks:** ta.highest(high,10)[1] / ta.lowest(low,10)[1] = max(H[i-10:i]) / min(L[i-10:i]); entry level uses the same [1] offset over 6 bars.
+- **Momentum:** close[10].
+- **VWAP slope:** vwap[3], skipped when vwBars < 3 (same as sinceStart).
+- **First bar after reset:** minOpenBars skips it, as in Python.
+- **Sunday filter:** dayofweek(time,"UTC") is the same as dowutc.
+- **Cooldown:** max(cooldown,1) is equivalent to engine2's gap check.
+- **Daily accounting:** day cap and the -3R stop are credited on the exit bar and reset before step 1.
+- **Re-arm:** a same-direction displacement keeps the armed limit; an opposite one replaces it.
+- **Exits:** stop is checked on the fill bar, and stop comes before TP4.
+- **Levels:** unrounded in both.
+- **barstate.isconfirmed:** always true on history, so it changes nothing.
+- **Session filter:** "0000-0000" is a 24-hour, 7-day session in v5/v6 docs.
+- **Start-up and ATR:** in both, the earliest possible arm is bar 13, set by when ATR becomes available. ta.atr and engine rma give the same result; any start-up difference has died out long before October.
+- **Day boundaries:** newDay and the VWAP reset are both timeframe.change("D"), and they match the CSV resets: 03:30 IST for GC/US30/EURUSD, 04:30 for NASDAQ (03:30 on Mondays), 09:00 for CRUDE, 09:15 for NIFTY/SENSEX, 05:30 for ETH.
+
+VWAP check, per symbol type: per-bar weights recovered from the exported VWAP are non-negative (0 bad bars) and not constant on all 8 symbols. So it is volume-weighted hlc3 everywhere — futures, FX_IDC EURUSD, IG NASDAQ, the NSE/BSE indices and Bitstamp ETH all carry volume in TradingView. The no-volume fallback (equal weights) is never used for these 8. On reset bars the exported VWAP equals hlc3 to within 1 ulp.
+
+The real divergence: on an exact decimal tie, Python decides by float rounding noise, while TradingView treats the tie as passing. This affects the body % and close % thresholds (Pine L166/168/169) and a fill touching exactly the limit (L269). The replay proves it: the first case is EURUSD 09-08 08:05, close% = 30.000000000051. Python rejects it; TradingView armed it and filled at 08:10.
+
+Effect on the current best model: still 71/9/9 against the 80 original trades. In Oct 5-12 TradingView would show one extra trade, EURUSD 10-12 20:55 S, which no screenshot covers. Outside the window about 10 trades differ.
+
+Fix: add the epsilons to the Python model (engine2 L53/80/84/87, pine_v2 L31/48/50/51). Also add them to the Pine to make it explicit; this does not change what TradingView already does. A patched copy, hunt/pine_parity/pine_v3.py, matches the patched engine exactly on all 8 symbols.
+
+Two minor engine-side bugs, neither of which changes any current trade:
+- engine.rtick does not round like TradingView's round_to_mintick; this only matters if rounded levels are tried again.
+- day_starts picks up two false resets, EURUSD 09-11 and 09-16 at 03:35; removing them changes 0 trades.
+
+I did not edit the Pine file or any shared files. All scripts are in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/pine_parity/ (oldtie.py, eng_eps.py, tvdiff.py, pine_v3.py, progress.md).
+
+Sources: https://tradingview.com/pine-script-docs/concepts/sessions/, https://www.tradingview.com/pine-script-docs/v4/essential/sessions-and-time-functions
+===== pine_runtime review out? True
+ - logic_bug L299 Armed limit is cancelled on every tick of the last bar in the window, so on the realtime bar the dashed line disappears and STATE reads SCANNING while the limit can still fill
+    DETAIL: On bar armBar+retestBars the expiry branch runs on the first realtime tick that has not touched the limit. It deletes limLine and sets st := 0. Rollback brings both back on the next tick, then the branch deletes them again. Until the bar closes or price touches, the chart shows no limit line and the table shows SCANNING, even though a touch later in the same bar still fills (the fill branch runs first). Any expiry alert added here would also fire early. On historical bars barstate.isconfirmed is always true, so adding it does not change the backtest result (pine_v2 parity is kept). The arming block already requires a confirmed bar, so cancelling only at the close changes nothing else.
+    FIX:     else if bar_index - armBar >= retestBars and barstate.isconfirmed
+ - logic_bug L214 f_rrRecord rounds the R level to mintick while the exit uses unrounded levels, so WIN RATE rows count losses as hits
+    DETAIL: lvl = math.round_to_mintick(lim + d*lvR*trRisk). If the level rounds toward the entry, a losing trade whose best price reached the rounded tick but not the exact level is still credited. Measured with an extended replica (hunt/pine_runtime/rt.py, chk4.py): CRUDE 2026-10-09 11:55 L, entry 8770.5, risk 29.757, exact 1.5R level 8815.136, rounded 8815.0, best high 8815.0. That loss is counted, so the 1.5R row shows 52 instead of 51. The same effect can push the 2R row above the real win rate, which contradicts the tooltip ('the TP4 level equals the model's win rate'). The guard d*(lvl-lim) > 0 is unnecessary once the level is unrounded (lvR >= 0.1 and trRisk >= mintick).
+    FIX: f_rrRecord(bool isL, bool win) =>
+    float d = isL ? 1.0 : -1.0
+    for k = 0 to 2
+        float lvR = array.get(rrLv, k)
+        // unrounded like the TP4 exit: a loss is credited only if its best price reached the exact level
+        if win ? lvR <= tp4R : d * (bestPx - (lim + d * lvR * trRisk)) >= 0
+            array.set(rrHit, k, array.get(rrHit, k) + 1)
+    win
+ - logic_bug L282 Each trade uses 4 lines but only 2 boxes, so the 500-line limit removes entry/TP lines from older trades while their boxes stay
+    DETAIL: Each fill creates 2 boxes and 4 lines (l1, l2, l3, eLine). With max_lines_count=500, garbage collection starts deleting the oldest trades' entry and TP lines after 125 trades. Boxes last until 250 trades. Measured trade counts on the exported histories: GC 144 trades in 9531 bars, EURUSD 147, NASDAQ 158, US30 145, ETH 165 in 13829 bars. So 19, 22, 33, 20 and 40 of the oldest trades already show boxes with no entry/TP lines. On longer histories (20k+ bars) boxes are deleted as well. The fix removes whole trades in FIFO order: at most 124 trades × 4 lines + 1 dashed limit line stays under 500.
+    FIX: // input (STYLE group, after line 79)
+maxDrawn   = input.int(100, "Trades Kept On Chart", minval = 1, maxval = 124, group = GRP_S, tooltip = "Each trade draws 2 boxes + 4 lines; older trades are removed whole so the 500-line limit never strips their entry/TP lines.")
+// state (after line 191)
+var array<box>  drawnBoxes = array.new<box>()
+var array<line> drawnLines = array.new<line>()
+// after line 287 (eLine := line.new(...)), same indentation
+        array.push(drawnBoxes, gBox)
+        array.push(drawnBoxes, rBox)
+        array.push(drawnLines, l1)
+        array.push(drawnLines, l2)
+        array.push(drawnLines, l3)
+        array.push(drawnLines, eLine)
+        while array.size(drawnBoxes) > 2 * maxDrawn
+            box.delete(array.shift(drawnBoxes))
+        while array.size(drawnLines) > 4 * maxDrawn
+            line.delete(array.shift(drawnLines))
+ - logic_bug L363 An intrabar TP4 alert can be followed by a STOP on the same bar, and the bar then records the trade as a loss
+    DETAIL: The stop is checked first (a bar that touches both is a loss), but the TP4 alert uses alert.freq_once_per_bar. On the realtime bar, if price tags t4 first, tp4Event is true on that tick and 'TP4 HIT +2R' is sent. If a later tick of the same bar trades through stp, rollback re-evaluates the bar as stopHit: the STOP alert fires, and the table, totals and history after a reload all show -1R. The fill and stop alerts do not have this problem because those conditions only grow within a bar (low/high only extend and the stop has priority). Sending TP4 at bar close makes the alert match the recorded result.
+    FIX:         alert(tag + "TP4 HIT " + f_r(tp4R), alert.freq_once_per_bar_close)
+ - minor L360 TP1-TP3 alerts only report the first level reached in a bar; TP2/TP3 reached later in the same bar are never alerted
+    DETAIL: tpBefore is the value committed at the start of the bar, and the alert is freq_once_per_bar. If TP1 is reached on one tick and TP2 or TP3 later in the same 5-minute bar, only 'TP1 reached' is sent. At the close tpHit=3 is committed, so the next bar has tpBefore=3 and TP2/TP3 are never alerted. With TP gaps of 0.4R-0.5R (about 0.7-0.9 ATR at a 1.8 ATR stop), crossing several levels in one bar is common. A varip counter is not rolled back, so each level is sent exactly once.
+    FIX: // after line 336
+varip int tpSent = 0   // highest TP1-3 already alerted for the live trade (varip: not rolled back intrabar)
+if longFill or shortFill
+    tpSent := 0
+// replace lines 360-361
+    if tpEvent and tpHit > tpSent
+        alert(tag + "TP" + str.tostring(tpHit) + " reached", alert.freq_all)
+        tpSent := tpHit
+ - logic_bug L110 format.mintick display of unrounded levels shows a price that would trigger a real order one tick before the model does
+    DETAIL: Levels stay unrounded (low <= lim, low <= stp, high >= t4 for a long), but the table and alerts print str.tostring(p, format.mintick), which rounds to the nearest tick. If the shown value is on the wrong side (e.g. GC long limit 2345.67 shown as 2345.7), a print at the shown price would fill or stop a real order but not the model. Measured on all 981 replica trades: 167 limits, 479 stops and 479 TP4s are shown at such a price. The effect is up to one tick on any symbol, including high-tick ones (CRUDE 1.0, index futures 5/10), and repeats at sub-pip level on FX. Showing the first tick price that actually triggers each level matches the fill logic exactly (0 mismatches over every bar of every trade, checked in chk2/chk3, apart from one 1-ulp float case on EURUSD). That rule is: long entry/stop round down and long targets round up; short is the reverse. R values stay unrounded.
+    FIX: // after line 110
+// unrounded level -> first tick-grid price that triggers it (up = reached from below: long targets, short entry/stop)
+f_trig(float p, bool up) =>
+    float q = p / syminfo.mintick
+    (up ? math.ceil(q - 1e-7) : math.floor(q + 1e-7)) * syminfo.mintick
+f_pxT(float p, bool up) => str.tostring(f_trig(p, up), format.mintick)
+// line 357
+        alert(tag + (armedLong ? "BUY" : "SELL") + " RETEST ARMED | Limit " + f_pxT(lim, armedShort) + " | Stop " + f_pxT(stp, armedShort) + " | TP1 " + f_pxT(t1, armedLong) + " | TP2 " + f_pxT(t2, armedLong) + " | TP3 " + f_pxT(t3, armedLong) + " | TP4 " + f_pxT(t4, armedLong), alert.freq_once_per_bar_close)
+// line 359
+        alert(tag + (longFill ? "LONG" : "SHORT") + " FILLED @ " + f_pxT(lim, shortFill) + " | Stop " + f_pxT(stp, shortFill) + " | TP4 " + f_pxT(t4, longFill), alert.freq_once_per_bar)
+// lines 398-403 (add 'bool lng = st > 0' after line 387)
+    f_row(mon, 4, armed ? "LIMIT" : "ENTRY", has ? f_pxT(lim, not lng) : "—", white, cellBg, sz)
+    f_row(mon, 5, "STOP", has ? f_pxT(stp, not lng) : "—", color.new(#FF80AB, 0), cellBg, sz)
+    f_row(mon, 6, "TP1", has ? f_pxT(t1, lng) : "—", white, cellBg, sz)
+    f_row(mon, 7, "TP2", has ? f_pxT(t2, lng) : "—", white, cellBg, sz)
+    f_row(mon, 8, "TP3", has ? f_pxT(t3, lng) : "—", white, cellBg, sz)
+    f_row(mon, 9, "TP4", has ? f_pxT(t4, lng) : "—", white, cellBg, sz)
+ - logic_bug L27 Retest Window above 500 stops the script with a runtime error; lookback inputs have no upper bound
+    DETAIL: Line 332 draws the dashed line to bar_index + retestBars. Objects placed with xloc.bar_index cannot be drawn more than 500 bars into the future, so retestBars > 500 raises a runtime error on the first arm. structLen, entryLen, momLen, stopLen and slopeBars also have no maxval. Offsets above the 5000-bar history buffer (close[momLen], vwap[slopeBars], ta.highest(...)) also end in a runtime error.
+    FIX: retestBars   = input.int(5, "Retest Window (bars)", minval = 1, maxval = 100, group = GRP_M, tooltip = "How many bars after the displacement the limit stays armed. Not filled in time = setup cancelled.")
+// and add maxval = 500 to structLen (l.25), entryLen (l.26), momLen (l.31), stopLen (l.40), slopeBars (l.47)
+ - logic_bug L155 If Entry Level Lookback is longer than Breakout Lookback, the limit can sit beyond the displacement close and fill at a price that never traded
+    DETAIL: With the defaults (6 <= 10), entHigh <= priorHigh < close, so the long limit always sits below the close (0/981 trades beyond the close). If entryLen > structLen, the entryLen-bar high can be above the close. The long buy limit then sits above the market, 'fills' on the next bar at lim (low <= lim is trivially true) even when the whole bar trades below it, and the trade is recorded and drawn at that untraded price. Measured with structLen=3, entryLen=10: limit beyond the displacement close on 27/146 GC, 27/157 NASDAQ and 38/170 ETH trades; fill price outside the fill bar's range on 16, 13 and 27 trades. Capping the entry lookback at the breakout lookback keeps the default results identical.
+    FIX: float entHigh   = ta.highest(high, math.min(entryLen, structLen))[1]
+float entLow    = ta.lowest(low, math.min(entryLen, structLen))[1]
+ - minor L303 No alert when an armed limit expires or is replaced, so a live user's working limit order is never told to cancel
+    DETAIL: The ARMED alert gives the limit price for an order. When the window ends unfilled (lines 299-303), or when an opposite displacement (or a same-direction one in 'Replace with newer' mode) re-arms (line 320), the setup disappears silently. A trader who placed the order keeps it working and can get filled on a setup the model has dropped. The alert must fire at bar close because expiry is only final at the close (see the line-299 fix).
+    FIX: // declare after line 230
+string cancelTxt = ""
+// in the expiry branch (after 'st := 0', line 303)
+        cancelTxt := "EXPIRED"
+// in block 3, just before line 320 'if not na(limLine)'
+        if math.abs(st) == 1
+            cancelTxt := "REPLACED"
+// alerts
+alertcondition(cancelTxt != "", "Retest Cancelled", "ARM: armed retest cancelled on {{ticker}} ({{interval}})")
+// inside 'if alertsOn'
+    if cancelTxt != ""
+        alert(tag + "ARMED RETEST " + cancelTxt + " - cancel the working limit", alert.freq_once_per_bar_close)
+ - minor L388 On daily and higher charts the script never arms a setup and gives no warning
+    DETAIL: With Anchor = Session on D/W/M charts, timeframe.change("D") is true on every bar. vwBars is then always 0, so setupOk (vwBars >= minOpenBars = 1) is never true. newDay also resets dayFills, dayR and the MODEL DAY counters on every bar. The script draws only a VWAP equal to hlc3 and a table that reads SCANNING.
+    FIX:     string stTxt  = timeframe.isdwm and vwapAnchor == "Session" ? "USE AN INTRADAY CHART" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY RETEST ARMED" : st == -1 ? "SELL RETEST ARMED" : dayFills >= maxFills ? "DAY CAP REACHED" : not dayOpen ? "DAILY STOP HIT" : "SCANNING"
+ - minor L55 TP input order is not checked; TP3 above TP4 draws a line outside the box and TARGETS HIT never reaches 3
+    DETAIL: Line 238 assumes t1 < t2 < t3 (it checks t3 first), and gBox only spans lim..t4. If tp3R > tp4R (or tp1R > tp2R and so on), the TP3 line is drawn beyond the target box, TP3 can never be reported before the TP4 exit, and TP alerts can be skipped.
+    FIX: if tp1R > tp2R or tp2R > tp3R or tp3R > tp4R
+    runtime.error("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4 (exit).")
+ - minor L421 WIN RATE rows for an R level above TP4 always show 0% in red
+    DETAIL: Every trade exits at TP4 or the stop. A loss cannot have reached a level beyond t4 (it would have exited as a win first), and wins are only credited for lvR <= tp4R. So an R level above tp4R (e.g. rr3 = 3 with TP4 = 2) always shows 0%, coloured as below break-even. That looks like a real statistic but is a structural zero.
+    FIX:             string val  = lvR > tp4R ? "n/a (above TP4 exit)" : closed > 0 ? str.tostring(math.round(pct)) + "% · " + str.tostring(hits) + "/" + str.tostring(closed) : "—"
+            f_row(mon, 17 + k, "WIN RATE " + f_rLabel(lvR), val, closed == 0 or lvR > tp4R ? white : pct >= 100.0 / (1.0 + lvR) ? posC : negC, cellBg, sz, rrTip)
+ - minor L42 Cooldown 0 behaves the same as 1
+    DETAIL: Line 307 uses math.max(cooldownBars, 1), so a setup is never armed on the exit bar even with cooldownBars = 0. This matches the engine, but the input allows 0 without saying so.
+    FIX: cooldownBars = input.int(2, "Cooldown After Exit (bars)", minval = 0, group = GRP_M, tooltip = "Bars to wait after an exit before a new setup can be armed. 0 and 1 are the same: a setup is never armed on the exit bar itself.")
+ - minor L138 A zero-volume stretch on a symbol that has volume collapses VWAP to the current bar's source
+    DETAIL: After hasVolume becomes true, w = nz(volume) is 0 for zero-volume bars. If a VWAP period starts with zero-volume bars, or has none at all (holiday or thin feed), cumW stays 0 and vwap = the current bar's hlc3. The VWAP side filter then becomes close > hlc3 of the same bar, and the slope compares raw hlc3 values. Falling back to the period's TWAP keeps the filter meaningful. Symbols with no volume at all (NIFTY/SENSEX index) are unaffected: they already use TWAP.
+    FIX: // with cumPV/cumW (lines 127-137)
+var float cumP = 0.0
+var int   cumN = 0
+// in 'if newAnchor': cumP := 0.0 and cumN := 0
+cumP += vwapSrc
+cumN += 1
+float vwap = cumW > 0 ? cumPV / cumW : cumP / cumN
+ - minor L300 Expired or replaced setups leave no trace on the chart, so unfilled setups cannot be reviewed in history
+    DETAIL: The dashed line is deleted on fill (l.280), expiry (l.301) and replacement (l.321). Only the live armed limit is ever visible. Historical setups that never filled (39-60 per symbol on the exported histories, e.g. GC 39 of 183 arms) cannot be checked against the reference screenshots. This is optional; if wanted, keep a faded, truncated line and include it in the FIFO budget from the drawing-limit finding (reduce maxDrawn's maxval to about 99).
+    FIX:     else if bar_index - armBar >= retestBars and barstate.isconfirmed
+        if not na(limLine)
+            line.set_x2(limLine, bar_index)
+            line.set_color(limLine, color.new(limitCol, 70))
+            array.push(drawnLines, limLine)
+        limLine := na
+        st      := 0
+ SUMMARY: Review of /home/user/Bank-Loan-Report/TradingView/Auction_Retest_Model.pine for realtime and usability problems. Numbers come from an extended replica of the Pine logic (pine_v2 logic plus bestPx, R-level stats, expiries and display checks) in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/pine_runtime/ (rt.py, chk2-chk5.py), run on all 8 symbols (981 trades). The log is in progress.md in the same folder.
+
+Checked and found correct:
+- Model state is safe across intrabar rollback: var scalars and arrays roll back each tick, and arming requires barstate.isconfirmed with fills from the next bar. The committed history therefore equals what a reload computes.
+- The fill and stop conditions only grow within a bar, so their triangles and alerts fire once and never disappear. The ARMED alert (once_per_bar_close) fires once.
+- The table is created with 20 rows when showRr is on and 17 when off, matching the rows written (0-19 / 0-16).
+- TRADING DAY formatting time_tradingday in UTC is correct.
+- slopeBars=0, momAtr=0, minOpenBars=0, rearm Replace and Swing stop mode all run without errors. Swing stops are always on the correct side of the entry.
+- 8 of 981 default trades fill at the limit after the bar opened through it; the reference does the same (its fill flag is set on the ETH cases), so this is not a defect.
+
+Defects, most important first:
+- Line 299: on the realtime bar the limit is cancelled and redrawn on every tick of the last window bar, so it flickers off while it can still fill. Fix: add `and barstate.isconfirmed`.
+- Line 214: the R-level win-rate stat rounds the level while exits use unrounded levels. Measured overcount: CRUDE 10-09 11:55, 1.5R row 52 instead of 51.
+- Drawing limit: 4 lines but 2 boxes per trade, so trades beyond 125 lose their entry/TP lines. Measured: 19-40 such trades on GC, EURUSD, NASDAQ, US30 and ETH histories. Fix: FIFO deletion of whole trades.
+- Line 363: an intrabar TP4 alert can be contradicted by a STOP on the same bar.
+- Line 360: TP2/TP3 alerts are lost when several targets are hit in one bar.
+- Line 110: format.mintick shows a price that would trigger a real order one tick before the model does (167/479/479 of 981 limits/stops/TP4s). Fix: display the trigger tick (long entry/stop rounded down, long targets rounded up, short the reverse). This matched the model on every bar checked, apart from one 1-ulp float case.
+- Line 27: retestBars > 500 causes a future-draw runtime error.
+- Line 155: entryLen > structLen puts the limit beyond the displacement close, giving fills at prices that never traded (13-27 trades per symbol).
+- Minor: no cancel alert for expired or replaced limits; silent on D/W/M charts; TP order not validated; R levels above TP4 always show 0%; cooldown 0 behaves as 1; zero-volume periods collapse the VWAP; expired setups are invisible in history.
+
+Side note for the shared engine: engine.py MINTICK uses ETH=0.1, but BITSTAMP ETHUSD data is on a 0.01 grid. It only affects the risk>=mintick guard, and the display check was rerun with 0.01. No shared files were modified.
+===== stop_sequence hunt out? True
+ SUMMARY: I found a rule that switches the stop to the tight mode, and it beats the oracle-stop target: the full engine now scores 75 exact / 5 miss / 7 extra (baseline 71/9/9, oracle stops 74/6/6). It gets all 8 tight trades right. On those 8 trades the engine's stop prices are within 0.013 ATR of the measured ones, and the exit bar and outcome match exactly.
+
+The rule is not trade-history based. A trade gets the tight stop when two things are true:
+1. Its displacement is the first displacement candle of the current session in that direction. This counts every qualifying candle, even ones that were never armed because of position, cooldown or the first-bar/Sunday-UTC gates.
+2. The previous session's candle closed against that direction by more than 1 ATR (close below open for a long, above open for a short).
+
+The tight stop is entry -/+ max(0.9*ATR14, distance to the displacement candle's low/high). Otherwise the stop stays at 1.8*ATR14.
+
+This settles the NIFTY/SENSEX 10-09 paradox. SENSEX printed a bullish displacement at 09:35 (armed, never filled), so its 10:05 long was not the first of the session and kept the normal stop. NIFTY had no displacement before 10:05, so its long was tight.
+
+Stop classification on all 80 trades is 77/80. On the oracle-tight history (74 trades with a recorded arm) it is 71/74, and inside the rule's own engine run it is 71/75. Four normal trades are wrongly made tight: CRUDE 10-08 10:50 L, NASDAQ 10-12 06:20 S, NIFTY 10-12 09:55 S, and in-engine only US30 10-07 05:30 S. For NIFTY and US30 an earlier same-direction candle missed the 10-bar breakout by just 0.09 ATR; I could not explain the other two. The NASDAQ one causes the only new extra (NASDAQ 10-12 07:00 S). Every other remaining miss or extra was already open before.
+
+The rule makes about 11.6% of all engine trades tight; the original shows 10%.
+
+How sensitive it is:
+- Threshold: any previous-session body threshold from 1.0 to 2.75 ATR gives the same 75/5/7 and 77/80. Without a threshold (any opposite candle) it drops to 74/6/8 because of NIFTY 10-06 09:50 L, whose previous candle body was only 0.08 ATR.
+- VWAP-slope condition: it must be part of the displacement definition, otherwise EURUSD 10-09 15:30 and GC 10-09 18:25 lose their tight stop.
+- First-bar and Sunday-UTC gates: putting them into the displacement definition drops the classification to 72–74/80. So they look like arming gates applied after detection.
+
+A Pine sketch of the switch:
+```
+var float pO = na, var float pC = na, var float sO = na
+var bool bullSeen = false, var bool bearSeen = false
+if newSession
+    pO := sO
+    pC := close[1]
+    sO := open
+    bullSeen := false
+    bearSeen := false
+// bullEvt/bearEvt = displacement candle conditions only (no state, no first-bar/Sunday gates)
+tightL = bullEvt and not bullSeen and (pC - pO) < -1.0*atr
+tightS = bearEvt and not bearSeen and (pC - pO) > 1.0*atr
+// update the flags only after computing tightL/tightS
+if bullEvt
+    bullSeen := true
+if bearEvt
+    bearSeen := true
+```
+Then stop distance = tight ? max(0.9*atr, entry - low (long) / high - entry (short)) : 1.8*atr.
+
+On the sequence ideas I was asked to test: none of the trade-history or model-state ideas work. I also showed from the original's own NIFTY trade list (continuous screenshots 10-01 to 10-12) that no rule based on cumulative R, drawdown from peak or win% can work, however much history is loaded. The full list is under ruled out. Notes and every check are in progress.md and rule_firstday_prevday.py in `/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_sequence/`.
+ * CAND First displacement of the session against a previous-session candle that closed >= 1 ATR the other way (recommended) | 77/80 static (8/8 tight correct). Wrong (normal predicted tight): CRUDE 10-08 10:50 L, NASDAQ 10-12 06:20 S, NIFTY 10-12 09:55 S. Teacher-forced on oracle history 71/74. In-engine 71/75 (adds US30 10-07 05:30 S, engine arm 05:10). | exact 75 / miss 5 / extra 7 | params 2 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_sequence/rule_firstday_prevday.py
+     rule: Tight if both: (a) no earlier bar in the current session, merged with any stub session under 24 bars, is a displacement candle in direction d, where a displacement candle means: closes in direction d, range >= 0.8 ATR14, body >= 55% of range, close within 25% of its extreme, close beyond the prior 10-bar high (long) / low (short), and VWAP higher (long) / lower (short) than 3 bars ago, skipped in the first 3 session bars; state, first-bar and Sunday-UTC gates are not applied; (b) d*(previous session close - previous session open) < -1.0*ATR14. Then stop = entry - d*max(0.9*ATR14, d*(entry - displacement low/high)); otherwise 1.8*ATR14.
+     notes: All 8 tight trades: engine stop within 0.013 ATR of the measured stop, exits identical (stopcmp.py). PD_TH from 1.0 to 2.75 ATR gives the same result; MERGE does not matter. Also adding 'vw' (close beyond VWAP) and/or 'mom' (close >= 0.85 ATR beyond close[10]) to the displacement definition still gives 75/5/7 (76-77/80). Removing the VWAP-slope condition loses EURUSD 10-09 15:30 and GC 10-09 18:25. Remaining misses/extras: all known before (CRUDE 10-06 21:00 L, ETH 00:10/00:25, NASDAQ 10-07 21:25, NIFTY 10-07 09:40 S, US30 10-07 cascade) plus NASDAQ 10-12 07:00 S, a cascade from the NASDAQ 06:20 false tight. Engine tight share 11.6% (original 10%).
+ * CAND Same rule with the full displacement definition and unmerged sessions | 76/80 static. Wrong: CRUDE 10-08 10:50 L, ETH 10-10 12:30 S, NASDAQ 10-12 06:20 S, NIFTY 10-12 09:55 S. | exact 75 / miss 5 / extra 7 | params 2 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_sequence/r_g_E2u_1.py
+     rule: As above, but a displacement candle uses every price condition of the entry signal (candle shape, 10-bar breakout, close beyond VWAP, momentum >= 0.85 ATR vs close[10], VWAP slope over 3 bars), still without the state, first-bar and Sunday-UTC gates. Session = the engine's VWAP session (no merging). Previous session body against d by more than 1 ATR.
+     notes: Easiest to port to Pine: reuse the existing bullSig/bearSig price conditions to set the 'seen' flags. Uses the fdlib/pdlib helpers in the same directory.
+ * CAND Plain version: any opposite previous-session candle (no threshold) | 76/80. Wrong: CRUDE 10-08 10:50 L, NASDAQ 10-12 06:20 S, NIFTY 10-06 09:50 L (previous body only -0.08 ATR), NIFTY 10-12 09:55 S. | exact 74 / miss 6 / extra 8 | params 1 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_sequence/r_g_CVm_0.py
+     rule: Same as the recommended rule (displacement = candle + breakout + VWAP slope, merged sessions), but (b) is just d*(previous close - previous open) < 0.
+     notes: Shows the 1-ATR threshold is only needed to skip near-doji previous sessions.
+ * CAND Previous close vs the close before it, instead of previous close vs open | 77/80. Wrong: CRUDE 10-08 10:50 L, NASDAQ 10-12 06:20 S, NIFTY 10-12 09:55 S. In-engine 70/74. | exact 74 / miss 6 / extra 8 | params 1 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_sequence/r_V1.py
+     rule: Same first-of-session displacement condition (candle + breakout + VWAP slope), with (b) = d*(previous session close - close of the session before) < 0.
+     notes: Equivalent on the 80 trades; slightly worse full engine because of a cascade around CRUDE 10-06 (22:10 L missed via 21:00/21:35 extras).
+ RULED OUT: Previous trade direction, outcome, time since exit, time since fill, whether it was tight, and previous same-/opposite-direction trade result, gap and tight flag (feat.py, samedir.py): best error 6-7 of 74 (baseline 8).; Loss/win streaks, dayFills, dayR, dayLoss, day W/L, week-to-date R/N/W/L, previous-session R and N (feat.py, week.py): no separator.; LOADED BARS cumulative R, drawdown from peak, win%: the table readings imply about 300-600 loaded trades and differ between screenshots (NASDAQ +52R on Fri vs +51R on Mon). On the original's own NIFTY sequence (continuous screenshots 10-01 to 10-12) tight and normal trades occur at the same cumulative R (0 and -1), and the win% path contradicts any threshold, so these are impossible regardless of how much history is loaded.; Rolling sum R / wins over the last 1-40 trades; equity vs its SMA/max/min over the last 5-30 trades (feat.py, rollN.py): best error 7.; Same-direction run length; flip (any), flip after a loss, flip after a win. Full engine: flip 67/13/14, fliploss 68/12/12. Short-history rules that fit all 10 NIFTY trades (e.g. previous trade opposite and lost AND the one before won) fail on SENSEX 10-09, whose last 4 trades are identical.; Armed-but-unfilled or cancelled setups since the last exit / today / in the last 20 bars, whether the previous arm filled, replacing an armed limit (feat.py): all 8 tight have none, but neither do 59 normal trades.; Previous trade's max favourable/adverse excursion, targets hit, duration, gap exit, for the last two trades (feat2.py): best error 7.; Current ATR, risk or range relative to the previous 1-3 trades or the average of the last 5 (ratio.py): best error 7.; Clamp-to-level stops using the previous same/opposite signal, arm or trade levels (extreme, close, open, mid, entry, stop, TP4) (prevlvl.py): best error 12.; Bias state machine (reset to the previous session's direction, flipped by every displacement, tight when trading against it): 18-22 normal trades also tight, so intraday flips are not tight.; The table's REGIME and BIAS labels: they match no 5m ADX/DI/EMA rule, previous-session direction or trade history (e.g. GC Monday NEUTRAL after a short TP4; NIFTY TRENDING at ADX 36 while SENSEX TRANSITION at ADX 38 at the same moment).; Two-feature combinations of any sequence and price features (pair2.py, pair3.py): none with error <= 3.; First-of-session condition plus sequence state (sumR5>=1 72/8/11, flip after loss 70/10/11, dayFills==0 70/10/12, dayR<=0 68/12/13): worse than the previous-session-candle condition.; Realtime-repaint explanation for the Monday 10-12 false tights (security() reading today's candle live): contradicted by EURUSD 10-12 10:20 S unless that chart was loaded after 10:20.
+===== stop_levels hunt out? True
+ SUMMARY: Result: no rule based on price levels or target feasibility explains the 8 tight stops. I tested about 250 features on all 80 original trades: levels at the displacement bar, levels at the fill bar, clamp-to-level stops, unions of levels, and pairs and triples of conditions. None of these simple rules separates tight from normal. Best results:
+- Single level in a fitted interval: at most 4 of 8 tight with 0 normal trades caught.
+- Fixed natural thresholds: at best 1 tight more than normal.
+- Clamp-to-level stops: at most 73/80 stops matched, and only 1 of them tight.
+- AND of covering intervals: the best pair still leaves 9 normal trades inside.
+- OR of clean intervals: no pair covers all 8; the only triple that does uses bands 0.004 to 0.08 ATR wide, so it is pure overfit.
+
+The best full-engine score (r_band2_zone, 72/8/8, 1 better than the 71/9/9 baseline) comes from an overfit interval on a recovered VWAP 2-sigma band. It is not plausible indicator logic.
+
+Facts confirmed on the way:
+1. All 8 tight stops equal max(0.9*ATR, distance to the displacement candle's extreme). For GC 10-09 the 1.06 is the 18:20 candle's high, not VWAP (VWAP is 6 px higher).
+2. NIFTY/SENSEX 10-09 paradox: every level feature is nearly identical for the two (VWAP distance 2.62 vs 2.22 ATR, sigma/ATR 1.57 vs 1.55, session open, previous-day levels, opening range, round numbers). The one structural difference is that SENSEX had a same-direction displacement at 09:35 (armed, never filled) and NIFTY had none.
+3. All 8 tight trades are the first same-direction displacement of their session, but about 24 normal trades are too. The stop_sequence agent found the same and is following it up.
+4. The original's on-chart table shows REGIME and BIAS states. On 10-12 at 12:40, NIFTY showed TRENDING ADX36 BEARISH while SENSEX showed TRANSITION ADX38 BEARISH. So a hidden regime state can differ between the two near-identical indices, which makes a stateful or regime switch more likely than a price-level one. stop_sequence/regime.py found that regime is not a function of 5-minute ADX, DI or slope.
+
+Work log: /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_levels/progress.md. The feature builders (lv.py, dispser.py, vfeat.py, vp.py, malv.py, origin.py) and the search scripts (sep.py, cover.py, orpair.py, union.py, natural.py, clampall.py) are in the same directory. In every candidate below, a tight trade gets the stop max(0.9*ATR, displacement extreme) and every other trade keeps 1.8*ATR.
+ * CAND band2_zone (adverse VWAP 2-sigma band in zone) | 76/80. Catches 4 tight (CRUDE 10-09 10:35, GC 10-07 06:10, GC 10-08 04:50, NASDAQ 10-09 06:05) with 0 normal trades. Misses EURUSD 10-09 15:30, GC 10-09 18:25, NIFTY 10-05 09:35, NIFTY 10-09 10:10. | exact 72 / miss 8 / extra 8 (baseline 71/9/9). It fixes the GC 10-08 05:40 S miss and the GC 15:15 extra. | params 2 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_levels/r_band2_zone.py
+     rule: Tight stop when the adverse VWAP 2-sigma band (lower band for a long, upper for a short; sigma recovered by volrec from the exported VWAP) lies 2.40 to 3.10 ATR14 behind the entry at the displacement bar. Measured as d*(band-entry)/ATR in (-3.10, -2.40). Otherwise 1.8 ATR.
+     notes: Numerically the best rule in this family, but the interval was fitted to the data. A natural zone (-3.6, -1.8) gives 4 tight and 13 normal. The sigma comes from volume recovered out of VWAP, so it is approximate. Treat it as a coincidence, not the real switch. It does not resolve NIFTY/SENSEX 10-09.
+ * CAND band1_zone (adverse VWAP 1-sigma band in zone) | 75/80. 4 tight, 1 normal wrongly tight (NASDAQ 10-12 06:20). | exact 71 / miss 9 / extra 10 | params 2 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_levels/r_band1_zone.py
+     rule: Tight stop when the adverse 1-sigma VWAP band lies 1.61 to 2.19 ATR behind the entry: d*(band1-entry)/ATR in (-2.19, -1.61).
+     notes: Fitted interval. No gain over baseline.
+ * CAND pd_fav_tgt (2R target beyond previous-session extreme) | 62/80. 1 of 8 tight caught; normal trades wrongly tight include SENSEX 10-09 10:10, SENSEX 10-07 x3, NIFTY 10-07 x2, NASDAQ 10-08 x2, CRUDE 10-08 12:20, EURUSD 10-09 07:05, GC 10-09 04:40, SENSEX 10-12 11:20. | exact 70 / miss 10 / extra 12 | params 1 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_levels/r_pd_fav_tgt.py
+     rule: Tight stop when the previous session's high (long) or low (short) lies between the entry and the 3.6-ATR 2R target: d*(pdExt-entry)/ATR in (0, 3.6).
+     notes: Natural target-feasibility rule. Fails.
+ * CAND vwap_cross18 (1.8-ATR stop would cross VWAP) | 56/80. 6 of 8 tight caught, 22 normal trades wrongly tight. | exact 67 / miss 13 / extra 14 | params 1 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_levels/r_vwap_cross18.py
+     rule: Tight stop when the session VWAP lies between the entry and the 1.8-ATR stop: d*(VWAP-entry)/ATR in (-1.8, 0).
+     notes: Highest recall of any natural rule, but far too many false tights. NIFTY 10-09 has VWAP 2.62 ATR behind the entry, SENSEX 2.22, so it cannot resolve the paradox.
+ * CAND sessopen_cross18 (stop would cross session open) | 60/80. 0 of 8 tight caught, 12 normal wrongly tight. | exact 67 / miss 13 / extra 13 | params 1 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_levels/r_sessopen_cross18.py
+     rule: Tight stop when the session open lies between the entry and the 1.8-ATR stop: d*(sessionOpen-entry)/ATR in (-1.8, 0).
+     notes: Fails.
+ * CAND tgt_beyond_sess (2R target beyond session high/low so far) | 17/80. Almost every trade is classed tight, because displacement bars sit at or near the session extreme. | exact 64 / miss 16 / extra 23 | params 1 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_levels/r_tgt_beyond_sess.py
+     rule: Tight stop when the session high (long) or low (short) up to the displacement bar lies within the 3.6-ATR target: d*(sessExt-entry)/ATR in (0, 3.6).
+     notes: Strongly rejected.
+ RULED OUT: VWAP and VWAP +/-1/2/3 sigma bands, trade side and stop side, as distance-to-entry intervals: best 4/8 tight with 0 normal (fitted interval), no full separation; Session open, session high/low including or excluding the displacement bar, session range in ATR, bars since session start; Previous-session high/low/close/open/mid; previous-week high/low, week open, week-to-date extremes; Opening range high/low for N = 1, 2, 3, 6, 12 bars (initial balance); Round numbers: nearest above/below at steps 10^(magnitude-k)*m, k=1..3, m=1, 2, 2.5, 5; ADR and daily ATR over 5/10/14/20 sessions: room to the projected high/low (range expansion limit), share of range used, ADR/ATR; Moving averages as levels: EMA/SMA 9..2400 on 5m (crossing the stop zone or the target zone); Market profile: previous-session and developing TPO and volume POC/VAH/VAL (70%); previous-session closing VWAP. Prior TPO POC 4 tight/1 normal at bin A/4, but unstable across bin widths; Recovered per-bar volume: relative volume over 1..50 bars, session share, VWAP jump at the displacement bar; Previous raw displacements without position state: counts in 6..48 bars and in session, bars since the last same/opposite one, their extreme/mid/open/close levels (all 8 tight are first-in-session in their direction, but about 24 normal trades are too); Same level set measured at the fill bar and fill-1, plus fill-bar close vs VWAP; Fixed natural zones: stop crossing a level within (-1.8,0), (-0.9,0), (-1.8,-0.9), (-3.6,-1.8) ATR; target obstacles in (0,3.6), (1.8,3.6), (0,1.8), (0,5.4) ATR: best TP-FP = +1; Union of levels (nearest of a set of levels in a natural zone): at most 2 of 8 tight; Stop clamped to a level: clamp(distance to level + buffer 0..0.3, 0.9, 1.8) over all ~120 level features: best 73/80 stops matched, with only 1 tight; Move-origin structure stops (same-colour run, VWAP-side run, since last opposite displacement, higher-low/close run, since the broken-extreme bar, 3/5/10/20-bar box) as clamps and as classifiers: best 72/80 clamp, 3/8 clean; AND of covering intervals over all features: best pair leaves 9 normal trades; OR of 2 clean intervals over ~250 features: none covers all 8; the single triple that does is degenerate (0.004 to 0.08 ATR-wide bands)
+===== stop_volatility hunt out? True
+ SUMMARY: I found no tight-stop switch in the volatility / candle-structure family. I built about 360 features at the displacement (arm) bar and at the fill bar for all 80 original trades and searched them as single thresholds and intervals, as AND pairs that keep all 8 tight trades, as ORs of zero-false-positive conditions, and again inside the 33-trade subset where the trade is the session's first signal in its direction. The best single feature catches 3 of 8 tight trades with 0 false positives, which is chance level for this many features. The best AND pair still flags 12 normal trades. Even the best three zero-false-positive conditions OR'd together cover only 6 of 8.
+
+Two facts limit what any rule in this family can do:
+1. The tight stop is exactly half the normal one. Across the 72 normal trades, stop / ATR14 (RMA) at the arm bar is 1.794 with sd 0.014. Every other ATR definition fits much worse: RMA13/15 sd 0.023, the previous bar's ATR sd 0.09, SMA/EMA/WMA worse still. Seven tight trades sit at 0.89-0.91 of that same ATR, and GC 10-09 18:25 is at 1.058, which is its displacement high. So the switch is a binary 0.5x multiplier, stop = max(0.9 ATR, displacement-candle extreme). No alternative ATR, higher-timeframe ATR, or cap in ticks, points or percent explains it. Within each symbol the tight trades are not the highest-ATR ones (GC tight risks of 44/49/79 ticks against a 42-88 range), so no fixed risk cap can work.
+2. The NIFTY / SENSEX pair on 10-09 10:05 is the same on every price-based feature to two decimals in ATR terms. Only volume differs (SENSEX relative volume 4.9x at the displacement bar, NIFTY 1.1x). Volume features (in-session relative volume over 3/5/10/20 bars, CLV-volume delta, VWAP jump and slope, VWAP stdev width) do not separate the 8 tight trades either.
+
+The switch is most likely state- or regime-based, outside this family. Two leads for the orchestrator. First, the stop_sequence finding that all 8 tight trades are the session's first signal in that direction (SENSEX had an earlier 09:35 long signal; NIFTY had none); none of my features is a clean second condition within that subset. Second, the table's REGIME/BIAS. On 10-12 12:40 the table shows NIFTY TRENDING and SENSEX TRANSITION with nearly the same 5m ADX and DI, and NASDAQ on 10-09 13:40 reads RANGING / NEUTRAL despite bullish stacked EMAs. So the regime uses inputs beyond 5m ADX, but 8 snapshot labels are too few to fit it.
+
+The full-engine score only improves when a rule catches the tight trades that start cascades: GC 10-08 04:50 (fixes GC 10-08 05:40 S), NIFTY 10-09 10:10 (fixes 13:50 L) and EURUSD 10-09 15:30 (fixes 17:40 S and the 18:05 extra). An overfit rule catching 4 tight trades with 0 false positives (CRUDE, GC 10-09, NASDAQ, NIFTY 10-05) still scores 71/9/9.
+
+My oracle module (tight exactly on the 8 known arm bars, stop = max(0.9 ATR, displacement extreme)) scores 75/5/6, not the 74/6/6 quoted in the task. Every module, script and feature file is in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_volatility/, and the full log is in progress.md there.
+ * CAND first_trx3 | 75/80 (3 tight caught: GC 10-07 06:10, GC 10-08 04:50, NIFTY 10-05 09:35; 0 false positives). Wrong: CRUDE 10-09 10:35, EURUSD 10-09 15:30, GC 10-09 18:25, NASDAQ 10-09 06:05, NIFTY 10-09 10:10 (all tight, predicted normal). | exact 72 / miss 8 / extra 8 | params 2 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_volatility/r_first_trx3.py
+     rule: Tight stop = max(0.9*ATR14, distance to the displacement candle's adverse extreme) when (a) the bar is the first raw displacement signal of the session in that direction (stop_sequence/sig.py) AND (b) the displacement bar's true range <= 0.8 x the mean true range of the previous 3 bars (no range expansion). Otherwise 1.8*ATR14.
+     notes: Best full-engine score of all candidates; the gain comes from GC 10-08 04:50 (fixes the GC 10-08 05:40 S cascade). The 0.8 threshold was picked from the data and the rule catches only 3 of 8, which is chance level. Not a credible switch.
+ * CAND chop20 | 75/80 (3 tight caught: CRUDE 10-09, NIFTY 10-05, NIFTY 10-09; 0 false positives). Wrong: EURUSD 10-09 15:30, GC 10-07 06:10, GC 10-08 04:50, GC 10-09 18:25, NASDAQ 10-09 06:05 (tight, predicted normal). | exact 72 / miss 8 / extra 9 | params 2 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_volatility/r_chop20.py
+     rule: Tight stop when Choppiness Index(20) at the displacement bar <= 30.2 (strongly trending). Otherwise 1.8*ATR14.
+     notes: Best single feature of about 360 (err 5). It separates NIFTY (30.16) from SENSEX (31.03) on 10-09 only by a hair, so the threshold is overfit.
+ * CAND first_chop20 | 75/80 (same 3 tight as chop20, 0 false positives). | exact 72 / miss 8 / extra 9 | params 2 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_volatility/r_first_chop20.py
+     rule: Tight stop when the bar is the session's first displacement signal in that direction AND Choppiness(20) <= 30.2.
+     notes: Adding the first-of-session gate changes nothing compared with chop20 alone.
+ * CAND atr_falling | 73/80 (only NIFTY 10-09 10:10 caught, 0 false positives; the other 7 tight trades are missed). | exact 72 / miss 8 / extra 9 | params 1 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_volatility/r_atrfall.py
+     rule: Tight stop when ATR14 fell on the displacement bar: ATR[i-1] >= 1.014 x ATR[i], i.e. the displacement true range is clearly below the prior ATR.
+     notes: On the feature table it caught 2 tight with 0 false positives; inside the module only NIFTY 10-09 crosses the threshold. The gain is the NIFTY 13:50 L cascade. Overfit.
+ * CAND trx3 | 73/80 (3 tight caught, 2 false positives: CRUDE 10-08 12:20, SENSEX 10-12 09:40). | exact 71 / miss 9 / extra 9 | params 2 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_volatility/r_trx3.py
+     rule: Tight stop when the displacement bar's true range <= 0.8 x the mean true range of the previous 3 bars (no first-of-session gate).
+     notes: No full-engine gain.
+ * CAND overfit_or_upper_bound | 76/80 (4 tight caught: CRUDE, GC 10-09 18:25, NASDAQ, NIFTY 10-05; 0 false positives). | exact 71 / miss 9 / extra 9 | params 2 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_volatility/r_overfit_or.py
+     rule: Demonstration only, not a plausible rule: tight when Choppiness(20) <= 30.161 OR the 5-bar VWAP slope against the trade is <= -0.0385 ATR.
+     notes: Shows that catching non-cascade tight trades does not move the full engine; the cascade-relevant ones are GC 10-08, NIFTY 10-09 and EURUSD 10-09.
+ * CAND oracle_reference | 80/80 | exact 75 / miss 5 / extra 6 | params 0 | /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/fit/hunt/stop_volatility/r_oracle.py
+     rule: Reference only, not a rule: tight exactly on the 8 known arm bars, stop = max(0.9*ATR14, displacement-candle extreme).
+     notes: Upper bound for any stop rule. It comes out at 75/5/6, one better than the 74/6/6 quoted in the task.
+ RULED OUT: Displacement candle range / TR / body vs ATR14, body %, favourable and adverse wick ratios (also in ATR), gap from previous close: best err 6 (2T 0N); Range / TR / body expansion vs the previous 1,2,3,5,10,20,50 bars (vs max and mean), N-bar box range/ATR, N-bar momentum/ATR: no separator; ATR definitions: RMA/SMA/EMA/WMA with lengths 5,7,10,14,20,50,100 at bar i and i-1 (as ratios to ATR14), ATR of high-low, ATR change on the bar; stop-fit test shows RMA14 at the arm bar is the stop ATR (sd 0.014) and tight = 0.90 x the same ATR; Higher-timeframe ATR via UTC-aligned (15/30/60/240m, daily-by-session) and session-anchored (15/30/60/120/240m) resampling, RMA/SMA/EMA lengths 5/14, completed and developing bar: no separator; ATR regime: percentrank / z-score / ATR vs max and min over 50..2000 bars; TR, range and body percentrank: no separator; Risk in ticks, price points, bps of price vs a fixed cap: impossible because tight trades are not the largest-risk trades within each symbol (GC tight 44/49/79 ticks among 42-88); Volume: in-session relative volume (3/5/10/20 bars), CLV x volume delta (3..20 bars, session), displacement delta share, VWAP jump/slope over 1..10 bars, VWAP stdev width/ATR, z vs VWAP, VWAP-rise run length: no separator, although volume is the only thing that differs in the NIFTY/SENSEX 10-09 pair; Counts of raw (candle-only) and full displacement signals in the same / opposite direction over the last 3..100 bars: no separator (fullSame100<=1 only as part of 12-false-positive AND pairs); Retest depth (close-to-entry in ATR and as a fraction of range), entry to displacement extreme, entry to open, entry at the mid vs the 6-bar level; Fill-bar features: fill range/TR/body/penetration/close/open/gap vs ATR, ATR at fill vs arm, run-up before the retest, retrace fraction, bars from arm to fill, fill-bar displacement; Efficiency ratio and Choppiness 10/14/20, close and return stdev, Bollinger width/ATR, BB-inside-Keltner squeeze at i-1/i-2 and squeeze count, NR7, inside / outside / engulfing bars, same- and opposite-colour runs, bars since the broken extreme, fraction of the range beyond the broken level; Any of the above as a second condition inside the first-of-session-in-direction subset (33 trades, 8 tight): best err 5 (3T 0N), only narrow overfit intervals better; Combinations: AND pairs of thresholds keeping all 8 tight best leaves 12 false positives (7-of-8 versions 11); the best OR of zero-false-positive conditions covers 5/8 with two and 6/8 with three; Volatility features as a REGIME proxy: the 8 table snapshots (NIFTY TRENDING vs SENSEX TRANSITION at near-identical ADX) are not ordered consistently by any volatility feature (daily/5m ATR ratio 10-29 across labels); too few labels to fit
+Traceback (most recent call last):
+  File "<stdin>", line 4, in <module>
+TypeError: 'NoneType' object is not subscriptable

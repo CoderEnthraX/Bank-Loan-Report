@@ -1,0 +1,1 @@
+{"vwapLag":1,"dayStopR":0}

@@ -1,0 +1,1 @@
+- verify: reproduced all 4 score2 runs; checked raw bars #49 #56; power analysis (ETH/US30/EURUSD/NASDAQ never open outside range); netMin2 diff

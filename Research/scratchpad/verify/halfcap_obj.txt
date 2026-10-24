@@ -1,0 +1,1 @@
+A 80/0/1 | B1 SENSEX+CRUDE 41/42 stops 38 prov 2 | B2 NIFTYF 20/20 stops 19 prov 0 | B3 NATGAS 16/18 stops 12 prov 1 | MD 6/6 | OBJ 396

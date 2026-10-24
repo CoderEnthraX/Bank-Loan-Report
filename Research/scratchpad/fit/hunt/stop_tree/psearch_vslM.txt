@@ -1,0 +1,114 @@
+subset first_vsl_M: 23 trades (8 tight), 612 features
+
+== zero-error singles: 0
+
+== best singles (min errors):
+  err 1: I_pEarmNet <= -3
+  err 1: I_pEcoreFrac <= -0.04
+  err 1: I_pEcoreNet <= -1
+  err 1: I_pEfullNet <= -3
+  err 1: I_pEvslNet <= -3
+  err 1: Im_pEarmNet <= -3
+  err 1: Im_pEcoreFrac <= -0.04
+  err 1: Im_pEcoreNet <= -1
+  err 1: Im_pEfullNet <= -3
+  err 1: Im_pEvslNet <= -3
+  err 1: R_pEarmFrac <= -0.1765
+  err 1: R_pEarmNet <= -3
+  err 1: R_pEfullNet <= -4
+  err 1: R_pEvslNet <= -4
+  err 2: I_pBodyD <= -0.07638
+  err 2: I_pBodyPct <= -0.04644
+  err 2: I_pCCD <= -0.07638
+  err 2: I_pCCPct <= -0.04644
+  err 2: I_pEarmFrac <= -0.1765
+  err 2: I_pEarmOpp >= 8
+  err 2: I_pEfullFrac <= -0.2222
+  err 2: I_pEfullOpp >= 8
+  err 2: I_pEvslFrac <= -0.2222
+  err 2: I_pEvslOpp >= 8
+  err 2: Im_pBodyD <= -0.07638
+
+== AND pairs: 1040 zero-error, 22581 one-error
+  m=0.225  R_pEfullNet <= -4  AND  I_gapA >= -0.02609   (m_a 0.225, m_b 0.256)
+  m=0.225  R_pEfullNet <= -4  AND  I_gapD >= -0.001469   (m_a 0.225, m_b 0.513)
+  m=0.225  R_pEfullNet <= -4  AND  I_openAdvA >= 3.936   (m_a 0.225, m_b 0.227)
+  m=0.225  R_pEfullNet <= -4  AND  Im_gapA >= -0.02609   (m_a 0.225, m_b 0.256)
+  m=0.225  R_pEfullNet <= -4  AND  Im_gapD >= -0.001469   (m_a 0.225, m_b 0.513)
+  m=0.225  R_pEfullNet <= -4  AND  Im_openAdvA >= 3.936   (m_a 0.225, m_b 0.227)
+  m=0.225  R_pEfullNet <= -4  AND  R_openLoc >= 0.213   (m_a 0.225, m_b 0.368)
+  m=0.222  R_pEvslNet <= -4  AND  I_gapA >= -0.02609   (m_a 0.222, m_b 0.256)
+  m=0.222  R_pEvslNet <= -4  AND  I_gapD >= -0.001469   (m_a 0.222, m_b 0.513)
+  m=0.222  R_pEvslNet <= -4  AND  I_openAdvA >= 3.936   (m_a 0.222, m_b 0.227)
+  m=0.222  R_pEvslNet <= -4  AND  Im_gapA >= -0.02609   (m_a 0.222, m_b 0.256)
+  m=0.222  R_pEvslNet <= -4  AND  Im_gapD >= -0.001469   (m_a 0.222, m_b 0.513)
+  m=0.222  R_pEvslNet <= -4  AND  Im_openAdvA >= 3.936   (m_a 0.222, m_b 0.227)
+  m=0.222  R_pEvslNet <= -4  AND  R_openLoc >= 0.213   (m_a 0.222, m_b 0.368)
+  m=0.170  I_pEvslNet <= -3  AND  I_gapA >= -0.02609   (m_a 0.170, m_b 0.256)
+  m=0.170  I_pEvslNet <= -3  AND  I_gapD >= -0.001469   (m_a 0.170, m_b 0.513)
+  m=0.170  I_pEvslNet <= -3  AND  I_openAdvA >= 3.936   (m_a 0.170, m_b 0.227)
+  m=0.170  I_pEvslNet <= -3  AND  Im_gapA >= -0.02609   (m_a 0.170, m_b 0.256)
+  m=0.170  I_pEvslNet <= -3  AND  Im_gapD >= -0.001469   (m_a 0.170, m_b 0.513)
+  m=0.170  I_pEvslNet <= -3  AND  Im_openAdvA >= 3.936   (m_a 0.170, m_b 0.227)
+  m=0.170  I_pEvslNet <= -3  AND  R_openLoc >= 0.213   (m_a 0.170, m_b 0.368)
+  m=0.170  Im_pEvslNet <= -3  AND  I_gapA >= -0.02609   (m_a 0.170, m_b 0.256)
+  m=0.170  Im_pEvslNet <= -3  AND  I_gapD >= -0.001469   (m_a 0.170, m_b 0.513)
+  m=0.170  Im_pEvslNet <= -3  AND  I_openAdvA >= 3.936   (m_a 0.170, m_b 0.227)
+  m=0.170  Im_pEvslNet <= -3  AND  Im_gapA >= -0.02609   (m_a 0.170, m_b 0.256)
+  m=0.170  Im_pEvslNet <= -3  AND  Im_gapD >= -0.001469   (m_a 0.170, m_b 0.513)
+  m=0.170  Im_pEvslNet <= -3  AND  Im_openAdvA >= 3.936   (m_a 0.170, m_b 0.227)
+  m=0.170  Im_pEvslNet <= -3  AND  R_openLoc >= 0.213   (m_a 0.170, m_b 0.368)
+  m=0.169  I_p2BodyF <= 0.6247  AND  R_pEarmNet <= -3   (m_a 0.272, m_b 0.169)
+  m=0.169  I_p2BodyF <= 0.6247  AND  R_pEfullNet <= -4   (m_a 0.272, m_b 0.169)
+  m=0.169  Im_p2BodyF <= 0.6247  AND  R_pEarmNet <= -3   (m_a 0.272, m_b 0.169)
+  m=0.169  Im_p2BodyF <= 0.6247  AND  R_pEfullNet <= -4   (m_a 0.272, m_b 0.169)
+  m=0.169  M_p2BodyF <= 0.64  AND  R_pEarmNet <= -3   (m_a 0.243, m_b 0.169)
+  m=0.169  M_p2BodyF <= 0.64  AND  R_pEfullNet <= -4   (m_a 0.243, m_b 0.169)
+  m=0.169  R_p2BodyF <= 0.64  AND  R_pEarmNet <= -3   (m_a 0.250, m_b 0.169)
+  m=0.169  R_p2BodyF <= 0.64  AND  R_pEfullNet <= -4   (m_a 0.250, m_b 0.169)
+  m=0.169  R_pEarmNet <= -3  AND  U_p2BodyF <= 0.581   (m_a 0.169, m_b 0.322)
+  m=0.169  R_pEarmNet <= -3  AND  Um_p2BodyF <= 0.581   (m_a 0.169, m_b 0.322)
+  m=0.169  R_pEarmNet <= -3  AND  I_gapA >= -0.02609   (m_a 0.169, m_b 0.256)
+  m=0.169  R_pEarmNet <= -3  AND  I_gapD >= -0.001469   (m_a 0.169, m_b 0.513)
+
+== OR pairs: 166 zero-error, 1540 one-error
+  m=0.200  M_pUpBars < 0.4425  OR  R_pEarmOpp > 7   (m_a 0.203, m_b 0.200)
+  m=0.189  I_pVsP2advA < 1.779  OR  R_pEarmOpp > 7   (m_a 0.189, m_b 0.200)
+  m=0.189  Im_pVsP2advA < 1.779  OR  R_pEarmOpp > 7   (m_a 0.189, m_b 0.200)
+  m=0.189  I_pVsP2advA < 1.779  OR  R_pEfullOpp > 7   (m_a 0.189, m_b 0.189)
+  m=0.189  I_pVsP2advA < 1.779  OR  R_pEvslOpp > 7   (m_a 0.189, m_b 0.189)
+  m=0.189  Im_pVsP2advA < 1.779  OR  R_pEfullOpp > 7   (m_a 0.189, m_b 0.189)
+  m=0.189  Im_pVsP2advA < 1.779  OR  R_pEvslOpp > 7   (m_a 0.189, m_b 0.189)
+  m=0.189  M_pUpBars < 0.4425  OR  R_pEfullOpp > 7   (m_a 0.203, m_b 0.189)
+  m=0.189  M_pUpBars < 0.4425  OR  R_pEvslOpp > 7   (m_a 0.203, m_b 0.189)
+  m=0.171  M_pVsP2advA < 1.779  OR  R_pEarmOpp > 7   (m_a 0.171, m_b 0.200)
+  m=0.171  M_pVsP2advA < 1.779  OR  R_pEfullOpp > 7   (m_a 0.171, m_b 0.189)
+  m=0.171  M_pVsP2advA < 1.779  OR  R_pEvslOpp > 7   (m_a 0.171, m_b 0.189)
+  m=0.171  R_pVsP2advA < 1.779  OR  R_pEarmOpp > 7   (m_a 0.171, m_b 0.200)
+  m=0.171  R_pVsP2advA < 1.779  OR  R_pEfullOpp > 7   (m_a 0.171, m_b 0.189)
+  m=0.171  R_pVsP2advA < 1.779  OR  R_pEvslOpp > 7   (m_a 0.171, m_b 0.189)
+  m=0.162  U_pVsP2advA < 0.4034  OR  R_pEarmOpp > 7   (m_a 0.162, m_b 0.200)
+  m=0.162  U_pVsP2advA < 0.4034  OR  R_pEfullOpp > 7   (m_a 0.162, m_b 0.189)
+  m=0.162  U_pVsP2advA < 0.4034  OR  R_pEvslOpp > 7   (m_a 0.162, m_b 0.189)
+  m=0.162  Um_pVsP2advA < 0.4034  OR  R_pEarmOpp > 7   (m_a 0.162, m_b 0.200)
+  m=0.162  Um_pVsP2advA < 0.4034  OR  R_pEfullOpp > 7   (m_a 0.162, m_b 0.189)
+  m=0.162  Um_pVsP2advA < 0.4034  OR  R_pEvslOpp > 7   (m_a 0.162, m_b 0.189)
+  m=0.128  U_p2RngA < 8.235  OR  R_pEarmOpp > 7   (m_a 0.128, m_b 0.200)
+  m=0.128  U_p2RngA < 8.235  OR  R_pEfullOpp > 7   (m_a 0.128, m_b 0.189)
+  m=0.128  U_p2RngA < 8.235  OR  R_pEvslOpp > 7   (m_a 0.128, m_b 0.189)
+  m=0.128  Um_p2RngA < 8.235  OR  R_pEarmOpp > 7   (m_a 0.128, m_b 0.200)
+  m=0.128  Um_p2RngA < 8.235  OR  R_pEfullOpp > 7   (m_a 0.128, m_b 0.189)
+  m=0.128  Um_p2RngA < 8.235  OR  R_pEvslOpp > 7   (m_a 0.128, m_b 0.189)
+  m=0.125  I_p2RngA < 8.235  OR  R_pEarmOpp > 7   (m_a 0.125, m_b 0.200)
+  m=0.125  I_p2RngA < 8.235  OR  R_pEfullOpp > 7   (m_a 0.125, m_b 0.189)
+  m=0.125  I_p2RngA < 8.235  OR  R_pEvslOpp > 7   (m_a 0.125, m_b 0.189)
+  m=0.125  Im_p2RngA < 8.235  OR  R_pEarmOpp > 7   (m_a 0.125, m_b 0.200)
+  m=0.125  Im_p2RngA < 8.235  OR  R_pEfullOpp > 7   (m_a 0.125, m_b 0.189)
+  m=0.125  Im_p2RngA < 8.235  OR  R_pEvslOpp > 7   (m_a 0.125, m_b 0.189)
+  m=0.118  R_p2RngA < 8.235  OR  R_pEarmOpp > 7   (m_a 0.118, m_b 0.200)
+  m=0.118  R_p2RngA < 8.235  OR  R_pEfullOpp > 7   (m_a 0.118, m_b 0.189)
+  m=0.118  R_p2RngA < 8.235  OR  R_pEvslOpp > 7   (m_a 0.118, m_b 0.189)
+  m=0.102  I_p2RngA < 8.235  OR  I_pEarmOpp > 7   (m_a 0.125, m_b 0.102)
+  m=0.102  I_p2RngA < 8.235  OR  Im_pEarmOpp > 7   (m_a 0.125, m_b 0.102)
+  m=0.102  I_pVsP2advA < 1.779  OR  I_pEarmOpp > 7   (m_a 0.189, m_b 0.102)
+  m=0.102  I_pVsP2advA < 1.779  OR  Im_pEarmOpp > 7   (m_a 0.189, m_b 0.102)

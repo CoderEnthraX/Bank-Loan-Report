@@ -1,0 +1,13 @@
+original trades with TP4/SL outcome after dedupe: 123  matched to a model signal bar: 121  wins 64
+rule                       winners vetoed   losers vetoed   E2 kept (n)    E2 vetoed (n)
+F1 near1S<=0.525            19/64 (30%)     29/59 (49%)    +0.800 (75)   +0.188 (48)
+F2 rngS>=6.97               25/64 (39%)     34/59 (58%)    +0.828 (64)   +0.271 (59)
+F4 xR2<=15.79&rngS>=5.99    20/64 (31%)     30/59 (51%)    +0.808 (73)   +0.200 (50)
+F5 xR2<=9.73                 8/64 (12%)     13/59 (22%)    +0.647 (102)   +0.143 (21)
+F5b xR2<=11.8                7/64 (11%)     11/59 (19%)    +0.629 (105)   +0.167 (18)
+F6 xR2<=p10&rngRel>=p20     11/64 (17%)     19/59 (32%)    +0.710 (93)   +0.100 (30)
+all original E2 +0.561 TP4 rate 52.0%
+original by causal xR2 tercile (model cuts 4.35/8.47): hi: n25 TP4 40% E2 +0.20 lo: n54 TP4 59% E2 +0.78 mid: n44 TP4 50% E2 +0.50
+original by causal near1S tercile (model cuts 0.329/0.56): hi: n41 TP4 39% E2 +0.17 lo: n45 TP4 53% E2 +0.60 mid: n37 TP4 65% E2 +0.95
+original by causal rngS tercile (model cuts 6.38/9.92): hi: n46 TP4 59% E2 +0.76 lo: n53 TP4 38% E2 +0.13 mid: n24 TP4 71% E2 +1.12
+original by HINDSIGHT day crossing tercile: hi: n29 TP4 31% E2 -0.07 lo: n63 TP4 65% E2 +0.95 mid: n31 TP4 45% E2 +0.35

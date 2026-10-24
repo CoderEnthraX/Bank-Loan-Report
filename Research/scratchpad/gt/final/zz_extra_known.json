@@ -1,0 +1,148 @@
+{
+ "group": "extra_known",
+ "windows": [
+  {
+   "image": "earlier photos",
+   "symbol": "GC",
+   "first_bar": "2026-10-09 03:30",
+   "last_bar": "2026-10-10 02:25"
+  },
+  {
+   "image": "earlier photos",
+   "symbol": "GC",
+   "first_bar": "2026-10-12 03:30",
+   "last_bar": "2026-10-12 06:40"
+  },
+  {
+   "image": "earlier photos",
+   "symbol": "EURUSD",
+   "first_bar": "2026-10-09 03:30",
+   "last_bar": "2026-10-10 02:25"
+  }
+ ],
+ "orig_trades": [
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-09 04:40",
+   "entry_measured": 4165.9,
+   "entry_exact": 4165.9,
+   "stop_measured": 4161.748563,
+   "outcome": "tp4",
+   "confidence": "high",
+   "exit_bar": "2026-10-09 05:30"
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-09 07:30",
+   "entry_measured": 4199.4,
+   "entry_exact": 4199.4,
+   "stop_measured": 4191.70456,
+   "outcome": "tp4",
+   "confidence": "high",
+   "exit_bar": "2026-10-09 10:45"
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-09 11:20",
+   "entry_measured": 4221.3,
+   "entry_exact": 4221.3,
+   "stop_measured": 4214.690707,
+   "outcome": "stop",
+   "confidence": "high",
+   "exit_bar": "2026-10-09 11:50"
+  },
+  {
+   "symbol": "GC",
+   "dir": "short",
+   "fill_bar": "2026-10-09 18:25",
+   "entry_measured": 4198.95,
+   "entry_exact": 4198.95,
+   "stop_measured": 4202.905104,
+   "outcome": "stop",
+   "confidence": "high",
+   "exit_bar": "2026-10-09 18:30"
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-09 20:55",
+   "entry_measured": 4214.3,
+   "entry_exact": 4214.3,
+   "stop_measured": 4205.476843,
+   "outcome": "tp4",
+   "confidence": "high",
+   "exit_bar": "2026-10-12 05:40"
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-12 05:55",
+   "entry_measured": 4234.3,
+   "entry_exact": 4234.3,
+   "stop_measured": 4226.117466,
+   "outcome": "stop",
+   "confidence": "high",
+   "exit_bar": "2026-10-12 07:05"
+  },
+  {
+   "symbol": "EURUSD",
+   "dir": "long",
+   "fill_bar": "2026-10-09 05:45",
+   "entry_measured": 1.12148,
+   "entry_exact": 1.12148,
+   "stop_measured": 1.121075,
+   "outcome": "tp4",
+   "confidence": "high",
+   "exit_bar": "2026-10-09 06:45"
+  },
+  {
+   "symbol": "EURUSD",
+   "dir": "long",
+   "fill_bar": "2026-10-09 07:05",
+   "entry_measured": 1.1225649999999998,
+   "entry_exact": 1.1225649999999998,
+   "stop_measured": 1.122089,
+   "outcome": "tp4",
+   "confidence": "high",
+   "exit_bar": "2026-10-09 11:00"
+  },
+  {
+   "symbol": "EURUSD",
+   "dir": "long",
+   "fill_bar": "2026-10-09 12:55",
+   "entry_measured": 1.1229,
+   "entry_exact": 1.1229,
+   "stop_measured": 1.122244,
+   "outcome": "stop",
+   "confidence": "high",
+   "exit_bar": "2026-10-09 14:20"
+  },
+  {
+   "symbol": "EURUSD",
+   "dir": "short",
+   "fill_bar": "2026-10-09 15:30",
+   "entry_measured": 1.12174,
+   "entry_exact": 1.12174,
+   "stop_measured": 1.122085,
+   "outcome": "tp4",
+   "confidence": "high",
+   "exit_bar": "2026-10-09 16:10"
+  },
+  {
+   "symbol": "EURUSD",
+   "dir": "short",
+   "fill_bar": "2026-10-09 17:40",
+   "entry_measured": 1.12063,
+   "entry_exact": 1.12063,
+   "stop_measured": 1.121296,
+   "outcome": "tp4",
+   "confidence": "high",
+   "exit_bar": "2026-10-09 18:20"
+  }
+ ],
+ "my_vs_orig": [],
+ "observations": ""
+}

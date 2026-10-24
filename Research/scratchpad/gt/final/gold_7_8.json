@@ -1,0 +1,283 @@
+{
+ "group": "gold_7_8",
+ "windows": [
+  {
+   "image": "3bf328ba",
+   "symbol": "GC",
+   "first_bar": "2026-10-07 03:30",
+   "last_bar": "2026-10-07 16:10",
+   "anchor": "crosshair header O4159.9 H4160.6 L4154.7 C4154.8 = 2026-10-07 11:25 at x~918.5; bar spacing 8.69px; x(07:55)=554"
+  },
+  {
+   "image": "37da0475",
+   "symbol": "GC",
+   "first_bar": "2026-10-08 01:40",
+   "last_bar": "2026-10-08 18:30",
+   "anchor": "crosshair header O4163.9 H4165.7 L4160.6 C4161.0 = 2026-10-08 09:40 at x~666.6 (legend ARP 4,148.3 1.0 0.0); spacing 7.058px; x(06:40)=412.5, x(11:40)=836; bd72225c pixel-identical duplicate"
+  }
+ ],
+ "orig_trades": [
+  {
+   "symbol": "GC",
+   "dir": "short",
+   "fill_bar": "2026-10-07 06:10",
+   "entry_measured": 4189.24,
+   "entry_exact": 4189.25,
+   "entry_exact_source": "05:55 body mid (O4190.7 C4187.8); 06:00 H4188 and 06:05 H4188.7 did not reach it; 06:10 H4190.5",
+   "stop_measured": 4191.7,
+   "r_from_green_box": 2.49,
+   "exit_bar": "2026-10-07 06:20",
+   "outcome": "tp4",
+   "confidence": "high",
+   "notes": "tiny 2-bar box missed by boxes.py; TP4~4184.27 touched by 06:20 L4184.3; R~2.47 (TP lines 2.47)",
+   "images": [
+    "3bf328ba"
+   ],
+   "table_values": "none (table shows live day)"
+  },
+  {
+   "symbol": "GC",
+   "dir": "short",
+   "fill_bar": "2026-10-07 07:55",
+   "entry_measured": 4172.89,
+   "entry_exact": 4172.9,
+   "entry_exact_source": "07:30 body mid (O4174.3 C4171.5); 07:35-07:50 highs <=4171.5",
+   "stop_measured": 4178.5,
+   "r_from_green_box": 5.62,
+   "exit_bar": "2026-10-07 10:25",
+   "outcome": "tp4",
+   "confidence": "high",
+   "notes": "TP4 4161.65 hit 10:25 L4161 (10:20 L4162.8 no)",
+   "images": [
+    "3bf328ba"
+   ],
+   "table_values": "none (table shows live day)"
+  },
+  {
+   "symbol": "GC",
+   "dir": "short",
+   "fill_bar": "2026-10-07 11:35",
+   "entry_measured": 4157.33,
+   "entry_exact": 4157.35,
+   "entry_exact_source": "11:25 body mid (O4159.9 C4154.8); 11:30 H4157",
+   "stop_measured": 4162.35,
+   "r_from_green_box": 5.03,
+   "exit_bar": "2026-10-07 12:55",
+   "outcome": "stop",
+   "confidence": "high",
+   "notes": "stop hit by 12:55 H4162.4",
+   "images": [
+    "3bf328ba"
+   ],
+   "table_values": "none (table shows live day)"
+  },
+  {
+   "symbol": "GC",
+   "dir": "short",
+   "fill_bar": "2026-10-07 13:55",
+   "entry_measured": 4154.57,
+   "entry_exact": 4154.6,
+   "entry_exact_source": "13:45 LOW 4154.6 (NOT 13:50 body mid 4154.7: entry line 1.8px too low for 4154.7; TP lines consistent only with 4154.6). Impulse 13:50 O4156.5 C4152.9",
+   "stop_measured": 4161.55,
+   "r_from_green_box": 6.96,
+   "exit_bar": "2026-10-07 15:45",
+   "outcome": "tp4",
+   "confidence": "high",
+   "notes": "TP4~4140.68 hit 15:45 L4140.2 (15:40 L4141)",
+   "images": [
+    "3bf328ba"
+   ],
+   "table_values": "none (table shows live day)"
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-08 04:50",
+   "entry_measured": 4135.14,
+   "entry_exact": 4135.1,
+   "stop_measured": 4132.9,
+   "r_from_green_box": 2.2,
+   "exit_bar": "2026-10-08 04:55",
+   "outcome": "stop",
+   "images": [
+    "37da0475",
+    "bd72225c"
+   ],
+   "entry_exact_source": "04:45 body mid (O4134.4 C4135.8); prior highs 04:40 4134.7/04:35 4134.8 lower; 04:50 L4133.9 fills",
+   "confidence": "high",
+   "notes": "2-bar box; stop 4132.9 hit same/next bar 04:55 L4132.9 (exact touch); R~2.2",
+   "table_values": "none (table shows live day)"
+  },
+  {
+   "symbol": "GC",
+   "dir": "short",
+   "fill_bar": "2026-10-08 05:40",
+   "entry_measured": 4132.67,
+   "entry_exact": 4132.7,
+   "stop_measured": 4137.85,
+   "exit_bar": "2026-10-08 06:15",
+   "outcome": "stop",
+   "images": [
+    "37da0475",
+    "bd72225c"
+   ],
+   "entry_exact_source": "05:30 LOW 4132.7 (impulse 05:35 O4135.6 C4131.4 mid 4133.5, crossed VWAP 4134.39 down) = min(mid, broken prior low)",
+   "r_from_green_box": 5.15,
+   "confidence": "high",
+   "notes": "stop ~4137.85 (R~5.15) hit 06:15 H4140.5; 05:40 H4137 did not reach stop",
+   "table_values": "none (table shows live day)"
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-08 06:40",
+   "entry_measured": 4147.82,
+   "entry_exact": 4147.85,
+   "stop_measured": 4139.26,
+   "r_from_green_box": 8.55,
+   "exit_bar": "2026-10-08 08:00",
+   "outcome": "tp4",
+   "images": [
+    "37da0475",
+    "bd72225c"
+   ],
+   "entry_exact_source": "06:30 body mid (O4141.5 C4154.2); 06:35 L4149.5 no fill; 06:40 L4145.3 fills",
+   "confidence": "high",
+   "notes": "TP4 ~4164.95 hit 08:00 H4166.3",
+   "table_values": "none (table shows live day)"
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-08 09:40",
+   "entry_measured": 4163.67,
+   "entry_exact": 4163.7,
+   "stop_measured": 4157.2,
+   "r_from_green_box": 6.47,
+   "exit_bar": "2026-10-08 09:50",
+   "outcome": "stop",
+   "images": [
+    "37da0475",
+    "bd72225c"
+   ],
+   "entry_exact_source": "09:20 HIGH 4163.7 (level broken by impulse 09:35 O4161 C4163.9, mid 4162.45 rejected by entry line); 09:35 itself spans entry so order placed after 09:35 close; 09:40 L4160.6 fills",
+   "confidence": "high",
+   "notes": "crosshair bar, legend long fill 1.0; stop ~4157.2 (R6.47) hit 09:50 L4157.2",
+   "table_values": "none (table shows live day)"
+  },
+  {
+   "symbol": "GC",
+   "dir": "short",
+   "fill_bar": "2026-10-08 11:40",
+   "entry_measured": 4145.65,
+   "entry_exact": 4145.7,
+   "stop_measured": 4152.97,
+   "r_from_green_box": 7.26,
+   "exit_bar": "2026-10-08 12:50",
+   "outcome": "stop",
+   "images": [
+    "37da0475",
+    "bd72225c"
+   ],
+   "entry_exact_source": "11:20 body mid (O4149.5 C4141.9); 11:30 H4145.6 / 11:35 H4145.2 just short; 11:40 H4146.1 fills",
+   "confidence": "high",
+   "notes": "stop ~4152.97 (R7.26) hit 12:50 H4154.3 (12:45 H4150.9 no)",
+   "table_values": "none (table shows live day)"
+  }
+ ],
+ "my_vs_orig": [
+  {
+   "symbol": "GC",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-07 05:00",
+   "notes": "mine entry ~4196.0 (04:55 mid 4195.95), stop ~4192.4; orig no trade"
+  },
+  {
+   "symbol": "GC",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-07 05:45",
+   "notes": "impulse 05:40 (O4191.1 C4197.1 crosses VWAP up); orig no trade"
+  },
+  {
+   "symbol": "GC",
+   "status": "different_bar",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 06:05",
+   "orig_fill_bar": "2026-10-07 06:10",
+   "notes": "mine entry 4185.95 (06:00 mid) stop ~4191.2 R5.25 exit 07:15; orig entry 4189.25 (05:55 mid) stop ~4191.7 R2.47 TP4 06:20 - orig kept the FIRST impulse (05:55) level, did not move to 06:00"
+  },
+  {
+   "symbol": "GC",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 07:55",
+   "orig_fill_bar": "2026-10-07 07:55",
+   "notes": "my stop 4178.53 (R5.61) vs orig 4178.50 (R5.60-5.62); same exit 10:25"
+  },
+  {
+   "symbol": "GC",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 11:35",
+   "orig_fill_bar": "2026-10-07 11:35",
+   "notes": "my stop ~4162.35 (R4.98-5.07) vs orig 4162.35 (R5.0); same exit 12:55"
+  },
+  {
+   "symbol": "GC",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-07 13:55",
+   "notes": "orig short entry 4154.6 (13:45 low), mine none"
+  },
+  {
+   "symbol": "GC",
+   "status": "different_bar",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 04:35",
+   "orig_fill_bar": "2026-10-08 04:50",
+   "notes": "mine: impulse 04:30 (O4131.2 C4134.7 crosses VWAP 4132.85 up), entry ~4133.0 (04:30 mid 4132.95), stop ~4128.3 R~4.7, TP4 06:20. orig skipped 04:30 impulse and instead took 04:45 impulse (body only 1.4) entry 4135.1 stop 4132.9 -> stopped 04:55. My open trade then blocked the orig 05:40 short."
+  },
+  {
+   "symbol": "GC",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-08 05:40",
+   "notes": "orig short entry 4132.7 (05:30 low) stop ~4137.85 -> stop 06:15. Mine blocked: my 04:35 long still open until 06:20 (yellow 05:40)."
+  },
+  {
+   "symbol": "GC",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 06:40",
+   "orig_fill_bar": "2026-10-08 06:40",
+   "notes": "same entry 4147.85; my stop ~4139.34 (R8.56) vs orig 4139.26 (R8.55-8.59) - within 1px; both TP4 08:00"
+  },
+  {
+   "symbol": "GC",
+   "status": "different_bar",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 09:10",
+   "orig_fill_bar": "2026-10-08 09:40",
+   "notes": "mine: impulse 09:05 (O4158.3 C4161.6) entry ~4160.7 (08:50 high), stop ~4153.2 R~7.5, stopped 10:55 L4152. orig skipped 09:05 impulse, took 09:35 impulse entry 4163.7 stop ~4157.2 -> stopped 09:50; mine could not take 09:40 because my 09:10 trade was open (yellow 09:40)."
+  },
+  {
+   "symbol": "GC",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-08 11:40",
+   "orig_fill_bar": "2026-10-08 11:40",
+   "notes": "same entry 4145.7; my stop ~4153.02 (R~7.32) vs orig 4152.97 (R7.26) - ~1px; both stopped 12:50"
+  },
+  {
+   "symbol": "GC",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 13:40",
+   "notes": "impulse 13:30 (O4144.4 C4151 crosses VWAP 4148.12 up, body 6.6); mine entry ~4149.5 stop ~4142.3, stopped 15:55. Orig had already 5 fills (04:50,05:40,06:40,09:40,11:40) = FILLS CAP 5 reached -> no trade; mine only had 4 fills. (yellow 14:50 area = this trade)"
+  }
+ ],
+ "observations": "ENTRY RULE (fits all 9 orig trades): short entry = min(impulse body mid, lowest prior low of the last ~3-4 bars that the impulse closed below); long entry = max(impulse body mid, highest prior high of last ~3-4 bars that the impulse closed above) - i.e. retest of the level the impulse broke, capped at body mid. Examples: Wed 13:55 short 4154.6=13:45 low (mid 4154.7); Thu 05:40 short 4132.7=05:30 low (mid 4133.5); Thu 09:40 long 4163.7=09:20 high (mid 4162.45, lookback must reach 3 bars back). Others = body mid.\nONE TRADE AT A TIME: neither indicator opens a new trade while one is live; most divergences cascade from that. Thu: mine 04:35 long (open to 06:20) blocked the orig 05:40 short; mine 09:10 long (open to 10:55) blocked the orig 09:40 long.\nFILLS CAP 5/day decides late trades: Wed mine had 5 fills by 11:35 (05:00,05:45,06:05,07:55,11:35) so missed orig 13:55 short; Thu orig had 5 fills by 11:40 so skipped the 13:30 impulse that mine (4 fills) took at 13:40. Fix the early-session divergences and the cap behaviour follows.\nSKIPPED IMPULSES by orig (mine traded): Wed 04:55 (mine long 05:00, ~85 min after 03:30 open), Wed 05:40 (O4191.1 C4197.1 crossing VWAP up, mine fill 05:45), Wed 06:00 (orig kept the earlier 05:55 short level 4189.25 instead of re-arming to 06:00 mid 4185.95 - pending order not replaced by a newer same-direction impulse), Thu 04:30 (O4131.2 C4134.7 body 3.5 crossing VWAP up, 60 min after open; orig instead armed on 04:45 body 1.4 candle closing above VWAP), Thu 09:05 (O4158.3 C4161.6 body 3.3, ~14 above VWAP, 65 min after orig TP4 at 08:00; orig took 09:35 body 2.9 instead). Orig first fill each day: Wed 06:10, Thu 04:50 (impulse 75 min after open) - possible warm-up of ~>=60-75 min, but Wed 04:55 skip contradicts a pure time rule.\nSTOPS: on matched trades my stops equal orig within ~0.1 (1 px): Wed 07:55 4178.53 vs 4178.50, Wed 11:35 4162.35 vs 4162.35, Thu 06:40 4139.34 vs 4139.26, Thu 11:40 4153.02 vs 4152.97. Exits identical on all matches. Stop hits use touch (low<=stop / high>=stop), TP4 = entry +/- 2R by touch.",
+ "table_readings": [
+  "3bf328ba (and identical in 37da0475): STATE SCANNING, RANGING ADX 34, NEUTRAL, MODEL DAY 2W/1L 67% +3.00R, FILLS/CAP 2/5, LOADED BARS TP4 +2.00R 36% +32.00R - live-day table, not the replayed window"
+ ]
+}

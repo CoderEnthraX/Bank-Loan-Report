@@ -1,0 +1,5 @@
+pess_triggerbar=0 scratch_cost=0.00R: TRAIN diff +0.0490 TEST diff +0.0044 ALL +0.0319
+pess_triggerbar=1 scratch_cost=0.00R: TRAIN diff -0.0082 TEST diff -0.0440 ALL -0.0218
+pess_triggerbar=0 scratch_cost=0.05R: TRAIN diff +0.0382 TEST diff -0.0057 ALL +0.0214
+pess_triggerbar=1 scratch_cost=0.05R: TRAIN diff -0.0204 TEST diff -0.0553 ALL -0.0337
+pess_triggerbar=0 scratch_cost=0.10R: TRAIN diff +0.0273 TEST diff -0.0158 ALL +0.0108

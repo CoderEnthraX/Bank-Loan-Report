@@ -1,0 +1,12 @@
+- setup: rc.py = hunt4/combo.py + cancelBlock, stopVwap, erMinSym (default off); CANDIDATE reproduces A 80/0/1, B 41/42 stop 38/41
+- T1 stopVwap (cap normal stop at VWAP when VWAP between entry and stop; for #52): A 75/5/7, B 40 st 32/40 REJECT
+- T2 erMin 0.219 + retestBars 6: A 80/0/0, B 41 st 38/41 (fixes (a)); erMin 0.219 + cancelBlock: A 80/0/0, B 41 st 38/41 (fixes (a)) -> CANDIDATES, check robustness
+- T3 erMin window with blocker: 0.218-0.221 -> A 80/0/0 B 41 st 38/41 (0.222 loses GC 10-09 20:50); erMin .218-.221 alone A 79/1/1 (cascade 21:35, miss 22:10); retestBars 6 / cancelBlock alone at erMin .2: no A/B change
+- T4 MODEL DAY 6/6 and provable B extras 2 (21:35 inside #59, 19:00 inside #63) for erMin .22 + retestBars6 and + cancelBlock (same as CANDIDATE)
+- T5 churn vs CANDIDATE (8 syms, n~1100): erMin .22 -33/+22; retest6 -41/+42; cancelBlock -28/+19; er.22+cancelBlock -60/+37; er.22+retest6 -73/+60
+- T6 type-2 signal (s2: shape breaks s2Len-bar extreme, mom+ER over s2Len): s2Len6 A 71/9/10 B34; +Vt3 79/1/3 B38; +Opp10 78/2/4 B40; +Vt3+Opp10 78/2/3 B42; +s2Far2 (close >=2 ATR inside 10-bar extreme) A 80/0/1 B 42 st 39/42 <- check
+- T7 s2Len 6 (=entryLen) + s2Far 1.5-2.5 -> A 80/0/1 B 42 st 39/42; s2Len 5/7: B 41; F<=1: A 77/3/4. Raw type-2 events (stateless, 8 syms): F1 96 (5 in/near A windows), F1.5 46 (2), F2 22 (0), F2.5 11 (0) -> A cannot test F>=2; only support = #63. churn F2: ~10 trades removed/~15 added
+- T8 (c) #52: general stop caps H+kA (k .8/.82/1.0), N-bar extreme (3/4): A 74-78 exact, A stops 28-49/74-78, B stops 9-18 REJECT. stopVwap only after same-dir loss (same session): fixes #52 but breaks A CRUDE 10-07 13:25 stop and B #47 -> REJECT. No ATR bar gives 8839 (need ATR 12.78; 10:45 14.68, 11:00 fill 13.97)
+- T9 type-2 without mom/ER (s2Mom -99, s2ER false), F 1.5/2/2.5: same A 80/0/1 B 42 st 39/42; raw events no-mom F1.5 54 (2 near A, both state-blocked), F2 28 (0), F2.5 13 (0)
+- T10 FINAL combined {erMin .22, cancelBlock, s2Len 6, s2Far 2}: A 80/0/0, A stops 79/80, B 42/42 st 39/42, MD 6/6, provB 1 (21:35 #59 doubtful); churn -68/+50 of ~1100. Same with retestBars 6 instead of cancelBlock (churn -81/+73)
+- CONCLUSION: (a) fixed by erMin .218-.221 + cancelBlock/retest6 (thin ER margin); (b) fixed only by a 1-case type-2 rule, untestable on A; (c) no rule found -> student log error most likely (exit 1 bar early, stop 3.4 pt off)

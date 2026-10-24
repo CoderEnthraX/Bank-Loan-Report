@@ -1,0 +1,2 @@
+- VWAP settings grid (grid.py/analysis.txt): session/hlc3/slope3 best; week/month much worse; best = distance band (min 1 ATR, max 2.0-2.4 sigma, invisible skip): 1:1 57.5%/56.4%, 1:2 43.9%/41.6%
+- classic strategies (research/classic/classic.py/.txt): none near 70% at 1:1 or 1:2; 70-80% only with 0.2-0.3R targets (negative); EMA9/21+200 own exit +0.23R at 23.5% win

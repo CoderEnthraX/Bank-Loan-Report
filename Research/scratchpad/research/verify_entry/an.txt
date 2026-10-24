@@ -1,0 +1,44 @@
+base TRAIN 0.131 TEST 0.180 ALL 0.150 n=1190
+{}                                 n=1190 TRAIN E2 +0.131 (d +0.000) TEST E2 +0.180 (d +0.000) E1 +0.059 E15 +0.099 tot +178 imp 0/10
+{"beR": 0.5}                       n=1227 TRAIN E2 +0.142 (d +0.012) TEST E2 +0.137 (d -0.043) E1 +0.056 E15 +0.100 tot +172 imp 6/10
+{"beR": 0.6}                       n=1223 TRAIN E2 +0.133 (d +0.003) TEST E2 +0.112 (d -0.069) E1 +0.052 E15 +0.089 tot +153 imp 5/10
+{"beR": 0.8}                       n=1213 TRAIN E2 +0.140 (d +0.009) TEST E2 +0.158 (d -0.022) E1 +0.065 E15 +0.098 tot +178 imp 5/10
+{"beR": 1.0}                       n=1204 TRAIN E2 +0.157 (d +0.026) TEST E2 +0.177 (d -0.003) E1 +0.059 E15 +0.094 tot +198 imp 6/10
+{"beR": 1.25}                      n=1200 TRAIN E2 +0.152 (d +0.021) TEST E2 +0.188 (d +0.008) E1 +0.055 E15 +0.100 tot +199 imp 5/10
+{"beR": 1.5}                       n=1195 TRAIN E2 +0.146 (d +0.016) TEST E2 +0.195 (d +0.015) E1 +0.059 E15 +0.105 tot +197 imp 6/10
+{"beR": 1.75}                      n=1191 TRAIN E2 +0.132 (d +0.001) TEST E2 +0.187 (d +0.007) E1 +0.055 E15 +0.093 tot +182 imp 5/10
+{"beR": 1.0, "retestBars": 2}      n=1186 TRAIN E2 +0.158 (d +0.028) TEST E2 +0.198 (d +0.018) E1 +0.054 E15 +0.100 tot +206 imp 8/10
+{"retestBars": 2}                  n=1174 TRAIN E2 +0.113 (d -0.018) TEST E2 +0.183 (d +0.003) E1 +0.066 E15 +0.107 tot +164 imp 5/10
+{"beR": 1.0, "retestBars": 3}      n=1192 TRAIN E2 +0.167 (d +0.037) TEST E2 +0.195 (d +0.015) E1 +0.075 E15 +0.113 tot +212 imp 8/10
+{"retestBars": 3}                  n=1175 TRAIN E2 +0.142 (d +0.011) TEST E2 +0.187 (d +0.006) E1 +0.080 E15 +0.111 tot +187 imp 3/10
+{"beR": 1.0, "retestBars": 4}      n=1209 TRAIN E2 +0.175 (d +0.044) TEST E2 +0.183 (d +0.002) E1 +0.078 E15 +0.092 tot +215 imp 7/10
+{"retestBars": 4}                  n=1194 TRAIN E2 +0.123 (d -0.007) TEST E2 +0.182 (d +0.001) E1 +0.090 E15 +0.100 tot +174 imp 5/10
+{"beR": 1.0, "retestBars": 5}      n=1204 TRAIN E2 +0.157 (d +0.026) TEST E2 +0.177 (d -0.003) E1 +0.059 E15 +0.094 tot +198 imp 6/10
+{"beR": 1.0, "retestBars": 6}      n=1207 TRAIN E2 +0.151 (d +0.020) TEST E2 +0.177 (d -0.003) E1 +0.052 E15 +0.092 tot +194 imp 4/10
+{"retestBars": 6}                  n=1191 TRAIN E2 +0.128 (d -0.003) TEST E2 +0.176 (d -0.004) E1 +0.053 E15 +0.096 tot +174 imp 2/10
+{"beR": 1.0, "retestBars": 8}      n=1217 TRAIN E2 +0.142 (d +0.011) TEST E2 +0.172 (d -0.008) E1 +0.060 E15 +0.094 tot +187 imp 3/10
+{"retestBars": 8}                  n=1193 TRAIN E2 +0.132 (d +0.002) TEST E2 +0.183 (d +0.003) E1 +0.072 E15 +0.117 tot +181 imp 5/10
+{"beR": 1.0, "retestBars": 12}     n=1226 TRAIN E2 +0.122 (d -0.008) TEST E2 +0.163 (d -0.017) E1 +0.074 E15 +0.094 tot +169 imp 4/10
+{"retestBars": 12}                 n=1199 TRAIN E2 +0.100 (d -0.031) TEST E2 +0.160 (d -0.020) E1 +0.081 E15 +0.111 tot +148 imp 3/10
+{"beR": 0.8, "retestBars": 3}      n=1199 TRAIN E2 +0.143 (d +0.013) TEST E2 +0.181 (d +0.001) E1 +0.076 E15 +0.117 tot +189 imp 7/10
+{"beR": 1.25, "retestBars": 3}     n=1184 TRAIN E2 +0.153 (d +0.023) TEST E2 +0.207 (d +0.027) E1 +0.079 E15 +0.123 tot +206 imp 6/10
+{"beR": 1.5, "retestBars": 3}      n=1179 TRAIN E2 +0.154 (d +0.023) TEST E2 +0.199 (d +0.019) E1 +0.080 E15 +0.117 tot +202 imp 6/10
+{"beR": 0.8, "retestBars": 4}      n=1215 TRAIN E2 +0.161 (d +0.031) TEST E2 +0.159 (d -0.021) E1 +0.078 E15 +0.088 tot +195 imp 6/10
+{"beR": 1.25, "retestBars": 4}     n=1203 TRAIN E2 +0.159 (d +0.028) TEST E2 +0.190 (d +0.009) E1 +0.081 E15 +0.100 tot +205 imp 6/10
+{"beR": 1.5, "retestBars": 4}      n=1200 TRAIN E2 +0.144 (d +0.014) TEST E2 +0.185 (d +0.005) E1 +0.081 E15 +0.100 tot +192 imp 6/10
+{"beR": 1.0}
+  per-sym d E2 ALL: GC -0.08 EURUS -0.04 NASDA +0.07 US30 +0.01 CRUDE +0.12 NIFTY +0.13 SENSE +0.08 ETH +0.02 NSE_N -0.21 MCX_N +0.00
+  TEST E2 CI -0.18514439608531513 0.17703128381465363
+  ALL E2 diff 0.015 CI [-0.094 0.123]
+  TRAIN E2 diff 0.026 CI [-0.118 0.163]
+  TEST E1 diff -0.000 CI [-0.127 0.127]
+  TEST E15 diff -0.005 CI [-0.169 0.160]
+  ALL E1 0.056 vs 0.069 ; E15 0.082 vs 0.097
+{"beR": 1.0, "retestBars": 3}
+  per-sym d E2 ALL: GC -0.04 EURUS +0.05 NASDA +0.06 US30 +0.01 CRUDE +0.10 NIFTY +0.07 SENSE +0.03 ETH +0.04 NSE_N -0.32 MCX_N +0.03
+  TEST E2 CI -0.16296510507036824 0.19078465394254868
+  ALL E2 diff 0.028 CI [-0.078 0.135]
+  TRAIN E2 diff 0.037 CI [-0.101 0.183]
+  TEST E1 diff 0.015 CI [-0.112 0.143]
+  TEST E15 diff 0.014 CI [-0.145 0.168]
+  ALL E1 0.067 vs 0.069 ; E15 0.097 vs 0.097

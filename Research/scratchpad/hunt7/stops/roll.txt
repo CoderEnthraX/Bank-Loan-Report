@@ -1,0 +1,154 @@
+A          CRUDE    10-06 14:50 S norm mn k 69 50:4/0 100:5/0 150:6/4 200:6/5 lastSame  36 lastOpp 103 seq --+----+++++
+A          CRUDE    10-06 22:10 L norm mn k154 50:4/0 100:4/2 150:4/7 200:8/7 lastSame   4 lastOpp  68 seq +-------++++
+A          CRUDE    10-07 11:35 L norm mn k 30 50:3/1 100:7/1 150:7/3 200:7/8 lastSame  30 lastOpp  14 seq ----+++++++-
+A          CRUDE    10-07 13:25 L norm mn k 52 50:2/2 100:9/2 150:9/3 200:9/7 lastSame  20 lastOpp   4 seq -+++++++-++-
+A          CRUDE    10-07 19:20 L norm mn k120 50:1/0 100:4/1 150:10/2 200:11/2 lastSame   2 lastOpp  72 seq ++++++-++-++
+A          CRUDE    10-07 20:10 S norm mn k133 50:0/2 100:1/3 150:2/7 200:2/12 lastSame  85 lastOpp  13 seq -----+--+---
+A          CRUDE    10-07 22:40 S norm mn k163 50:3/2 100:3/2 150:5/5 200:5/12 lastSame  12 lastOpp  43 seq --+--+---+++
+A          CRUDE    10-08 10:50 L norm mn k 21 50:0/2 100:2/4 150:3/5 200:6/6 lastSame  75 lastOpp  32 seq +-++-+++----
+A          CRUDE    10-08 12:20 L norm mn k 39 50:1/1 100:3/4 150:3/4 200:6/6 lastSame  18 lastOpp  50 seq -++-+++----+
+A          CRUDE    10-08 13:10 L norm mn k 48 50:4/0 100:4/4 150:6/4 200:9/5 lastSame   6 lastOpp  59 seq -+++----++++
+A          CRUDE    10-08 20:25 L norm mn k136 50:0/0 100:8/0 150:9/1 200:11/4 lastSame  53 lastOpp 147 seq ---+++++++++
+A          CRUDE    10-09 10:35 S HALF mT k 17 50:1/0 100:1/1 150:1/8 200:1/10 lastSame  38 lastOpp  55 seq +----------+
+A          CRUDE    10-09 11:55 L norm mn k 34 50:0/1 100:1/2 150:5/2 200:10/2 lastSame  72 lastOpp  17 seq ++++++++++--
+A          ETH      10-10 06:45 L norm mn k 14 50:1/2 100:1/6 150:2/7 200:3/8 lastSame  11 lastOpp  14 seq +-+-+------+
+A          ETH      10-10 12:30 S norm mn k 83 50:0/2 100:1/5 150:4/5 200:6/6 lastSame  83 lastOpp  25 seq -++++++-----
+A          ETH      10-10 17:30 L norm mn k139 50:0/0 100:2/1 150:5/2 200:5/4 lastSame  81 lastOpp  56 seq ------+++++-
+A          ETH      10-11 00:25 L norm mn k225 50:1/0 100:5/0 150:5/1 200:7/1 lastSame   2 lastOpp 142 seq -+++++-+++++
+A          EURUSD   10-09 05:45 L norm mn k 26 50:0/0 100:2/1 150:8/1 200:8/4 lastSame  80 lastOpp  94 seq ---++++++-++
+A          EURUSD   10-09 07:05 L norm mn k 42 50:1/0 100:3/0 150:9/1 200:9/3 lastSame  16 lastOpp 110 seq --++++++-+++
+A          EURUSD   10-09 12:55 L norm mn k111 50:3/0 100:6/0 150:6/0 200:11/1 lastSame  21 lastOpp 179 seq +++-++++++++
+A          EURUSD   10-09 15:30 S HALF mT k143 50:0/1 100:0/5 150:0/7 200:0/9 lastSame 211 lastOpp  32 seq --+---------
+A          EURUSD   10-09 17:40 S norm mn k169 50:3/0 100:3/4 150:3/7 200:3/7 lastSame  19 lastOpp  58 seq ---------+++
+A          EURUSD   10-12 05:35 L norm mn k 24 50:3/1 100:3/4 150:3/8 200:4/11 lastSame   5 lastOpp  26 seq ---------+++
+A          EURUSD   10-12 10:20 S norm mn k 81 50:0/1 100:1/7 150:4/7 200:8/7 lastSame  83 lastOpp  13 seq +++++-------
+A          GC       10-07 06:10 S HALF mT k 29 50:0/0 100:0/5 150:0/9 200:0/15 lastSame 211 lastOpp  54 seq ------------
+A          GC       10-07 07:55 S norm mn k 48 50:1/0 100:1/4 150:1/5 200:1/14 lastSame  19 lastOpp  73 seq -----------+
+A          GC       10-07 11:35 S norm mn k 95 50:4/0 100:5/0 150:5/4 200:5/5 lastSame  12 lastOpp 120 seq -------+++++
+A          GC       10-07 13:55 S norm mn k124 50:4/0 100:6/0 150:6/1 200:6/5 lastSame  29 lastOpp 149 seq ------++++++
+A          GC       10-08 04:50 L HALF mT k 15 50:0/0 100:1/0 150:1/2 200:1/5 lastSame  62 lastOpp 115 seq +----------+
+A          GC       10-08 05:40 S norm mn k 25 50:0/1 100:0/2 150:2/2 200:4/2 lastSame 125 lastOpp  10 seq ++++++++++--
+A          GC       10-08 06:40 L norm mn k 36 50:1/1 100:2/1 150:2/3 200:2/5 lastSame  21 lastOpp  11 seq ---------++-
+A          GC       10-08 09:40 L norm mn k 73 50:4/1 100:5/1 150:6/1 200:6/3 lastSame  19 lastOpp  48 seq -----++-++++
+A          GC       10-08 11:40 S norm mn k 94 50:0/4 100:1/6 150:1/7 200:3/7 lastSame  69 lastOpp  21 seq ++++--+-----
+A          GC       10-09 04:40 L norm mn k 13 50:1/0 100:3/1 150:4/3 200:4/4 lastSame  30 lastOpp  73 seq ++++--+-+-++
+A          GC       10-09 07:30 L norm mn k 47 50:5/0 100:7/0 150:9/2 200:9/3 lastSame   2 lastOpp 107 seq -+-+-+++++++
+A          GC       10-09 11:20 L norm mn k 90 50:8/0 100:10/0 150:12/1 200:14/2 lastSame   3 lastOpp 150 seq ++++++++++++
+A          GC       10-09 18:25 S HALF mT k178 50:0/0 100:0/3 150:0/10 200:0/12 lastSame 238 lastOpp  88 seq ------------
+A          GC       10-09 20:55 L norm mn k208 50:0/1 100:0/1 150:4/1 200:11/1 lastSame 118 lastOpp  30 seq +++++++++++-
+A          GC       10-12 05:55 L norm mn k 28 50:2/2 100:6/2 150:6/3 200:6/3 lastSame  10 lastOpp  24 seq +++-++++--++
+A          GC       10-12 10:35 S norm mn k 84 50:1/2 100:3/5 150:3/8 200:4/9 lastSame  12 lastOpp  34 seq ----++-----+
+A          NASDAQ   10-07 21:25 L norm mn k200 50:0/0 100:0/7 150:0/8 200:0/13 lastSame 260 lastOpp  53 seq ------------
+A          NASDAQ   10-08 05:40 S norm mn k 13 50:0/1 100:0/3 150:0/4 200:7/4 lastSame 154 lastOpp  25 seq ++++++++----
+A          NASDAQ   10-08 08:05 L norm mn k 42 50:1/3 100:4/3 150:5/3 200:5/7 lastSame  12 lastOpp  22 seq ----++++---+
+A          NASDAQ   10-08 08:50 S norm mn k 50 50:3/2 100:3/5 150:3/6 200:7/6 lastSame  30 lastOpp   8 seq +++----+++--
+A          NASDAQ   10-08 14:30 S norm mn k119 50:3/0 100:7/2 150:9/3 200:9/5 lastSame  36 lastOpp  77 seq -+++--++++++
+A          NASDAQ   10-08 15:50 S norm mn k135 50:1/0 100:7/1 150:10/3 200:10/5 lastSame  16 lastOpp  93 seq +++--+++++++
+A          NASDAQ   10-09 05:00 S norm mn k  5 50:0/0 100:7/0 150:8/3 200:12/3 lastSame  73 lastOpp 108 seq ++---+++++++
+A          NASDAQ   10-09 06:05 L HALF mT k 18 50:0/1 100:0/5 150:3/9 200:3/13 lastSame 121 lastOpp  13 seq -+++--------
+A          NASDAQ   10-09 09:45 L norm mn k 62 50:2/1 100:2/2 150:2/7 200:5/10 lastSame  30 lastOpp  35 seq +--------+-+
+A          NASDAQ   10-09 11:10 L norm mn k 79 50:3/0 100:4/2 150:4/3 200:7/10 lastSame  13 lastOpp  52 seq -------+-+++
+A          NASDAQ   10-09 12:55 L norm mn k100 50:5/0 100:7/2 150:7/2 200:7/9 lastSame   8 lastOpp  73 seq ----+-++++++
+A          NASDAQ   10-12 06:20 S norm mn k 21 50:0/6 100:0/6 150:1/7 200:1/9 lastSame 121 lastOpp  15 seq -----+------
+A          NASDAQ   10-12 11:15 S norm mn k 80 50:0/0 100:3/6 150:3/6 200:4/6 lastSame  52 lastOpp  74 seq --+------+++
+A          NIFTY    10-05 09:35 L HALF mT k  2 50:0/7 100:0/12 150:4/13 200:6/14 lastSame 107 lastOpp  17 seq ------------
+A          NIFTY    10-05 10:40 S norm mn k 16 50:6/2 100:12/2 150:14/5 200:15/7 lastSame   3 lastOpp  10 seq +++++++++--+
+A          NIFTY    10-06 09:50 L norm mn k  6 50:1/1 100:3/5 150:3/11 200:6/15 lastSame  25 lastOpp  46 seq ------++---+
+A          NIFTY    10-07 10:30 L norm mn k 14 50:1/2 100:3/2 150:4/5 200:6/11 lastSame  46 lastOpp  10 seq -++---++++--
+A          NIFTY    10-07 11:00 L norm mn k 20 50:1/2 100:4/2 150:5/4 200:7/11 lastSame   6 lastOpp  16 seq ++---++++--+
+A          NIFTY    10-08 10:40 S norm mn k 16 50:3/0 100:5/3 150:5/5 200:6/7 lastSame  16 lastOpp  55 seq ----++---+++
+A          NIFTY    10-08 13:20 S norm mn k 48 50:5/0 100:7/2 150:9/3 200:9/6 lastSame  12 lastOpp  87 seq ++---+++++++
+A          NIFTY    10-09 10:10 L HALF mT k 10 50:0/3 100:0/7 150:3/10 200:4/11 lastSame 121 lastOpp  25 seq +++---------
+A          NIFTY    10-09 13:50 L norm mn k 53 50:3/0 100:3/5 150:3/7 200:6/11 lastSame  29 lastOpp  68 seq ---------+++
+A          NIFTY    10-12 09:55 S norm mn k  7 50:1/4 100:2/7 150:7/7 200:10/8 lastSame   6 lastOpp  19 seq ++++-------+
+A          SENSEX   10-07 09:40 S norm mn k  4 50:1/1 100:1/3 150:5/6 200:12/6 lastSame   4 lastOpp  36 seq +---++++---+
+A          SENSEX   10-07 10:30 L norm mn k 14 50:1/2 100:3/2 150:3/6 200:6/12 lastSame  46 lastOpp  10 seq +++----+++--
+A          SENSEX   10-07 11:00 L norm mn k 20 50:1/2 100:4/2 150:4/5 200:7/12 lastSame   6 lastOpp  16 seq ++----+++--+
+A          SENSEX   10-08 10:40 S norm mn k 16 50:3/0 100:5/3 150:5/5 200:7/6 lastSame  16 lastOpp  55 seq +---++---+++
+A          SENSEX   10-08 13:20 S norm mn k 48 50:5/0 100:7/2 150:9/3 200:9/6 lastSame  12 lastOpp  87 seq ++---+++++++
+A          SENSEX   10-09 10:10 L norm mn k 10 50:1/4 100:1/8 150:4/11 200:5/12 lastSame   6 lastOpp  14 seq +----------+
+A          SENSEX   10-12 09:40 S norm mn k  4 50:1/6 100:4/10 150:9/10 200:11/12 lastSame   3 lastOpp  16 seq +----------+
+A          SENSEX   10-12 11:20 S norm mn k 23 50:5/5 100:6/10 150:11/10 200:15/10 lastSame   2 lastOpp  35 seq -------+++++
+A          US30     10-07 05:30 S norm mT k 20 50:0/1 100:0/2 150:0/7 200:0/14 lastSame 273 lastOpp  23 seq ------------
+A          US30     10-07 06:05 S norm mn k 29 50:1/1 100:1/2 150:1/7 200:1/11 lastSame   9 lastOpp  32 seq -----------+
+A          US30     10-07 10:05 S norm mn k 78 50:2/0 100:3/1 150:3/2 200:3/7 lastSame  30 lastOpp  81 seq ---------+++
+A          US30     10-07 11:30 S norm mn k 95 50:2/0 100:4/1 150:4/1 200:4/4 lastSame  17 lastOpp  98 seq --------++++
+A          US30     10-07 12:40 S norm mn k108 50:3/0 100:6/0 150:6/1 200:6/4 lastSame   8 lastOpp 111 seq ------++++++
+A          US30     10-08 06:10 S norm mn k 31 50:0/1 100:1/1 150:8/1 200:14/1 lastSame  53 lastOpp  19 seq +++++++++++-
+A          US30     10-08 11:15 S norm mn k 92 50:3/1 100:5/2 150:6/2 200:10/2 lastSame  16 lastOpp  38 seq +++++-++-+++
+A          US30     10-08 14:55 S norm mn k135 50:8/0 100:12/1 150:13/2 200:14/2 lastSame  16 lastOpp  81 seq -+++++++++++
+A          US30     10-08 23:15 L norm mn k236 50:3/0 100:3/2 150:3/11 200:4/15 lastSame   1 lastOpp  87 seq ---------+++
+BNA#1      MCX_NATU 10-09 18:25 L norm mn k112 50:1/1 100:3/3 150:3/5 200:5/9 lastSame  13 lastOpp  39 seq ++-----++--+
+BNA#2      MCX_NATU 10-09 19:45 L norm mn k128 50:3/0 100:5/2 150:5/3 200:6/7 lastSame   5 lastOpp  55 seq -----++--+++
+BNA#3      MCX_NATU 10-12 11:10 L ??   mn k 25 50:2/0 100:6/0 150:6/1 200:8/3 lastSame  30 lastOpp 126 seq --++--++++++
+BNA#4      MCX_NATU 10-12 13:10 S norm mn k 49 50:2/3 100:2/7 150:3/9 200:4/11 lastSame   2 lastOpp  18 seq +---------++
+BNA#5      MCX_NATU 10-12 16:55 S norm mn k 93 50:7/0 100:7/5 150:7/7 200:8/9 lastSame  39 lastOpp  62 seq -----+++++++
+BNA#6      MCX_NATU 10-12 20:40 L HALF mn k139 50:0/3 100:0/10 150:5/10 200:7/10 lastSame 108 lastOpp  31 seq ++----------
+BNA#7      MCX_NATU 10-13 10:50 S norm mn k 21 50:0/0 100:1/2 150:10/2 200:10/6 lastSame  87 lastOpp  54 seq ++++++++++--
+BNA#8      MCX_NATU 10-13 11:20 L norm mn k 27 50:1/1 100:3/2 150:3/8 200:6/11 lastSame   3 lastOpp   6 seq --------++-+
+BNA#9      MCX_NATU 10-13 13:00 S norm mn k 47 50:1/2 100:1/4 150:4/4 200:11/7 lastSame  26 lastOpp  20 seq +++++++--+--
+BNA#10     MCX_NATU 10-13 14:45 S norm mn k 68 50:4/2 100:4/2 150:7/4 200:14/4 lastSame  13 lastOpp  41 seq ++++--+--+++
+BNA#11     MCX_NATU 10-13 16:05 S norm mn k 84 50:6/0 100:7/2 150:8/4 200:10/4 lastSame   7 lastOpp  57 seq +--+--++++++
+BNA#12     MCX_NATU 10-14 09:25 L norm mn k  4 50:5/0 100:8/1 150:8/7 200:10/8 lastSame   7 lastOpp  94 seq ----++++++++
+BNA#14     MCX_NATU 10-14 19:10 S norm mn k121 50:4/0 100:6/0 150:7/5 200:7/9 lastSame  30 lastOpp 117 seq -----+++++++
+BNA#15     MCX_NATU 10-15 09:50 L norm mT k  8 50:0/2 100:0/10 150:0/11 200:5/13 lastSame 178 lastOpp  16 seq ------------
+BNA#16     MCX_NATU 10-15 14:35 L norm mn k 65 50:0/1 100:1/3 150:1/9 200:1/12 lastSame  57 lastOpp  40 seq ----------+-
+BNA#17     MCX_NATU 10-15 18:00 S norm mn k107 50:0/3 100:1/4 150:3/4 200:11/4 lastSame  82 lastOpp   5 seq +++++++-+---
+BNI#19     NSE_NIFT 10-05 10:30 S norm mn k 13 50:4/1 100:6/1 150:11/2 200:11/2 lastSame  34 lastOpp  13 seq -++++++++++-
+BNI#20     NSE_NIFT 10-06 09:50 L norm mn k  6 50:2/1 100:3/3 150:3/8 200:4/13 lastSame   3 lastOpp  14 seq ------+--+-+
+BNI#21     NSE_NIFT 10-06 15:20 L norm mn k 73 50:1/0 100:4/1 150:5/3 200:5/7 lastSame  33 lastOpp  81 seq ----+--+-+++
+BNI#22     NSE_NIFT 10-07 09:40 S norm mT k  4 50:0/2 100:1/4 150:3/5 200:7/6 lastSame  89 lastOpp   8 seq +++-++-+----
+BNI#23     NSE_NIFT 10-07 10:30 L norm mn k 14 50:1/1 100:4/2 150:5/3 200:6/5 lastSame  18 lastOpp  10 seq --+--+-++++-
+BNI#24     NSE_NIFT 10-07 11:00 L norm mn k 20 50:2/1 100:5/1 150:6/3 200:7/5 lastSame   6 lastOpp  16 seq -+--+-++++-+
+BNI#25     NSE_NIFT 10-07 13:15 S norm mn k 46 50:1/3 100:1/4 150:2/7 200:4/8 lastSame  42 lastOpp  26 seq -++-+----+--
+BNI#26     NSE_NIFT 10-08 14:05 S norm mn k 57 50:3/0 100:4/0 150:5/3 200:5/4 lastSame   9 lastOpp 114 seq +----+--++++
+BNI#27     NSE_NIFT 10-09 09:30 L norm mT k  2 50:0/2 100:0/4 150:2/5 200:4/6 lastSame 136 lastOpp  22 seq ++++-++-----
+BNI#29     NSE_NIFT 10-12 09:55 S norm mn k  7 50:2/2 100:2/5 150:6/5 200:7/5 lastSame   3 lastOpp  30 seq +++++-----++
+BNI#30     NSE_NIFT 10-12 12:10 S norm mn k 34 50:6/0 100:6/3 150:8/5 200:10/5 lastSame  13 lastOpp  57 seq +-----++++++
+BNI#31     NSE_NIFT 10-12 14:15 S norm mn k 59 50:4/0 100:7/2 150:7/5 200:11/5 lastSame  25 lastOpp  82 seq -----+++++++
+BNI#32     NSE_NIFT 10-13 12:20 L norm mT k 36 50:0/1 100:0/7 150:2/10 200:5/10 lastSame 136 lastOpp  43 seq ++----------
+BNI#34     NSE_NIFT 10-14 11:00 L norm mn k 20 50:4/1 100:5/1 150:5/5 200:7/11 lastSame  31 lastOpp  20 seq ------+++++-
+BNI#35     NSE_NIFT 10-14 12:20 L norm mn k 36 50:3/1 100:6/1 150:6/4 200:6/11 lastSame  16 lastOpp  36 seq -----+++++-+
+BNI#36     NSE_NIFT 10-15 09:30 L norm mn k  2 50:1/2 100:6/3 150:7/3 200:7/7 lastSame  43 lastOpp  32 seq --+++++-++--
+BNI#38     NSE_NIFT 10-16 12:40 L norm mn k 40 50:2/1 100:6/1 150:9/3 200:11/4 lastSame  28 lastOpp  38 seq --+++++++-++
+BCR#39     CRUDE    10-07 20:10 S norm mn k133 50:0/2 100:1/3 150:2/7 200:2/12 lastSame  85 lastOpp  13 seq -----+--+---
+BCR#40     CRUDE    10-07 22:40 S norm mn k163 50:3/2 100:3/2 150:5/5 200:5/12 lastSame  12 lastOpp  43 seq --+--+---+++
+BCR#41     CRUDE    10-08 10:50 L norm mn k 21 50:0/2 100:2/4 150:3/5 200:6/6 lastSame  75 lastOpp  32 seq +-++-+++----
+BCR#42     CRUDE    10-08 12:20 L norm mn k 39 50:1/1 100:3/4 150:3/4 200:6/6 lastSame  18 lastOpp  50 seq -++-+++----+
+BCR#43     CRUDE    10-08 13:10 L norm mn k 48 50:4/0 100:4/4 150:6/4 200:9/5 lastSame   6 lastOpp  59 seq -+++----++++
+BCR#44     CRUDE    10-08 20:25 L norm mn k136 50:0/0 100:8/0 150:9/1 200:11/4 lastSame  53 lastOpp 147 seq ---+++++++++
+BCR#45     CRUDE    10-09 10:35 S HALF mT k 17 50:1/0 100:1/1 150:1/8 200:1/10 lastSame  38 lastOpp  55 seq +----------+
+BCR#46     CRUDE    10-09 11:55 L norm mn k 34 50:0/1 100:1/2 150:5/2 200:10/2 lastSame  72 lastOpp  17 seq ++++++++++--
+BCR#47     CRUDE    10-09 15:15 L norm mn k 74 50:4/1 100:4/3 150:5/3 200:10/3 lastSame  32 lastOpp  18 seq +++++--++++-
+BCR#48     CRUDE    10-09 20:30 L norm mn k137 50:1/0 100:5/1 150:6/2 200:7/3 lastSame  29 lastOpp  81 seq +++--++++-++
+BCR#49     CRUDE    10-12 11:55 L HALF mT k 34 50:2/0 100:4/0 150:5/0 200:9/2 lastSame  35 lastOpp 152 seq --++++-+++++
+BCR#50     CRUDE    10-12 14:20 L norm mn k 63 50:3/0 100:6/0 150:7/0 200:11/1 lastSame   7 lastOpp 181 seq +++-++++++++
+BCR#51     CRUDE    10-13 09:35 S HALF mT k  6 50:0/0 100:0/2 150:0/7 200:0/9 lastSame 298 lastOpp  71 seq ------------
+BCR#52     CRUDE    10-13 11:00 S ??   mn k 21 50:1/0 100:1/2 150:1/5 200:1/8 lastSame  15 lastOpp  86 seq -----------+
+BCR#53     CRUDE    10-13 15:30 S norm mn k 77 50:0/0 100:2/0 150:2/2 200:2/5 lastSame  56 lastOpp 142 seq ----------++
+BCR#54     CRUDE    10-13 18:55 L norm mn k114 50:0/2 100:0/3 150:0/4 200:2/4 lastSame 179 lastOpp  36 seq ++++++++----
+BCR#55     CRUDE    10-13 19:45 L norm mn k128 50:3/1 100:3/2 150:3/4 200:5/4 lastSame   2 lastOpp  50 seq +++++----+++
+BCR#56     CRUDE    10-14 11:15 S HALF mT k 23 50:0/1 100:0/6 150:2/6 200:4/6 lastSame 119 lastOpp  36 seq --++++------
+BCR#57     CRUDE    10-15 16:15 L norm mn k 85 50:3/2 100:3/3 150:4/3 200:9/3 lastSame  20 lastOpp  39 seq ++++++---+++
+BCR#58     CRUDE    10-15 18:55 L norm mn k118 50:4/0 100:7/2 150:8/3 200:10/3 lastSame   4 lastOpp  72 seq ++---+++++++
+BCR#59     CRUDE    10-15 20:15 L norm mn k134 50:6/0 100:9/2 150:9/3 200:10/3 lastSame   6 lastOpp  88 seq ---+++++++++
+BCR#60     CRUDE    10-16 11:50 L norm mn k 33 50:1/0 100:8/0 150:14/0 200:14/3 lastSame   1 lastOpp 161 seq ++++++++++++
+BCR#61     CRUDE    10-16 15:40 L norm mn k 78 50:2/0 100:3/0 150:9/0 200:15/0 lastSame  45 lastOpp 206 seq ++++++++++++
+BCR#62     CRUDE    10-16 16:30 L norm mn k 87 50:1/0 100:3/0 150:10/0 200:15/0 lastSame   9 lastOpp 215 seq ++++++++++++
+BSE#64     SENSEX   10-05 12:00 S norm mn k 32 50:4/3 100:9/4 150:13/7 200:15/11 lastSame  16 lastOpp  26 seq +++++++---++
+BSE#65     SENSEX   10-06 10:00 L norm mn k  6 50:0/2 100:3/6 150:4/11 200:7/15 lastSame  72 lastOpp  44 seq -----+++----
+BSE#66     SENSEX   10-07 09:40 S norm mn k  4 50:1/1 100:1/3 150:5/6 200:12/6 lastSame   4 lastOpp  36 seq +---++++---+
+BSE#67     SENSEX   10-07 10:30 L norm mn k 14 50:1/2 100:3/2 150:3/6 200:6/12 lastSame  46 lastOpp  10 seq +++----+++--
+BSE#68     SENSEX   10-07 11:00 L norm mn k 20 50:1/2 100:4/2 150:4/5 200:7/12 lastSame   6 lastOpp  16 seq ++----+++--+
+BSE#69     SENSEX   10-08 10:40 S norm mn k 16 50:3/0 100:5/3 150:5/5 200:7/6 lastSame  16 lastOpp  55 seq +---++---+++
+BSE#70     SENSEX   10-08 13:20 S norm mn k 48 50:5/0 100:7/2 150:9/3 200:9/6 lastSame  12 lastOpp  87 seq ++---+++++++
+BSE#71     SENSEX   10-09 10:05 L norm mn k 10 50:1/4 100:1/8 150:4/11 200:5/12 lastSame   6 lastOpp  14 seq +----------+
+BSE#72     SENSEX   10-12 09:40 S norm mn k  4 50:1/6 100:4/10 150:9/10 200:11/12 lastSame   3 lastOpp  16 seq +----------+
+BSE#73     SENSEX   10-12 11:20 S norm mn k 23 50:5/5 100:6/10 150:11/10 200:15/10 lastSame   2 lastOpp  35 seq -------+++++
+BSE#74     SENSEX   10-13 12:20 L norm mn k 36 50:4/4 100:4/8 150:10/11 200:14/13 lastSame   8 lastOpp  44 seq --------++++
+BSE#75     SENSEX   10-13 14:40 L norm mn k 64 50:4/0 100:7/5 150:9/11 200:16/11 lastSame   1 lastOpp  72 seq -----+++++++
+BSE#76     SENSEX   10-14 11:00 L norm mn k 20 50:4/0 100:9/1 150:9/8 200:15/11 lastSame  26 lastOpp 100 seq ---+++++++++
+BSE#77     SENSEX   10-15 09:20 L norm mn k  0 50:0/2 100:5/2 150:10/2 200:10/9 lastSame  52 lastOpp  25 seq ++++++++++--
+BSE#78     SENSEX   10-15 10:50 L norm mn k 18 50:6/2 100:10/2 150:13/2 200:16/7 lastSame   7 lastOpp  43 seq ++++--++++++
+BSE#79     SENSEX   10-15 13:30 L norm mn k 50 50:11/0 100:11/2 150:16/2 200:21/2 lastSame  10 lastOpp  75 seq -+++++++++++
+BSE#80     SENSEX   10-16 12:40 L norm mn k 40 50:4/0 100:10/0 150:16/2 200:20/2 lastSame   4 lastOpp 137 seq ++++++++++++

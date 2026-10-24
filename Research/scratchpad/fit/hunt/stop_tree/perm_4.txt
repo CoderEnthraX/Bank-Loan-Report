@@ -1,0 +1,1 @@
+SUMMARY seed 4 best errors {'single': np.float64(5.0), 'interval': np.float64(3.0), 'interval_m': np.float64(0.011), 'AND': 99, 'OR': 99, 'tree': np.float64(1.0)} best margins {'AND0': None, 'AND1': None, 'OR0': None, 'OR1': None, 'tree0': None, 'tree1': np.float64(0.015)}

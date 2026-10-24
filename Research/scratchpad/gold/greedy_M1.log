@@ -1,0 +1,9 @@
+M1 seeded 146 engine runs
+M1 61 moves
+
+M1 profit:default start: default | A -0.684 (n 3865, L 22) B -0.215
+round 1: Kill zones: London close | A -0.163 (n 1715, win 33.1%, W/L 9/15) | B -0.056 (n 1719, W/L 8/15) | yrs+ 1 | score -6.75
+round 2: stopAtr = 4.0 | A -0.052 (n 1065, win 33.8%, W/L 8/13) | B -0.013 (n 1053, W/L 6/13) | yrs+ 1 | score -1.70
+round 3: VWAP anchor = month | A +0.049 (n 1001, win 37.2%, W/L 8/14) | B +0.034 (n 1005, W/L 4/14) | yrs+ 4 | score 1.55
+round 4: dispAtr = 0.4 | A +0.063 (n 1048, win 37.6%, W/L 7/14) | B +0.025 (n 1063, W/L 4/12) | yrs+ 4 | score 2.05
+final profit:default: {'kzOn': True, 'kz': (False, False, False, True), 'stopAtr': 4.0, 'vwAnchorG': 'month', 'dispAtr': 0.4}

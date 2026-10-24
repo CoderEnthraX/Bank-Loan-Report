@@ -1,0 +1,11 @@
+[R4pairs] pairs base A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393; 54 near-plateau singles (tol 0)
+[R4pairs] pair netMin {"netMin": 2} + tightAtr {"tightAtr": 0.95} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393
+[R4pairs] pair netMin {"netMin": 2} + erMin {"erMin": 0.219} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393
+[R4pairs] pair netMin {"netMin": 2} + vwStretch {"vwStretch": 4.0} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393
+[R4pairs] pair netMin {"netMin": 2} + eod {"eodFlat": false, "eodCancel": true} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393
+[R4pairs] pair netMin {"netMin": 2} + leg {"legReset": true, "legFrom": "fill", "legWin": 0, "legSameDay": false, "legLossOnly": true} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393
+[R4pairs] pair netMin {"netMin": 2} + leg {"legReset": true, "legFrom": "fill", "legWin": 0, "legSameDay": true, "legLossOnly": false} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393
+[R4pairs] pair netMin {"netMin": 2} + leg {"legReset": true, "legFrom": "fill", "legWin": 0, "legSameDay": true, "legLossOnly": true} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393
+[R4pairs] pair netMin {"netMin": 2} + leg {"legReset": true, "legFrom": "fill", "legWin": 6, "legSameDay": false, "legLossOnly": false} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393
+[R4pairs] pair netMin {"netMin": 2} + leg {"legReset": true, "legFrom": "fill", "legWin": 6, "legSameDay": false, "legLossOnly": true} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393
+[R4pairs] pair netMin {"netMin": 2} + leg {"legReset": true, "legFrom": "fill", "legWin": 6, "legSameDay": true, "legLossOnly": false} -> A 80/0/0 | B1 42 st39 p1 | B2 18 st14 p1 | B3 16 st12 p1 | MD 6 | OBJ 393

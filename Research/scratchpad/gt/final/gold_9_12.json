@@ -1,0 +1,250 @@
+{
+ "group": "gold_9_12",
+ "windows": [
+  {
+   "image": "126bd692",
+   "symbol": "GC",
+   "first_bar": "2026-10-08 22:05",
+   "last_bar": "2026-10-09 10:45",
+   "anchor": "crosshair header O4169.4 H4174.3 L4168.9 C4172.8 = 2026-10-09 05:30 at x=584; spacing 6.5px (x=584+(idx-7899)*6.5, Thu 02:25 -> Fri 03:30 contiguous); axis 4200@y141, 15.183 px/pt; bars after 10:45 above chart top"
+  },
+  {
+   "image": "13b3c576",
+   "symbol": "GC",
+   "first_bar": "2026-10-08 23:45",
+   "last_bar": "2026-10-09 14:30",
+   "anchor": "crosshair header O4193.8 H4198.8 L4193.6 C4198.1 = 2026-10-09 07:15 at x=589; spacing 6.5px; axis 4230@y156, 15.167 px/pt; candles before 06:35 below visible price range; right edge cut by table at x~1160"
+  },
+  {
+   "image": "4772dc3c",
+   "symbol": "GC",
+   "first_bar": "2026-10-09 17:25",
+   "last_bar": "2026-10-12 08:10",
+   "anchor": "crosshair header O4214.8 H4216.6 L4213.7 C4214.7 = 2026-10-09 21:05 at x=439 (idx 8086); spacing 8.05px (fit on 103 candle lows); axis 4250@y132.5, 15.175 px/pt; VWAP reset Mon 03:30 at x~962; table covers x>1170,y<470"
+  },
+  {
+   "image": "1c019e4f",
+   "symbol": "GC",
+   "first_bar": "2026-10-09 23:50",
+   "last_bar": "2026-10-12 13:00",
+   "anchor": "crosshair header O4229.9 H4234.2 L4226.3 C4234.2 = 2026-10-12 06:45 at x=643 (idx 8190); spacing 8.05px (fit 97 lows); axis 4257.5@y125, 15.184 px/pt; last bar 13:00 is the live bar (last price 4209.2, countdown 04:11)"
+  }
+ ],
+ "orig_trades": [
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-09 04:40",
+   "entry_measured": 4165.88,
+   "entry_exact": 4165.9,
+   "entry_exact_source": "04:35 impulse body mid (O4165.0 C4166.8) = 4165.9, also 04:15 high 4165.9; 04:40 L4165.0 trades through",
+   "stop_measured": 4161.73,
+   "r_from_green_box": 4.15,
+   "exit_bar": "2026-10-09 05:30",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "126bd692"
+   ],
+   "notes": "TP4 4174.18 measured; 05:30 H4174.3 first bar >= TP4 (05:25 H4170.6). Box x519-583."
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-09 07:30",
+   "entry_measured": 4199.37,
+   "entry_exact": 4199.4,
+   "entry_exact_source": "07:20 high 4199.4 (07:25 impulse O4196.7 C4199.8 body mid 4198.25 does NOT fit); 07:30 L4196.8 fills",
+   "stop_measured": 4191.7,
+   "r_from_green_box": 7.67,
+   "exit_bar": "2026-10-09 10:45",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "126bd692",
+    "13b3c576"
+   ],
+   "notes": "TP4 ~4214.7; 10:45 H4216.1 first bar above (10:30-10:40 highs 4212.9 max). min low in trade 4194.5 (08:00). 13b3c576 confirms E4199.37 P4191.73 TP4 4214.80, box 07:30-10:45."
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-09 11:20",
+   "entry_measured": 4221.39,
+   "entry_exact": 4221.4,
+   "entry_exact_source": "11:00 impulse body mid (O4217.3 C4225.5); 11:05-11:15 lows 4224.8/4225.0/4222.4 above entry; 11:20 L4217.1 fills",
+   "stop_measured": 4214.77,
+   "r_from_green_box": 6.62,
+   "exit_bar": "2026-10-09 11:50",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "13b3c576"
+   ],
+   "notes": "TP4 4234.62, TP2 4228.0, TP1 4225.4 lines; 11:50 L4214.5 first low <= stop (11:40 L4215.1). Box x908-946.5. Blue circle markers at 11:35 (y=4220.57 = 11:35 body mid) and 13:15 (4216.48 = 13:15 body mid) - non-trade markers."
+  },
+  {
+   "symbol": "GC",
+   "dir": "short",
+   "fill_bar": "2026-10-09 18:25",
+   "entry_measured": 4198.96,
+   "entry_exact": 4198.95,
+   "entry_exact_source": "18:20 impulse body mid (O4203.5 C4194.4); 18:25 H4202.4 fills",
+   "stop_measured": 4203.6,
+   "r_from_green_box": 4.65,
+   "exit_bar": "2026-10-09 18:30",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "4772dc3c"
+   ],
+   "notes": "Pixel-measured: stop frame y836.5 -> 4203.59 (local labels 4202.5@853, 4205@815, 15.2px/pt), entry line y907 -> 4198.95, TP1 y950 -> 4196.17, TP2 y978 -> 4194.31 => R 4.65-4.68. STOP = 18:20 impulse HIGH 4203.6 exactly (VWAP cyan line is 6px higher at 4204.0, so not VWAP). Only 1.06 x ATR14(RMA 4.39); all other 6 trades use 1.80 x ATR. 18:30 H4204.1 stops it (2-bar box x180-189)."
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-09 20:55",
+   "entry_measured": 4214.28,
+   "entry_exact": 4214.3,
+   "entry_exact_source": "20:45 high 4214.3 (impulse 20:50 O4212.5 C4215.3, body mid 4213.9 lower); 20:55 L4213.1 fills; table ENTRY 4214.3",
+   "stop_measured": 4205.49,
+   "r_from_green_box": 8.8,
+   "exit_bar": "2026-10-12 05:40",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "4772dc3c",
+    "1c019e4f"
+   ],
+   "notes": "TP4 4231.98 (lines TP1 4219.62, TP2 4223.15, TP3 4227.56). Held over the weekend: stop never touched, TP4 hit Mon 12 05:40 (H4234.3) - box ends x1175 in 4772dc3c and x537 in 1c019e4f. Table stop 4205.5. R = 1.80 x ATR14(RMA)."
+  },
+  {
+   "symbol": "GC",
+   "dir": "long",
+   "fill_bar": "2026-10-12 05:55",
+   "entry_measured": 4234.3,
+   "entry_exact": 4234.3,
+   "entry_exact_source": "05:40 high 4234.3 (impulse 05:50 O4228 C4235.1 body mid 4231.55); table",
+   "stop_measured": 4226.15,
+   "r_from_green_box": 8.2,
+   "exit_bar": "2026-10-12 07:05",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "4772dc3c",
+    "1c019e4f"
+   ],
+   "notes": "see 1c019e4f; box x1200-1312 here"
+  },
+  {
+   "symbol": "GC",
+   "dir": "short",
+   "fill_bar": "2026-10-12 10:35",
+   "entry_measured": 4217.39,
+   "entry_exact": 4217.4,
+   "entry_exact_source": "10:30 impulse body mid (O4218.5 C4216.3; prior lows 10:25 4217.7 / 10:20 4217.9 higher); 10:35 H4218.5 fills",
+   "stop_measured": 4222.92,
+   "r_from_green_box": 5.53,
+   "exit_bar": "2026-10-12 11:00",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "1c019e4f"
+   ],
+   "notes": "TP4 4206.33; 11:00 L4202.9 first low below (10:55 L4207.8). Box x1016-1055. This is the 'other Monday fill': Monday model day = Fri 20:55 long closed TP4 Mon (W) + 05:55 L + 10:35 W = 2W/1L +3.00R, FILLS 2/5. R=1.79 ATR (impulse body only 2.2 = 0.7 ATR, close 10.7 below VWAP)."
+  }
+ ],
+ "my_vs_orig": [
+  {
+   "symbol": "GC",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 03:40",
+   "orig_fill_bar": "",
+   "notes": "mine E~4160.2 P4155.7 TP4~4169.0 exit TP4 04:50 (f99fc11f). 2nd bar of session (03:35 impulse O4157.4 C4160.3, VWAP reset at 03:30). Orig takes nothing. Mine being live 03:40-04:50 blocks the orig 04:40 long."
+  },
+  {
+   "symbol": "GC",
+   "status": "missed_mine",
+   "my_dir": "",
+   "my_fill_bar": "",
+   "orig_fill_bar": "2026-10-09 04:40",
+   "notes": "orig long 04:40 E4165.9 P~4161.75 TP4 05:30; mine was still inside its 03:40 long. (yellow 04:40 on f99fc11f)"
+  },
+  {
+   "symbol": "GC",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 05:35",
+   "orig_fill_bar": "",
+   "notes": "mine E~4171.05 P4166.37 TP4 4180.45, box 05:35-05:55 (f99fc11f; user's yellow at 05:45). Orig had just closed TP4 on 05:30 and does not re-enter on the 05:30 impulse (O4169.4 C4172.8)."
+  },
+  {
+   "symbol": "GC",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 07:30",
+   "orig_fill_bar": "2026-10-09 07:30",
+   "notes": "my stop 4191.63 vs orig 4191.70; my entry 4199.34 vs orig 4199.37; both exit TP4 10:45 (797a5371)"
+  },
+  {
+   "symbol": "GC",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 11:20",
+   "orig_fill_bar": "2026-10-09 11:20",
+   "notes": "my stop 4214.77 vs orig 4214.77; my entry 4221.38; both stopped 11:50 (797a5371 box x793-882)"
+  },
+  {
+   "symbol": "GC",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 12:35",
+   "orig_fill_bar": "",
+   "notes": "mine E~4219.5 P4212.34 TP4~4233.7, stopped 14:20 (797a5371 box x1011-1317). Orig: no trade after the 11:50 stop for the rest of the window (to 14:30); only a blue circle at 13:15. User yellow at 13:35 is inside this extra trade."
+  },
+  {
+   "symbol": "GC",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-09 18:25",
+   "notes": "mine took no trade Fri evening (cc0d7275 shows no boxes 18:00-01:15): my 5 Friday fills (03:40, 05:35, 07:30, 11:20, 12:35) exhausted FILLS/CAP 5; orig had only 3 by then (04:40, 07:30, 11:20)."
+  },
+  {
+   "symbol": "GC",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-09 20:55",
+   "notes": "same cause (cap). User yellow 20:55 on cc0d7275. Orig carries this long over the weekend to TP4 Mon 05:40."
+  },
+  {
+   "symbol": "GC",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-12 03:35",
+   "notes": "orig is still in the Friday 20:55 long at Mon 03:35 (until 05:40) so cannot trade; mine was flat. Mine E4217.0 P4221.42 TP4 4208.1, box to ~04:55 (a87e52b4; user yellow 04:20 inside this trade)."
+  },
+  {
+   "symbol": "GC",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-12 05:55",
+   "orig_fill_bar": "2026-10-12 05:55",
+   "notes": "my stop 4226.14 vs orig 4226.1 (table); my entry 4234.29 vs 4234.3; both stop out 07:05"
+  },
+  {
+   "symbol": "GC",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-12 10:35",
+   "orig_fill_bar": "2026-10-12 10:35",
+   "notes": "my stop 4223.02 vs orig 4222.92; my entry 4217.46 vs 4217.39; both TP4 at 11:00 (a87e52b4 box x1474-1550)"
+  }
+ ],
+ "observations": "1) ENTRY rule fits all 7 originals exactly: the trigger bar closes beyond the extreme of the preceding few bars, and the limit is the more conservative (closer to the trigger close) of the trigger-bar body mid and that broken level. LONG entry = max(body mid, highest high of the prior bars that the trigger close broke): 04:40 4165.9 (mid 4165.9 = 04:15 H), 07:30 4199.4 (07:20 H > mid 4198.25), 11:20 4221.4 (mid > prior H 4217.5), 20:55 4214.3 (20:45 H > mid 4213.9), Mon 05:55 4234.3 (05:40 H > mid 4231.55). SHORT entry = min(body mid, lowest prior low): 18:25 4198.95 (mid; 18:15 L 4201), Mon 10:35 4217.4 (mid; 10:25 L 4217.7). Trigger bodies can be small (0.57-0.78 ATR on 04:35, 07:25, 20:50, 10:30), so the trigger is not a large-candle filter.\n2) STOP: 6 of 7 stops are 1.80 x ATR14 (Wilder/RMA, measured at the trigger bar; R/ATR 1.79-1.81). The exception is the Fri 18:25 short: the stop is 4203.6 = the 18:20 trigger-bar HIGH (pixel-measured 4203.59 from the frame; the TP1/TP2 lines confirm R 4.65-4.68; the VWAP line is 6 px higher at 4204.0). That is 1.06 ATR, against the 1.8-ATR stop of 4206.85. A rule like 'cap at the trigger extreme when it lies between the entry and the ATR stop' does NOT hold for the longs: 11:00 low 4217.1 and 05:50 low 4228 would have capped those stops, but the original used the full 1.8 ATR. The only special feature of 18:20 is that it is the bar that crossed VWAP (18:15 close 4203.7 just under VWAP 4204.18, 18:20 open 4203.5 / close 4194.4) and it was the first short of the day after only longs. Treat it as a VWAP-cross case to investigate, not a general cap.\n3) FILLS/CAP = 5 per model day. Original Friday fills: 04:40, 07:30, 11:20, 18:25, 20:55, which is exactly 5. Mine reached 5 by 12:35 (extra 03:40, 05:35 and 12:35), so it missed 18:25 and 20:55 (cc0d7275 has no boxes in the evening). That missing 20:55 long changed Monday as well: the original held it over the weekend (stop never hit) to TP4 at Mon 05:40, so it could not take the Mon 03:35 short that mine took while flat. Removing the extra Friday trades should fix all four of these differences.\n4) Skipped triggers: (a) Fri 03:35, the 2nd bar of the session, closed above the single 03:30 bar (body 2.9 = 1.19 ATR, close 1.9 above the just-reset VWAP): no trade. Mon 03:30, the first bar (body -7.7 = 3.1 ATR): no trade, but the original was in a position then anyway. The original seems to need some minimum number of bars in the session before a level/trigger is valid. (b) Fri 05:30: the original took TP4 on this bar, and the bar is itself a breakout (close 4172.8, body 1.31 ATR); it did not re-enter (mine filled 05:35). So there is no trigger on the bar where the previous trade exits, or a cooldown. (c) Fri 12:30, 40 min after the 11:50 stop: body only 0.37 ATR, close 4222.1 above the 12:25 H 4221.7 but below the 11:35 H 4224 (11 bars back). The original did not trade; mine filled 12:35. This suggests the original's breakout lookback is longer than about 10 bars, or it needs more body.\n5) Accounting: MODEL DAY counts trades by exit day. Monday's 2W/1L +3.00R = Fri 20:55 long closed TP4 on Mon (+2R) + Mon 05:55 long stopped (-1R) + Mon 10:35 short TP4 (+2R), while FILLS counts only Monday fills (2/5). Every frame read (126bd692, 4772dc3c, 1c019e4f) shows this same table, so the table is the state at recording time (Mon ~13:00), not at the crosshair.\n6) Exits: TP4 = entry +/- 2R, stop = entry -/+ R, checked with bar highs/lows. The bar that touches the level closes the trade, and the box ends on that bar (05:30, 10:45, 11:50, 18:30, Mon 05:40, 07:05, 11:00). Positions carry across the weekend session gap.\n7) Orig 13b3c576 has blue circle markers (not trades) at body mid of Fri 11:35 (in-trade) and 13:15 bars.\n8) Where trades match (07:30, 11:20, Mon 05:55, Mon 10:35), my entries and stops agree within 0.1 (axis precision).",
+ "table_readings": [
+  "126bd692/4772dc3c/1c019e4f (13b3c576 table not read; all same, state at recording time Mon ~13:00): STATE SCANNING; REGIME TRANSITION . ADX 34; bias NEUTRAL; ENTRY/STOP/TP1-4/LIVE/TARGETS '-'; MODEL DAY 2W/1L . 67% . +3.00R; FILLS / CAP 2/5; LOADED BARS TP4 +2.00R . 36% . +32.00R",
+  "Header 126bd692: O4169.4 H4174.3 L4168.9 C4172.8 (Fri 05:30)",
+  "Header 13b3c576: O4193.8 H4198.8 L4193.6 C4198.1 (Fri 07:15)",
+  "Header 4772dc3c: O4214.8 H4216.6 L4213.7 C4214.7 (Fri 21:05)",
+  "Header 1c019e4f: O4229.9 H4234.2 L4226.3 C4234.2 (Mon 06:45)"
+ ]
+}

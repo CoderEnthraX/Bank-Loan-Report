@@ -1,0 +1,7 @@
+# holistic progress
+- built m.py (pine_final + options cdRaw, legBars, slopeCross, impNoSlope, tightCond net/netAbs/first/firstAny, tightStop minAtrCandle/candle/atr/maxAtrCandle, dayLossN), ev.py in-process scorer (== score2: base A 79/1/3 B 32/29 obj 290; timing best A 79/1/2 B 38/35)
+- ATR variants (rma14[1], sma14, rma10, rma20) cannot separate CRUDE 10-15 18:30 (mom .91, must reject for #58) and 10-16 11:40 (.95, reject for #60) from GC 10-09 20:50 (.94, must accept) -> no momentum/ATR fix for #58/#60
+- rearmMode (on timing best): better (replace armed limit by a newer same-dir signal with a higher long/lower short entry) A 77/3/5 B 33 obj 277 (+#60, loses #54 #55 #64 #78-80 + 5 A) REJECT; worse / oppKeep: identical to best (no effect)
+- CD from current model ({}): stalls at {"dayStopR":0,"netMin":2} A 79/1/3 B 36/34 obj 299 (base obj 290). slopeCross / minOpenBars0 / cooldown1 are each negative alone -> joint move needed (local optimum)
+- CD from timing best: only change netMin 3->2: A 79/1/2, B 38 matched, 36/38 stops, obj 305 (+Bstop#56). Sweep1 converged; ties at obj 305: cooldown 0(=1), dayStopR 4/5, dayLossN 4/5, retest 6, momAtr 0.9, legBars 8/12/15, vwapFilter off, tightAtr 0.95, tightStop atr, skipSunday off (no evidence)
+- subsets.py: all 31 subsets of {slopeCross, minOpenBars0, cooldown1, dayStopR0, netMin2} vs current (subsets.txt). slopeCross alone = no change but it is the enabler: +cooldown1 -> +#75 with no loss (obj 292); +minOpenBars0 -> +#77, -#78, -1 A extra (292); all five obj 305 (A 79/1/2 B 38/36), no loss vs current

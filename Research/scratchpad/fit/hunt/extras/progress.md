@@ -1,0 +1,14 @@
+- base.py (stop_fn from rule_firstday_prevday, arm_fn True): FULL 75/5/7 confirmed (extras CRUDE 10-06 21:00 L, ETH 10-11 00:10 L, NASDAQ 10-12 07:00 S, NIFTY 10-07 09:40 S, US30 10-07 07:35/16:15/18:05 S; misses ETH 10-11 00:25 L, NASDAQ 10-07 21:25 L, US30 10-07 06:05/10:05/11:30 S)
+- (run2) pf.py = traced copy of pine_final.py (+options). H1 structSrc=close (struct break vs 10-bar lowest close/highest close): 48/27/25 (gains US30 06:05,10:05; loses 29) REJECT
+- (run2) H2 structSrc=body (break vs body extremes): 50/26/23 REJECT
+- (run2) H3 sameBarDayR=false (a fill-bar stop-out, i.e. zero-width box, is not added to the daily R used by the -3R day stop): 76/4/6, gains NASDAQ 10-07 21:25 L, loses none  << candidate
+- (run2) H4 dayStopR=3.5 or 0 (looser/no daily stop): 76/4/6, same gain NASDAQ 21:25 L, loses none (daily stop has no other scored effect)
+- (run2) H5 structReset (10-bar struct window starts at last exit bar when exit < 10 bars ago): excl 70/9/10 REJECT; incl 76/3/4 +1 near (gains US30 06:05/10:05/11:30, kills US30 extras, but loses NASDAQ 10-09 12:55 L -> extra 06:50 S, SENSEX 10-07 11:00 L -> off-1) REJECT as-is
+- (run2) H6a structReset incl + resetDir=same (window from last exit, same direction as last trade): 77/2/3 +1 near (loses SENSEX 10-07 11:00 L -> off-1) REJECT
+- (run2) H6b structReset incl + resetDir=same + resetAnchor=fill (same-dir struct level = extreme since last trade's FILL bar, when exit < 10 bars ago): 78/2/3, gains US30 06:05/10:05/11:30 S, removes US30 07:35/16:15/18:05 extras, loses none  << candidate
+- (run2) H6c legReset=1 (clean form: if last trade filled < structLen bars ago and is closed, its direction's struct level = extreme of bars [fill, i) ): 78/2/3, loses none; full-data diff: only US30 10-07 (intended) + NASDAQ 09-30 (unscored, 14:35 S -> 11:25 S); entry_err unchanged
+- (run2) legReset + sameBarDayR=false: 79/1/3; legReset + dayStopR=0: 79/1/3 (both lose none)
+- (run2) H7 intraday net-bias block (no arm if d*(bullN-bearN) <= -k), on top of legReset+sameBarDayR: k=4 72/8/5, k=5 73/7/5, k=6 71/9/6, k=7 76/4/3 REJECT
+- (run2) H8 legReset=2 (reset both directions): 77/3/4, loses NASDAQ 10-09 12:55 L -> same-direction restriction needed
+- (run2) H9 slopeAll (each of last 3 one-bar VWAP slopes in trade dir; aimed at CRUDE 20:55): 66/13/7 REJECT
+- (run2) BEST: legReset=1 + sameBarDayR=false -> 79/1/3, loses none (remaining: CRUDE 10-06 21:00 L extra, ETH 00:10/00:25 pair, NIFTY 10-07 09:40 S extra; no simple filter separates them: brk/mom/rng/body/z/vsl/sinceBrk overlap POS). legReset alone 78/2/3. Full-data diff of combo: US30 10-07 intended + ~12 unscored trades (mostly from sameBarDayR). Run: python3 -I sc.py '{"legReset":1,"sameBarDayR":false}'

@@ -1,0 +1,7 @@
+random filter keep 1.00: TEST E2 gain sd 0.000  5%..95% [+0.000,+0.000]  frac>=+0.015: 0.000
+random filter keep 0.95: TEST E2 gain sd 0.017  5%..95% [-0.029,+0.028]  frac>=+0.015: 0.200
+random filter keep 0.80: TEST E2 gain sd 0.033  5%..95% [-0.055,+0.050]  frac>=+0.015: 0.306
+random filter keep 0.60: TEST E2 gain sd 0.055  5%..95% [-0.089,+0.090]  frac>=+0.015: 0.348
+best-of-145 random filters keep 0.95: best TRAIN gain mean 0.032 (analyst best TRAIN gain +0.037/+0.044); TEST gain of selected: sd 0.016, 95th pct +0.025
+best-of-145 random filters keep 0.80: best TRAIN gain mean 0.070 (analyst best TRAIN gain +0.037/+0.044); TEST gain of selected: sd 0.037, 95th pct +0.059
+TEST per-trade sd 1.467 SE of mean 0.069; ratio of BE+rb3 gain 0.015 to unpaired SE 0.22

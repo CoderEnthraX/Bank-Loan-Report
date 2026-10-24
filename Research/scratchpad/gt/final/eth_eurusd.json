@@ -1,0 +1,251 @@
+{
+ "group": "eth_eurusd",
+ "windows": [
+  {
+   "image": "01f3d4dc",
+   "symbol": "EURUSD",
+   "first_bar": "2026-10-09 19:05",
+   "last_bar": "2026-10-12 12:50 (live 12:55 partial)",
+   "anchor": "crosshair header O1.12042 H1.12068 L1.12038 C1.12067 = Mon 12 05:30 at x1017.5; spacing 8.26px; price y->1.124042-5.442e-6*y (labels 1.12340@118,1.11940@853)"
+  },
+  {
+   "image": "6c00a918",
+   "symbol": "ETH",
+   "first_bar": "2026-10-10 15:45",
+   "last_bar": "2026-10-11 05:20 (05:25 partial at edge)",
+   "anchor": "crosshair header O2510.7 H2510.7 L2510.3 C2510.4 = Sun 11 00:40 at x904; spacing 7.74px from x75=Sat 15:45; price=2525.517-0.032258*y (labels 2506@604.5, 2496@914.5)"
+  },
+  {
+   "image": "0e90c944",
+   "symbol": "ETH",
+   "first_bar": "2026-10-10 02:15",
+   "last_bar": "2026-10-10 15:45 (15:50 partial at edge)",
+   "anchor": "crosshair header O2491.4 H2491.4 L2491.0 C2491.0, ARP VWAP 2488.6 = Sat 10 08:00 at x607.5; spacing 7.76px from x72.5=02:15; price=2510.596-0.032129*y (labels 2496@453.5, 2480@951.5)"
+  }
+ ],
+ "orig_trades": [
+  {
+   "symbol": "EURUSD",
+   "dir": "long",
+   "fill_bar": "2026-10-12 05:35",
+   "entry_measured": 1.12055,
+   "entry_exact": 1.120545,
+   "entry_exact_source": "body mid of 05:30 bull impulse (O1.12042 C1.12067), first bar of UTC day, close>VWAP 1.12003",
+   "stop_measured": 1.12016,
+   "r_from_green_box": 0.000387,
+   "exit_bar": "2026-10-12 05:50",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "01f3d4dc"
+   ],
+   "notes": "box x1026-1050; E y642.5 P y713.5 G y500; TP4 1.12132 hit by 05:50 H1.12136; 05:35 L1.12042 trades through entry; triangle under 05:35"
+  },
+  {
+   "symbol": "EURUSD",
+   "dir": "short",
+   "fill_bar": "2026-10-12 10:20",
+   "entry_measured": 1.12083,
+   "entry_exact": 1.120825,
+   "entry_exact_source": "body mid of 10:15 bear impulse (O1.12092 C1.12073), close<VWAP 1.12096",
+   "stop_measured": 1.12114,
+   "r_from_green_box": 0.000316,
+   "exit_bar": "2026-10-12 10:45",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "01f3d4dc"
+   ],
+   "notes": "box x1497-1538; E y590.5 P y532.5 G y707.5; fill 10:20 H1.12083>=1.120825; TP4 1.120193 hit 10:45 L1.12016. stop ~= 09:55 high 1.12114 (or ATR-based)"
+  },
+  {
+   "symbol": "ETH",
+   "dir": "long",
+   "fill_bar": "2026-10-10 17:30",
+   "entry_measured": 2494.24,
+   "entry_exact": 2494.265,
+   "entry_exact_source": "body mid of 17:05 bull impulse (O2492.78 C2495.75; body/ATR 3.08); 17:10-17:25 lows stayed above entry, 17:30 L2493.45 fills",
+   "stop_measured": 2492.52,
+   "r_from_green_box": 1.742,
+   "exit_bar": "2026-10-10 19:55",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "6c00a918"
+   ],
+   "notes": "box x238-461; G y861.5, TP lines 888/915/937, E 969.5; red box bottom hidden by YouTube progress bar, stop from green box = 2492.52 = entry-1.8*ATR(0.964); TP4 2497.75 hit on 19:55 (H2506.09), 19:50 H2497.32 not"
+  },
+  {
+   "symbol": "ETH",
+   "dir": "long",
+   "fill_bar": "2026-10-11 00:25",
+   "entry_measured": 2509.29,
+   "entry_exact": 2509.265,
+   "entry_exact_source": "body mid of 00:15 bull impulse (O2507.54 C2510.99; body/ATR 2.01); 00:20 L2509.31 just above entry, 00:25 L2508.79 fills",
+   "stop_measured": 2506.19,
+   "r_from_green_box": 3.089,
+   "exit_bar": "2026-10-11 01:10",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "6c00a918"
+   ],
+   "notes": "box x881-950; G y311.5, t 359, E 503, P 599; stop = entry-1.8*ATR(1.716)=2506.18; TP4 2515.44: 01:05 H2515.12 no, 01:10 H2516.70 yes"
+  },
+  {
+   "symbol": "ETH",
+   "dir": "long",
+   "fill_bar": "2026-10-10 06:45",
+   "entry_measured": 2489.5,
+   "entry_exact": 2489.49,
+   "entry_exact_source": "body mid of 06:40 bull impulse (O2488.68 C2490.30; body/ATR 1.13, close>VWAP); 06:45 L2487.77 fills",
+   "stop_measured": 2486.92,
+   "r_from_green_box": 2.58,
+   "exit_bar": "2026-10-10 10:40",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "0e90c944"
+   ],
+   "notes": "box x492-855; G y496, t 536/576/608, E 656.5, P 737; stop = entry-1.8*ATR(1.4399)=2486.90; TP4 2494.67 first hit 10:40 (H2495.78; max H 06:45-10:35 = 2494.39); min low in trade 2487.62 > stop"
+  },
+  {
+   "symbol": "ETH",
+   "dir": "short",
+   "fill_bar": "2026-10-10 12:30",
+   "entry_measured": 2491.95,
+   "entry_exact": 2491.96,
+   "entry_exact_source": "body mid of 12:25 bear impulse (O2492.51 C2491.41; body/ATR 0.84, close<VWAP 2492.06); 12:30 H2492.55 fills",
+   "stop_measured": 2494.32,
+   "r_from_green_box": 2.35,
+   "exit_bar": "2026-10-10 13:35",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "0e90c944"
+   ],
+   "notes": "box x1027-1127; P y506.5, E 580.5, t 624/654/690, G 727; stop = entry+1.8*ATR(1.3117)=2494.32; min low 2490.11 (TP1 ~2490.54 hit, TP4 2487.24 not); 13:35 H2494.77 stops (13:30 H2493.78)"
+  }
+ ],
+ "table_readings": [
+  "01f3d4dc table: STATE SCANNING; REGIME TRANSITION \u00b7 ADX 21; BIAS BEARISH; ENTRY/STOP/TP1-4/LIVE/TARGETS HIT '-'; MODEL DAY 2W/0L \u00b7 100% \u00b7 +4.00R; FILLS/CAP 2/5; LOADED BARS TP4 +2.00R \u00b7 37% \u00b7 +34.00R"
+ ],
+ "my_vs_orig": [
+  {
+   "symbol": "EURUSD",
+   "status": "different_bar",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-12 05:55",
+   "orig_fill_bar": "2026-10-12 05:35",
+   "notes": "[01f3d4dc] MINE (6bfe1659) long entry 1.121205 (05:50 mid), stop ~1.12075 (R 0.000457), stopped 08:15. Mine could not take 05:35 because MY Fri 9 18:05 short (entry ~1.12010, stop ~1.12081) was still open over the weekend and was stopped exactly at Mon 05:35 (H1.12084); orig had no open trade in window (its Fri 17:40 short closed before Fri 19:05)."
+  },
+  {
+   "symbol": "EURUSD",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-12 10:20",
+   "orig_fill_bar": "2026-10-12 10:20",
+   "notes": "[01f3d4dc] my stop 1.12114 vs orig 1.12114 (MINE P y352.5, G y524.5 -> R 0.000316); same TP4 exit 10:45"
+  },
+  {
+   "symbol": "ETH",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-10 16:25",
+   "notes": "[6c00a918] impulse 16:20 body/ATR 0.92 (orig skipped). MINE 63aa8d09: entry ~2494.0 (16:20 mid 2494.01), stop ~2492.30 (R~1.70=1.78 ATR), TP4 at 19:25. This open trade blocks mine from orig's 17:30 long."
+  },
+  {
+   "symbol": "ETH",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-10 17:30",
+   "notes": "[6c00a918] mine still in its 16:25 long until 19:25"
+  },
+  {
+   "symbol": "ETH",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-10 20:00",
+   "notes": "[6c00a918] impulse 19:55 (body/ATR 5.6) is the bar on which orig's 17:30 long hit TP4 -> orig does not take an impulse formed on its own exit bar (mine's trade had already closed 19:25). MINE: entry ~2501.7 (19:55 mid 2501.68), stop ~2498.9 (R~2.79), TP4 20:05. Yellow line 20:05."
+  },
+  {
+   "symbol": "ETH",
+   "status": "different_bar",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-11 00:10",
+   "orig_fill_bar": "2026-10-11 00:25",
+   "notes": "[6c00a918] mine used impulse 00:05 (body/ATR 0.71, orig skipped) and filled 00:10; orig used 00:15 (body/ATR 2.01). MINE box: E y353.5 ~2508.80-2508.83 (not exactly 00:05 mid 2508.345; maybe 00:05 close 2508.9 / 00:00 high 2508.75), stop ~2505.9 (R 2.81-2.89) vs orig entry 2509.265 stop ~2506.18; mine TP4 01:05, orig 01:10."
+  },
+  {
+   "symbol": "ETH",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-10 05:55",
+   "notes": "[0e90c944] impulse 05:45 (body/ATR 0.82, brk 0.52; orig skipped). MINE c5786566: entry 2487.42 (05:45 mid 2487.40), stop ~2484.60 (R 2.80 = 1.8 ATR), TP4 exit 07:15. Blocks orig's 06:45 long (yellow 06:45)."
+  },
+  {
+   "symbol": "ETH",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-10 06:45",
+   "notes": "[0e90c944] mine in its 05:55 long until 07:15"
+  },
+  {
+   "symbol": "ETH",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-10 10:30",
+   "notes": "[0e90c944] orig was in its 06:45 long (exit 10:40) at the time. MINE: E y298.5 = ~2493.02 (not 10:20 mid 2492.63; ~10:10 high 2493.04), stop ~2490.84 (R~2.18 = 1.8*ATR(10:20)), stopped 12:35 (L2490.39). Blocks orig's 12:30 short."
+  },
+  {
+   "symbol": "ETH",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-10 12:30",
+   "notes": "[0e90c944] short 12:30 (stop 13:35) missed: mine still in its 10:30 long until 12:35. Yellow ~13:10 sits inside this orig short."
+  },
+  {
+   "symbol": "EURUSD",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-09 04:30",
+   "notes": "[40b84190] entry 1.12129 (04:25 mid; impulse body/A 0.68, brk 0.29), stop 1.121655 (R 0.000368), stopped 05:40 = the orig's 05:40 impulse bar -> mine skips 05:45 long (impulse on own exit bar)."
+  },
+  {
+   "symbol": "EURUSD",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-09 05:45",
+   "notes": "[40b84190] orig long 05:45 (impulse 05:40 body/A 2.22, entry 1.12148); mine exited 04:30 short on 05:40."
+  },
+  {
+   "symbol": "EURUSD",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 07:05",
+   "orig_fill_bar": "2026-10-09 07:05",
+   "notes": "[40b84190] my entry 1.12258 (07:00 mid 1.12257), my stop 1.122095 (R 0.000485 = 1.83 ATR), TP4 at 11:00; orig stop not measured in this group's images"
+  },
+  {
+   "symbol": "EURUSD",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 12:55",
+   "orig_fill_bar": "2026-10-09 12:55",
+   "notes": "[40b84190] my stop 1.12225 vs orig 1.12224 (table); entry 1.12291 vs 1.12290; both stopped 14:20"
+  },
+  {
+   "symbol": "EURUSD",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-09 15:30",
+   "orig_fill_bar": "2026-10-09 15:30",
+   "notes": "[40b84190] my stop 1.12244 (R 0.000691 = 1.8*ATR 0.000383) vs orig ~1.12207-1.12212 (R~0.00035; ~= 15:20 high 1.12212). Entry 1.121745 both. With orig stop the TP4 (~1.12102) is hit 16:10 so orig is flat by 17:35; mine (TP4 1.12036) stays in until 17:40."
+  },
+  {
+   "symbol": "EURUSD",
+   "status": "different_bar",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-09 18:05",
+   "orig_fill_bar": "2026-10-09 17:40",
+   "notes": "[40b84190] orig short 17:40 (impulse 17:35); mine still in 15:30 short (exit 17:40) so used 18:00 impulse; my 18:05 short entry 1.12010 stop 1.12081 (R 0.000709) stays open over the weekend and is stopped Mon 12 05:35 -> mine misses Mon 05:35 long."
+  }
+ ],
+ "observations": "1) STOP RULE: every orig trade measured here has stop = entry -/+ 1.8*ATR(impulse bar) (ETH 17:30 1.81, 00:25 1.80, 06:45 1.79, 12:30 1.80; EURUSD Mon 05:35 1.79, 10:20 1.80; Fri 12:55 table stop also ~1.8). Mine also uses 1.8 ATR and matches when the same trade is taken (Mon 10:20 short 1.12114 vs 1.12114; Fri 12:55 1.12225 vs 1.12224). Exception: Fri 9 15:30 short orig stop ~1.12207-1.12212 (~0.9-1.0 ATR, ~= 15:20 high 1.12212) vs mine 1.12244. 2) ENTRY = body mid of impulse candle in all 6 orig trades; fill = first later bar trading through it; box spans fill-bar centre to exit-bar centre; TP4 = 2R. 3) CASCADES are the main source of mismatch: an extra/different trade of mine stays open and blocks the orig's next trade: ETH Sat 05:55 extra long blocks 06:45; 10:30 extra long (taken while orig was in its 06:45 long) blocks 12:30 short; 16:25 extra long blocks 17:30; EURUSD Fri 04:30 extra short blocks 05:45; Fri 15:30 wider stop keeps mine in until 17:40 -> 18:05 short instead of 17:40 -> held over the weekend -> Mon 05:35 long missed. 4) Impulse on the bar where an orig trade exits is NOT traded: ETH 19:55 Sat (body 5.6 ATR) was the TP4 bar of the 17:30 long -> no 20:00 trade (mine took it). Mine shows the same behaviour on Fri 05:40 EURUSD (its stop bar). 5) Impulses orig skipped while flat: ETH 16:20 Sat (body/ATR 0.92, closeFromExt 28%), 05:45 Sat (0.82, brk 0.52), 00:05 Sun (0.71, brk 0.10), 14:40 Sat (1.33 but body% 63, cfe 37%), 15:50 Sat dn (1.15, body% 63, cfe 37%), 20:05 Sat (1.81 but body% 47, cfe 27%), 04:25 Sun up (1.46, body% 96, cfe 4%, brk 0.67, would fill 04:40) - the last one is unexplained by candle shape (end of UTC day 22:55 UTC; that ETH day already had 4 fills 3W/1L +5R -> possible daily profit/fill cap), 03:30 Sat dn (2.65 ATR, but before ETH day start 05:30 IST = 00:00 UTC), 04:00 Sat up (close below VWAP). Taken impulses: body/ATR 0.84-3.08, body% >=72, closeFromExt <=13%, brk/ATR >=0.65 (ETH 12:25 0.84/97%/1.8%/0.93; EURUSD 10:15 1.08/86%/14%/0.85; 05:30 1.16/83%/3%/0.65). So a body% (~>=70) / close-near-extreme (<~20%) filter plus a minimum size around 0.8 ATR fits all cases except ETH Sun 04:25. 6) EURUSD Mon 05:30 IST impulse = first bar of the UTC day (orig table MODEL DAY counts only Mon trades: 2W/0L +4.00R, FILLS/CAP 2/5). MINE yellow 07:05 Mon has no orig trade (07:05 long was Fri 9). 7) ETH 6c00a918 red box bottom is hidden by the YouTube progress bar; stop for 17:30 long derived from green box (R 1.742)."
+}

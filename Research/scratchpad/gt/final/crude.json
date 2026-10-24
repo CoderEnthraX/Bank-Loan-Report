@@ -1,0 +1,421 @@
+{
+ "group": "crude",
+ "windows": [
+  {
+   "symbol": "CRUDE",
+   "first_bar": "2026-10-06 13:20",
+   "last_bar": "2026-10-07 17:25 (last visible; axis labels VWAP 8715 / close 8711 = 17:25 bar)",
+   "anchor": "crosshair O8494 H8500 L8473 C8493 = 2026-10-06 19:25 at x~514; bar spacing 6.162 px; header buttons 8731 = replay's live bar 2026-10-09 13:40 (C8731)",
+   "image": "18d03c77"
+  },
+  {
+   "symbol": "CRUDE",
+   "first_bar": "2026-10-07 13:00",
+   "last_bar": "2026-10-08 17:05 (axis VWAP label 8861 = 17:05 VWAP 8861.27)",
+   "anchor": "no crosshair: header O8762 H8763 L8724 C8731 = replay live bar 2026-10-09 13:40; x aligned by candle highs/lows: 2026-10-07 20:10 at x 593, spacing 6.162 px (mean wick err small, offsets <0.2 bar)",
+   "image": "9a510e48"
+  },
+  {
+   "symbol": "CRUDE",
+   "first_bar": "2026-10-08 10:55",
+   "last_bar": "2026-10-09 13:40 (replay live bar, C8731)",
+   "anchor": "candle highs/lows matched to data: 2026-10-09 10:35 at x 1108 (short box start), spacing 6.158 px; offsets < 0.25 bar over the whole window",
+   "image": "5c1c0b1b"
+  },
+  {
+   "symbol": "CRUDE",
+   "first_bar": "~2026-10-06 13:20 (approx, thumbnail)",
+   "last_bar": "~2026-10-07 17:25 (approx)",
+   "anchor": "crosshair O8641 H8644 L8622 C8632 = 2026-10-06 23:05 (findbar exact); legend ARP 8524 0 0",
+   "image": "f0f40456"
+  },
+  {
+   "symbol": "CRUDE",
+   "first_bar": "~2026-10-07 13:00 (approx)",
+   "last_bar": "~2026-10-08 17:05 (approx)",
+   "anchor": "no crosshair; header O..62 H8763 L8724 C8731 = replay live bar 2026-10-09 13:40; legend ARP 8759 0 0",
+   "image": "6813a2ca"
+  },
+  {
+   "symbol": "CRUDE",
+   "first_bar": "~2026-10-08 09:00 (approx)",
+   "last_bar": "~2026-10-09 13:40 (live)",
+   "anchor": "crosshair O8972 H8994 L8968 C8989 = 2026-10-08 16:30 (findbar exact); legend ARP 8851 0 0",
+   "image": "a501f941"
+  },
+  {
+   "symbol": "CRUDE",
+   "first_bar": "~2026-10-07 17:30 (approx)",
+   "last_bar": "~2026-10-08 19:30 (approx; candles end before right edge)",
+   "anchor": "crosshair O8734 H8756 L8734 C8745 = 2026-10-08 11:00 (findbar exact); legend ARP 8706 0 0",
+   "image": "01ed8f9b"
+  }
+ ],
+ "orig_trades": [
+  {
+   "symbol": "CRUDE",
+   "dir": "short",
+   "fill_bar": "2026-10-06 14:50",
+   "entry_measured": 8467.25,
+   "entry_exact": 8467,
+   "entry_exact_source": "low of 14:40 bar (= lowest low of the 6 bars before the 14:45 impulse); impulse 14:45 body mid 8476 NOT used",
+   "stop_measured": 8511.84,
+   "r_from_green_box": 44.8,
+   "exit_bar": "2026-10-06 18:45",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "18d03c77"
+   ],
+   "notes": "arm/impulse 14:45 (O8486 H8488 L8459 C8466, below VWAP 8568.8); R=1.8*ATR14(14:45)=44.81 -> stop 8511.81 unrounded; box x 175-464; TP4 8377.4 never reached"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "long",
+   "fill_bar": "2026-10-06 22:10",
+   "entry_measured": 8622.66,
+   "entry_exact": 8622.5,
+   "entry_exact_source": "body mid of 21:50 impulse (8608+8637)/2 (TP4 line 8704.96 favours unrounded 8622.5 over 8623)",
+   "stop_measured": 8581.29,
+   "r_from_green_box": 41.15,
+   "exit_bar": "2026-10-07 09:00",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "18d03c77"
+   ],
+   "notes": "arm 21:50, fill 4 bars later (no earlier touch); R=1.8*ATR14(21:50)=41.28 -> stop 8581.22, TP4 8705.06 hit on 10-07 09:00 open bar (H8720)"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "long",
+   "fill_bar": "2026-10-07 11:35",
+   "entry_measured": 8722.68,
+   "entry_exact": 8722.5,
+   "entry_exact_source": "body mid of 11:30 impulse (8710+8735)/2",
+   "stop_measured": 8694.86,
+   "r_from_green_box": 27.9,
+   "exit_bar": "2026-10-07 12:40",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "18d03c77"
+   ],
+   "notes": "R=1.8*ATR14(11:30)=27.92; box x 1007-1086"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "long",
+   "fill_bar": "2026-10-07 13:25",
+   "entry_measured": 8732.5,
+   "entry_exact": 8732.5,
+   "entry_exact_source": "body mid of 13:20 impulse (8715+8750)/2",
+   "stop_measured": 8697.56,
+   "r_from_green_box": null,
+   "exit_bar": "2026-10-07 13:25",
+   "outcome": "stop",
+   "confidence": "medium",
+   "images": [
+    "18d03c77",
+    "9a510e48"
+   ],
+   "notes": "zero-width box: only a vertical green line at x 1142 (13:25) from entry up to TP4 ~8803 (same vertical line seen in 9a510e48 at x 93-94); the fill bar itself (L8692) went through stop 8697.56 -> stopped ON the fill bar. R=1.8*ATR14(13:20)=34.94"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "long",
+   "fill_bar": "2026-10-07 19:20",
+   "entry_measured": 8787.17,
+   "entry_exact": 8787,
+   "entry_exact_source": "highest high of the 6 bars before the 19:00 impulse (19:00 body mid 8782.5 is lower; long uses the higher of the two)",
+   "stop_measured": 8747.36,
+   "r_from_green_box": 39.7,
+   "exit_bar": "2026-10-07 19:30",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "9a510e48"
+   ],
+   "notes": "arm 19:00 (O8770 H8797 L8770 C8795, VWAP 8721); 19:05-19:15 lows 8793/8805/8792 stayed above 8787; fill 19:20 (L8757); R=1.8*ATR14(19:00)=39.755 -> stop 8747.25; box x 531-543"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "short",
+   "fill_bar": "2026-10-07 20:10",
+   "entry_measured": 8680.06,
+   "entry_exact": 8680,
+   "entry_exact_source": "lowest low of 6 bars before 20:05 impulse (= 20:05 close/low region; body mid 8691 higher, short uses the lower)",
+   "stop_measured": 8722.77,
+   "r_from_green_box": 42.8,
+   "exit_bar": "2026-10-07 21:35",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "9a510e48"
+   ],
+   "notes": "arm 20:05 (O8704 H8704 L8678 C8678); R=1.8*ATR14(20:05)=42.80; TP4 8594.4 hit 21:35 (L8580); box x 592-697"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "short",
+   "fill_bar": "2026-10-07 22:40",
+   "entry_measured": 8593.46,
+   "entry_exact": 8593.5,
+   "entry_exact_source": "body mid of 22:35 impulse (8602+8585)/2, UNROUNDED (8594 would be 1.2 px off)",
+   "stop_measured": 8634.64,
+   "r_from_green_box": 41.2,
+   "exit_bar": "2026-10-08 09:00",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "9a510e48"
+   ],
+   "notes": "R=1.8*ATR14(22:35)=41.11 -> stop 8634.61 unrounded (measured 8634.64); stopped by the 10-08 09:00 session-open bar (H8707)"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "long",
+   "fill_bar": "2026-10-08 10:50",
+   "entry_measured": 8726.07,
+   "entry_exact": 8726,
+   "entry_exact_source": "highest high of 6 bars before 10:45 impulse (body mid 8722.5 lower)",
+   "stop_measured": 8702.35,
+   "r_from_green_box": 23.7,
+   "exit_bar": "2026-10-08 12:00",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "5c1c0b1b",
+    "9a510e48"
+   ],
+   "notes": "R=1.8*ATR14(10:45)=23.62; TP4 8773.24 hit 12:00 (H8782); box x 975-1061"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "long",
+   "fill_bar": "2026-10-08 12:20",
+   "entry_measured": 8790.1,
+   "entry_exact": 8790,
+   "entry_exact_source": "highest high of 6 bars before 12:15 impulse (body mid 8788.5 lower)",
+   "stop_measured": 8766.6,
+   "r_from_green_box": 23.3,
+   "exit_bar": "2026-10-08 12:30",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "5c1c0b1b",
+    "9a510e48"
+   ],
+   "notes": "R=1.8*ATR14(12:15)=23.30; TP4 8836.6 hit 12:30 (H8844); box x 1086-1098"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "long",
+   "fill_bar": "2026-10-08 13:10",
+   "entry_measured": 8862.3,
+   "entry_exact": 8862,
+   "entry_exact_source": "body mid of 13:00 impulse (8851+8873)/2",
+   "stop_measured": 8831.95,
+   "r_from_green_box": null,
+   "exit_bar": "2026-10-08 15:50",
+   "outcome": "tp4",
+   "confidence": "high",
+   "images": [
+    "5c1c0b1b",
+    "9a510e48"
+   ],
+   "notes": "TP4 above chart top here and box right part hidden under the table (x>1180); 5c1c0b1b shows the full box x 228-423 = 13:10..15:50 with TP4 8922.4. R=1.8*ATR14(13:00)=30.14 -> stop 8831.86 UNROUNDED; the 13:35 low 8832 did NOT stop it (strict low<=8831.86). fill 13:10 (13:05 L8864 did not touch)"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "long",
+   "fill_bar": "2026-10-08 20:25",
+   "entry_measured": 8975.51,
+   "entry_exact": 8975.5,
+   "entry_exact_source": "body mid of 20:20 impulse (8962+8989)/2, unrounded (6-bar high 8974 lower)",
+   "stop_measured": 8928.99,
+   "r_from_green_box": 46.7,
+   "exit_bar": "2026-10-08 21:45",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "5c1c0b1b"
+   ],
+   "notes": "R=1.8*ATR14(20:20)=46.54 -> stop 8928.96; box x 764-861; stopped 21:45 (L8781)"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "short",
+   "fill_bar": "2026-10-09 10:35",
+   "entry_measured": 8733.01,
+   "entry_exact": 8733,
+   "entry_exact_source": "lowest low of 6 bars before 10:25 impulse (10:10/09:55 L8733); body mid 8734.5 higher",
+   "stop_measured": 8748.35,
+   "r_from_green_box": 15.1,
+   "exit_bar": "2026-10-09 11:35",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "5c1c0b1b"
+   ],
+   "notes": "ANOMALY: R=15.13 (TP lines 8724.0/8717.9/8710.2/8702.8 all fit R 15.1) = 0.90*ATR14(10:25)=0.9*16.814, i.e. HALF the usual 1.8*ATR (30.27) used by every other orig trade; stop 8748.13; fill 10:35 (10:30 H8725 did not reach 8733); stopped 11:35 (H8752). 10:25 arm: O8744 H8744 L8723 C8725 below VWAP 8752.9, 85 min after open, first trade of the day, after the 09:00 bar had TR 114 (gap) inflating ATR14"
+  },
+  {
+   "symbol": "CRUDE",
+   "dir": "long",
+   "fill_bar": "2026-10-09 11:55",
+   "entry_measured": 8770.56,
+   "entry_exact": 8770.5,
+   "entry_exact_source": "body mid of 11:50 impulse (8762+8779)/2, unrounded (6-bar high 8765 lower)",
+   "stop_measured": 8740.92,
+   "r_from_green_box": 29.7,
+   "exit_bar": "2026-10-09 13:40",
+   "outcome": "stop",
+   "confidence": "high",
+   "images": [
+    "5c1c0b1b"
+   ],
+   "notes": "R=1.8*ATR14(11:50)=29.76 -> stop 8740.74; box x 1208-1335; stopped by the live bar 13:40 (L8724) -> table 0W/2L, FILLS 2/5",
+   "table_values": "table at live bar 10-09 13:40: STATE SCANNING, TRANSITION ADX 20, BEARISH, ENTRY/STOP/TP '-', MODEL DAY 0W/2L 0% -2.00R, FILLS/CAP 2/5"
+  }
+ ],
+ "my_vs_orig": [
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-06 14:50",
+   "orig_fill_bar": "2026-10-06 14:50",
+   "notes": "entry 8467 both; my stop 8512 (MINE eeb9f471 measured 8512.14) vs orig 8511.81 (measured 8511.84); both stopped 18:45"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-06 21:00",
+   "notes": "my arm 20:55 entry 8514 stop 8471 (TP4 21:35); orig no trade (yellow Tue 06 21:00)"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-06 22:10",
+   "orig_fill_bar": "2026-10-06 22:10",
+   "notes": "my entry 8623 (rounded) vs orig 8622.5; my stop 8581 (MINE measured 8580.65) vs orig 8581.22 (measured 8581.29); both TP4 10-07 09:00"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 10:25",
+   "notes": "my arm 10:20 entry 8696 stop 8724, stopped 11:30; orig no trade"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-07 11:35",
+   "notes": "orig long arm 11:30 entry 8722.5 stopped 12:40; mine was still in my 10:25 short (exit 11:30) when the 11:30 impulse closed"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "extra_mine",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 12:45",
+   "notes": "my arm 12:35 entry 8710 stop 8739, stopped 13:20; orig no trade (yellow ~13:05)"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-07 13:25",
+   "notes": "orig long arm 13:20 entry 8732.5, stopped on fill bar; mine was in the 12:45 short (exit on 13:20 bar)"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-07 18:15",
+   "notes": "my arm 17:55 entry 8729 stop 8693, TP4 19:05; orig did not arm 17:55 (yellow ~18:xx)"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "missed_mine",
+   "orig_fill_bar": "2026-10-07 19:20",
+   "notes": "orig arm 19:00 entry 8787 stopped 19:30; mine was still in the 18:15 long at 19:00 (exit 19:05) so did not arm (yellow 19:20)"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 20:10",
+   "orig_fill_bar": "2026-10-07 20:10",
+   "notes": "my stop 8723 (MINE 6023409d measured 8723.22) vs orig 8722.80 (measured 8722.77); both TP4 21:35"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-07 22:40",
+   "orig_fill_bar": "2026-10-07 22:40",
+   "notes": "my entry 8594 vs orig 8593.5; my stop 8635 (MINE measured 8635.16) vs orig 8634.61 (measured 8634.64); both stopped 10-08 09:00"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 10:50",
+   "orig_fill_bar": "2026-10-08 10:50",
+   "notes": "my stop 8702 (MINE measured 8701.8) vs orig 8702.38 (measured 8702.35); both TP4 12:00"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 12:20",
+   "orig_fill_bar": "2026-10-08 12:20",
+   "notes": "my stop 8767 (MINE 37bd5600 line ~8767) vs orig 8766.70"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 13:10",
+   "orig_fill_bar": "2026-10-08 13:10",
+   "notes": "same fill/entry 8862; MY stop drawn 8831.82 on MINE 37bd5600 (engine 8832) vs orig 8831.86 - but MINE exits STOP at 13:35 (low 8832 = rounded stop) while orig runs to TP4 15:50: my stop test must use the unrounded stop (low <= 8831.86 is false)"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "extra_mine",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 14:15",
+   "notes": "my arm 14:10 (entry 8886 stop 8854, TP4 15:55); orig was still in the 13:10 long (until 15:50) so it never armed 14:10 - consequence of my early 13:35 stop-out (yellow Thu 08 14:15)"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-08 20:25",
+   "orig_fill_bar": "2026-10-08 20:25",
+   "notes": "my entry 8976 (MINE 8976.34) vs orig 8975.5; my stop 8929 (MINE 8928.86) vs orig 8928.96; both stopped 21:45"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "short",
+   "my_fill_bar": "2026-10-09 10:35",
+   "orig_fill_bar": "2026-10-09 10:35",
+   "notes": "my stop 8763 (MINE measured 8763.27, R 30) vs orig 8748.13 (R 15.13 = 0.9*ATR); my exit 11:40 vs orig 11:35; both -1R"
+  },
+  {
+   "symbol": "CRUDE",
+   "status": "match",
+   "my_dir": "long",
+   "my_fill_bar": "2026-10-09 11:55",
+   "orig_fill_bar": "2026-10-09 11:55",
+   "notes": "my entry 8771 (MINE 8771.18) vs orig 8770.5; my stop 8741 (MINE 8740.70) vs orig 8740.74; both stopped 13:40"
+  }
+ ],
+ "table_readings": [
+  "18d03c77 / 9a510e48 / photos (all frames, table = state of the replay live bar 2026-10-09 13:40, header C8731, my ADX there 20.4): AUCTION RETEST | MODEL MONITOR; STATE SCANNING; REGIME TRANSITION \u00b7 ADX 20; BIAS BEARISH; ENTRY/STOP/TP1-4/LIVE-BARS/TARGETS HIT '-'; MODEL DAY 0W/2L \u00b7 0% \u00b7 -2.00R; FILLS / CAP 2/5; LOADED BARS STOP -1.00R \u00b7 35% \u00b7 +24.00R"
+ ],
+ "observations": "ALIGNMENT: all three video frames share the same replay live bar 2026-10-09 13:40 (header O8762 H8763 L8724 C8731, Sell/Buy 8731) and are just scrolled back; so the table always shows 10-09 (2 fills, both stopped: 10:35 S and 11:55 L). Right-axis cyan/red labels = VWAP/close of the LAST VISIBLE bar (8715/8711 -> 10-07 17:25; 8861 -> 10-08 17:05). The table covers x 1180-1430: boxes there look cut at x~1177 - do not read exits under it (that misled the earlier pass on the 10-08 13:10 trade). ENTRY: every orig trade fits long = max(impulse body mid, highest high of the 6 bars before the impulse), short = min(body mid, lowest low of the 6 prior bars); orig keeps half-tick values unrounded (8622.5, 8593.5, 8975.5, 8770.5 measured to <0.2) while mine rounds to 8623/8594/8976/8771. STOP: R = 1.8*ATR14(RMA, impulse bar) for 12 of 13 trades (R/ATR 1.798-1.806), stop line drawn UNROUNDED and the stop test is strict on the unrounded value: 10-08 13:10 L stop 8831.86, 13:35 low 8832 did NOT stop orig (ran to TP4 15:50) but stopped mine at 13:35 -> my next trade 14:15 is extra and the orig never armed 14:10. EXCEPTION: 10-09 10:35 S has R=15.13 = 0.90*ATR14(10:25) (half the usual), stop 8748.13 vs my 8763 - unexplained (first trade of day, 85 min after a 09:00 gap bar with TR 114; ADX 37, -DI 38 > +DI 15). FILL/EXIT: fill = first bar after the impulse whose range trades through the limit (fills 1-4 bars later: 21:50->22:10, 19:00->19:20); the stop is also checked ON the fill bar (10-07 13:25 L filled and stopped on the same bar -> zero-width box drawn as a vertical green line). SKIPPED IMPULSES (mine traded, orig flat): 10-06 20:55 L (c-vwap 1.43 ATR, VWAP 3-bar slope +0.02 ATR, 715 min after open, orig flat since 18:45 stop), 10-07 10:20 S (c-vwap -1.10, slope +0.01, 80 min, +DI 27 > -DI 17 against the short), 10-07 17:55 L (c-vwap 0.76, slope +0.01, close 26% off the high, brk +0.05 ATR). 10-07 12:35 S was skipped because orig was still in its 11:35 long (exit 12:40). Every one of the 13 orig arms has |close-VWAP| >= 1.66 ATR14 and VWAP rising (long) / falling (short) over the last 3 bars by >= 0.08 ATR; every skipped arm has |close-VWAP| <= 1.43 ATR and 3-bar VWAP slope <= 0.02 ATR -> a 'close at least ~1.5 ATR beyond VWAP' and/or 'VWAP sloping with the trade' filter separates them perfectly on this sample. Low ADX does not block (orig took 13:20 with ADX 14.0 and 20:20 with ADX 15.4). KNOCK-ON: my extra trades put mine in a position when orig armed: 10-07 10:25 S (exit 11:30) -> missed orig 11:35 L; 12:45 S (exit 13:20) -> missed orig 13:25 L; 18:15 L (exit 19:05) -> missed orig 19:20 L. Photos f0f40456/6813a2ca/a501f941/01ed8f9b are the same views (crosshairs 10-06 23:05, 10-08 16:30, 10-08 11:00 confirmed by findbar) and add no trades; 01ed8f9b/a501f941 independently show the 10-08 13:10 box running to ~15:50."
+}

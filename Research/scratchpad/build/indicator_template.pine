@@ -1,0 +1,184 @@
+//@version=6
+// ═══════════════════════════════════════════════════════════════════════════════════════
+//  AUCTION RETEST MODEL  —  VWAP displacement + time-limited retest
+//
+//  1. SESSION VWAP is the auction's fair value. Longs only above it, shorts only below it, and only
+//     while the VWAP slopes the same way (3 bars; on a session's first bars it looks back into the
+//     previous session).
+//  2. DISPLACEMENT: a confirmed candle that closes beyond the high / low of the previous 6 bars with
+//     real range (>= 0.8 ATR), a dominant body (>= 55 %), a close in the outer 25 % of its range,
+//     >= 0.85 ATR of net progress over 10 bars and a clean move (CMO(10) >= 20). It may be the
+//     session's first bar.
+//  3. ARMED: a limit at the shallower of the 50 % body level and the 6-bar high / low, for 5 bars.
+//  4. FILLED: price trades back into the limit -> stop box (1.8 ATR; a half stop of 0.9 ATR or just
+//     beyond the candle for the session's first impulse against a strongly opposite previous
+//     session or after a gap outside its range) and target box with TP1-TP4 (0.6/1/1.5/2 R).
+//  5. The trade ends at TP4 (+2R) or the stop. One trade at a time, no new setup on the exit bar,
+//     5 fills per day. Shortly after a trade, a new signal in its direction must break the extreme
+//     made since that trade's fill. Levels stay unrounded, like the reference.
+//  The engine below is byte-identical in Auction_Retest_Strategy.pine, so both show the same trades.
+// ═══════════════════════════════════════════════════════════════════════════════════════
+indicator("Auction Retest Model [VWAP Displacement + Retest]", shorttitle = "ARM", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
+
+// ═════════════════════════════════════ INPUTS ═════════════════════════════════════════
+
+{{INPUTS}}
+
+GRP_R = "REGIME / BIAS"
+adxLen     = input.int(14, "ADX Length", minval = 2, group = GRP_R)
+rangeAdx   = input.float(20.0, "Ranging Below ADX", minval = 1, group = GRP_R)
+trendAdx   = input.float(32.0, "Trending From ADX", minval = 1, group = GRP_R)
+biasSpread = input.float(5.0, "Bias DI Spread", minval = 0, group = GRP_R, tooltip = "+DI minus -DI needed for a BULLISH / BEARISH bias. A strong ADX with no DI spread is shown as RANGING.")
+
+GRP_D = "MODEL MONITOR"
+showTable = input.bool(true, "Show Table", group = GRP_D)
+tablePos  = input.string("Top Right", "Position", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left", "Middle Right"], group = GRP_D)
+tableSize = input.string("Small", "Text Size", options = ["Tiny", "Small", "Normal"], group = GRP_D)
+tableTz   = input.string("Asia/Kolkata", "Date Timezone", options = ["Asia/Kolkata", "Exchange", "UTC", "America/New_York", "Europe/London", "Asia/Dubai", "Asia/Singapore"], group = GRP_D, tooltip = "Timezone used for the DATA RANGE dates. MODEL DAY always shows the exchange's trading date.")
+showRr    = input.bool(true, "Show Win Rate by R Level", group = GRP_D)
+rr1       = input.float(1.0, "R Levels", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D)
+rr2       = input.float(1.5, "", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D)
+rr3       = input.float(2.0, "", minval = 0.1, step = 0.1, inline = "rr", group = GRP_D, tooltip = "WIN row: the share of closed trades whose price reached each of these R levels in profit before the stop was hit.")
+
+GRP_A = "ALERTS"
+alertsOn = input.bool(true, "alert() Messages (armed / filled / targets / stop)", group = GRP_A, tooltip = "Create one alert with the condition 'Any alert() function call' to receive every event with its prices.")
+
+// ═════════════════════════════════════ HELPERS ════════════════════════════════════════
+
+f_size(string s) =>
+    switch s
+        "Tiny"   => size.tiny
+        "Normal" => size.normal
+        => size.small
+
+f_pos(string s) =>
+    switch s
+        "Top Left"     => position.top_left
+        "Bottom Right" => position.bottom_right
+        "Bottom Left"  => position.bottom_left
+        "Middle Right" => position.middle_right
+        => position.top_right
+
+f_px(float p) => str.tostring(p, format.mintick)
+
+f_r(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
+
+f_pct(int wins, int losses) => wins + losses > 0 ? str.tostring(math.round(100.0 * wins / (wins + losses))) + "%" : "0%"
+
+f_rLabel(float x) => str.tostring(x, "#.##") + "R"
+
+// ═══════════════════════════════════════ ENGINE ═══════════════════════════════════════
+
+{{ENGINE}}
+
+// ═════════════════════════════════ INDICATOR EXTRAS ═══════════════════════════════════
+
+[diPlus, diMinus, adx] = ta.dmi(adxLen, adxLen)
+float  diSpread = diPlus - diMinus
+string regime   = adx < rangeAdx ? "RANGING" : adx >= trendAdx ? (math.abs(diSpread) >= biasSpread ? "TRENDING" : "RANGING") : "TRANSITION"
+string bias     = diSpread > biasSpread ? "BULLISH" : diSpread < -biasSpread ? "BEARISH" : "NEUTRAL"
+var int firstTime = time
+
+// win rate by R level: how many closed trades reached each level before the stop (credited when a trade closes)
+var array<float> rrLv  = array.from(rr1, rr2, rr3)
+var array<int>   rrHit = array.new_int(3, 0)
+if evExit
+    float dd = lastDir == 1 ? 1.0 : -1.0
+    for k = 0 to 2
+        float lvR = array.get(rrLv, k)
+        // unrounded, like the exit: a loss counts only if its best price reached the exact level
+        if evWin ? lvR <= exitR : dd * (bestPx - (lim + dd * lvR * trRisk)) >= 0
+            array.set(rrHit, k, array.get(rrHit, k) + 1)
+
+plot(evFill and evFillL ? 1 : 0, "Long Event", color = color.new(#00E676, 0), display = display.status_line + display.data_window)
+plot(evFill and not evFillL ? 1 : 0, "Short Event", color = color.new(#FF5252, 0), display = display.status_line + display.data_window)
+
+// ═══════════════════════════════════════ ALERTS ═══════════════════════════════════════
+
+alertcondition(evArm and evArmL, "Buy Retest Armed", "ARM: BUY retest armed on {{ticker}} ({{interval}})")
+alertcondition(evArm and not evArmL, "Sell Retest Armed", "ARM: SELL retest armed on {{ticker}} ({{interval}})")
+alertcondition(evFill, "Entry Filled", "ARM: retest entry filled on {{ticker}} ({{interval}})")
+alertcondition(evTp or (evExit and evWin), "Target Hit", "ARM: target reached on {{ticker}} ({{interval}})")
+alertcondition(evExit and not evWin, "Stop Hit", "ARM: stop hit on {{ticker}} ({{interval}})")
+alertcondition(evCancel != "", "Retest Cancelled", "ARM: armed retest cancelled on {{ticker}} ({{interval}})")
+
+// highest TP1-TP3 already alerted for the live trade (varip: not rolled back between ticks, so each level is sent once)
+varip int tpSent = 0
+if evFill
+    tpSent := 0
+if alertsOn
+    string tag = syminfo.ticker + " [" + timeframe.period + "] "
+    if evArm
+        alert(tag + (evArmL ? "BUY" : "SELL") + " RETEST ARMED | Limit " + f_px(lim) + " | Stop " + f_px(stp) + (trHalf ? " (half stop)" : "") + " | TP1 " + f_px(t1) + " | TP2 " + f_px(t2) + " | TP3 " + f_px(t3) + " | TP4 " + f_px(t4) + " | exit at " + exitAt, alert.freq_once_per_bar_close)
+    if evFill
+        alert(tag + (evFillL ? "LONG" : "SHORT") + " FILLED @ " + f_px(lim) + " | Stop " + f_px(stp) + " | Exit target " + f_px(tF), alert.freq_once_per_bar)
+    if evTp and tpHit > tpSent
+        alert(tag + "TP" + str.tostring(tpHit) + " reached" + (evMove ? " | stop moved to " + f_px(stp) : ""), alert.freq_all)
+        tpSent := tpHit
+    if evExit
+        string exitMsg = tag + (evWin ? "TP" + str.tostring(exitK) + " HIT " : "STOP HIT ") + f_r(evRes)
+        // a target alert waits for the close (a later stop in the same bar has priority); a stop alert goes out at once
+        if evWin
+            alert(exitMsg, alert.freq_once_per_bar_close)
+        else
+            alert(exitMsg, alert.freq_once_per_bar)
+    if evCancel != ""
+        alert(tag + "ARMED RETEST " + evCancel + " - cancel the working limit", alert.freq_once_per_bar_close)
+
+// ═══════════════════════════════════ MODEL MONITOR ════════════════════════════════════
+
+f_row(table tb, int r, string k, string v, color vc, color bg, string sz, string tip = "") =>
+    table.cell(tb, 0, r, k, text_color = color.new(#D1D4DC, 0), bgcolor = color.new(#2A2E39, 0), text_size = sz, tooltip = tip)
+    table.cell(tb, 1, r, v, text_color = vc, bgcolor = bg, text_size = sz, tooltip = tip)
+
+var table mon = na
+if showTable and barstate.islast
+    if na(mon)
+        mon := table.new(f_pos(tablePos), 2, 10 + (mvAny ? 1 : 0) + (fltAny ? 1 : 0) + (showRr ? 1 : 0), bgcolor = color.new(#1E222D, 0), border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
+    string sz     = f_size(tableSize)
+    color  white  = color.new(#FFFFFF, 0)
+    color  cellBg = color.new(#1E222D, 0)
+    color  green  = color.new(#4CAF50, 0)
+    color  red    = color.new(#F23645, 0)
+    color  orange = color.new(#FF9800, 0)
+    color  pink   = color.new(#F06292, 0)
+    color  grey   = color.new(#5D606B, 0)
+    color  posC   = color.new(#69F0AE, 0)
+    color  negC   = color.new(#FF80AB, 0)
+    bool   act    = math.abs(st) == 2 and not trGhost
+    bool   armed  = math.abs(st) == 1 and not trGhost
+    bool   has    = act or armed
+    string stTxt  = timeframe.isdwm and vwapAnchor == "Session" ? "USE AN INTRADAY CHART" : st != 0 and trGhost ? "SKIPPED (" + trSkip + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY RETEST ARMED" : st == -1 ? "SELL RETEST ARMED" : dayFills >= maxFills ? "DAY CAP REACHED" : not dayOpen ? "DAILY STOP HIT" : not dayOk ? "DAY SWITCHED OFF" : not hourOk ? "OUTSIDE HOURS" : not kzOk ? "OUTSIDE KILL ZONES" : "SCANNING"
+    color  stBg   = act ? (st == 2 ? green : red) : armed ? orange : grey
+    color  rgBg   = regime == "TRENDING" ? green : regime == "TRANSITION" ? orange : pink
+    float  liveR  = act and trRisk > 0 ? (st == 2 ? close - lim : lim - close) / trRisk : na
+    string tz     = tableTz == "Exchange" ? syminfo.timezone : tableTz
+    string stopTip = has ? (trHalf ? "Half stop: the session's first impulse against a strongly opposite previous session or after a gap outside its range." : stopMode == STOP_ATR ? "Stop = " + str.tostring(stopAtr, "#.##") + " x ATR from the entry." : "Swing + buffer stop.") + (stp != stp0 ? " Moved from " + f_px(stp0) + "." : "") : ""
+    table.cell(mon, 0, 0, "AUCTION RETEST", text_color = white, bgcolor = color.new(#29A3E0, 0), text_size = sz)
+    table.cell(mon, 1, 0, "MODEL MONITOR", text_color = white, bgcolor = color.new(#3D8FD6, 0), text_size = sz)
+    f_row(mon, 1, "STATE", stTxt, white, stBg, sz)
+    f_row(mon, 2, "REGIME / BIAS", regime + " · ADX " + str.tostring(math.round(adx)) + " · " + bias, white, rgBg, sz)
+    f_row(mon, 3, armed ? "LIMIT / STOP" : "ENTRY / STOP", has ? f_px(lim) + " / " + f_px(stp) + (trHalf ? " ½" : "") : "—", white, cellBg, sz, stopTip)
+    f_row(mon, 4, "TP1 · TP2 · TP3 · TP4", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC, cellBg, sz, "Targets at " + str.tostring(tp1R, "#.##") + " / " + str.tostring(tp2R, "#.##") + " / " + str.tostring(tp3R, "#.##") + " / " + str.tostring(tp4R, "#.##") + " R. The trade exits at " + exitAt + " or the stop.")
+    f_row(mon, 5, "LIVE · BARS · HIT", act ? f_r(liveR) + " · " + str.tostring(bar_index - fillBar) + " · " + str.tostring(tpHit) + "/3" : "—", act ? (liveR >= 0 ? posC : negC) : white, cellBg, sz, "Current R, bars since the fill and TP1-TP3 reached.")
+    f_row(mon, 6, "MODEL DAY", str.format_time(time_tradingday, "EEE dd MMM", "UTC") + " · " + str.tostring(dayW) + "W/" + str.tostring(dayL) + "L · " + f_pct(dayW, dayL) + " · " + f_r(dayR) + " · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayR >= 0 ? posC : negC, cellBg, sz, "Trading day · wins/losses · win % · R · fills / daily cap. A trade is credited on the day it exits.")
+    f_row(mon, 7, "LOADED BARS", f_accTxt() + " · last " + lastRes, totR >= 0 ? posC : negC, cellBg, sz, "Closed trades · win % (wins / losses) · total R of every closed trade in the DATA RANGE · the last result. A breakeven exit counts as a loss of 0R.")
+    f_row(mon, 8, "TP HIT", f_tpTxt(), posC, cellBg, sz, "Share (and number) of the closed trades whose price reached each target before the stop. TP" + str.tostring(exitK) + " is the final exit, so its share is the win rate. Targets after the final exit show n/a.")
+    int r = 9
+    if mvAny
+        f_row(mon, r, "BREAKEVEN", f_beTxt(), white, cellBg, sz, "Closed trades that ended at a stop moved by the Move Stop settings: to the entry (breakeven, 0R) or into profit. Shares are of all closed trades.")
+        r += 1
+    if fltAny
+        f_row(mon, r, "SKIPPED BY FILTERS", f_fltTxt(), ghR <= 0 ? posC : negC, cellBg, sz, "Setups the accuracy filters skipped and the result they would have had (they run invisibly). Their losses are what the filters saved, their wins what the filters cost.")
+        r += 1
+    if showRr
+        int    closed = totW + totL
+        string key    = "WIN " + f_rLabel(rr1) + " · " + f_rLabel(rr2) + " · " + f_rLabel(rr3)
+        string val    = ""
+        for k = 0 to 2
+            float lvR = array.get(rrLv, k)
+            val := val + (k > 0 ? " · " : "") + (lvR > exitR ? "n/a" : closed > 0 ? str.tostring(math.round(100.0 * array.get(rrHit, k) / closed)) + "%" : "—")
+        val := val + (closed > 0 ? " · n " + str.tostring(closed) : "")
+        f_row(mon, r, key, val, white, cellBg, sz, "Share of closed trades in the DATA RANGE whose price reached that many R in profit before the stop. Levels above the final exit show n/a.")
+        r += 1
+    f_row(mon, r, "DATA RANGE", str.format_time(firstTime, "dd MMM yy", tz) + " → " + str.format_time(time, "dd MMM HH:mm", tz) + " · " + str.tostring(bar_index + 1) + " bars", white, cellBg, sz, "First and last loaded bar (" + tz + ") and the bar count.")

@@ -1,0 +1,21 @@
+# Batch 2 (20 screenshots). mine = user's chart with my ARM indicator (yellow lines = discrepancy marks); orig = original ARP (YouTube video).
+3bf328ba-image.png  orig  GC1! 5m  7 Oct (pairs with batch1 c52b0da8)
+b9f45f8f-image.png  mine  GC1! 5m  8 Oct (yellow: Thu 08 05:40, 09:40, 14:50)
+37da0475-image.png  orig  GC1! 5m  8 Oct
+bd72225c-image.png  orig  GC1! 5m  8 Oct (duplicate of 37da0475)
+f99fc11f-image.png  mine  GC1! 5m  9 Oct early (yellow: Fri 09 04:40, 05:45)
+126bd692-image.png  orig  GC1! 5m  9 Oct early
+797a5371-image.png  mine  GC1! 5m  9 Oct 07:30-17:00 (yellow: Fri 09 13:35)
+13b3c576-image.png  orig  GC1! 5m  9 Oct
+cc0d7275-image.png  mine  GC1! 5m  9 Oct evening (yellow: Fri 09 20:55)
+4772dc3c-image.png  orig  GC1! 5m  9 Oct evening
+a87e52b4-image.png  mine  GC1! 5m  12 Oct (yellow: Mon 12 04:20)
+1c019e4f-image.png  orig  GC1! 5m  12 Oct
+63aa8d09-image.png  mine  ETHUSD 5m  10-11 Oct (yellow: Sat 10 17:30, 20:05, Sun 11 00:25)
+6c00a918-image.png  orig  ETHUSD 5m  10-11 Oct
+c5786566-image.png  mine  ETHUSD 5m  10 Oct (yellow: Sat 10 06:45, 13:10-ish)
+0e90c944-image.png  orig  ETHUSD 5m  10 Oct
+6bfe1659-image.png  mine  EURUSD 5m  12 Oct (yellow: Mon 12 05:35, 07:05)
+01f3d4dc-image.png  orig  EURUSD 5m  12 Oct
+40b84190-image.png  mine  EURUSD 5m  9 Oct (yellow: Fri 09 ~04:xx, 05:45, 17:40-ish, 21:10)
+f13f5eb6-image.png  mine  US30 5m  7 Oct (yellow: Wed 07 06:00, 08:55, 12:40, 14:20, ~16:xx, 17:00)

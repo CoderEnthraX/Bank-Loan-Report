@@ -1,0 +1,2 @@
+PH zT<=2.4 (equal-weight sigma): ALL n=846 kept 71% tot +165 hit1 54.5% hit15 45.4% hit2 39.8% E1 +0.090 E15 +0.135 E2 +0.195 | TRAIN n=524 E1 +0.092 E15 +0.135 E2 +0.162 | TEST n=322 E1 +0.087 E15 +0.134 E2 +0.248 dE2 +0.068 CI[-0.145,+0.271] | syms improved 9/10
+     GC +0.19>+0.28 | EURUSD +0.28>+0.25 | NASDAQ +0.14>+0.17 | US30 +0.13>+0.15 | CRUDE +0.12>+0.23 | NIFTY +0.11>+0.24 | SENSEX +0.26>+0.36 | ETH -0.07>-0.03 | NSE_NI +0.55>+0.62 | MCX_NA +0.28>+0.29

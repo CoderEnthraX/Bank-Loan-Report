@@ -1,0 +1,297 @@
+
+===== orderflow
+SUMMARY: I tested 7 order-flow method families on the 10 instruments, with volume backed out of the VWAP and a bar-shape delta proxy (there is no bid/ask data). Real order-flow signals added nothing: aggression, absorption, exhaustion/climax volume, CVD divergence, low-volume retest confirmation and volume-profile POC/value-area/LVN all fell inside a random-veto null or hurt. One filter met every protocol rule: the location of the signal within the VWAP standard-deviation bands. With 'Skip a long when the signal bar closes more than 2.4 sigma above the session VWAP (short: below)', and keeping the skipped setup as an untaken virtual trade so it still blocks the next signals, TEST results improve as follows. Expectancy per trade at the 2R exit rises from +0.180 to +0.262 (paired-by-day 95% CI of the difference [+0.008, +0.150]; the shared lib boot_diff CI is [-0.119, +0.308]). At the 1R exit it rises from +0.059 to +0.112, and at 1.5R from +0.099 to +0.153. TEST hit rates for 1R / 1.5R / 2R rise from 53.0/44.0/39.3% to 55.6/46.1/42.1%. On ALL data 75% of trades are kept, total R is +180 vs +178, and 8 of 10 instruments improve. This directly targets the complaint about buying at the top of a stretched swing. Caveat: an equal-weight sigma (no volume) works just as well, so the gain comes from how stretched price is from the VWAP, not from volume. Second best is the session CVD-proxy direction (do not trade against the session's net delta). It improves 9 of 10 instruments and TEST 2R expectancy to +0.233, but its CI includes zero, so it is promising only. Combining it with the sigma filter gives TEST +0.319 but keeps only 60% of trades and total R falls to +170.
+variants_tried 412
+- [works] (7) VWAP sigma-band stretch veto, virtual-trade (phantom) mode: z<=2.4
+    test: n=347 hit1R 55.6% hit1.5R 46.1% hit2R 42.1% (base 53.0/44.0/39.3); E/trade 1R +0.112, 1.5R +0.153, 2R +0.262 (base +0.059/+0.099/+0.180)
+    ci: dE2 +0.082. lib boot_diff 95% CI [-0.119, +0.308]. Day-paired bootstrap CI [+0.008, +0.150] (E1 [-0.003, +0.104], E15 [-0.014, +0.115]). Above all 40 random 30%-veto controls on TEST (null mean +0.182, p95 +0.257); TRAIN at the 80th percentile of the null.
+    kept: 891/1190 = 75%; total +180R vs +178R; ALL hit1/1.5/2R 55.3/45.8/40.1% vs 53.4/43.9/38.3% | per_symbol: ALL-data 2R E/trade base->new: GC .19->.27, EURUSD .28->.29, NASDAQ .14->.21, US30 .13->.12, CRUDE .12->.23, NIFTY .11->.20, SENSEX .26->.32, ETH -.07->-.04, NSE_NIFTY1 .55->.80, MCX_NATURALGAS .28->.28. Improved 8/10.
+    opts: {"of_phantom":true,"of_gate":[["z","le",2.4]]} ['orderflow', 'combo_of.py']
+- [works] (7b) robustness: same veto with equal-weight sigma (no volume) zT<=2.4
+    test: n=322 E1 +0.087 E15 +0.134 E2 +0.248
+    ci: dE2 +0.068, lib CI [-0.145, +0.271]
+    kept: 846/1190 = 71%, total +165R | per_symbol: 9/10 improved (EURUSD .28->.25 only drop)
+    opts: {"of_phantom":true,"of_gate":[["zT","le",2.4]]} ['orderflow', 'combo_of.py']
+- [promising] (4) session CVD-proxy direction (phantom): cvd_clv >= -0.006
+    test: n=360 hit1/1.5/2R 54.2/46.1/41.1%; E1 +0.083 E15 +0.153 E2 +0.233
+    ci: dE2 +0.053, lib CI [-0.146, +0.264], day-paired [-0.040, +0.135]; 95th percentile of the 20% random-veto null on both TRAIN and TEST
+    kept: 955/1190 = 80%, total +182R | per_symbol: 9/10 improved (GC equal, ETH -.07->-.15 worse)
+    opts: {"of_phantom":true,"of_gate":[["cvd_clv","ge",-0.006]]} ['orderflow', 'combo_of.py']
+- [promising] (7)+(4) combined: z<=2.4 AND cvd_clv>=-0.006 (phantom)
+    test: n=273 hit1/1.5/2R 56.8/48.0/44.0%; E1 +0.136 E15 +0.200 E2 +0.319
+    ci: dE2 +0.138, lib CI [-0.079, +0.360], day-paired E2 [+0.030, +0.233], E15 [+0.002, +0.181]
+    kept: 712/1190 = 60%, total +170R (< +178) | per_symbol: 9/10 improved (ETH -.07->-.15)
+    opts: {"of_phantom":true,"of_gate":[["z","le",2.4],["cvd_clv","ge",-0.006]]} ['orderflow', 'combo_of.py']
+- [no-effect] (3) exhaustion / climax veto: max relvol of last 3 bars >= 1.5 AND z >= 2.0 (TRAIN pick); also >=2.0 & z>=2.0
+    test: n=345 E2 +0.191 E1 +0.078 E15 +0.109 (variant rvmax3>=2&z>=2: TEST +0.230, total +192R, 8/10)
+    ci: dE2 +0.011, lib CI [-0.189, +0.218]
+    kept: 900/1190 = 76%, total +168R | per_symbol: 7/10 improved
+    opts: {"of_phantom":true,"of_veto":[["rvmax3","ge",1.5],["z","ge",2.0]]} ['orderflow', 'combo_of.py']
+- [no-effect] (1) aggression: breakout-bar relative volume / 3-bar delta proxy in trade direction
+    test: rvS: E2 +0.212, E1 +0.044; agg3_tick: E2 +0.179; rv10: +0.170
+    ci: rvS dE2 +0.032 [-0.190, +0.251]; agg3_tick -0.001 [-0.202, +0.202]
+    kept: 69-93%, total R 122-156 (all < 178) | per_symbol: rvS 6/10, agg3_tick 8/10, rv10 5/10
+    opts: {"of_phantom":true,"of_gate":[["rvS","ge",1.152]]} ['orderflow', 'combo_of.py']
+- [no-effect] (2) absorption: heavy volume with small range / long opposite wick at the breakout level in the 5 bars before the signal
+    test: absorbER E2 +0.191 E1 +0.100 E15 +0.125; absorbWick E2 +0.215
+    ci: absorbER dE2 +0.011 [-0.190, +0.214]; absorbWick +0.035 [-0.170, +0.238]
+    kept: 71-73%, total +157..161R | per_symbol: 6/10 and 8/10
+    opts: {"of_phantom":true,"of_gate":[["absorbER","le",1.513]]} ['orderflow', 'combo_of.py']
+- [no-effect] (4b) CVD divergence / CVD slope against the trade
+    test: cvdslope_tick E2 +0.235 E1 +0.085 E15 +0.151; cvddiv +0.189
+    ci: cvdslope dE2 +0.055 [-0.149, +0.267] (inside the random null, below p95 0.257); cvddiv +0.008 [-0.178, +0.195]
+    kept: 72% (total +162R) / 94% | per_symbol: 8/10 and 6/10
+    opts: {"of_phantom":true,"of_gate":[["cvdslope_tick","ge",0.241]]} ['orderflow', 'combo_of.py']
+- [hurts] (5) volume at the retest: entry confirmation at the close of the pullback bar
+    test: hold +0.187 (E1 -0.004); hold+wait +0.188 (E1 -0.003); hold+vol +0.104
+    ci: hold+wait dE2 +0.007 [-0.197, +0.219]; hold+vol -0.077 [-0.314, +0.181]
+    kept: 43-77%, total +59..+102R | per_symbol: 4-5/10
+    opts: {"of_confirm":true,"of_confirmWait":true} ['orderflow', 'combo_of.py']
+- [no-effect] (6) session volume profile: entry vs POC / value area / low-volume node
+    test: pocDist E2 +0.156 (E1 +0.024); vaPos +0.182; node +0.241
+    ci: pocDist -0.024 [-0.236, +0.178]; vaPos +0.002; node +0.060 [-0.143, +0.270] (no TRAIN gain)
+    kept: 72-82% | per_symbol: 7/10, 7/10, 6/10
+    opts: {"of_phantom":true,"of_gate":[["pocDist","le",3.675]]} ['orderflow', 'combo_of.py']
+- [no-effect] (7c) better entry: cap the limit at VWAP +/- k sigma
+    test: k2 shift +0.199; k1.5 shift +0.208; k1.5 keep +0.132
+    ci: k2 shift dE2 +0.018 [-0.166, +0.220]
+    kept: 86-99%, total +150..+167R | per_symbol: 3-7/10
+    opts: {"of_bandK":2.0} ['orderflow', 'combo_of.py']
+  NOTE Volume: per-bar relative volume was backed out of the CSV session VWAP with my own /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/orderflow/of.py weights(). NASDAQ has a zero-volume hour every day (02:30-03:25 IST, about 350 bars). There the VWAP does not move, and the shared vwalt.py fallback (W*0.01) gave a recompute error of 23 TR. Setting w=0 when the VWAP is unchanged brings the max recompute error after the first session to 4e-5 TR on NASDAQ and below 1e-5 on the others. The first partial session of each file is excluded (its features are None and the filter passes).
+  NOTE Delta is only a proxy (no bid/ask): CLV w*(2C-H-L)/(H-L), w*sign(C-O) and the bar tick rule. CVD is the session cumulative proxy normalised by session volume.
+  NOTE No look-ahead: every filter uses only bars up to and including the signal (arm) bar; the entry price used in zEntry/pocDist is the limit price known at the arm bar. The retest confirmation decides at the close of the touching bar and enters at that close, simulated from the next bar on.
+  NOTE Phantom (virtual-trade) mode matters: if a vetoed signal simply disappears, the next, even more stretched signal arms instead. Without phantom mode z<=2.4 gives only TRAIN +0.107 / TEST +0.217, 6/10 instruments, total +155R. In Pine the vetoed setup must keep running as a hidden ghost order/trade.
+  NOTE Random-veto control (40 seeds each at 20% and 30% random vetoes, phantom mode): TEST 2R expectancy null mean +0.188 / +0.182, p95 +0.231 / +0.257; instruments improved p95 = 7/10. Gains of +0.02..+0.05 R/trade are inside this null. Only the sigma-band veto is clearly outside it on TEST (100th percentile); TRAIN is only at the 80th percentile, so the in-sample evidence is modest.
+  NOTE The shared lib.boot_diff CI resamples baseline and filtered trades independently, so it is very wide and includes 0 for every method. I also report a day-paired bootstrap (same resampled days for both): for z<=2.4 its 2R CI is [+0.008, +0.150].
+  NOTE The sigma-band filter works the same with an equal-weight sigma (zT), so its value is the price stretch from the session VWAP, not the reconstructed volume. Honest conclusion: the volume / order-flow proxies (aggression, absorption, climax, CVD divergence, retest volume, volume profile) did not reduce losing trades beyond chance.
+  NOTE The removed high-z trades are slightly net-positive on TRAIN, so total R barely rises (+180 vs +178 at z<=2.4); the benefit is higher win rate and expectancy per trade with 25% fewer trades. ETH stays the only losing instrument under every filter.
+  NOTE Variant count 412 = 29 quintile features + 174 single-threshold screens + 152 climax 2D screens on the baseline list + 57 full simulations; the 80 random-null control runs are not counted.
+  NOTE Files: /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/orderflow/combo_of.py (options of_gate, of_veto, of_phantom, of_confirm, of_confirmWait, of_confirmVol, of_bandK, of_bandStop, all off by default; with no options it reproduces the baseline exactly), /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/orderflow/of.py (features), /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/orderflow/drive.py (runner), /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/orderflow/final.py (CIs and null percentiles), /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/orderflow/progress.md (one line per simulated method).
+VERIFY SUMMARY: Everything the analyst reported reproduces exactly (lib.py runs: z<=2.4 TEST E2 +0.262 vs +0.180; cvd +0.233; combined +0.319; zT +0.248), and I found no look-ahead. The gate features use only data through the signal bar. When I recomputed them on data cut at the signal bar, 80 signals showed 0 mismatches. The phantom (ghost trade) filter equals the baseline trade list minus the vetoed trades (exact key match), so the subset-mode statistics below are exact. My 12 full-pipeline random gates confirm this. The evidence is moderate, not strong, for the z<=2.4 stretch veto. The gain beats a 3000-draw random-veto null (P about 1.7% on TEST; P about 0.17% that a random filter beats z on both TRAIN and TEST). The z-quintile shape matches in TRAIN and TEST. The threshold is stable (both halves pick 1.6 unconstrained and 2.4 under keep>=70%), and leave-one-symbol-out gains stay positive (TEST +0.064 to +0.097). My day-clustered TEST CI [+0.011,+0.151] matches the analyst's; the shared lib boot_diff CI [-0.119,+0.308] includes 0. Weaknesses: (1) The feature was spotted after seeing TEST. A TRAIN-only selection over the analyst's 29 features would not pick z (about 33rd by TRAIN) and would pick features that give about 0 on TEST. Against an oracle-selection null (max TEST over about 30 features), a +0.082 gain is not unusual. (2) The TRAIN gain is small (+0.033, CI includes 0), and TRAIN total R falls from +96 to +89 (ALL total +180 vs +178, essentially flat). (3) Without the ghost-trade rule, z<=2.4 gives TRAIN E2 +0.107 (below base) and TEST only +0.217. (4) The 1R and 1.5R gains are marginal (day-clustered CIs [-0.002,+0.105] and [-0.014,+0.116]). (5) CVD is promising only (TEST CI includes 0; the threshold grid is flat and not stable). The combined filter has the best TEST numbers but keeps 60% and total R drops to +170, which fails the protocol's trade-retention-or-total-R criterion. All four verdicts are 'partly': real and worth forward-testing, but not proven. Do not present the z filter as having validated accuracy gains. Files are in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/verify_orderflow/ (progress.md, rep_*.txt, an1.py, an3.py, null.py, fs.py, trunc.py, rfull.py)."}
+  V[partly] (7) VWAP sigma-band stretch veto, phantom mode, z<=2.4
+     lookahead: Read combo_of.py and of.py line by line. The gate runs only at the arm (signal) bar. It uses sig_features(OF, i, d, entry, ...), and z = d*(C[i]-V[i])/sd[i]. sd[i] is built from session cumulative sums w, w*tp and w*tp^2 through bar i. w[i] is backed out from VWAP[i] and VWAP[i-1] with a running cumulative W, so it is causal. The 'valid' flag, session start, and the first partial session are all c
+     recomputed: lib.py run reproduced the analyst's numbers exactly. ALL n=891, hit 55.3/45.8/40.1%, total +180R, PF 1.34. TRAIN n=544, E1 +0.103, E15 +0.140, E2 +0.164. TEST n=347, hit 55.6/46.1/42.1%, E1 +0.112, E15 +0.153, E2 +0.262. lib boot_diff TEST dE2 +0.082 with CI [-0.119,+0.308]. Per-symbol numbers match. 8/10 instruments improve strictly: EURUSD is marginal (+0.006) and US30 and NATGAS do not improve. My day-clustered paired bootstrap (calendar-day clusters) gives TEST dE2 +0.082 with CI [+0.011,+0.151], which matches the analyst. E1 is +0.053 with CI [-0.002,+0.105]. E15 is +0.054 with CI [-0.014
+     reason: The effect is real in shape but weaker than presented. Supporting evidence: z-quintile E2 has the same shape in TRAIN and TEST, with Q1-Q2 strongly positive (+0.26 to +0.45) and Q3-Q5 about 0 to -0.13. Vetoed z>2.4 trades have E2 +0.037 on TRAIN (n=191) and -0.083 on TEST (n=108). THRESHOLD STABILITY: unconstrained, both TRAIN and TEST pick z<=1.6 (keeping only 37%). Under the keep>=70% rule, both TRAIN and TEST select 2.4 (2.2 keeps only 66-67%). So the threshold is stable, and every grid value from 1.4 to 3.5 improves both halves, with gain decreasing monotonically as the veto loosens. NEGATIVES: (1) CHANCE: a random 25% veto (3000 draws in subset mode, which is exact here) has TEST dE2 null mean 0.000, sd 0.040, p95 +0.064, p99 +0.093. P(null >= +0.082) = 1.7%. P(a random filter beats z on both TRAIN and TEST) = 0.17%. A TRAIN-picked-threshold single-feature null gives P = 1.3%. A 30-
+  V[partly] (7b) equal-weight sigma veto zT<=2.4 (phantom)
+     lookahead: zT = d*(C[i]-V[i])/sdT[i], where sdT uses running session sums of hlc3 and hlc3^2 up to bar i around CSV VWAP[i]. It is causal, and it was in the same truncation test with 0 mismatches. The phantom path is the same as above.
+     recomputed: Reproduced exactly: ALL n=846 (71% kept), total +165R. TRAIN n=524, E2 +0.162. TEST n=322, E1 +0.087, E15 +0.134, E2 +0.248, lib CI of dE2 [-0.145,+0.271]. Per-symbol: 9/10 improve in the analyst's run, with EURUSD the only drop.
+     reason: Same story as the volume-weighted band. It confirms the gain is price stretch, not volume, but total R falls from +178 to +165 on ALL data. 71% keep passes the 60% rule. TEST CI includes 0, and the same TEST-contamination caveat applies. It is not a separate confirmation, because zT is highly correlated with z. Its only value is as the Pine-friendly option for symbols with no volume data.
+  V[partly] (4) session CVD-proxy direction (phantom): cvd_clv>=-0.006
+     lookahead: cvd_clv = d*cumDelta[i]/cumVol[i], with the CLV-delta cumulated from session open through the signal bar. It is causal, and it was included in the truncation test (0 mismatches). The phantom filter is an exact subset of baseline (955 vs 955 keys).
+     recomputed: Reproduced exactly: ALL n=955, total +182R. TRAIN n=595, E1 +0.109, E15 +0.118, E2 +0.165. TEST n=360, hit 54.2/46.1/41.1%, E1 +0.083, E15 +0.153, E2 +0.233. lib CI of dE2 [-0.146,+0.264]. My day-clustered CI for TEST dE2 (+0.053) is [-0.044,+0.136], and E1 is only +0.024 with CI [-0.044,+0.077]. TRAIN dE2 is +0.034 with CI [+0.002,+0.066]. 9/10 instruments improve; ETH worsens.
+     reason: Threshold stability is poor. The cvd gain grid is nearly flat and rises with the threshold: TEST dE2 goes +0.004 (>=-0.3), +0.043 (-0.1), +0.064 (-0.05) up to +0.105 (>=0.1, 35% kept). TRAIN peaks at >=0.02 (+0.045) and then turns negative at >=0.1 (-0.078). The -0.006 cutoff is a decile pick with no real optimum. A random 20% veto null gives P(>= +0.053) = 5.4% on TEST. The feature was found by looking at TEST. The 1R gain is not distinguishable from zero. Its break-even area is the combined filter below. Promising only, as the analyst said; I do not upgrade it.
+  V[partly] (7)+(4) combined: z<=2.4 AND cvd_clv>=-0.006 (phantom)
+     lookahead: The same causal features, with both gates evaluated at the signal bar. The phantom path is unchanged.
+     recomputed: Reproduced exactly: ALL n=712 (60% kept), total +170R (< +178). TRAIN n=439, E1 +0.130, E15 +0.150, E2 +0.189. TEST n=273, hit 56.8/48.0/44.0%, E1 +0.136, E15 +0.200, E2 +0.319. lib CI of dE2 [-0.079,+0.360]. My day-clustered TEST CIs: E2 [+0.035,+0.239], E1 [-0.017,+0.146], E15 [+0.005,+0.185]. TRAIN dE2 +0.058 with CI [+0.005,+0.115]. 9/10 instruments improve.
+     reason: This is the strongest-looking number, but it fails the protocol rule on retained trades and total R: it keeps 60% (about the borderline) and total R drops to +170 from +178, so it does not qualify as a method that 'counts'. It is also the most data-mined choice: two features selected after seeing TEST, and the combination picked after seeing both. The day-clustered CI excludes 0 on TEST, and TRAIN dE2 is also positive, which is a mildly good sign. Random-filter nulls give a P(random 40% veto beats it on both halves) well below 1% in subset mode, but I did not run a combined-feature selection-adjusted null. Not recommended as a headline; flag as a lower-total-R, higher-quality-per-trade option to forward-test.
+
+===== location
+SUMMARY: I tested price-location and regime filters at the signal bar against the user's complaint that the indicator buys tops and sells bottoms. All of them were added to my own copy of the model, /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/location/combo_loc.py (options loc, locMax, locBlock, skipLossDir, after2Loss, deepExt; all off by default; with no options it reproduces the baseline exactly: n=1190, E2 +0.150). The features are in .../research/location/feats.py and are causal: each uses only bars up to the signal bar, and the 15m/1h timeframes use only completed bars.
+
+None of the location filters works. The data go against the complaint: signals at the extreme are not the losing ones. On TRAIN, removing the most extended or strongest signals hurt (dropping CMO>62.5 cost -0.135 R/trade, Stochastic>91 -0.081, being at the top 15% of the session range -0.075, RSI7>80 -0.068). The extension caps the user would expect to help were flat to negative on TEST: VWAP-sigma cap -0.005, VWAP-ATR cap -0.061, ADX cap -0.082, consecutive-close cap -0.018, Donchian-top cap -0.022. Requiring 15m or 1h trend agreement hurt (TEST -0.106 and -0.151). Momentum floors that looked good on TRAIN failed on TEST (mom10 TRAIN +0.044 but TEST -0.110; Stochastic floor TRAIN +0.037 but TEST -0.048).
+
+The main reason is structural. With one trade at a time, a blocked signal is replaced by a later signal that would otherwise have been skipped, and those replacement trades averaged about -0.13 R. Blocking the rest of the leg after a rejected signal did not fix this. Placing the limit deeper when the signal is extended also hurt on TRAIN (E2 0.08 to 0.12 against 0.131).
+
+Two methods had positive TEST results; neither is statistically proven:
+(1) skipLossDir: after a losing trade, block same-direction signals for the rest of the session until a trade wins. TEST E2 +0.269 against +0.180 (+0.089, CI [-0.105, +0.293]). It also improved TEST at 1R (+0.040) and 1.5R (+0.069). It kept 80% of trades, improved 8/10 instruments, and total R stayed the same (+178). But TRAIN was flat (+0.006, and slightly worse at 1R and 1.5R). Almost all the gain is in October.
+(2) pdRoom: skip a long whose close is more than 3.4 ATR above the previous session high (mirror for shorts). The gain is small but the same sign in both halves: TRAIN +0.018, TEST +0.017 (CI [-0.179, +0.225]). It kept 88% of trades, improved 7/10 instruments, and total R moved from +178 to +175.
+Both technically meet the counting criteria, but every bootstrap CI includes zero. Each trade's result swings by about ±1.46R, so at these sample sizes a difference of 0.1 R/trade cannot be told apart from noise, and about 800 variants were screened.
+variants_tried 804
+- [promising] skipLossDir (no same-direction re-entry after a loss, rest of session)
+    test: n=364 hit1R 54.9% hit1.5R 46.7% hit2R 42.3%, E1 +0.099 E15 +0.168 E2 +0.269 (base 455: +0.059/+0.099/+0.180); PF 1.47
+    ci: TEST dE2 +0.089 95% CI [-0.105,+0.293]; dE1 +0.040 CI [-0.092,+0.177]; dE15 +0.069
+    kept: 80% (947/1190); ALL total R +178 vs +178; ALL E2 +0.188 vs +0.150 | per_symbol: ALL E2/trade base>new: GC +0.19>+0.14, EURUSD +0.28>+0.36, NASDAQ +0.14>+0.20, US30 +0.13>+0.15, CRUDE +0.12>+0.26, NIFTY +0.11>+0.17, SENSEX +0.26>+0.38, ETH -0.07>-0.04, NSE_NIFTY1 +0.55>+0.62, MCX_NG +0.28>+0.22 (8/10 better; total R better on 5/10)
+    opts: {"skipLossDir":1000} ['location', 'combo_loc.py']
+- [promising] pdRoom (not already far beyond the previous session extreme)
+    test: n=396 E1 +0.071 E15 +0.111 E2 +0.197 (base +0.059/+0.099/+0.180)
+    ci: TEST dE2 +0.017 CI [-0.179,+0.225]; dE1 +0.011 CI [-0.116,+0.148]; dE15 +0.012
+    kept: 88% (1046/1190); ALL total +175 vs +178; ALL E2 +0.167 | per_symbol: 7/10 instruments better E/trade on ALL; total R better on 5/10
+    opts: {"loc":[["pdRoom","ge",-3.4]]} ['location', 'combo_loc.py']
+- [no-effect] post-hoc combo skipLossDir + pdRoom
+    test: n=308 E1 +0.123 E15 +0.177 E2 +0.256
+    ci: dE2 +0.076 CI [-0.135,+0.284]; dE1 +0.064 CI [-0.077,+0.203]
+    kept: 70%; ALL total +159 vs +178 | per_symbol: 6/10 better E/trade; total R better 3/10
+    opts: {"skipLossDir":1000,"loc":[["pdRoom","ge",-3.4]]} ['location', 'combo_loc.py']
+- [no-effect] VWAP extension cap in sigma (vwSig)
+    test: E1 +0.023 E15 +0.057 E2 +0.175 (n=383)
+    ci: dE2 -0.005 CI [-0.198,+0.196]
+    kept: 85%, total +153 | per_symbol: 6/10 better E/trade, total R 3/10
+    opts: {"loc":[["vwSig","le",2.4]]} ['location', 'combo_loc.py']
+- [hurts] VWAP extension cap in ATR (vwExtA)
+    test: E1 -0.003 E15 +0.020 E2 +0.120 (n=343)
+    ci: dE2 -0.061 CI [-0.262,+0.155]
+    kept: 77%, total +123 | per_symbol: 5/10 E/trade, total R 1/10
+    opts: {"loc":[["vwExtA","le",4.07]]} ['location', 'combo_loc.py']
+- [hurts] ADX(14) exhaustion cap
+    test: E1 -0.011 E15 +0.020 E2 +0.098
+    ci: dE2 -0.082 CI [-0.282,+0.113]
+    kept: 80%, total +121 | per_symbol: 2/10
+    opts: {"loc":[["adx","le",29.4]]} ['location', 'combo_loc.py']
+- [hurts] Momentum floors (Stochastic>=79.4, mom10>=2.04 ATR, CMO>=30.5)
+    test: stoch E2 +0.133; mom10 +0.070; cmo +0.109
+    ci: stoch dE2 -0.048 [-0.237,+0.150]; mom10 -0.110 [-0.302,+0.083]; cmo -0.071 [-0.266,+0.126]
+    kept: 88%, 86%, 94% | per_symbol: 5/10, 3/10, 3/10
+    opts: {"loc":[["stoch","ge",79.4]]} | {"loc":[["mom10","ge",2.036]]} | {"loc":[["cmo","ge",30.5]]} ['location', 'combo_loc.py']
+- [hurts] Higher-timeframe trend agreement (15m / 1h EMA20 vs EMA50, price vs 15m EMA20)
+    test: htf15 +0.074; htf60 +0.030; htf15px +0.177
+    ci: htf15 dE2 -0.106 [-0.304,+0.098]; htf60 -0.151 [-0.358,+0.064]; htf15px -0.003 [-0.197,+0.188]
+    kept: 78%, 69%, 98% | per_symbol: 3/10, 3/10, 6/10
+    opts: {"loc":[["htf15","ge",0]]} | {"loc":[["htf60","ge",0]]} | {"loc":[["htf15px","ge",0]]} ['location', 'combo_loc.py']
+- [no-effect] Swing/run exhaustion caps (consecutive higher closes<=3, move since last 3/3 pivot<=5.65 ATR, RSI7<=84.3, Donchian20 not at top)
+    test: consecC +0.162; swMove +0.197; rsi7 +0.203; donPos20 +0.158
+    ci: consecC dE2 -0.018 [-0.219,+0.183]; swMove +0.017 [-0.182,+0.220]; rsi7 +0.023 [-0.158,+0.216]; donPos20 -0.022 [-0.223,+0.173]
+    kept: 89%, 93%, 94%, 94% | per_symbol: 5/10, 4/10, 4/10, 4/10
+    opts: {"loc":[["consecC","le",3]]} | {"loc":[["swMove","le",5.65]]} | {"loc":[["rsi7","le",84.3]]} | {"loc":[["donPos20","le",0.997]]} ['location', 'combo_loc.py']
+- [no-effect] Opening range / time of day / ATR regime
+    test: orLoc +0.203; hour +0.188; atrReg +0.135
+    ci: orLoc +0.023 [-0.165,+0.227]; hour +0.007 [-0.181,+0.198]; atrReg -0.045 [-0.242,+0.148]
+    kept: 88%, 94%, 93% | per_symbol: 6/10, 3/10, 4/10
+    opts: {"loc":[["orLoc","le",7.58]]} | {"loc":[["hour","ge",6.42]]} | {"loc":[["atrReg","le",1.37]]} ['location', 'combo_loc.py']
+- [hurts] after2Loss (stop for the session after 2 consecutive losses)
+    test: E2 +0.141 (n=313)
+    ci: dE2 -0.040 [-0.250,+0.170]
+    kept: 70% | per_symbol: 3/10
+    opts: {"after2Loss":true} ['location', 'combo_loc.py']
+- [hurts] Deeper limit when extended (deepExt) and leg block after a rejection (locBlock)
+    test: not run (failed on TRAIN)
+    ci: n/a
+    kept: 94-98% (deepExt) | per_symbol: TRAIN 1-4/8 better
+    opts: {"deepExt":["vwSig",2.15,0.3]} ... {"loc":[["vwSig","le",2.15]],"locBlock":6} ['location', 'combo_loc.py']
+  NOTE Variant count: 576 threshold screens on the baseline trade list (TRAIN only), plus 13 per-symbol checks, plus about 192 TRAIN-only full-model runs (a 140-run sweep and smaller grids), plus 23 full-model runs where TEST was visible (including 1 post-hoc combo). TEST was looked at only for TRAIN-chosen thresholds or natural thresholds such as 0 for trend agreement.
+  NOTE Most important finding: screening on the baseline trade list overstates every filter. In the full model, a removed signal frees the one-trade-at-a-time slot and a later signal, normally skipped, takes it. Those replacement trades averaged E2 about -0.13 to -0.18 (adx cap: 156 removed at +0.04, 69 new at -0.13). ADX<=29 looked like +0.22 E2 in screening and was +0.14 in the full model on TRAIN. Blocking the rest of the leg after a rejection (locBlock 3-24 bars) did not fix this.
+  NOTE The data contradict the 'buys at the top' intuition: in the TRAIN sweep, removing the MOST extended or strongest signals usually hurt (CMO>62.5 -0.135, Stochastic>91 -0.081, session-range position>=0.85 -0.075, RSI7>80 -0.068, Donchian50>=0.98 -0.082). Only 28 of 140 single-feature full-model filters improved TRAIN E2 at all, and the best by only +0.044.
+  NOTE Noise: a single trade's result swings by about 1.46R, so with 455 TEST trades the standard error of a difference is about 0.1 R/trade. Every bootstrap CI includes zero. lib.boot_diff is unpaired, which makes the CIs conservative because most trades are shared between runs.
+  NOTE skipLossDir: TEST and the instrument count look good, but TRAIN is flat and the gain comes almost entirely from October (E2 +0.269 vs +0.180; September +0.140 vs +0.141). The TRAIN window sweep (12, 24, whole session) also showed that shorter windows hurt (+0.107, +0.110). Treat it as a hypothesis to forward-test, not a proven edge.
+  NOTE Data limits: there is no volume, so VWAP band sigma is an equal-weight std of hlc3 around the session VWAP. The 15m/1h features use UTC-aligned buckets and only completed buckets, so they lag by up to one HTF bar. Previous-session high/low comes from the daystart flags. Every feature is computed at the signal (arm) bar only.
+  NOTE Files are in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/location/: combo_loc.py (model with the options), feats.py (features), screen.py and screen2.py (baseline-list screens), tgrid.py and tgrid2.py (TRAIN-only full-model grids; full sweep in grid2.txt and grid2.json), evalm.py (ALL/TRAIN/TEST plus CI plus per-symbol through lib.run_all), diffchk.py (replacement-trade analysis), progress.md (one line per tested variant).
+VERIFY SUMMARY: Both methods reproduce exactly and neither uses look-ahead. skipLossDir is partly supported; pdRoom is refuted.
+
+Reproduction: all numbers in the analyst report (TRAIN, TEST, per-symbol, unpaired CIs) match when re-run through lib.py. My copy of the model with extra placebo and random-filter options reproduces the skipLossDir numbers exactly.
+
+skipLossDir:
+- Direction matters. In the baseline trades, same-direction-after-loss trades average E2 +0.008 against +0.190 for the rest (about 1.8 sigma). Blocking the opposite direction instead destroys the edge.
+- The gain is fragile. TRAIN is flat (+0.007) and TEST dE2 grows steadily as the block gets longer. All of the TEST total-R gain comes from one week (12-18 Oct), while the two earlier weeks lose 12R and 9R. Total R over ALL data is unchanged at +178.
+- Against 240 random filters that keep a similar share of trades, TEST dE2 +0.089 beats all of them (p < 1/240). But the random filters are biased negative (mean -0.055), because the replacement trades are worse. Against a zero-centred null it is only z=1.75 (p about 0.04), and many variants were screened.
+- The paired day-cluster CI is [-0.023,+0.180], still crossing zero.
+
+pdRoom:
+- The +0.017 sits inside the random-filter spread (p=0.10).
+- Neighbouring thresholds give about 0, and the TRAIN-best threshold (-4.5) differs from the one chosen (-3.4).
+- Total R is -3.
+
+Treat skipLossDir as a hypothesis to re-test on fresh data, not an accepted improvement. pdRoom should be dropped.
+
+Files are in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/verify_location/. The main ones are combo_v.py, stab.txt, rndan.py, cond.py, clus.py and progress.md; the 240-run random-filter results are in rnd41.pkl and rnd28.pkl.
+  V[partly] skipLossDir (no same-direction re-entry after a loss, rest of session)
+     lookahead: Read combo_loc.py line by line. lastLoss is set only in step 1 (a live trade's stop is hit on bar i, which is at or before the signal bar) or in step 2 (same-bar stop on the fill bar), and it is cleared by a win or on a new session (newDay). The block check runs at the signal bar i and uses only (exit bar, direction) of an already-closed trade. canArm needs st != +-2, so no trade is live when a si
+     recomputed: Re-ran lib.py with combo_loc.py: ALL n=947, E2 +0.188, total +178. TRAIN n=583, E1 +0.057, E15 +0.089, E2 +0.137. TEST n=364, hit1R 54.9%, hit1.5R 46.7%, hit2R 42.3%, E1 +0.099, E15 +0.168, E2 +0.269. Lib's unpaired bootstrap gives TEST dE2 +0.089, CI [-0.105,+0.293], identical to the analyst. A paired day-cluster bootstrap (19 TEST days, 4000 resamples) gives TEST dE2 +0.089, CI [-0.023,+0.180], P(diff<=0)=0.057. TRAIN dE2 is +0.007, CI [-0.063,+0.075]. Per symbol, E2 per trade is better on 8/10, but total R is better on only 5/10 (GC 30->19, US30 22->18, NSE_NIFTY1 16->15, MCX_NG 17->11 are 
+     reason: Reproduces exactly and is causal. Stability: the block-length N (bars) was varied. TEST dE2 rises monotonically with N (N6 +0.005, 12 +0.028, 24 +0.043, 48 +0.046, 100 +0.056, 1000 +0.089). TRAIN dE2 is noise (-0.024..+0.020) and the TRAIN-best N is 48, not 1000, so a TRAIN-fit would have chosen a different value. Placebos: blocking the OPPOSITE direction after a loss collapses the edge (TEST -0.174, total +35), and blocking all directions for the session cuts n to 446 (TEST -0.096). In the baseline trade list, same-direction-after-loss trades average E2 +0.008 (n=265) against +0.190 for the rest, diff -0.183 (se 0.10, about 1.8 sigma). By period it is TRAIN -0.081 (se 0.128) and TEST -0.346 (se 0.158). Chance test: 240 random signal-rejection filters (kept n about 974, mean E2 shift -0.055 because replacement trades are worse, sd 0.051) give a TEST dE2 max of +0.082. Observed +0.089 is 
+  V[refuted] pdRoom (skip when already >3.4 ATR beyond the previous session extreme)
+     lookahead: Read combo_loc.py and feats.py. pdH/pdL are the previous session's running high/low taken at the newDay bar, before the new session's bar is added. The feature uses C[i], ATR14[i] and pdH/pdL only, evaluated at the signal bar. When there is no previous session the feature is None and the signal passes. No look-ahead found.
+     recomputed: Re-ran lib.py: ALL n=1046, E2 +0.167, total +175. TRAIN n=650, E1 +0.086, E15 +0.112, E2 +0.149. TEST n=396, E1 +0.071, E15 +0.111, E2 +0.197. TEST dE2 +0.017, CI [-0.179,+0.225] (unpaired), [-0.034,+0.066] (day-cluster, P(<=0)=0.24). All numbers match the analyst. Per-symbol E2 per trade is better on 7/10 (NASDAQ, NIFTY, SENSEX worse). Total R is better on 5/10 in the analyst's count and ALL total R is -3.
+     reason: Threshold stability fails. Thresholds -2, -2.5, -3, -3.4, -4, -4.5, -5, -6 and -8 give TEST dE2 of +0.002, -0.002, +0.001, +0.017, +0.006, +0.004, +0.005, -0.003 and -0.007, so only -3.4 reaches +0.017 and the neighbours are about 0. The TRAIN-best threshold is -4.5 (TRAIN +0.031, TEST +0.004), while the TEST-best is -3.4, so the fit moves by about 1.1 ATR. The gain is not distinguishable from chance: 240 random filters keeping about 1066 trades give TEST dE2 mean -0.043, sd 0.042, max +0.066, and the observed +0.017 is only p=0.10 (z=1.4). It improves TEST at 1R/1.5R by just +0.011/+0.012. It does not change total R (-3). Whatever tiny gain exists is the trade-count reduction, not selectivity.
+
+===== entry
+SUMMARY: Better entries and trade management (key=entry). I tried 145 variants, picking thresholds on TRAIN only. None of the entry changes passes the protocol: deeper Fibonacci, impulse-leg or VWAP limits, ATR-pullback limits, structure stops, confirmation entries and ATR stop multiples 1.2-2.4. All of them lower TRAIN expectancy, and most lower TEST expectancy too. The reason is adverse selection. 51% of baseline winners never trade more than 0.6 ATR against the entry, and 73% never more than 1.0 ATR, while every loser does. So a deeper limit drops the winners and still fills the losers.
+
+The useful finding is management: move the stop to breakeven at +1R. On TRAIN, expectancy at the 2R exit rises from +0.131 to +0.157. On TEST it is flat (+0.177 vs +0.180; difference -0.003, CI [-0.185, +0.177]). Total R rises from +178 to +198 and PF from 1.24 to 1.35. Full -1R losses fall from 62% to 47% of trades (TEST: 61% to 47%), max drawdown from 30R to 25R, and the longest losing streak from 20 to 8 (scratch trades break streaks). The cost is that 2R wins fall from about 38% to 32%.
+
+Combined with a 3-bar retest window (instead of 5), the result passes the protocol on paper: TEST at the 2R exit +0.195 vs +0.180 (CI [-0.163, +0.191]), 1R +0.075 vs +0.059, 1.5R +0.113 vs +0.099, 8/10 instruments, total +212R. But the retest-window values around 3 are noisy on TRAIN (2: 0.113, 3: 0.142, 4: 0.123, 5: 0.131), so I treat that part as luck. Partial take-profit at 1R, time stops, early close-stops and fixed 1R/1.5R targets all reduce expectancy. No method's TEST improvement is statistically significant: every bootstrap CI is about ±0.18R wide.
+variants_tried 145
+- [promising] Breakeven stop at +1R
+    test: n=457 hit1R 53.0% hit1.5R 43.8% hit2R 39.2% E(2R exit) +0.177 (base +0.180) E1 +0.059 E15 +0.094 tot +81R PF 1.38, E in ATR units +0.306 (base +0.337); full losses 47.0% (base 60.7%)
+    ci: TEST 2R-exit diff -0.003 CI[-0.185,+0.177]; 1R -0.000 CI[-0.127,+0.127]; 1.5R -0.005 CI[-0.169,+0.160]; ATR units -0.032 CI[-0.349,+0.281]
+    kept: 101% (1204 trades); total +198R vs +178R; maxDD 25R vs 30R; longest losing streak 8 vs 20 | per_symbol: ALL 2R-exit E per trade: GC +0.10 EURUSD +0.24 NASDAQ +0.21 US30 +0.14 CRUDE +0.23 NIFTY +0.23 SENSEX +0.34 ETH -0.05 NSE_NIFTY1 +0.34 MCX_NATURALGAS +0.28; 6/10 improved
+    opts: {"beR": 1.0} ['entry', 'combo_entry.py']
+- [promising] Breakeven at +1R plus 3-bar retest window
+    test: n=456 hit1R 53.7% hit1.5R 44.5% hit2R 39.3% E1 +0.075 E15 +0.113 E2 +0.195 tot +89R PF 1.42 Eatr +0.332
+    ci: TEST E2 diff +0.015 CI[-0.163,+0.191]; E1 +0.015 CI[-0.112,+0.143]; E15 +0.014 CI[-0.145,+0.168]; Eatr -0.006 CI[-0.321,+0.304]
+    kept: 100% (1192); total +212R; maxDD 27R | per_symbol: GC +0.15 EURUSD +0.33 NASDAQ +0.21 US30 +0.14 CRUDE +0.22 NIFTY +0.18 SENSEX +0.29 ETH -0.03 NSE_NIFTY1 +0.23 MCX_NATURALGAS +0.31; 8/10 improved (E2), 7/10 in ATR units
+    opts: {"retestBars": 3, "beR": 1.0} ['entry', 'combo_entry.py']
+- [no-effect] Breakeven at +1.25R / +1.5R (and with a locked offset)
+    test: be1.25 E2 +0.188 E1 +0.055 E15 +0.100; be1.5 +0.195; be0.8 +0.158; be1.75 +0.187
+    ci: be1.25: E2 +0.008 CI[-0.172,+0.188], E1 -0.005 CI[-0.128,+0.127], E15 +0.001 CI[-0.158,+0.165]
+    kept: 100-101%; totals +178..+199R | per_symbol: be1.25 5/10 improved; be1.5 6/10
+    opts: {"beR": 1.25} ['entry', 'combo_entry.py']
+- [hurts] Deeper limit at a signal-candle retracement (38.2/50/61.8/78.6%)
+    test: f=0.5: n=442 hit1R 51.4% hit1.5R 42.3% hit2R 38.7% E1 +0.027 E15 +0.058 E2 +0.161; 0.382 +0.177; 0.618 +0.145; 0.786 +0.109
+    ci: f=0.5: E2 -0.020 CI[-0.207,+0.168]; E1 -0.032 CI[-0.162,+0.089]; E15 -0.041 CI[-0.197,+0.115]; Eatr -0.050 CI[-0.376,+0.276]
+    kept: 82-99%; total +95..+170R (all below +178) | per_symbol: f=0.5: 4/10 improved (ETH -0.15)
+    opts: {"entryMode": "candle", "entryFib": 0.5, "deepOnly": true} ['entry', 'combo_entry.py']
+- [hurts] Deeper limit at an impulse-leg retracement
+    test: f=0.382 L10 n=319 hit1R 48.6% hit2R 33.2% E2 -0.003; 0.5 -0.070; 0.618 -0.108
+    ci: f=0.382 L10: E2 -0.183 CI[-0.394,+0.018]; E1 -0.088 CI[-0.236,+0.059]; E15 -0.119 CI[-0.305,+0.056]; Eatr -0.354 CI[-0.717,+0.003]
+    kept: 12-70%; total -24..+47R | per_symbol: 3/10 improved
+    opts: {"entryMode": "leg", "entryFib": 0.382, "legLen": 10, "deepOnly": true} ['entry', 'combo_entry.py']
+- [hurts] Limit at VWAP (fixed at the signal bar, or following VWAP)
+    test: fixed n=133 hit1R 48.9% E2 +0.015; live n=155 E2 -0.129
+    ci: fixed: E2 -0.165 CI[-0.438,+0.136]; E1 -0.082 CI[-0.276,+0.117]; E15 -0.084 CI[-0.308,+0.162]
+    kept: 26-31%; total about 0R | per_symbol: 4/10 improved (fixed), 2/10 (live)
+    opts: {"entryMode": "vwap"} ['entry', 'combo_entry.py']
+- [no-effect] Limit an ATR fraction below the close
+    test: f=0.25 E2 +0.175 E1 +0.058 E15 +0.090; 0.5 +0.177; 1.0 +0.019
+    ci: f=0.25: E2 -0.005 CI[-0.197,+0.187]; E1 -0.002 CI[-0.125,+0.135]; E15 -0.009 CI[-0.174,+0.155]
+    kept: 82-99% | per_symbol: 4/10
+    opts: {"entryMode": "atr", "entryFib": 0.25, "deepOnly": true} ['entry', 'combo_entry.py']
+- [hurts] Deeper entry with a structure stop (base stop price / beyond the signal candle / beyond the leg)
+    test: candle0.382 + base stop price n=452 E2 +0.188 E1 +0.066 E15 +0.101 Eatr +0.330; base entry + candle stop 0.6 E2 +0.113
+    ci: candle0.382 + base stop price: E2 +0.008 CI[-0.177,+0.193]; E1 +0.007 CI[-0.117,+0.135]; E15 +0.002 CI[-0.153,+0.167]; Eatr -0.008 CI[-0.327,+0.316]
+    kept: 37-108% | per_symbol: 4/10 improved (base stop price); candle stop 0.6: 2/10
+    opts: {"entryMode": "candle", "entryFib": 0.382, "deepOnly": true, "stopMode": "basePx", "stopMinAtr": 0.5} ['entry', 'combo_entry.py']
+- [hurts] Confirmation entry after the limit is touched
+    test: both/atr/cb2 n=337 hit1R 52.2% hit1.5R 45.1% hit2R 40.7% E1 +0.045 E15 +0.128 E2 +0.220; bull/atr/cb4 E2 +0.129
+    ci: both/atr/cb2: E2 +0.039 CI[-0.161,+0.240]; E1 -0.015 CI[-0.151,+0.120]; E15 +0.029 CI[-0.138,+0.207]; Eatr +0.074 CI[-0.298,+0.446]
+    kept: 46-99% (both/atr/cb2 74%, total +124R vs +178R) | per_symbol: both/atr/cb2: 6/10 improved
+    opts: {"confirm": true, "confType": "both", "confStop": "atr", "confBars": 2} ['entry', 'combo_entry.py']
+- [hurts] Stop ATR multiple 1.2-2.4 (base and deeper entries)
+    test: base 2.4 n=401 E2 +0.152 E1 +0.022 E15 +0.097 Eatr +0.376; base 1.2 +0.018
+    ci: base 2.4: E2 -0.028 CI[-0.220,+0.168]; E1 -0.037 CI[-0.170,+0.098]; E15 -0.002 CI[-0.166,+0.168]; Eatr +0.039 CI[-0.370,+0.452]
+    kept: 62-106% | per_symbol: 3/10 in R, 6/10 in ATR units
+    opts: {"stopAtr": 2.4} ['entry', 'combo_entry.py']
+- [no-effect] Retest window length
+    test: rb3 n=450 hit1R 54.0% hit1.5R 44.4% hit2R 39.6% E1 +0.080 E15 +0.111 E2 +0.187
+    ci: rb3: E2 +0.006 CI[-0.173,+0.198]; E1 +0.021 CI[-0.104,+0.149]; E15 +0.012 CI[-0.138,+0.172]
+    kept: 99% | per_symbol: rb3: 3/10 improved
+    opts: {"retestBars": 3} ['entry', 'combo_entry.py']
+- [no-effect] Deeper entry only when the base entry is extended
+    test: vwap 2.5 / 0.5 E2 +0.161; with breakeven at 1R n=448 E2 +0.163 E1 +0.058 E15 +0.083
+    ci: with breakeven at 1R: E2 -0.017 CI[-0.205,+0.162]; E1 -0.001 CI[-0.139,+0.131]; E15 -0.016 CI[-0.183,+0.140]
+    kept: 95-100% | per_symbol: 4-5/10
+    opts: {"entryMode": "candle", "entryFib": 0.5, "deepOnly": true, "extK": 2.5, "extRef": "vwap"} ['entry', 'combo_entry.py']
+- [hurts] Partial take-profit at 1R / 1.5R
+    test: 50% at 1R + breakeven E2 +0.118; 50% at 1.5R + breakeven +0.150
+    ci: 50% at 1R + breakeven: E2 -0.062 CI[-0.229,+0.106]; Eatr -0.144 CI[-0.432,+0.153]
+    kept: 100%; total +130..+154R | per_symbol: 2-4/10
+    opts: {"partR": 1.0, "partFrac": 0.5, "partBE": true} ['entry', 'combo_entry.py']
+- [hurts] Time stop
+    test: N=20 E2 +0.175; N=10 +0.177
+    ci: N=20: E2 -0.006 CI[-0.199,+0.174]; E1 +0.002 CI[-0.130,+0.134]
+    kept: 100-104% | per_symbol: 3-4/10
+    opts: {"tsBars": 20, "tsR": 0.5} ['entry', 'combo_entry.py']
+- [hurts] Adverse-close early exit
+    test: 0.7 within 3 bars E2 +0.151
+    ci: 0.7 within 3 bars: E2 -0.030 CI[-0.221,+0.150]
+    kept: 100-104% | per_symbol: 1-4/10
+    opts: {"csR": 0.7, "csBars": 3} ['entry', 'combo_entry.py']
+- [hurts] Fixed 1R / 1.5R target
+    test: 1R exit +0.076; 1.5R exit +0.051
+    ci: 1R exit vs base 2R exit: -0.104 CI[-0.268,+0.059]
+    kept: 103-105%; total +78..+88R | per_symbol: 1/10
+    opts: {"tp4R": 1.0} ['entry', 'combo_entry.py']
+  NOTE All work is in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/entry/: combo_entry.py (copy of hunt4/combo.py; all new options default off, and with {} it reproduces the 1190 baseline trades exactly), ev.py (full report with bootstrap CIs and per-symbol results), grid.py (families A-K) and progress.md (every variant with its TRAIN and TEST lines, plus a summary).
+  NOTE Look-ahead: entry prices and stops are fixed at the signal bar. Confirmation entries use only the touch and confirmation bars and are simulated from the bar after the entry close; their stop is forced beyond that bar's extreme. Management rules act from the bar after their trigger; within a bar the stop is checked before the target or partial (conservative).
+  NOTE Selection was on TRAIN, but the grid printed TEST lines too, so I saw TEST before choosing what to run in full. Candidates were still ranked by TRAIN. The breakeven + 3-bar-window combination was chosen because each part was best on TRAIN in its own family. The TRAIN-best overall (extension-deepening + breakeven at 1R, TRAIN +0.179) did worse on TEST (+0.163).
+  NOTE Comparing in ATR units (result in R x risk / ATR, i.e. a fixed position size) does not change any conclusion. Baseline is +0.232 ATR per trade on TRAIN and +0.337 on TEST. The stop-multiple variants that look better in ATR units (stop 2.4 ATR: TEST +0.376) are worse in R per fixed risk.
+  NOTE For breakeven and partial-exit variants, the lib's 1R/1.5R-exit numbers (E1/E15) come from hit flags measured against the original stop, so they do not include the management. Only the 2R-exit result (res) does.
+  NOTE lib.boot_diff is an unpaired bootstrap. Every TEST difference has a CI about ±0.18R wide, so no method is significant, including the two marked 'promising'.
+  NOTE Breakeven at +1R is a risk and psychology improvement more than an edge improvement: it cuts full losses by about a quarter in both TRAIN and TEST at roughly unchanged expectancy. A static check on the baseline trades agrees: 180 losers become scratches (+1R each) and 71 2R winners are cut to 0 (-2R each), net +38R.
+  NOTE The user's 'buys at the swing high' complaint is not fixed by entering deeper. The signals that retrace deeply are mostly the losers, so a deeper limit picks those and misses the fast winners. That problem has to be solved by filtering signals (the other research tracks), not by changing the entry price.
+VERIFY SUMMARY: Neither method clears the protocol, so I rate both "partly" (the first leans refuted, the second is chance-level). I re-ran both through lib.py and the analyst's numbers reproduce exactly (BE1: ALL n=1204, TRAIN +0.157, TEST +0.177, CI [-0.185,+0.177]; BE1+rb3: TEST +0.195, CI [-0.163,+0.191], 8/10 symbols). I found no look-ahead. The problem is that the gain is not distinguishable from noise, and for BE1 it depends on how the trigger bar is treated. The TEST 2R improvement is -0.003 for BE1 and +0.015 for BE1+rb3, both far inside the ±0.18 CI. The gain does not survive the intrabar and cost tests below. The rb3 part is a TRAIN-selection artifact. Breakeven-at-1R should be presented as a risk-smoothing option (fewer full losses, shorter losing streaks, lower drawdown). It is not an accuracy gain. It also does not raise the 1R, 1.5R or 2R hit rates by construction, because the labels ignore management. Files are in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/research/verify_entry/. Raw run outputs are run_be1.txt and run_be1_rb3.txt. The grid and CI tables are in an.txt (from grid.py/grid.pkl), the paired static check in static.txt, the random-filter null in rnd.txt and the pessimistic-bar and cost test in pess.txt (progress.md is the checkpoint). Steps ran on Sonnet 5.5 (this session); the grid/CI table was cross-checked against the lib.py re-runs, and the paired BE check is an independent re-implementation.
+  V[partly] Breakeven stop at +1R (beR=1.0)
+     lookahead: No look-ahead found. In combo_entry.py the live-trade block runs only for i > fillBar. On each bar it checks the current stop (stopHit) first, then the 2R target, and only then updates mfe and sets stp = ent + beOff*risk0 once that bar's high (low for shorts) has reached +beR. The new stop therefore applies from bar i+1, using only bars up to and including i. The fill bar gets only the original st
+     recomputed: Re-run with lib.py: ALL n=1204 hit1R 52.8% hit1.5R 43.3% hit2R 37.9% E1 +0.056 E15 +0.082 E2 +0.164 total +198R PF 1.35. TRAIN n=747 E2 +0.157 (base +0.131). TEST n=457 E2 +0.177 (base +0.180), diff -0.003, CI [-0.185,+0.177]. TEST E1 diff -0.000 CI [-0.127,+0.127]; TEST E15 diff -0.005 CI [-0.169,+0.160]. ALL-data E2 diff +0.015 CI [-0.094,+0.123]. TRAIN diff +0.026 CI [-0.118,+0.163]. Improved symbols on ALL data in E2: 6/10 (NASDAQ +0.07, US30 +0.01, CRUDE +0.12, NIFTY +0.13, SENSEX +0.08, ETH +0.02); worse or flat: GC -0.08, EURUSD -0.04, NSE_NIFTY1 -0.21, MCX_NATURALGAS 0.00. The numbers 
+     reason: The mechanism is real. Scratches replace 180 full losses with 0, which is worth +180R, but they also turn 71 would-be 2R winners into 0, which costs 142R. The net is only +38R over 1190 trades. That is +0.032 R/trade, and it is positive in the same direction in TRAIN and ALL but not in TEST. It is also fragile in three ways. First, stability: on TRAIN the best trigger is beR=1.0 (+0.157), on TEST it is beR=1.5 (+0.195), and the TEST diff is -0.043, -0.069, -0.022, -0.003, +0.008, +0.015 and +0.007 for beR 0.5, 0.6, 0.8, 1.0, 1.25, 1.5 and 1.75. That is a spread of about 0.08R and the sign flips, so there is no stable optimum. Second, intrabar ordering: the model moves the stop only after the trigger bar closes, so a trigger bar that also traded back to entry counts as no scratch. If that bar is counted as a scratch (the pessimistic reading), the paired gain turns negative, at -0.022 on A
+  V[partly] Breakeven at +1R plus 3-bar retest window
+     lookahead: Same BE code as above, with the retestBars=3 branch. The armed limit is cancelled when i - armBar >= retestBars, which uses only the bar index and no price data. No look-ahead found.
+     recomputed: Re-run with lib.py: ALL n=1192 hit1R 53.4% hit1.5R 43.9% hit2R 38.1% E1 +0.067 E15 +0.097 E2 +0.178 total +212R PF 1.38. TRAIN n=736 E2 +0.167. TEST n=456 hit1R 53.7% hit1.5R 44.5% hit2R 39.3% E1 +0.075 E15 +0.113 E2 +0.195, diff +0.015, CI [-0.163,+0.191]. TEST E1 diff +0.015 CI [-0.112,+0.143]; TEST E15 diff +0.014 CI [-0.145,+0.168]. ALL-data E2 diff +0.028 CI [-0.078,+0.135]. Improved symbols on ALL data: 8/10 (all except GC -0.04 and NSE_NIFTY1 -0.32). The analyst's numbers reproduce. Kept 100%.
+     reason: The rb=3 value was not chosen by a TRAIN fit. The TRAIN-best retest window under BE1 is rb4 (+0.175 vs +0.167 for rb3). That rb4 variant gives a TEST diff of only +0.002, and BE1+rb5 gives -0.003. A TEST fit would instead pick rb2 (+0.198) or BE1.25+rb3 (+0.207), so the optimum moves between the two samples. TEST diffs across the BE+rb grid (27 variants run) range from -0.021 to +0.027, which is noise around zero. rb3 without BE has TRAIN +0.011 and TEST +0.006, so it adds almost nothing. It improves only 3/10 symbols alone and does not even match the ~+0.02 I'd call meaningful. The 8/10 count and the +0.015 TEST gain are not beyond chance (see the random-filter null). It also inherits the intrabar fragility of BE1 above. It cannot count as an accuracy improvement.

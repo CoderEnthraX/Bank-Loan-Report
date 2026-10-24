@@ -1,0 +1,10 @@
+static paired BE1.00 ALL n=1190 mean diff +0.0319 SE 0.0181 boot95 [-0.004,+0.065] changed 251
+static paired BE1.00 TRAIN n=735 mean diff +0.0490 SE 0.0228 boot95 [+0.003,+0.095] changed 159
+static paired BE1.00 TEST n=455 mean diff +0.0044 SE 0.0297 boot95 [-0.053,+0.064] changed 92
+Counter({(-1.0, -1.0): 554, (2.0, 2.0): 385, (-1.0, 0.0): 180, (2.0, 0.0): 71})
+static beR 0.50 TRAIN diff +0.0163 TEST diff -0.0374
+static beR 0.80 TRAIN diff +0.0299 TEST diff -0.0110
+static beR 1.00 TRAIN diff +0.0490 TEST diff +0.0044
+static beR 1.25 TRAIN diff +0.0367 TEST diff +0.0066
+static beR 1.50 TRAIN diff +0.0231 TEST diff +0.0066
+static beR 1.75 TRAIN diff -0.0027 TEST diff +0.0132

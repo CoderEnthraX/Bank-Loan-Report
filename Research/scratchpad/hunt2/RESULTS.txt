@@ -1,0 +1,215 @@
+===== daystate
+VERIFY: {
+"items": [
+{
+"name": "No daily R stop",
+"verdict": "confirmed",
+"recomputed": "ds.py {\"dsMode\":\"none\"} and pine_final.py {\"dayStopR\":0}: A 79/1/3 (same extras/miss as baseline), B 36 matched / 6 missed, stops 33/36. Baseline is B 32/10, 29/32.",
+"reason": "Numbers reproduce. Strongest evidence is CRUDE 10-13: log #51/#52/#53 are three clean SL trades, and the no-stop model then takes #54 (e 8840.5, s 8808.33, exit 19:30) and #55 (e 8910, s 8871.38, exit 22:25), which match the log's 8841/8809 and 8910/8872 with the right exit times. #62 (10-16 16:30) also matches (9259.5/9230.11 vs 9260/9231), but only if the 10-15 trade that stops at 10-16 09:00 counts toward the 10-16 day. #48 is a weaker match (model entry 8878.5 vs logged 8880, stop 8833.69 vs 8833), and its three prior model losses are unclear because the log shows #45 reaching TP2 and #46 reaching TP3. A gives no evidence either way: removing the stop changes about 100 trades across all symbols but 0 inside any A window (my own diff). Caveat: it contradicts the stated published -3R logic. Other daily-loss rules tie when the first-session-bar exit counts toward the previous day (ds_v.py carryPrev): lossDir 3 and CRUDE eveReset 17:00 both give A 79/1/3 and B 36 (33/36). So 'no stop' is the simplest rule that fits, not the only one. Confidence is medium-high, not high."
+},
+{
+"name": "Fill cap 5 per session confirmed",
+"verdict": "confirmed",
+"recomputed": "A/B with dsMode none: maxFills 3: A 60/20/2, B 29; 4: A 72/8/3, B 34; 5: A 79/1/3, B 36; 6: A 79/1/8, B 36; 7: A 78/2/11, B 36; 99: A 71/9/16, B 36.",
+"reason": "Every number matches. The cap is supported by A only, through extras appearing inside windows at 6 or more (3 extras at 5, 8 at 6, 11 at 7). B cannot separate 5 from 6 or 7, although CRUDE 10-13 reaches exactly 5 fills. Setting the cap to 5 is a simple, plausible rule. An evening reset of the fill cap on CRUDE (eveReset 17:00) gives A 79/1/3 and B 36, so it is untested."
+},
+{
+"name": "Open trades carry across sessions (no EOD flat)",
+"verdict": "confirmed",
+"recomputed": "eodFlat=false: A 79/1/3, B 36 (33/36). eodFlat=true: A 77/3/5 (loses SENSEX 10-12 09:40 S and 11:20 S, gains extras 09:25 S and 11:05 S), B 34 matched and 31/34 stops.",
+"reason": "The A numbers match. One correction: the analyst wrote 'B 31' for eodFlat, but 31 is the stop-correct count and the time-matched count is 34. B still gets worse (36 to 34). Raw bars check: SENSEX 10-09 10:10 L (e 72338.6, TP4 about 72754) is still open and exits at the 10-12 09:15 gap (high 72884.2, logged peak 72882). The cooldown then blocks the 09:20 signal and the next arm is 09:35 with fill 09:40 S, matching log #72 (72396/72573). The student's '15:10' exit times are the last bar of the day, not the real exit. eodCancel (cancel the armed limit at a new session) changes nothing (79/1/3, B 36), which I confirmed."
+},
+{
+"name": "Daily stop variants that also fit (not preferred)",
+"verdict": "confirmed",
+"recomputed": "dsStrict, loss 4 and netR: A 79/1/3, B 36 (33/36). lossDir 3 and eveReset 17:00: A 79/1/3, B 35 (32/35). Rejected variants, rechecked: sameBarDayStop=true gives A 78/2/3, B 32. minOpenBars=0 gives A 78/2/2, B 35.",
+"reason": "All numbers reproduce. I added a new test (ds_v.py carryPrev: an exit on the first bar of a session counts toward the previous day). With it, lossDir 3 and eveReset 17:00 both recover #62 and tie with no stop at A 79/1/3, B 36 (33/36). So the analyst's 'one worse on B' for those two depends on the carry-over accounting, not on the rules themselves. The data does not separate the variants. 'No daily stop' is preferred on simplicity, with medium confidence."
+}
+],
+"summary": "All four rules reproduce at the stated A and B scores. One misstatement: eodFlat=true gives B 34 time-matched (31/34 stops), not 'B 31'. Removing the -3R daily stop is the best simple fit: B goes from 32 to 36 matched and from 29/32 to 33/36 stops, with A unchanged at 79/1/3. It rests on CRUDE 10-13, where three clean -1R stops are followed by two logged trades that the no-stop model reproduces exactly (entries, stops and exit times). The #48 recovery is weak (entry off by 1.5 points, loss count ambiguous), and #62 depends on how the carry-over exit is counted. A is blind to the daily stop: about 100 trades change outside the A windows and none inside. Other daily-loss rules tie once the first-session-bar exit counts toward the previous day: lossDir 3 and a CRUDE 17:00 reset both reach B 36 (33/36) and A 79/1/3. So 'no stop' is the simplest rule that fits, not the only one, and it contradicts the stated published -3R logic. The 5-fill cap is well supported by A alone. No end-of-day flat is supported by the SENSEX 10-09 to 10-12 gap exit and by the worse A and B scores with a forced flat. Files are in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/verify_daystate/ (progress.md, v1.py, v2.py, ds_v.py).\""
+}
+===== timing
+SUMMARY: I found three timing rules plus one daily-limit rule that work together. Scored with score2.py on /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/timing/m.py and the options in best.json ({"slopeCross":true,"minOpenBars":0,"cooldownBars":1,"dayStopR":0}), A goes from 79/1/3 to 79/1/2: the NIFTY 10-07 09:40 S extra is gone and nothing in A got worse. B goes from 32 to 38 of 42 logged trades matched, and stops from 29/32 to 35/38. On SENSEX the model now produces exactly the 17 logged trades and nothing else.
+
+Removing any one of the four parts makes things worse:
+- without slopeCross: A 76/4/4, B 35
+- without first-bar arming: A 79/1/3, B 37
+- without dayStopR=0: A 79/1/2, B 34
+- without cooldown 1: A 79/1/2, B 36
+
+What each rule does:
+(1) The VWAP slope is vwap - vwap[3] with no session guard, the plain Pine behaviour. On the first bars of a session it compares against the previous session's VWAP. This is applied to the signal only; the impulse counts for the half-stop stay as they were.
+(2) Arming is allowed on the session's first bar (minOpenBars 0). That gives #77: the 10-15 09:15 signal fills at 09:20 and hits TP4 at 09:45, as logged. Rule (1) is what blocks the bad first-bar cases: 10-07 09:15 short (VWAP 72745 vs 72685 the previous session, so the slope is up) and 10-12 09:20 short (72628 vs 72334).
+(3) The only cooldown is no arming on the exit bar itself; arming on the next bar is fine. That gives #75: the 14:30 TP4 exit, then an arm at 14:35 and the logged 14:40 fill. A true arm-on-the-exit-bar version breaks A (67 exact).
+(4) No daily -3R stop. This gives #48, #54, #55 and #62; the daystate hunter found the same thing independently.
+
+Keeping the first armed limit (a newer same-direction signal does not replace it) is confirmed, and it explains #78. On SENSEX 10-15 the 09:50 limit never fills, which blocks the 09:55 and 10:10 signals until it expires at 10:15; then 10:45 arms and fills at 10:50.
+
+Settings confirmed as already right:
+- retest 5 bars (6 ties; 4, 7 and 8 are worse)
+- keep the first limit (replacing it gives A 77/3/5, B 33)
+- legReset on (without it A drops to 76)
+- momLen 10 (8, 9, 11 and 12 all lose a lot in A)
+
+Rejected:
+- a VWAP-retest second signal type (A 75/5/6)
+- half-stop on every trade against the previous session's bias (A 73/7/13)
+- momAtr 0.95–1.05: fixes #58 and #60 (B 40) but loses GC 10-09 20:55 L in A, whose momentum is 0.94
+RULE {
+"name": "VWAP slope across session boundary",
+"rule": "The signal's VWAP-slope filter is vwap - vwap[slopeBars=3] with no session guard: on bars 1-3 of a session it compares against the previous session's VWAP, instead of treating the slope as 'undefined = OK'. Signal only; the impulse counts for the half-stop keep the old session-guarded slope.",
+"module_path": "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/timing/m.py",
+"options_json": "{\"slopeCross\":true,\"minOpenBars\":0,\"cooldownBars\":1,\"dayStopR\":0}",
+"scoreA": "79 exact / 1 miss / 2 extra (full combination; baseline 79/1/3). Without slopeCross: 76/4/4",
+"scoreB": "38/42 matched, 35/38 stops (full combination). Without slopeCross: 35 matched",
+"explains": "Blocks SENSEX 10-07 09:15 first-bar short (VWAP 72745 vs 72685 prev session = rising) and SENSEX 10-12 09:20 short (72628 vs 72334); allows SENSEX 10-15 09:15 long (#77). Also removes A extra NIFTY 10-07 09:40 S. This is what makes rules 2 and 3 safe",
+"confidence": "high"
+}
+RULE {
+"name": "Arm on first bar of session",
+"rule": "minOpenBars = 0: a signal on the session's first bar may arm a limit.",
+"module_path": "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/timing/m.py",
+"options_json": "{\"slopeCross\":true,\"minOpenBars\":0,\"cooldownBars\":1,\"dayStopR\":0}",
+"scoreA": "79/1/2 (without this part: 79/1/3)",
+"scoreB": "38 matched (without this part: 37)",
+"explains": "SENSEX #77: 10-15 09:15 signal, entry 73054.9 (log 73053), stop 72891.4 (log 72889), fill 09:20, TP4 exit 09:45 as logged",
+"confidence": "high"
+}
+RULE {
+"name": "Cooldown = only not on the exit bar",
+"rule": "No new arm on the bar where a trade exits; arming is allowed from the next bar (i - lastExit >= 1). Previously 2 bars. A true 0 (arming on the exit bar) is wrong.",
+"module_path": "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/timing/m.py",
+"options_json": "{\"slopeCross\":true,\"minOpenBars\":0,\"cooldownBars\":1,\"dayStopR\":0}",
+"scoreA": "79/1/2 (cooldown 2: same A; arming on the exit bar: 67 exact)",
+"scoreB": "38 matched (cooldown 2: 36)",
+"explains": "SENSEX #75: 14:30 TP4 exit, then arm at 14:35 (1 bar later), fill 14:40, exit 14:50. Together with keeping the first limit it gives #78: on 10-15 the 09:50 limit never fills and blocks 09:55 and 10:10, then 10:45 arms and fills at 10:50. Without slopeCross, cooldown 1 breaks SENSEX 10-12 in A (77/3/5)",
+"confidence": "high"
+}
+RULE {
+"name": "No daily -3R stop",
+"rule": "dayStopR = 0: no daily loss stop. The 5-fills-per-day cap stays; it is essential (maxFills 99 gives A 71/9/16).",
+"module_path": "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/timing/m.py",
+"options_json": "{\"slopeCross\":true,\"minOpenBars\":0,\"cooldownBars\":1,\"dayStopR\":0}",
+"scoreA": "79/1/3 alone (A unchanged)",
+"scoreB": "36 matched, 33/36 stops alone; full combination 38, 35/38",
+"explains": "CRUDE #48, #54, #55, #62. The daystate hunter found the same independently",
+"confidence": "high"
+}
+RULE {
+"name": "Keep first armed limit, retest 5, legReset (confirmed)",
+"rule": "A newer same-direction signal does not replace an armed limit; the limit lives 5 bars; leg-reset rule stays on.",
+"module_path": "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/timing/m.py",
+"options_json": "{\"slopeCross\":true,\"minOpenBars\":0,\"cooldownBars\":1,\"dayStopR\":0}",
+"scoreA": "Alternatives on top of best: replace 77/3/5, retest 4 72/8/9, retest 6 79/1/2 (tie), legReset off 76/4/5",
+"scoreB": "Alternatives: replace 33, retest 4 35, retest 6 38 (tie), legReset off 38",
+"explains": "SENSEX 10-15 #78 needs keep-first; the A set needs legReset",
+"confidence": "high"
+}
+UNEXP CRUDE #50 (10-12 14:20 L): a stop-mode question, not timing. What-if test forcing the half-stop on the 11:50 and 13:40 longs: the 13:45 trade (stop 8756.4) is stopped at 13:50, then the 14:15 signal arms and fills at 14:20 with entry 8802 and stop 8759.5 (log 8760), TP4 exit 15:10 (log 15:05). #49 on the same day also has the half-stop (8742 vs log 8741), but prevNet is +7, so these longs go WITH the previous session's bias. Our half-stop condition does not cover this; for the stop hunter.
+UNEXP CRUDE #58 (10-15 18:55 L) and #60 (10-16 11:50 L): the original skipped our 18:30 and 11:40 signals. Their momentum is only 0.91 and 0.95 ATR, against the 0.85 threshold, a margin of about 1-1.5 points, so this is probably a price difference between the student's data feed and ours (his entries are often 1-2 points off ours). momAtr 0.96-1.05 fixes both but loses GC 10-09 20:55 L in A (momentum 0.94), so it was not adopted.
+UNEXP CRUDE #63 (10-16 18:35 L, entry 9264 = 6-bar high at 18:30): the 18:30 candle closes 2.53 ATR below the 10-bar high with momentum -2.16. No displacement rule produces it; a VWAP-retest second signal type was tried and makes A worse (75/5/6).
+UNEXP Wrong stops CRUDE #49, #52, #56 are unchanged (half-stop mode); out of scope for timing.
+UNEXP Old A issues unchanged: extra CRUDE 10-06 21:00 L; ETH 10-11 extra 00:10 / miss 00:25. The original skipped the 00:05 signal, whose close is only 0.10 ATR above the 10-bar high; no rule found.
+VERIFY: {
+"summary": "I re-ran score2.py on the full combination. A is 79/1/2 and B is 38/42 matched with stops 35/38, as reported, and every ablation number the analyst gave reproduces exactly. Rules 1 to 3 and rule 5 hold against the raw bars. Rule 4 holds empirically, but 'no daily stop' is not uniquely identified. A variant that keeps a -3R daily stop scores identically (A 79/1/2, B 38/35). I coded that variant in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/verify_timing/m2.py.\n\nPoints that change how the rules should be read:\n- Rules 1 and 2 are identified only as a pair. slopeCross alone leaves A and B unchanged (79/1/3, B 32). minOpenBars=0 alone is worse (A 78/2/2, B 31). Together they give B 38 and A 79/1/2.\n- Rule 3 is really 'no arming on the exit bar'. cooldownBars=0 is silently clamped to 1 by max(cooldownBars,1) unless cdRaw is set. With cdRaw=true, arming on the exit bar gives A 67/1/12 and B 32.\n- Rule 4: dayStopR of 3.5, 4, 5 or 99 scores the same as 0. A has no evidence either way, since A is identical with dayStopR 3 or 0.\n\nAll numbers were computed by me.",
+"items": [
+{
+"name": "VWAP slope across session boundary (slopeCross)",
+"verdict": "confirmed",
+"recomputed": "Full combination A 79/1/2, B 38 matched, stops 35/38. slopeCross off: A 76/4/4, B 35/42, stops 32/35. slopeCross alone on the defaults: A 79/1/3, B 32, so it only matters together with first-bar arming.",
+"reason": "Raw bars confirm the VWAP values. SENSEX 10-07 09:15: vwap 72745.0 vs vwap[3] 72683.8 (10-06 15:00), slope up, first-bar short blocked. 10-12 09:20: 72628.0 vs 72334.3, up, short blocked. 10-15 09:15: 73079.6 vs 72956.5, up, long allowed. Without slopeCross the model takes a 10-12 09:20 short (fill 09:25) and loses the logged 09:40 S (#72) and 11:20 S (#73), and on 10-07 it misses 09:40 S (#66). With slopeCross it produces SENSEX 10-07 09:40 S, 10-12 09:40 S and 11:20 S, matching log #66, #72 and #73. Plain Pine vwap - vwap[3] with no session guard is natural. The evidence is small (three SENSEX dates plus the A NIFTY 10-07 extra) but consistent, and no A trade is hurt."
+},
+{
+"name": "Arm on first bar of session (minOpenBars=0)",
+"verdict": "confirmed",
+"recomputed": "Full combination A 79/1/2, B 38. With minOpenBars=1 and the other three rules on: A 79/1/3, B 37, stops 34/37. minOpenBars=0 without slopeCross: A 78/2/2, B 31.",
+"reason": "SENSEX 10-15 09:15 is a long candle with body 60%, close 17% from its extreme and range 3.3 ATR. Its body mid is 73054.9, matching logged entry 73053 (#77), and the 09:20 low of 73012 touches it, so the fill is at 09:20. The 09:20 bar itself is not a signal (body 6%), so the 09:15 candle must be the signal. The TP4 exit at 09:45 matches the log. The A NIFTY 10-07 09:40 S extra disappears only with minOpenBars=0 plus slopeCross. The NIFTY 09:15 short arms a limit that never fills, and keep-first then blocks the 09:35 signal. The marginal gain is small (B +1, A +1) and rests mainly on #77, but it is a direct logged fill. Report it as a pair with rule 1."
+},
+{
+"name": "Cooldown = only not on the exit bar (cooldownBars=1)",
+"verdict": "confirmed",
+"recomputed": "Full combination A 79/1/2, B 38, stops 35/38. cooldownBars=2: A 79/1/2, B 36, stops 33/36. cooldownBars=3: A 76/4/3, B 33. cdRaw with 0 (arming on the exit bar): A 67/1/12, B 32.",
+"reason": "Two logged SENSEX trades depend on it. #75: the prior trade exits at 14:30, the 14:35 bar is a displacement long with mid 72787.5, and the 14:40 bar (low 72755.3) fills it. Entry 72787.5 vs log 72788, stop 72691 vs log 72692, and the 14:50 TP4 exit match. #78: with cooldown 2 the model arms at 09:55, fills at 10:00 and exits 11:35, which blocks the logged 10:50 trade. With cooldown 1 the 09:50 signal arms first (limit about 73473, bar lows 73527 and up, so it never fills), keep-first blocks 09:55 and 10:10, it expires, and 10:45 arms and fills at 10:50 (entry 73863.4 vs log 73865). A does not distinguish 1 from 2. The CRUDE-side differences are model-only trades the log is silent on. 'Blocked only on the exit bar' is natural for a flat-position check and better than a magic 2-bar cooldown."
+},
+{
+"name": "No daily -3R stop (dayStopR=0)",
+"verdict": "partly",
+"recomputed": "Full combination: A 79/1/2, B 38/42, stops 35/38. dayStopR 3: A 79/1/2, B 34, stops 31/34 (misses #48, #54, #55, #62). dayStopR 3.5, 4, 5 and 99 all equal dayStopR 0. Alone on the A baseline: A 79/1/3, B 36.",
+"reason": "The logged trades do contradict the model's -3R stop. CRUDE 10-13 has three clean -1R losses (#51, #52, #53) and then logged trades #54 and #55. But the model's day-R accounting is what fails, and a variant keeps a -3R stop and fits identically. In m2.py in my folder, with options dayW and carry0, day R is weighted by actual risk / (1.8 ATR), so half-stop trades count -0.5R, and a loss on a trade filled on the previous day does not count toward the new day. Run with dayStopR=3, that variant gives A 79/1/2 and B 38 matched, stops 35/38, the same as dayStopR=0. The two parts matter separately. 10-09 (#48) is -0.5R, -1R, -1R, which stays above -3R. 10-13 (#54, #55) is -0.5R, -1R, -1R = -2.5R. 10-16 (#62) is blocked in the model only because the 10-15 21:40 long exits at the 10-16 09:00 day-start bar and the -1R is booked to the new day. Weighting alone gives B 37 (#62 missed) and carry0 alone gives B 35. The brief calls the -3R stop published logic, so record 'no daily stop' as the simplest B-equivalent, not as proven. B cannot separate it from the R-normalised variant."
+},
+{
+"name": "Keep first armed limit, retest 5, legReset (confirmed)",
+"verdict": "confirmed",
+"recomputed": "On top of the best options: rearmKeep off A 77/3/5, B 33; retestBars 4 A 72/8/9, B 35; retestBars 6 A 79/1/2, B 38 (exact tie); retestBars 7 A 78/2/3, B 36; legReset off A 76/4/5, B 38; momLen 9 A 74 exact/2 near/4/6, B 38 (stops 34/38); momLen 11 A 68 exact/1 near/11/8, B 36.",
+"reason": "Every claimed alternative reproduces and is worse or tied. retestBars 6 is a genuine tie, so 5 vs 6 is not resolved by this data, and the analyst said so. Keep-first is supported by #78 and the NIFTY 10-07 case above. legReset is required by A (79 vs 76) and neutral on B. momLen 10 is clearly best."
+}
+]
+}
+===== halfstop
+SUMMARY: I found one new condition for the tight (half) stop, and it fixes the 2 genuinely tight stops the model got wrong in the student's log without changing anything on the screenshot set. The rule: the first impulse of a session in a given direction also gets the tight stop when the session OPENED outside the previous session's range against that direction (long: session open < previous session low; short: session open > previous session high). This is an OR with the existing counter-bias test, which stays as it is (net impulse count of the previous session at least 3 the other way). It is option tightOut (default off) in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/halfstop/m.py.
+
+Scores I computed (score2.py, plus my A-set stop checker astop.py):
+- Defaults: A 79/1/3, B 32 matched with 29/32 stops right (same as the baseline).
+- {"tightOut":true}: A 79/1/3, and all 79 matched A stops unchanged. B 32 matched with 31/32 stops right: #49 and #56 are fixed.
+- {"tightOut":true,"dayStopR":0}: A 79/1/3, B 36 matched with 35/36 stops right.
+- The tight stop formula itself, entry -/+ max(0.9 ATR, distance to the signal candle's low/high), reproduces the logged stops: #45 8748.1 vs 8748, #49 8742.0 vs 8741, #51 8844.5 vs 8844, #56 8991.5 vs 8992.
+
+Checking the logged stops against the logged exit time and highest TP (exitchk.py):
+- #45, #49, #51 and #56 are truly tight. One caveat: for #49 the Excel computes the TP levels from the student's own stop, so its "TP3" does not prove anything on its own.
+- #58 and #60 are NORMAL 1.8 ATR stops; the logged stops are student errors. For #58, the logged 9098 (and the tight 9103.9) would have been hit at 19:05 after TP1, but the log says SL at 19:20 with no TP. The normal stop 9083.3 gives exactly 19:20 with no TP. For #60, the logged 9234 would exit at 12:40, while the normal 9236.2 gives the logged 12:05. So 1.14 ATR and 2.03 ATR are not real stop modes.
+- #52 is neither formula. Its stop is not the signal candle's high (8827); the tight value 8829.2 would exit at 11:05, not the logged 11:10. The exit at 11:10 needs a stop between 8834 and 8841. The normal stop 8842.4 misses the 11:10 high (8841) by only 1.4 points, so it is most likely a normal stop with a small data difference plus a 3-point logging error.
+
+Why I trust the new rule:
+- Among the 30 first-same-direction-impulse cases in A and B, the session opened outside the previous range against the trade direction only for #49 and #56, and both are tight. That is 2 for, 0 against, and no normal trade meets the condition.
+- No threshold to fit; it is the standard "opened below yesterday's low / above yesterday's high" test you would write in Pine.
+- It fires rarely: CRUDE 2026-09-21 11:25 L, #49 and #56, plus a knock-on new trade at 10-14 12:15; 4 NIFTY trades in September; none in other symbols and none inside A windows. Because so few cases test it, the evidence is real but thin.
+
+Rejected or weaker options:
+- netMin=2 alone fixes #56 only (A unchanged, B 30/32); netMin=1 breaks A (78/2/5).
+- Rolling-window or last-K impulse counts in place of the previous-session count: at least 3 errors, and #49 always wrong.
+- A gap-size threshold in ATR only works between 8.2 and 15.1 ATR (#54 must stay normal), which is fit to one trade.
+- A "far from VWAP" rule only works between 3.5 and 4.3 ATR and breaks A stops below that.
+
+#49 has a long previous-session bias (+7), so no count-based bias can make it tight; only the opening gap below 10-09's whole range explains it. Note that its stop (8741) and time (11:55) are identical to #46 on 10-09, so a copy error cannot be fully ruled out, although 8741 also matches the tight formula's 8742.0.
+RULE {
+"name": "halfstop_open_outside_prev_range",
+"rule": "Tight stop (entry -/+ max(0.9 ATR, distance to the signal candle's low/high)) on the first impulse of the session in direction d when EITHER the previous session's net impulse count is at least 3 the other way (existing rule) OR the session open is outside the previous session's range against d (long: session open < previous session low; short: session open > previous session high). Otherwise the stop is 1.8 ATR.",
+"module_path": "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/halfstop/m.py",
+"options_json": "{\"tightOut\": true}",
+"scoreA": "79 exact / 1 miss / 3 extra (unchanged); all 79 matched A stops unchanged (only the known US30 10-07 05:30 1.4-ATR borderline is flagged, error -0.11 ATR, same as baseline)",
+"scoreB": "32 matched / 10 missed, stops 31/32 (baseline 29/32; fixes #49 and #56). With dayStopR=0 as well: 36 matched / 6 missed, stops 35/36. Only #52 remains (likely a logging/data error)",
+"explains": "CRUDE #49 (10-12 11:50 signal, long, session opened 2.9% below 10-09's low; tight stop 8742.0 vs logged 8741) and #56 (10-14 10:55 signal, short, session opened above 10-13's high; tight stop 8991.5 vs logged 8992). Keeps #45 and #51 tight and every A tight/normal classification unchanged. Among the 30 first-impulse cases in A and B, the open-outside-against condition occurs only in #49 and #56.",
+"confidence": "medium"
+}
+RULE {
+"name": "netMin_2",
+"rule": "Existing counter-bias test with the threshold lowered from 3 to 2 (previous-session net impulse count at least 2 against d).",
+"module_path": "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/halfstop/m.py",
+"options_json": "{\"netMin\": 2}",
+"scoreA": "79/1/3, A stops unchanged",
+"scoreB": "32 matched, stops 30/32 (+#56 only)",
+"explains": "#56 only (previous-session net -2). The data cannot separate 2 from 3 once tightOut is on, since no A case has net exactly -2; netMin=1 breaks A (78/2/5).",
+"confidence": "low"
+}
+UNEXP CRUDE #52 (10-13 11:00 S, logged stop 8839 = 1.57 ATR): neither the normal 8842.4 nor the tight 8829.2 (signal-candle high is 8827). The logged 11:10 exit needs a stop between 8834 and 8841; the normal stop misses the 11:10 high (8841) by 1.4 points, so it is most likely a normal stop with a small data difference plus a logging error.
+UNEXP CRUDE #58 (logged 1.14 ATR) and #60 (logged 2.03 ATR) are not real stop modes: the logged exit time and 'no TP' outcome are reproduced only by the normal 1.8 ATR stop, so the logged stops are student errors. The model misses both trades for timing reasons, not stop reasons.
+UNEXP #49's logged stop 8741 and time 11:55 are identical to #46 on 10-09 (a possible copy error), although 8741 also matches the tight formula's 8742.0; the Excel's TP3 is computed from the student's own stop, so it does not independently confirm a tight stop.
+UNEXP netMin 2 vs 3 cannot be told apart by the current data once tightOut is on.
+VERIFY: {
+"items": [
+{
+"name": "halfstop_open_outside_prev_range (tightOut)",
+"verdict": "partly",
+"recomputed": "score2.py m.py: default {} -> A 79/1/3, B 32 matched, stops 29/32. {\"tightOut\":true} -> A 79/1/3, B 32 matched, stops 31/32 (#49, #56 fixed, only #52 wrong). {\"tightOut\":true,\"dayStopR\":0} -> A 79/1/3, B 36 matched / 6 missed, stops 35/36. All numbers match the analyst's report.",
+"reason": "The scores reproduce, but the rule rests on 2 trades and no A case tests it. The raw bars agree with the claims. CRUDE session 10-12 opens at 8633, below the 10-09 low of 8712. Tight stop = 8742 (signal bar low) against logged 8741. The log's TP3 fits 1.6R of favourable move (high 8789) against a tight R of 18, and the normal 1.8 ATR stop would give only about 0.9R, so TP1. The tight stop exits at 12:30, matching the log. Session 10-14 opens at 9014, above the 10-13 high of 9008. Tight stop is 8992 as logged, and the old wide-stop model won +2R where the log says TP2 then SL. Weaknesses: (1) #56 clears the range by only 6 points (9014 vs 9008, under 0.1%). (2) ETH, US30, EURUSD and NASDAQ never open outside the previous session's range (0 of 34-48 sessions each), so the condition is untestable on half of the A symbols. Only SENSEX, NIFTY and CRUDE have such gaps. The SENSEX/NIFTY/CRUDE sessions where it applies (10-07, 10-12, 10-14, 10-16) produce no model trade whose tightness changes, apart from the two CRUDE B trades. So 'A unchanged' is largely trivially true. The only discriminating evidence is #49 and #56 (2 for, 0 against). (3) #49 has prevNet +7 (a bullish previous session) yet is tight, so the existing counter-bias test cannot explain it. The new rule is therefore a second, independent invented mechanism, not a refinement of the first. (4) It also flips 09-21 11:25 L CRUDE, adds a knock-on 10-14 12:15 S CRUDE that is not in the log (neutral), and changes 4 Sept NIFTY trades, none of which have ground truth. (5) #49 shares its stop 8741 and time 11:55 with #46, so a copy error cannot be excluded, though the tight formula independently gives 8742. Judgement: plausible Pine logic with no tuned threshold, and it can be adopted as an optional low-confidence rule. It is not strongly established.",
+"extra": ""
+},
+{
+"name": "netMin_2",
+"verdict": "partly",
+"recomputed": "score2.py m.py {\"netMin\":2}: A 79/1/3 (unchanged), B 32 matched, stops 30/32. Only #56 is fixed (its prevNet is +2); #49 stays wrong (prevNet +7) and #52 stays wrong. netMin=1 breaks A (78/2/5, per the analyst's progress log; I did not re-run it).",
+"reason": "The numbers reproduce. As a rule it is weak. Lowering 3 to 2 is a single-threshold fit to one trade (#56), and #56 is already covered by tightOut. No A case has net exactly 2, so 2 versus 3 cannot be separated. netMin=2 also flips several non-ground-truth trades in Sept (SENSEX 09-01, CRUDE 09-01 and 09-04, ETH, NASDAQ, NIFTY 09-30 and 10-01, which has knock-on changes). Treat it as an unsupported alternative, not a finding."
+}
+],
+"summary": "I reran all four scorings on m.py and every number matches the analyst's report. tightOut leaves A at 79/1/3 and takes B stops from 29/32 to 31/32. With dayStopR=0 it gives B 36 matched, stops 35/36. netMin=2 gives B stops 30/32 with A unchanged. The raw bars confirm the two claimed CRUDE trades. #49 is a long on 10-12 where the session opened at 8633, below the 10-09 low of 8712. #56 is a short on 10-14 where the session opened at 9014, above the 10-13 high of 9008. Evidence for tightOut is real but thin. Only two trades support it, and the #56 margin is 6 points. Half of the A symbols (ETH, US30, EURUSD, NASDAQ) never open outside the previous range, so A cannot contradict the rule. #49 has a bullish previous session (prevNet +7), so the rule is a second mechanism rather than an extension of the counter-bias test. I rate tightOut as plausible but low-to-medium confidence, and netMin=2 as redundant and unsupported. My scratch files are in /tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/hunt2/verify_halfstop/ (diff.py, pow.py, progress.md).\""
+}

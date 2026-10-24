@@ -1,0 +1,412 @@
+20a21,25
+> //|                                                                  |
+> //| v3.1: optional filters (half-stop cap, choppy-session VWAP-cross |
+> //| gate, 1h EMA20 speed gate; all off), on-chart table with target  |
+> //| and breakeven statistics, trade markings (entry, stop, targets,  |
+> //| result). Use "Visualization" in the Strategy Tester to see them. |
+22,24d26
+< #property copyright "Auction Retest Model"
+< #property version   "3.00"
+< #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
+26c28,31
+< #include <Trade/Trade.mqh>
+---
+> 
+> 
+> 
+> 
+83a89
+> input bool   InpHalfCap      = false; // Half stop never wider than the normal stop (optional)
+127a134,137
+> input bool   InpChopOn     = false; // Skip choppy sessions (too many VWAP crosses)
+> input double InpChopMax    = 12.0;  //   max VWAP crosses per 100 bars
+> input bool   InpEmaOn      = false; // Skip when the 1h EMA20 moved too fast (natural gas: worse)
+> input double InpEmaMax     = 1.65;  //   max 1h EMA20 move in 3 hours (x ATR)
+213a224,237
+> enum ENUM_TBL_POS { TBL_TOP_RIGHT    = 0,  // Top right
+>                     TBL_TOP_LEFT     = 1,  // Top left
+>                     TBL_BOTTOM_RIGHT = 2,  // Bottom right
+>                     TBL_BOTTOM_LEFT  = 3 };// Bottom left
+> input group "DISPLAY (chart and Strategy Tester visualization)"
+> input bool   InpDraw      = true;              // Show trade markings (entry, stop, targets, result)
+> input int    InpMaxDrawn  = 0;                 //   trades kept on the chart (0 = all)
+> input color  InpColTarget = clrMediumSeaGreen; //   target box and TP lines
+> input color  InpColStop   = clrIndianRed;      //   stop box
+> input color  InpColEntry  = clrDodgerBlue;     //   entry line and armed limit
+> input bool   InpShowTable = true;              // Show the table
+> input ENUM_TBL_POS InpTablePos = TBL_TOP_RIGHT;//   table position
+> input int    InpTableFont = 8;                 //   table font size
+> 
+217d240
+< input bool   InpDraw     = true;   // Draw trade boxes
+227c250
+< double   vwHist[];                 // vwap of processed bars, [0] = latest
+---
+> double vwHist[];                 // vwap of processed bars, [0] = latest
+238a262
+> int      trSkip = 0;               // why the setup is a ghost: 1 too far from VWAP, 2 choppy VWAP session, 3 1h EMA20 too fast
+239a264,276
+> string   lastRes = "-";
+> double   bestPx = 0;               // best price after the fill (the fill bar and stop bars add nothing)
+> int      ghW = 0, ghL = 0; double ghR = 0;   // results the skipped (invisible) trades would have had
+> // optional filters: VWAP crosses of this VWAP period; 1-hour (UTC) candles built from the bars and their EMA20
+> int      vxSide = 0, vxN = 0;
+> long     hK = -1;                  // hour of the last bar (-1 = none yet)
+> double   hC = 0, hSum = 0;         // close of the forming hour, sum of the first 20 hourly closes
+> int      hNum = 0;                 // completed hours
+> double   hE[4];                    // EMA20 of the last four completed hours, [0] = latest; [k] is valid once hNum >= 20 + k
+> // accuracy of the shown trades (port of the shared Pine STATS block)
+> int      tpHitN[4];                // closed trades that reached TP1..TP4 before the stop
+> int      beN = 0, lkN = 0;         // closed at a stop moved to the entry (breakeven) / into profit
+> datetime gFirstT = 0;              // first bar the engine processed
+259a297,301
+> bool     gCanDraw = true;          // false in non-visual testing and optimisation (nothing would be seen)
+> long gDrawn[];                 // fill times of the drawn trades, oldest first
+> string   gStateTxt = "SCANNING";   // table: state line
+> int      gTblW = -1, gTblH = -1;   // chart size the table was laid out for
+> string tblKey[]; string tblVal[]; color tblCol[]; color tblBg[];
+262c304
+< double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP = 0;
+---
+> double labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP = 0;
+350a393,394
+> void DrawBar(datetime bt);   // trade markings, defined below
+> 
+395a440,460
+>    // optional accuracy filters (off by default)
+>    // VWAP crosses in this VWAP period: the close moving from more than 0.2 ATR on one side of the VWAP to more than 0.2 ATR on the other
+>    if(newAnchor) { vxSide = 0; vxN = 0; }
+>    double vxDev = haveAtr && atr > 0 ? (c - vwap) / atr : 0.0;
+>    int    vxZ = vxDev > 0.2 ? 1 : (vxDev < -0.2 ? -1 : 0);
+>    if(vxZ != 0) { if(vxSide != 0 && vxZ != vxSide) vxN++; vxSide = vxZ; }
+>    double vxRate = 100.0 * vxN / (vwBars + 1);
+>    // 1-hour candles (UTC hours) built from the bars; the EMA starts from the average of the first 20 hours
+>    long hKey = (long)UtcTime(t) / 3600;
+>    if(hK >= 0 && hKey != hK)
+>    {
+>       hNum++;
+>       double hNew = 0;
+>       if(hNum <= 20) { hSum += hC; hNew = hNum == 20 ? hSum / 20.0 : 0; }
+>       else hNew = 2.0 / 21.0 * hC + (1.0 - 2.0 / 21.0) * hE[0];
+>       hE[3] = hE[2]; hE[2] = hE[1]; hE[1] = hE[0]; hE[0] = hNew;
+>    }
+>    hK = hKey; hC = c;
+>    bool   haveSpd = hNum >= 23 && haveAtr && atr > 0;
+>    double emaSpd = haveSpd ? MathAbs(hE[0] - hE[3]) / atr : 0;
+> 
+464a530
+>       if(!stopHit) bestPx = isL ? MathMax(bestPx, h) : MathMin(bestPx, l);
+474a541
+>             lastRes = (win ? "TP" + IntegerToString((int)InpExitAt) + " " : "STOP ") + (res >= 0 ? "+" : "") + DoubleToString(res, 2) + "R";
+476a544
+>          else { if(win) ghW++; else ghL++; ghR += res; }
+497a566
+>          bestPx = lim;
+505a575
+>                lastRes = "STOP -1.00R";
+507a578
+>             else { ghL++; ghR += -1.0; }
+546a618
+>       if(InpHalfCap) hStop = isL ? MathMax(hStop, cStop) : MathMin(hStop, cStop);
+553c625,629
+<          bool ghost = haveZ && d * (c - vwap) / vwSd > InpNoChaseSig;
+---
+>          bool zNo = haveZ && d * (c - vwap) / vwSd > InpNoChaseSig;
+>          // choppy session (VWAP crosses) / over-extended 1h EMA20; a skipped setup runs on invisibly like the no-chase one
+>          bool chopNo = InpChopOn && vxRate > InpChopMax;
+>          bool emaNo = InpEmaOn && haveSpd && emaSpd > InpEmaMax;
+>          bool ghost = zNo || chopNo || emaNo;
+555a632
+>          trSkip = zNo ? 1 : (chopNo ? 2 : (emaNo ? 3 : 0));
+560a638,653
+> 
+>    // accuracy of the shown trades (shared Pine STATS block): a target counts when the best price after the fill reached it
+>    // before the stop; the final target is reached exactly when the trade is a win
+>    if(evExit)
+>    {
+>       double sd = lastDir == 1 ? 1.0 : -1.0;
+>       int    xk = (int)InpExitAt;
+>       for(int k = 1; k <= 4; k++)
+>       {
+>          double lvl = k == 1 ? t1 : (k == 2 ? t2 : (k == 3 ? t3 : t4));
+>          if(evWin ? k <= xk : (k < xk && sd * (bestPx - lvl) >= -TickSize() * 0.001)) tpHitN[k - 1]++;
+>       }
+>       if(!evWin && stp != stp0) { if(evRes == 0.0) beN++; else if(evRes > 0.0) lkN++; }
+>    }
+>    if(gFirstT == 0) gFirstT = t;
+>    DrawBar(t);
+681,682c774,831
+< //--- drawing -----------------------------------------------------------------
+< void DrawLimit(datetime bt, bool on)
+---
+> //--- text helpers (table and markings) ----------------------------------------
+> string SgnR(double r) { return (r >= 0 ? "+" : "") + DoubleToString(r, 2) + "R"; }
+> string Share(int n, int total) { return total > 0 ? IntegerToString((int)MathRound(100.0 * n / total)) + "%" : "-"; }
+> string AccTxt() { int n = totW + totL; return IntegerToString(n) + " trades | " + Share(totW, n) + " (" + IntegerToString(totW) + "W/" + IntegerToString(totL) + "L) | " + SgnR(totR); }
+> string TpTxt()
+> {
+>    int n = totW + totL, xk = (int)InpExitAt;
+>    string s = "";
+>    for(int k = 1; k <= 4; k++) s += (k > 1 ? " | " : "") + "TP" + IntegerToString(k) + " " + (k > xk ? "n/a" : Share(tpHitN[k - 1], n) + " (" + IntegerToString(tpHitN[k - 1]) + ")");
+>    return s;
+> }
+> string BeTxt() { int n = totW + totL; return "BE " + IntegerToString(beN) + " (" + Share(beN, n) + ") | locked profit " + IntegerToString(lkN) + " (" + Share(lkN, n) + ")"; }
+> string FltTxt() { return IntegerToString(ghW + ghL) + " skipped | would have been " + IntegerToString(ghW) + "W/" + IntegerToString(ghL) + "L | " + SgnR(ghR); }
+> string MonTxt(int m) { string a[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}; return a[(m + 11) % 12]; }
+> string DateTxt(datetime tm, bool withYear)
+> {
+>    MqlDateTime d; TimeToStruct(tm, d);
+>    return StringFormat("%02d %s ", d.day, MonTxt(d.mon)) + (withYear ? StringFormat("%02d", d.year % 100) : StringFormat("%02d:%02d", d.hour, d.min));
+> }
+> 
+> //--- trade markings: drawn for every bar the engine processes (history included), same events as the TradingView files
+> string TrId(datetime tf) { return "ARM_X" + IntegerToString((long)tf) + "_"; }
+> void MarkLine(string nm, datetime ta, double pa, datetime tb, double pb, color clr, int width, ENUM_LINE_STYLE sty)
+> {
+>    if(ObjectFind(0, nm) < 0) ObjectCreate(0, nm, OBJ_TREND, 0, ta, pa, tb, pb);
+>    else { ObjectMove(0, nm, 0, ta, pa); ObjectMove(0, nm, 1, tb, pb); }
+>    ObjectSetInteger(0, nm, OBJPROP_COLOR, clr);
+>    ObjectSetInteger(0, nm, OBJPROP_WIDTH, width);
+>    ObjectSetInteger(0, nm, OBJPROP_STYLE, sty);
+>    ObjectSetInteger(0, nm, OBJPROP_RAY_RIGHT, false);
+>    ObjectSetInteger(0, nm, OBJPROP_BACK, true);
+>    ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
+>    ObjectSetInteger(0, nm, OBJPROP_HIDDEN, true);
+> }
+> void MarkBox(string nm, datetime ta, double pa, datetime tb, double pb, color clr)
+> {
+>    if(ObjectFind(0, nm) < 0) ObjectCreate(0, nm, OBJ_RECTANGLE, 0, ta, pa, tb, pb);
+>    else { ObjectMove(0, nm, 0, ta, pa); ObjectMove(0, nm, 1, tb, pb); }
+>    ObjectSetInteger(0, nm, OBJPROP_COLOR, clr);
+>    ObjectSetInteger(0, nm, OBJPROP_FILL, true);
+>    ObjectSetInteger(0, nm, OBJPROP_BACK, true);
+>    ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
+>    ObjectSetInteger(0, nm, OBJPROP_HIDDEN, true);
+> }
+> void MarkText(string nm, datetime ta, double pa, string txt, color clr, ENUM_ANCHOR_POINT anc)
+> {
+>    if(ObjectFind(0, nm) < 0) ObjectCreate(0, nm, OBJ_TEXT, 0, ta, pa);
+>    else ObjectMove(0, nm, 0, ta, pa);
+>    ObjectSetString(0, nm, OBJPROP_TEXT, txt);
+>    ObjectSetString(0, nm, OBJPROP_FONT, "Arial");
+>    ObjectSetInteger(0, nm, OBJPROP_FONTSIZE, 7);
+>    ObjectSetInteger(0, nm, OBJPROP_COLOR, clr);
+>    ObjectSetInteger(0, nm, OBJPROP_ANCHOR, anc);
+>    ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
+>    ObjectSetInteger(0, nm, OBJPROP_HIDDEN, true);
+> }
+> // one engine bar: armed limit, then a filled trade's boxes, entry / TP lines, fill arrow and price labels, then its result
+> void DrawBar(datetime bt)
+684,705c833,968
+<    ObjectDelete(0, "ARM_limit");
+<    if(!InpDraw || !on) return;
+<    ObjectCreate(0, "ARM_limit", OBJ_TREND, 0, bt, lim, bt + PeriodSeconds() * InpRetestBars, lim);
+<    ObjectSetInteger(0, "ARM_limit", OBJPROP_STYLE, STYLE_DASH); ObjectSetInteger(0, "ARM_limit", OBJPROP_COLOR, clrWhite);
+<    ObjectSetInteger(0, "ARM_limit", OBJPROP_RAY_RIGHT, false);
+< }
+< void DrawTrade(datetime t0)
+< {
+<    if(!InpDraw) return;
+<    string id = "ARM_" + IntegerToString((long)t0);
+<    ObjectCreate(0, id + "_tgt", OBJ_RECTANGLE, 0, t0, MathMax(lim, tF), t0, MathMin(lim, tF));
+<    ObjectSetInteger(0, id + "_tgt", OBJPROP_COLOR, clrMediumSeaGreen); ObjectSetInteger(0, id + "_tgt", OBJPROP_FILL, true); ObjectSetInteger(0, id + "_tgt", OBJPROP_BACK, true);
+<    ObjectCreate(0, id + "_stp", OBJ_RECTANGLE, 0, t0, MathMax(lim, stp0), t0, MathMin(lim, stp0));
+<    ObjectSetInteger(0, id + "_stp", OBJPROP_COLOR, clrIndianRed); ObjectSetInteger(0, id + "_stp", OBJPROP_FILL, true); ObjectSetInteger(0, id + "_stp", OBJPROP_BACK, true);
+<    gDrawT = t0; gDrawOn = true;
+< }
+< void ExtendTrade(datetime t1x)
+< {
+<    if(!InpDraw || !gDrawOn) return;
+<    string id = "ARM_" + IntegerToString((long)gDrawT);
+<    ObjectMove(0, id + "_tgt", 1, t1x, MathMin(lim, tF)); ObjectMove(0, id + "_tgt", 0, gDrawT, MathMax(lim, tF));
+<    ObjectMove(0, id + "_stp", 1, t1x, MathMin(lim, stp0)); ObjectMove(0, id + "_stp", 0, gDrawT, MathMax(lim, stp0));
+---
+>    if(!InpDraw || !gCanDraw) return;
+>    if(evCancel != 0 || evFill) ObjectDelete(0, "ARM_limit");
+>    if(evArm) MarkLine("ARM_limit", bt, lim, bt + PeriodSeconds() * InpRetestBars, lim, InpColEntry, 2, STYLE_DASH);
+>    int xk = (int)InpExitAt;
+>    if(evFill)
+>    {
+>       string id = TrId(bt);
+>       bool   isL = evFillL;
+>       MarkBox(id + "tgt", bt, MathMax(lim, tF), bt, MathMin(lim, tF), InpColTarget);
+>       MarkBox(id + "stp", bt, MathMax(lim, stp0), bt, MathMin(lim, stp0), InpColStop);
+>       MarkLine(id + "en", bt, lim, bt, lim, InpColEntry, 2, STYLE_SOLID);
+>       if(xk > 1) MarkLine(id + "tp1", bt, t1, bt, t1, InpColTarget, 1, STYLE_DOT);
+>       if(xk > 2) MarkLine(id + "tp2", bt, t2, bt, t2, InpColTarget, 1, STYLE_DOT);
+>       if(xk > 3) MarkLine(id + "tp3", bt, t3, bt, t3, InpColTarget, 1, STYLE_DOT);
+>       string an = id + "ar";
+>       if(ObjectFind(0, an) < 0) ObjectCreate(0, an, isL ? OBJ_ARROW_BUY : OBJ_ARROW_SELL, 0, bt, lim);
+>       ObjectSetInteger(0, an, OBJPROP_COLOR, isL ? InpColEntry : InpColStop);
+>       ObjectSetInteger(0, an, OBJPROP_SELECTABLE, false);
+>       ObjectSetInteger(0, an, OBJPROP_HIDDEN, true);
+>       MarkText(id + "le", bt, lim, (isL ? "BUY " : "SELL ") + DoubleToString(lim, _Digits), InpColEntry, isL ? ANCHOR_LEFT_LOWER : ANCHOR_LEFT_UPPER);
+>       MarkText(id + "ls", bt, stp0, "SL " + DoubleToString(stp0, _Digits) + (trHalf ? " (half)" : ""), InpColStop, isL ? ANCHOR_LEFT_UPPER : ANCHOR_LEFT_LOWER);
+>       MarkText(id + "lt", bt, tF, "TP" + IntegerToString(xk) + " " + DoubleToString(tF, _Digits), InpColTarget, isL ? ANCHOR_LEFT_LOWER : ANCHOR_LEFT_UPPER);
+>       gDrawT = bt; gDrawOn = true;
+>       int n = ArraySize(gDrawn);
+>       ArrayResize(gDrawn, n + 1);
+>       gDrawn[n] = (long)bt;
+>       if(InpMaxDrawn > 0 && n + 1 > InpMaxDrawn) { ObjectsDeleteAll(0, TrId((datetime)gDrawn[0])); ArrayRemove(gDrawn, 0, 1); }
+>    }
+>    else if(gDrawOn)
+>    {
+>       string id = TrId(gDrawT);
+>       ObjectMove(0, id + "tgt", 1, bt, MathMin(lim, tF));
+>       ObjectMove(0, id + "stp", 1, bt, MathMin(lim, stp0));
+>       ObjectMove(0, id + "en", 1, bt, lim);
+>       if(xk > 1) ObjectMove(0, id + "tp1", 1, bt, t1);
+>       if(xk > 2) ObjectMove(0, id + "tp2", 1, bt, t2);
+>       if(xk > 3) ObjectMove(0, id + "tp3", 1, bt, t3);
+>    }
+>    if(evExit && gDrawOn)
+>    {
+>       bool   above = (lastDir == 1) == evWin;   // long target / short stop: above the level
+>       string txt = evWin ? "TP" + IntegerToString(xk) + " " + SgnR(evRes) : (stp != stp0 && evRes == 0.0 ? "BE " : "STOP ") + SgnR(evRes);
+>       color  cl = evWin ? InpColTarget : (evRes >= 0.0 ? clrSilver : InpColStop);
+>       MarkText(TrId(gDrawT) + "rx", bt, evWin ? tF : stp, txt, cl, above ? ANCHOR_RIGHT_LOWER : ANCHOR_RIGHT_UPPER);
+>       gDrawOn = false;
+>    }
+> }
+> 
+> //--- on-chart table (rebuilt on every new bar so it stays on top of the markings) ----
+> string StateText(bool newsBlk)
+> {
+>    string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : "1H EMA20 TOO FAST");
+>    string s = st != 0 && trGhost ? "SKIPPED (" + why + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
+>               capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : dayBlock ? "STREAK STOP TODAY" :
+>               !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : "SCANNING";
+>    string ex = exState == 2 ? " (in trade)" : (exState == 1 ? (gVirt ? " (waiting for the level)" : " (order working)") : "");
+>    return s + ex;
+> }
+> void TblAdd(string k, string v, color vc, color bg)
+> {
+>    int n = ArraySize(tblKey);
+>    ArrayResize(tblKey, n + 1); ArrayResize(tblVal, n + 1); ArrayResize(tblCol, n + 1); ArrayResize(tblBg, n + 1);
+>    tblKey[n] = k; tblVal[n] = v; tblCol[n] = vc; tblBg[n] = bg;
+> }
+> void TblCell(string nm, int x, int y, int w, int hgt, color bg, string txt, color fg, int fs)
+> {
+>    string rb = nm + "b", lb = nm + "t";
+>    ObjectCreate(0, rb, OBJ_RECTANGLE_LABEL, 0, 0, 0);
+>    ObjectSetInteger(0, rb, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+>    ObjectSetInteger(0, rb, OBJPROP_XDISTANCE, x);
+>    ObjectSetInteger(0, rb, OBJPROP_YDISTANCE, y);
+>    ObjectSetInteger(0, rb, OBJPROP_XSIZE, w);
+>    ObjectSetInteger(0, rb, OBJPROP_YSIZE, hgt);
+>    ObjectSetInteger(0, rb, OBJPROP_BGCOLOR, bg);
+>    ObjectSetInteger(0, rb, OBJPROP_BORDER_TYPE, BORDER_FLAT);
+>    ObjectSetInteger(0, rb, OBJPROP_COLOR, ((color)5918282));
+>    ObjectSetInteger(0, rb, OBJPROP_SELECTABLE, false);
+>    ObjectSetInteger(0, rb, OBJPROP_HIDDEN, true);
+>    ObjectCreate(0, lb, OBJ_LABEL, 0, 0, 0);
+>    ObjectSetInteger(0, lb, OBJPROP_CORNER, CORNER_LEFT_UPPER);
+>    ObjectSetInteger(0, lb, OBJPROP_ANCHOR, ANCHOR_LEFT);
+>    ObjectSetInteger(0, lb, OBJPROP_XDISTANCE, x + 6);
+>    ObjectSetInteger(0, lb, OBJPROP_YDISTANCE, y + hgt / 2);
+>    ObjectSetString(0, lb, OBJPROP_FONT, "Arial");
+>    ObjectSetInteger(0, lb, OBJPROP_FONTSIZE, fs);
+>    ObjectSetInteger(0, lb, OBJPROP_COLOR, fg);
+>    ObjectSetString(0, lb, OBJPROP_TEXT, txt);
+>    ObjectSetInteger(0, lb, OBJPROP_SELECTABLE, false);
+>    ObjectSetInteger(0, lb, OBJPROP_HIDDEN, true);
+> }
+> void UpdateTable()
+> {
+>    ObjectsDeleteAll(0, "ARM_TB_");
+>    if(!InpShowTable || !gCanDraw) return;
+>    ArrayResize(tblKey, 0); ArrayResize(tblVal, 0); ArrayResize(tblCol, 0); ArrayResize(tblBg, 0);
+>    color  white = clrWhite, posC = ((color)11464809), negC = ((color)11239679), cell = ((color)2957854);
+>    bool   act = MathAbs(st) == 2 && !trGhost, armed = MathAbs(st) == 1 && !trGhost, has = act || armed;
+>    int    xk = (int)InpExitAt;
+>    string tps = has ? DoubleToString(t1, _Digits) + " | " + DoubleToString(t2, _Digits) + " | " + DoubleToString(t3, _Digits) + " | " + DoubleToString(t4, _Digits) : "-";
+>    bool   isC = InpRec == REC_C || InpRec == REC_CS;
+>    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
+>    TblAdd("AUCTION RETEST", "EA v3.1", white, ((color)14061373));
+>    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? ((color)5287756) : ((color)4536050)) : (armed ? ((color)39167) : ((color)7037021)));
+>    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
+>    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
+>    TblAdd("RISK | LOTS", exState != 0 ? DoubleToString(exRiskAmt, 2) + " | " + DoubleToString(exLots, 2) : "base " + DoubleToString(InpBaseRisk, 2), white, cell);
+>    TblAdd(isC ? "LOSSES CARRIED" : "RECOVERY POOL", rec, (isC ? carried : recPool) > 0 ? negC : white, cell);
+>    TblAdd("STREAK W | L", IntegerToString(winRow) + " | " + IntegerToString(lossRow) + " | total " + IntegerToString(exW) + "W/" + IntegerToString(exLn) + "L", white, cell);
+>    TblAdd("DAY P&L | FILLS", DoubleToString(dayPnl, 2) + " | " + IntegerToString(dayFills) + "/" + IntegerToString(InpMaxFills), dayPnl >= 0 ? posC : negC, cell);
+>    TblAdd("SIGNALS | TAKEN | SKIPPED", IntegerToString(sigN) + " | " + IntegerToString(takenN) + " | " + IntegerToString(skipN) + (missN > 0 ? " | missed " + IntegerToString(missN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN > 0 ? negC : white, cell);
+>    TblAdd("SIGNAL TRADES | WIN % | R", AccTxt() + " | last " + lastRes, totR >= 0 ? posC : negC, cell);
+>    TblAdd("TP HIT", TpTxt(), posC, cell);
+>    if(InpMv1On || InpMv2On || InpMv3On) TblAdd("BREAKEVEN", BeTxt(), white, cell);
+>    if(InpNoChase || InpChopOn || InpEmaOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
+>    TblAdd("DATA RANGE", gFirstT > 0 ? DateTxt(UserTime(gFirstT), true) + " -> " + DateTxt(UserTime(gLastDone), false) + " | " + IntegerToString(bi + 1) + " bars" : "-", white, cell);
+>    // column widths from the longest text in each column
+>    int  fs = (int)MathMax(6, InpTableFont), n = ArraySize(tblKey), kw = 0, vw = 0, th = 0;
+>    uint tw = 0, tht = 0;
+>    TextSetFont("Arial", -fs * 10);
+>    for(int i = 0; i < n; i++)
+>    {
+>       TextGetSize(tblKey[i], tw, tht); kw = (int)MathMax(kw, (int)tw); th = (int)MathMax(th, (int)tht);
+>       TextGetSize(tblVal[i], tw, tht); vw = (int)MathMax(vw, (int)tw); th = (int)MathMax(th, (int)tht);
+>    }
+>    int  rowH = th + 6, c0 = kw + 12, c1 = vw + 12;
+>    int  cw = (int)ChartGetInteger(0, CHART_WIDTH_IN_PIXELS), chh = (int)ChartGetInteger(0, CHART_HEIGHT_IN_PIXELS);
+>    gTblW = cw; gTblH = chh;
+>    bool right = InpTablePos == TBL_TOP_RIGHT || InpTablePos == TBL_BOTTOM_RIGHT, bottom = InpTablePos == TBL_BOTTOM_RIGHT || InpTablePos == TBL_BOTTOM_LEFT;
+>    int  x0 = right ? (int)MathMax(0, cw - c0 - c1 - 8) : 8, y0 = bottom ? (int)MathMax(0, chh - n * rowH - 8) : 22;
+>    for(int i = 0; i < n; i++)
+>    {
+>       int y = y0 + i * rowH;
+>       TblCell("ARM_TB_k" + IntegerToString(i), x0, y, c0, rowH, i == 0 ? ((color)14721833) : ((color)3747370), tblKey[i], i == 0 ? white : ((color)14472401), fs);
+>       TblCell("ARM_TB_v" + IntegerToString(i), x0 + c0, y, c1, rowH, tblBg[i], tblVal[i], tblCol[i], fs);
+>    }
+>    ChartRedraw(0);
+802,807d1064
+<    // drawings of the engine's shown trades (same events as the TradingView files)
+<    if(evCancel != 0 || evFill) ObjectDelete(0, "ARM_limit");
+<    if(evArm) DrawLimit(bt, true);
+<    if(evFill) DrawTrade(bt); else ExtendTrade(bt);
+<    if(evExit) gDrawOn = false;
+< 
+864,872c1121,1123
+<    // status panel
+<    string state = st != 0 && trGhost ? "SKIPPED (too far from VWAP)" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
+<                   capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : dayBlock ? "STREAK STOP TODAY" :
+<                   !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : "SCANNING";
+<    string ex = exState == 2 ? " (in trade)" : exState == 1 ? (gVirt ? " (waiting for the level)" : " (order working)") : "";
+<    Comment(StringFormat("AUCTION RETEST EA v3\nState: %s%s\nEntry/Stop: %s / %s   Exit target: %s\nRisk: %.2f  Lots: %.2f\nRecovery pool: %.2f  Carried: %.2f\nStreak W/L: %d/%d   Total %dW/%dL\nDay P&L: %.2f  Fills: %d/%d\nSignals %d · taken %d · skipped %d%s%s",
+<            state, ex, DoubleToString(lim, _Digits), DoubleToString(stp, _Digits), DoubleToString(tF, _Digits), exRiskAmt, exLots,
+<            recPool, carried, winRow, lossRow, exW, exLn, dayPnl, dayFills, InpMaxFills, sigN, takenN, skipN,
+<            missN > 0 ? StringFormat(" · missed %d", missN) : "", skipWhy != "" ? " (last: " + skipWhy + ")" : ""));
+---
+>    // on-chart table
+>    gStateTxt = StateText(newsBlk);
+>    UpdateTable();
+914a1166,1169
+>    trSkip = 0; lastRes = "-"; bestPx = 0; ghW = 0; ghL = 0; ghR = 0;
+>    vxSide = 0; vxN = 0; hK = -1; hC = 0; hSum = 0; hNum = 0; ArrayInitialize(hE, 0.0);
+>    ArrayInitialize(tpHitN, 0); beN = 0; lkN = 0; gFirstT = 0;
+>    gDrawT = 0; ArrayResize(gDrawn, 0); gStateTxt = "SCANNING";
+924a1180,1182
+>    // markings and table only where they can be seen (not in non-visual tests or optimisation)
+>    gCanDraw = MQLInfoInteger(MQL_OPTIMIZATION) == 0 && (MQLInfoInteger(MQL_TESTER) == 0 || MQLInfoInteger(MQL_VISUAL_MODE) != 0);
+>    ObjectsDeleteAll(0, "ARM_");
+946a1205,1206
+>    gStateTxt = StateText(false);
+>    UpdateTable();
+950c1210,1223
+< void OnDeinit(const int reason) { Comment(""); }
+---
+> void OnDeinit(const int reason)
+> {
+>    Comment("");
+>    // after a Strategy Tester run the markings stay on the visual chart; everywhere else they are removed with the EA
+>    if(MQLInfoInteger(MQL_TESTER) == 0) ObjectsDeleteAll(0, "ARM_");
+> }
+> 
+> void OnChartEvent(const int id, const long &lparam, const double &dparam, const string &sparam)
+> {
+>    if(id != CHARTEVENT_CHART_CHANGE) return;
+>    // keep the table in its corner when the chart window is resized (scrolling does not move it)
+>    int cw = (int)ChartGetInteger(0, CHART_WIDTH_IN_PIXELS), chh = (int)ChartGetInteger(0, CHART_HEIGHT_IN_PIXELS);
+>    if(cw != gTblW || chh != gTblH) UpdateTable();
+> }
+980a1254,1255
+> 
+> #line 1225 "/home/user/Bank-Loan-Report/MetaTrader5/AuctionRetestEA.mq5"

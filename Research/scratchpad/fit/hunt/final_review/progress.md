@@ -1,0 +1,4 @@
+1. syntax parse of final.pine with pynescript 0.3.0: parsed ok (198 top-level nodes); no tabs, indents all multiples of 4, no trailing spaces
+2. independent port of final.pine (pine_sim.py, na=nan, no early-bar skip) vs pine_final.run on 8 symbols: 993 trades, 0 diffs (newDay@bar0 true and false); baseline reproduced 75/5/6
+3. option-path parity (pine_sim vs pine_final.run, 8 symbols): rearm=replace, cooldown 0/1/4, maxFills 1/2, dayStop 0/1.5, half off/biasNet 2/halfAtr 1.2, tp4 1.5, minOpenBars 0/3, slope 0, vwapFilter off, mom 0, sunday on, retest 3, struct/entry 8: 20 variants, 0 diffs each
+4. manual v6 compile/runtime pass over all 484 lines (signatures, qualifiers, := vs =, UDF globals, history refs, na, string concat, table 9/10 rows vs row idx 0..8/9, global alertcondition, input args/options/defaults): no definite problem

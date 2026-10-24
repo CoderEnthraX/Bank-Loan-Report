@@ -1,0 +1,65 @@
+
+==== M5: 204 combinations with >= 400 trades in 2021-23 | positive after spread in 2021-23: 0 | of the 20 best in 2021-23, positive in 2024-26: 16 | rank correlation A vs B: +0.35
+combination (ranked by 2021-23 after spread)   | 2021-23: trades win  TP1  E  net   | 2024-26: trades win  TP1  E  net   | yrs+ net, longest losing streak
+stop2.5 KZ-Asia nc2.0 notrend TP4              |   446 36.5%  69% +0.096 -0.059 |   410 36.8%  65% +0.105 +0.062 | 4/6  11
+stop2.5 KZ-Asia band0.5-2 notrend TP4          |   446 36.5%  69% +0.096 -0.059 |   410 36.8%  65% +0.105 +0.062 | 4/6  11
+stop2.5 KZ-Asia anydist ema200 BE@TP1          |   888 21.3%  66% +0.087 -0.061 |   877 21.9%  64% +0.076 +0.036 | 2/6   6
+stop2.5 KZ-Asia nc2.0 notrend BE@TP1           |   524 20.4%  68% +0.092 -0.061 |   455 23.3%  65% +0.121 +0.078 | 3/6   5
+stop2.5 KZ-Asia band0.5-2 notrend BE@TP1       |   524 20.4%  68% +0.092 -0.061 |   455 23.3%  65% +0.121 +0.078 | 3/6   5
+stop2.2 KZ-Asia anydist ema200 TP4             |   848 36.4%  66% +0.093 -0.072 |   853 36.2%  64% +0.087 +0.042 | 2/6  15
+stop2.5 KZ-NY anydist notrend TP4              |   796 33.2%  59% -0.005 -0.078 |   717 33.5%  60% +0.004 -0.014 | 2/6  26
+stop2.2 KZ-Asia anydist notrend TP4            |  1155 36.5%  65% +0.096 -0.082 |  1059 35.4%  63% +0.062 +0.012 | 2/6  15
+stop2.2 KZ-NY anydist notrend TP4              |   832 33.2%  60% -0.005 -0.088 |   738 33.2%  60% -0.004 -0.024 | 1/6  28
+stop2.2 KZ-Asia nc2.0 notrend TP4              |   476 36.1%  67% +0.084 -0.088 |   432 37.5%  64% +0.125 +0.079 | 3/6  16
+stop2.2 KZ-Asia band0.5-2 notrend TP4          |   476 36.1%  67% +0.084 -0.088 |   432 37.5%  64% +0.125 +0.079 | 3/6  16
+stop2.5 KZ-Asia anydist notrend BE@TP1         |  1221 20.7%  66% +0.072 -0.088 |  1093 21.8%  64% +0.076 +0.030 | 1/6   7
+stop2.5 KZ-Asia anydist ema200 TP4             |   820 35.2%  66% +0.057 -0.091 |   829 36.9%  64% +0.107 +0.067 | 2/6  12
+stop2.2 KZ-Asia anydist ema200 BE@TP1          |   921 20.8%  66% +0.073 -0.091 |   905 22.3%  64% +0.084 +0.039 | 2/6   6
+stop2.2 KZ-Ldn+NY+LC nc2.0 notrend TP4         |  1024 33.3%  63% -0.001 -0.092 |  1089 34.8%  63% +0.044 +0.023 | 2/6  17
+  positive after spread in BOTH periods: 0 combinations
+
+==== M15: 122 combinations with >= 250 trades in 2021-23 | positive after spread in 2021-23: 5 | of the 20 best in 2021-23, positive in 2024-26: 12 | rank correlation A vs B: -0.19
+combination (ranked by 2021-23 after spread)   | 2021-23: trades win  TP1  E  net   | 2024-26: trades win  TP1  E  net   | yrs+ net, longest losing streak
+stop2.2 allhours nc1.5 notrend BE@TP1          |   301 22.9%  64% +0.100 +0.035 |   348 22.1%  58% +0.026 +0.009 | 3/6   7
+stop2.2 KZ-NY anydist ema200 BE@TP1            |   359 24.0%  58% +0.064 +0.012 |   311 19.9%  59% -0.013 -0.025 | 3/6   6
+stop1.8 KZ-NY anydist ema200 BE@TP1            |   371 25.3%  57% +0.073 +0.010 |   315 21.3%  59% +0.016 +0.001 | 3/6   6
+stop2.2 KZ-Asia anydist ema200 TP4             |   326 36.5%  66% +0.095 +0.003 |   327 39.1%  61% +0.174 +0.149 | 5/6  11
+stop2.5 KZ-Asia anydist ema200 TP4             |   318 36.2%  66% +0.085 +0.001 |   316 39.6%  62% +0.187 +0.164 | 3/6  10
+stop1.8 KZ-NY anydist ema200 TP4               |   363 35.3%  57% +0.058 -0.005 |   312 34.0%  59% +0.019 +0.004 | 4/6  13
+stop2.5 allhours nc1.5 notrend BE@TP1          |   271 19.9%  65% +0.048 -0.010 |   312 21.5%  57% -0.003 -0.018 | 3/6   6
+stop1.8 KZ-Asia anydist ema200 TP4             |   331 36.6%  65% +0.097 -0.011 |   340 38.8%  60% +0.165 +0.135 | 4/6  11
+stop2.2 KZ-Ldn+NY+LC anydist ema200 BE@TP1     |   779 22.2%  60% +0.040 -0.014 |   694 21.0%  61% +0.026 +0.013 | 2/6   6
+stop1.8 KZ-NY anydist notrend TP4              |   441 34.9%  56% +0.048 -0.017 |   356 33.7%  59% +0.011 -0.004 | 2/6  13
+stop2.2 allhours nc2.0 ema200 TP4              |   442 34.6%  63% +0.038 -0.021 |   486 34.2%  56% +0.025 +0.010 | 3/6  12
+stop2.2 allhours anydist ema200 BE@TP1         |  1382 20.8%  62% +0.038 -0.023 |  1354 20.2%  59% -0.005 -0.021 | 1/6   7
+stop2.2 KZ-NY anydist notrend BE@TP1           |   434 23.0%  57% +0.030 -0.025 |   356 20.2%  59% -0.003 -0.016 | 2/6   7
+stop2.5 KZ-Ldn+NY+LC anydist ema200 BE@TP1     |   744 21.8%  59% +0.023 -0.025 |   675 21.0%  60% +0.025 +0.014 | 1/6   8
+stop2.2 allhours band0.5-2 ema200 TP4          |   436 34.4%  63% +0.032 -0.027 |   479 34.0%  56% +0.021 +0.006 | 3/6  12
+  positive after spread in BOTH periods: 4 combinations
+    stop2.2 allhours nc1.5 notrend BE@TP1          A +0.035 (301) B +0.009 (348) yrs+ 3/6 streak 7
+    stop2.2 KZ-Asia anydist ema200 TP4             A +0.003 (326) B +0.149 (327) yrs+ 5/6 streak 11
+    stop2.5 KZ-Asia anydist ema200 TP4             A +0.001 (318) B +0.164 (316) yrs+ 3/6 streak 10
+    stop1.8 KZ-NY anydist ema200 BE@TP1            A +0.010 (371) B +0.001 (315) yrs+ 3/6 streak 6
+
+==== H1: 78 combinations with >= 100 trades in 2021-23 | positive after spread in 2021-23: 4 | of the 20 best in 2021-23, positive in 2024-26: 19 | rank correlation A vs B: +0.47
+combination (ranked by 2021-23 after spread)   | 2021-23: trades win  TP1  E  net   | 2024-26: trades win  TP1  E  net   | yrs+ net, longest losing streak
+stop2.5 allhours nc2.0 notrend TP4             |   102 39.2%  60% +0.176 +0.150 |   117 43.6%  58% +0.308 +0.301 | 5/6  12
+stop2.2 allhours nc2.0 notrend TP4             |   119 36.1%  58% +0.084 +0.055 |   127 43.3%  65% +0.299 +0.292 | 5/6   7
+stop2.2 allhours band0.5-2 notrend TP4         |   110 35.5%  56% +0.064 +0.034 |   114 46.5%  70% +0.395 +0.388 | 5/6   6
+stop2.2 allhours nc2.0 ema200 TP4              |   100 35.0%  61% +0.050 +0.021 |   105 41.9%  61% +0.257 +0.249 | 4/6  10
+stop1.8 allhours nc2.0 ema200 TP4              |   105 34.3%  61% +0.029 -0.007 |   116 37.9%  57% +0.138 +0.129 | 4/6  14
+stop1.8 allhours band0.5-2 notrend TP4         |   131 33.6%  57% +0.008 -0.028 |   124 38.7%  59% +0.161 +0.152 | 4/6   8
+stop1.8 allhours nc2.0 notrend TP4             |   140 33.6%  58% +0.007 -0.028 |   139 37.4%  58% +0.122 +0.113 | 4/6   8
+stop2.5 allhours nc2.0 ema200 BE@TP1           |   103 17.5%  64% -0.010 -0.035 |   115 20.0%  55% -0.052 -0.059 | 3/6   5
+stop2.2 allhours nc2.0 ema200 BE@TP1           |   113 17.7%  62% -0.027 -0.056 |   118 22.9%  59% +0.051 +0.043 | 2/6   6
+stop2.2 allhours anydist notrend TP4           |   390 32.3%  58% -0.031 -0.059 |   350 36.9%  65% +0.106 +0.098 | 5/6  12
+stop2.5 KZ-Ldn+NY anydist notrend BE@TP1       |   263 17.9%  61% -0.034 -0.059 |   226 21.7%  63% +0.066 +0.061 | 4/6   9
+stop2.5 KZ-Ldn+NY+LC anydist notrend BE@TP1    |   298 17.8%  60% -0.040 -0.065 |   276 22.5%  63% +0.080 +0.074 | 4/6   6
+stop2.5 allhours anydist ema200 TP4            |   295 31.9%  58% -0.044 -0.068 |   271 39.1%  59% +0.173 +0.167 | 4/6  11
+stop2.5 allhours anydist notrend TP4           |   353 31.7%  59% -0.048 -0.073 |   311 37.0%  59% +0.109 +0.103 | 5/6  12
+stop2.5 KZ-NY anydist notrend TP4              |   143 31.5%  58% -0.056 -0.080 |   123 35.0%  59% +0.049 +0.043 | 2/6  12
+  positive after spread in BOTH periods: 4 combinations
+    stop2.5 allhours nc2.0 notrend TP4             A +0.150 (102) B +0.301 (117) yrs+ 5/6 streak 12
+    stop2.2 allhours nc2.0 notrend TP4             A +0.055 (119) B +0.292 (127) yrs+ 5/6 streak 7
+    stop2.2 allhours band0.5-2 notrend TP4         A +0.034 (110) B +0.388 (114) yrs+ 5/6 streak 6
+    stop2.2 allhours nc2.0 ema200 TP4              A +0.021 (100) B +0.249 (105) yrs+ 4/6 streak 10

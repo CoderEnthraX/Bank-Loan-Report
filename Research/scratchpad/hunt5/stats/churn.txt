@@ -1,0 +1,10 @@
+sym   bars | current: N win%  R   | CAND: N win%  R   | changes: common  removed(cur only)  added(cand only) | cur-only avg R, cand-only avg R
+CRUDE    5794 |  117 37.6%    +15 |  129 37.2%    +15 |  108    9   21  (26% of cur trades differ) | +0.67 +0.43
+GC       9531 |  145 40.0%    +29 |  162 39.5%    +30 |  132   14   31  (31% of cur trades differ) | +0.29 +0.16
+NASDAQ   9937 |  163 38.7%    +26 |  168 38.1%    +24 |  144   19   24  (26% of cur trades differ) | -0.05 -0.12
+NIFTY    2449 |   57 35.1%     +3 |   57 36.8%     +6 |   51    6    6  (21% of cur trades differ) | -1.00 -0.50
+US30     9439 |  149 34.9%     +7 |  167 37.7%    +22 |  136   13   31  (30% of cur trades differ) | -0.31 +0.35
+SENSEX   2352 |   55 40.0%    +11 |   57 42.1%    +15 |   50    5    7  (22% of cur trades differ) | +0.80 +1.14
+EURUSD   9962 |  148 39.2%    +26 |  164 42.7%    +46 |  138   10   26  (24% of cur trades differ) | -0.10 +0.62
+ETH     13829 |  169 30.2%    -16 |  196 31.1%    -13 |  145   24   51  (44% of cur trades differ) | +0.12 +0.12
+ALL            | 1003 36.7%   +101 | 1100 37.7%   +145 | {'c': 904, 'r': 100, 'a': 197}

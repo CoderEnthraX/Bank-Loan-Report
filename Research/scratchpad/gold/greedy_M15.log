@@ -1,0 +1,14 @@
+M15 seeded 332 engine runs
+M15 170 moves
+
+M15 profit:default start: default | A -0.102 (n 1610, L 16) B -0.007
+round 1: stopAtr = 4.0 | A +0.083 (n 609, win 37.6%, W/L 6/18) | B +0.084 (n 570, W/L 5/11) | yrs+ 6 | score 2.06
+round 2: Stop to +1R at TP3 | A +0.106 (n 692, win 44.9%, W/L 8/17) | B +0.134 (n 703, W/L 5/11) | yrs+ 6 | score 2.78
+round 3: halfStopAtr = 1.2 | A +0.135 (n 687, win 46.0%, W/L 8/17) | B +0.132 (n 701, W/L 5/11) | yrs+ 6 | score 3.55
+round 4: 1h EMA20 speed cap = 1.20 | A +0.169 (n 575, win 47.0%, W/L 8/18) | B +0.116 (n 572, W/L 6/12) | yrs+ 6 | score 4.06
+round 5: entryLen = 8 | A +0.186 (n 574, win 47.2%, W/L 8/18) | B +0.105 (n 581, W/L 6/14) | yrs+ 6 | score 4.47
+round 6: impBodyPct = 60.0 | A +0.198 (n 568, win 47.7%, W/L 8/12) | B +0.081 (n 580, W/L 6/14) | yrs+ 6 | score 4.73
+final profit:default: {'stopAtr': 4.0, 'mv3On': True, 'halfStopAtr': 1.2, 'emaOn': True, 'emaMax': 1.2, 'entryLen': 8, 'impBodyPct': 60.0}
+
+M15 profit:bestB start: stopAtr = 3.0 + momLen = 15 + cooldownBars = 12 + VWAP anchor = month | A +0.030 (n 650, L 11) B +0.006
+round 1: atrLen = 21 | A +0.067 (n 663, win 37.1%, W/L 8/14) | B +0.005 (n 675, W/L 5/11) | yrs+ 5 | score 1.72

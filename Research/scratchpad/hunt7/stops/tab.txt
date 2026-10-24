@@ -1,0 +1,160 @@
+A          CRUDE          2026-10-06 14:50 S norm mn k 69 net -4 pB5/1 pD5/1 imp s5o0 disp 0/4 sig[0, 1] gap  +1.1 in    pdir up vpos +9.1 rngA 1.16 prev -1,2.0,S selfImp 1
+A          CRUDE          2026-10-06 22:10 L norm mn k154 net +4 pB5/1 pD5/1 imp s4o7 disp 4/6 sig[1, 2] gap  -1.2 in    pdir up vpos -2.5 rngA 1.53 prev 1,2.0,S selfImp 1
+A          CRUDE          2026-10-07 11:35 L norm mn k 30 net -1 pB6/7 pD6/6 imp s1o1 disp 1/0 sig[0, 0] gap  +4.0 ABOVE pdir dn vpos+13.4 rngA 2.19 prev 1,2.0,o selfImp 1
+A          CRUDE          2026-10-07 13:25 L norm mn k 52 net -1 pB6/7 pD6/6 imp s3o2 disp 2/0 sig[1, 0] gap  +3.2 ABOVE pdir dn vpos+11.5 rngA 2.11 prev 1,-1.0,S selfImp 1
+A          CRUDE          2026-10-07 19:20 L norm mn k120 net -1 pB6/7 pD6/6 imp s5o2 disp 3/0 sig[2, 0] gap  +2.8 ABOVE pdir dn vpos+12.1 rngA 1.22 prev 1,-1.0,S selfImp 1
+A          CRUDE          2026-10-07 20:10 S norm mn k133 net +1 pB6/7 pD6/6 imp s2o6 disp 4/0 sig[3, 0] gap  -2.6 ABOVE pdir dn vpos -6.4 rngA 1.09 prev 1,-1.0,S selfImp 1
+A          CRUDE          2026-10-07 22:40 S norm mn k163 net +1 pB6/7 pD6/6 imp s5o6 disp 4/2 sig[3, 1] gap  -2.7 ABOVE pdir dn vpos -2.5 rngA 0.96 prev -1,2.0,S selfImp 1
+A          CRUDE          2026-10-08 10:50 L norm mn k 21 net +0 pB6/6 pD4/3 imp s0o0 disp 0/0 sig[0, 0] gap +10.7 in    pdir dn vpos +2.9 rngA 0.99 prev -1,-1.0,o selfImp 1
+A          CRUDE          2026-10-08 12:20 L norm mn k 39 net +0 pB6/6 pD4/3 imp s1o0 disp 1/0 sig[1, 0] gap +10.8 in    pdir dn vpos +8.1 rngA 0.93 prev 1,2.0,S selfImp 1
+A          CRUDE          2026-10-08 13:10 L norm mn k 48 net +0 pB6/6 pD4/3 imp s4o0 disp 4/0 sig[2, 0] gap  +8.4 in    pdir dn vpos+11.0 rngA 1.43 prev 1,2.0,S selfImp 1
+A          CRUDE          2026-10-08 20:25 L norm mn k136 net +0 pB6/6 pD4/3 imp s9o0 disp 8/0 sig[4, 0] gap  +5.4 in    pdir dn vpos+11.6 rngA 1.28 prev 1,2.0,S selfImp 1
+A          CRUDE          2026-10-09 10:35 S HALF mT k 17 net -9 pB10/1 pD9/1 imp s0o0 disp 0/0 sig[0, 0] gap  +6.6 in    pdir up vpos +9.6 rngA 1.25 prev 1,-1.0,o selfImp 1
+A          CRUDE          2026-10-09 11:55 L norm mn k 34 net +9 pB10/1 pD9/1 imp s0o1 disp 0/1 sig[0, 1] gap  -6.7 in    pdir up vpos -6.5 rngA 1.27 prev -1,-1.0,S selfImp 1
+A          ETH            2026-10-10 06:45 L norm mn k 14 net -2 pB6/8 pD5/8 imp s1o1 disp 0/0 sig[0, 0] gap  +0.0 in    pdir up vpos -1.5 rngA 1.14 prev 1,2.0,o selfImp 1
+A          ETH            2026-10-10 12:30 S norm mn k 83 net +2 pB6/8 pD5/8 imp s1o5 disp 2/0 sig[1, 0] gap  -0.0 in    pdir up vpos +0.8 rngA 0.86 prev 1,2.0,S selfImp 1
+A          ETH            2026-10-10 17:30 L norm mn k139 net -2 pB6/8 pD5/8 imp s5o2 disp 2/1 sig[1, 1] gap  +0.0 in    pdir up vpos +3.4 rngA 3.16 prev -1,-1.0,S selfImp 1
+A          ETH            2026-10-11 00:25 L norm mn k225 net -2 pB6/8 pD5/8 imp s10o2 disp 5/1 sig[2, 1] gap  +0.0 in    pdir up vpos+10.8 rngA 2.12 prev 1,2.0,S selfImp 1
+A          EURUSD         2026-10-09 05:45 L norm mn k 26 net +4 pB12/8 pD10/7 imp s0o0 disp 0/0 sig[0, 0] gap  +0.0 in    pdir up vpos +9.2 rngA 2.62 prev 1,-1.0,o selfImp 1
+A          EURUSD         2026-10-09 07:05 L norm mn k 42 net +4 pB12/8 pD10/7 imp s1o0 disp 1/0 sig[1, 0] gap  +0.0 in    pdir up vpos+11.6 rngA 1.63 prev 1,2.0,S selfImp 1
+A          EURUSD         2026-10-09 12:55 L norm mn k111 net +4 pB12/8 pD10/7 imp s6o0 disp 5/0 sig[2, 0] gap  +0.0 in    pdir up vpos +9.7 rngA 1.81 prev 1,2.0,S selfImp 1
+A          EURUSD         2026-10-09 15:30 S HALF mT k143 net -4 pB12/8 pD10/7 imp s0o7 disp 6/0 sig[3, 0] gap  -0.0 in    pdir up vpos -5.2 rngA 1.04 prev 1,-1.0,S selfImp 1
+A          EURUSD         2026-10-09 17:40 S norm mn k169 net -4 pB12/8 pD10/7 imp s3o7 disp 6/2 sig[3, 1] gap  -0.0 in    pdir up vpos -2.4 rngA 1.62 prev -1,2.0,S selfImp 1
+A          EURUSD         2026-10-12 05:35 L norm mn k 24 net -4 pB7/11 pD6/7 imp s3o0 disp 0/0 sig[0, 0] gap  -5.7 in    pdir dn vpos -1.5 rngA 1.39 prev -1,2.0,o selfImp 1
+A          EURUSD         2026-10-12 10:20 S norm mn k 81 net +4 pB7/11 pD6/7 imp s0o7 disp 3/0 sig[1, 0] gap  +6.9 in    pdir dn vpos +1.5 rngA 1.25 prev 1,2.0,S selfImp 1
+A          GC             2026-10-07 06:10 S HALF mT k 29 net-11 pB17/6 pD15/4 imp s0o0 disp 0/0 sig[0, 0] gap  -0.8 in    pdir up vpos -3.2 rngA 1.24 prev 1,2.0,o selfImp 1
+A          GC             2026-10-07 07:55 S norm mn k 48 net-11 pB17/6 pD15/4 imp s1o0 disp 0/1 sig[0, 1] gap  -0.7 in    pdir up vpos +2.4 rngA 1.31 prev -1,2.0,S selfImp 1
+A          GC             2026-10-07 11:35 S norm mn k 95 net-11 pB17/6 pD15/4 imp s5o0 disp 0/5 sig[0, 2] gap  -0.8 in    pdir up vpos +8.7 rngA 2.11 prev -1,2.0,S selfImp 1
+A          GC             2026-10-07 13:55 S norm mn k124 net-11 pB17/6 pD15/4 imp s6o0 disp 0/6 sig[0, 3] gap  -0.6 in    pdir up vpos +6.8 rngA 1.14 prev -1,-1.0,S selfImp 1
+A          GC             2026-10-08 04:50 L HALF mT k 15 net -9 pB1/10 pD1/10 imp s0o0 disp 0/0 sig[0, 0] gap  +1.3 in    pdir dn vpos -0.7 rngA 0.82 prev 1,-1.0,o selfImp 1
+A          GC             2026-10-08 05:40 S norm mn k 25 net +9 pB1/10 pD1/10 imp s0o1 disp 1/0 sig[1, 0] gap  -1.1 in    pdir dn vpos +2.1 rngA 1.67 prev 1,-1.0,S selfImp 1
+A          GC             2026-10-08 06:40 L norm mn k 36 net -9 pB1/10 pD1/10 imp s1o1 disp 1/1 sig[1, 1] gap  +0.7 in    pdir dn vpos +3.5 rngA 3.59 prev -1,-1.0,S selfImp 1
+A          GC             2026-10-08 09:40 L norm mn k 73 net -9 pB1/10 pD1/10 imp s5o1 disp 5/1 sig[2, 1] gap  +0.9 in    pdir dn vpos +7.4 rngA 0.89 prev 1,2.0,S selfImp 1
+A          GC             2026-10-08 11:40 S norm mn k 94 net +9 pB1/10 pD1/10 imp s1o6 disp 6/1 sig[3, 1] gap  -0.8 in    pdir dn vpos -1.1 rngA 2.28 prev 1,-1.0,S selfImp 1
+A          GC             2026-10-09 04:40 L norm mn k 13 net +5 pB10/5 pD9/5 imp s0o0 disp 0/0 sig[0, 0] gap  +0.6 in    pdir up vpos +7.7 rngA 1.17 prev -1,-1.0,o selfImp 1
+A          GC             2026-10-09 07:30 L norm mn k 47 net +5 pB10/5 pD9/5 imp s5o0 disp 4/0 sig[2, 0] gap  +0.3 in    pdir up vpos+11.9 rngA 0.91 prev 1,2.0,S selfImp 1
+A          GC             2026-10-09 11:20 L norm mn k 90 net +5 pB10/5 pD9/5 imp s10o0 disp 8/0 sig[3, 0] gap  +0.4 in    pdir up vpos+20.8 rngA 2.42 prev 1,2.0,S selfImp 1
+A          GC             2026-10-09 18:25 S HALF mT k178 net -5 pB10/5 pD9/5 imp s0o11 disp 9/0 sig[4, 0] gap  -0.3 in    pdir up vpos-10.3 rngA 2.14 prev 1,-1.0,S selfImp 1
+A          GC             2026-10-09 20:55 L norm mn k208 net +5 pB10/5 pD9/5 imp s11o1 disp 9/1 sig[4, 1] gap  +0.3 in    pdir up vpos+13.5 rngA 0.88 prev -1,-1.0,S selfImp 1
+A          GC             2026-10-12 05:55 L norm mn k 28 net+14 pB15/1 pD12/1 imp s2o2 disp 0/0 sig[0, 0] gap  +0.1 in    pdir up vpos +5.8 rngA 1.72 prev 1,2.0,o selfImp 1
+A          GC             2026-10-12 10:35 S norm mn k 84 net-14 pB15/1 pD12/1 imp s3o5 disp 2/0 sig[1, 0] gap  -0.2 in    pdir up vpos -2.5 rngA 1.13 prev 1,-1.0,S selfImp 1
+A          NASDAQ         2026-10-07 21:25 L norm mn k200 net +6 pB9/3 pD7/2 imp s0o13 disp 0/11 sig[0, 6] gap  -0.0 in    pdir up vpos -4.9 rngA 0.86 prev -1,-1.0,S selfImp 1
+A          NASDAQ         2026-10-08 05:40 S norm mn k 13 net +9 pB4/13 pD2/11 imp s0o0 disp 0/0 sig[0, 0] gap  +0.0 in    pdir dn vpos -7.4 rngA 1.79 prev 1,2.0,o selfImp 1
+A          NASDAQ         2026-10-08 08:05 L norm mn k 42 net -9 pB4/13 pD2/11 imp s1o3 disp 1/3 sig[0, 1] gap  -0.0 in    pdir dn vpos +9.2 rngA 1.72 prev -1,-1.0,S selfImp 1
+A          NASDAQ         2026-10-08 08:50 S norm mn k 50 net +9 pB4/13 pD2/11 imp s3o2 disp 2/3 sig[1, 1] gap  +0.0 in    pdir dn vpos -4.5 rngA 1.29 prev 1,-1.0,S selfImp 1
+A          NASDAQ         2026-10-08 14:30 S norm mn k119 net +9 pB4/13 pD2/11 imp s9o2 disp 2/8 sig[1, 2] gap  +0.0 in    pdir dn vpos +4.0 rngA 0.82 prev -1,2.0,S selfImp 1
+A          NASDAQ         2026-10-08 15:50 S norm mn k135 net +9 pB4/13 pD2/11 imp s10o2 disp 2/9 sig[1, 3] gap  +0.0 in    pdir dn vpos +4.8 rngA 0.89 prev -1,-1.0,S selfImp 1
+A          NASDAQ         2026-10-09 05:00 S norm mn k  5 net+16 pB5/21 pD3/18 imp s0o0 disp 0/0 sig[0, 0] gap  +0.0 in    pdir dn vpos +7.0 rngA 1.28 prev -1,2.0,o selfImp 1
+A          NASDAQ         2026-10-09 06:05 L HALF mT k 18 net-16 pB5/21 pD3/18 imp s0o1 disp 0/1 sig[0, 1] gap  -0.0 in    pdir dn vpos -3.8 rngA 1.52 prev -1,2.0,S selfImp 1
+A          NASDAQ         2026-10-09 09:45 L norm mn k 62 net-16 pB5/21 pD3/18 imp s2o2 disp 2/1 sig[2, 1] gap  -0.0 in    pdir dn vpos +1.5 rngA 0.88 prev 1,-1.0,S selfImp 1
+A          NASDAQ         2026-10-09 11:10 L norm mn k 79 net-16 pB5/21 pD3/18 imp s4o2 disp 4/1 sig[3, 1] gap  -0.0 in    pdir dn vpos +3.5 rngA 1.15 prev 1,-1.0,S selfImp 1
+A          NASDAQ         2026-10-09 12:55 L norm mn k100 net-16 pB5/21 pD3/18 imp s7o2 disp 6/1 sig[4, 1] gap  -0.0 in    pdir dn vpos +6.1 rngA 1.25 prev 1,2.0,S selfImp 1
+A          NASDAQ         2026-10-12 06:20 S norm mn k 21 net -1 pB1/0 pD0/0 imp s0o4 disp 0/0 sig[0, 0] gap  -0.0 in    pdir up vpos -3.4 rngA 1.19 prev 1,-1.0,o selfImp 1
+A          NASDAQ         2026-10-12 11:15 S norm mn k 80 net -1 pB1/0 pD0/0 imp s3o4 disp 0/3 sig[0, 1] gap  -0.0 in    pdir up vpos -1.4 rngA 1.75 prev -1,2.0,S selfImp 1
+A          NIFTY          2026-10-05 09:35 L HALF mT k  2 net -8 pB0/8 pD0/6 imp s0o0 disp 0/0 sig[0, 0] gap  +2.3 in    pdir dn vpos +2.7 rngA 0.97 prev -1,-1.0,o selfImp 1
+A          NIFTY          2026-10-05 10:40 S norm mn k 16 net +8 pB0/8 pD0/6 imp s1o2 disp 2/1 sig[1, 0] gap  -2.5 in    pdir dn vpos -0.3 rngA 1.58 prev 1,-1.0,S selfImp 1
+A          NIFTY          2026-10-06 09:50 L norm mn k  6 net +0 pB3/3 pD3/3 imp s0o0 disp 0/0 sig[0, 0] gap  +2.7 in    pdir dn vpos +4.2 rngA 0.94 prev -1,-1.0,o selfImp 1
+A          NIFTY          2026-10-07 10:30 L norm mn k 14 net +3 pB3/0 pD1/0 imp s0o2 disp 0/2 sig[0, 1] gap  -0.9 in    pdir up vpos +0.7 rngA 1.26 prev 1,2.0,o selfImp 1
+A          NIFTY          2026-10-07 11:00 L norm mn k 20 net +3 pB3/0 pD1/0 imp s1o2 disp 1/2 sig[1, 1] gap  -0.9 in    pdir up vpos +1.0 rngA 1.02 prev 1,-1.0,S selfImp 1
+A          NIFTY          2026-10-08 10:40 S norm mn k 16 net +1 pB3/4 pD3/4 imp s1o0 disp 0/1 sig[0, 1] gap  +0.9 in    pdir dn vpos +7.6 rngA 1.06 prev 1,-1.0,o selfImp 1
+A          NIFTY          2026-10-08 13:20 S norm mn k 48 net +1 pB3/4 pD3/4 imp s5o0 disp 0/4 sig[0, 2] gap  +0.9 in    pdir dn vpos+14.5 rngA 1.30 prev -1,2.0,S selfImp 1
+A          NIFTY          2026-10-09 10:10 L HALF mT k 10 net -7 pB0/7 pD0/6 imp s0o0 disp 0/0 sig[0, 0] gap  +3.0 in    pdir dn vpos +3.9 rngA 0.82 prev -1,-1.0,o selfImp 1
+A          NIFTY          2026-10-09 13:50 L norm mn k 53 net -7 pB0/7 pD0/6 imp s3o0 disp 2/0 sig[1, 0] gap  +5.8 in    pdir dn vpos +9.9 rngA 1.22 prev 1,-1.0,S selfImp 1
+A          NIFTY          2026-10-12 09:55 S norm mn k  7 net -7 pB7/0 pD6/0 imp s1o0 disp 0/0 sig[0, 0] gap  -1.7 ABOVE pdir up vpos +0.2 rngA 1.54 prev 1,2.0,o selfImp 1
+A          SENSEX         2026-10-07 09:40 S norm mn k  4 net -3 pB3/0 pD2/0 imp s1o0 disp 0/0 sig[0, 0] gap  -0.4 in    pdir up vpos +1.8 rngA 1.08 prev 1,2.0,o selfImp 1
+A          SENSEX         2026-10-07 10:30 L norm mn k 14 net +3 pB3/0 pD2/0 imp s0o2 disp 0/1 sig[0, 1] gap  +0.3 in    pdir up vpos +3.1 rngA 1.38 prev -1,-1.0,S selfImp 1
+A          SENSEX         2026-10-07 11:00 L norm mn k 20 net +3 pB3/0 pD2/0 imp s1o2 disp 1/1 sig[1, 1] gap  +0.3 in    pdir up vpos +3.4 rngA 0.92 prev 1,-1.0,S selfImp 1
+A          SENSEX         2026-10-08 10:40 S norm mn k 16 net +1 pB3/4 pD3/3 imp s1o0 disp 0/1 sig[0, 1] gap  -0.0 in    pdir dn vpos +6.9 rngA 1.02 prev 1,-1.0,o selfImp 1
+A          SENSEX         2026-10-08 13:20 S norm mn k 48 net +1 pB3/4 pD3/3 imp s5o0 disp 0/4 sig[0, 2] gap  -0.0 in    pdir dn vpos+12.4 rngA 1.06 prev -1,2.0,S selfImp 1
+A          SENSEX         2026-10-09 10:10 L norm mn k 10 net -8 pB0/8 pD0/6 imp s1o0 disp 1/0 sig[1, 0] gap  +3.4 in    pdir dn vpos +3.6 rngA 0.83 prev -1,-1.0,o selfImp 1
+A          SENSEX         2026-10-12 09:40 S norm mn k  4 net-10 pB10/0 pD9/0 imp s1o0 disp 0/0 sig[0, 0] gap  -2.4 ABOVE pdir up vpos -0.3 rngA 0.94 prev 1,2.0,o selfImp 1
+A          SENSEX         2026-10-12 11:20 S norm mn k 23 net-10 pB10/0 pD9/0 imp s5o0 disp 0/4 sig[0, 1] gap  -2.8 ABOVE pdir up vpos +4.7 rngA 1.35 prev -1,2.0,S selfImp 1
+A          US30           2026-10-07 05:30 S norm mT k 20 net-18 pB19/1 pD16/1 imp s0o0 disp 0/0 sig[0, 0] gap  -0.9 in    pdir up vpos -2.5 rngA 1.60 prev 1,2.0,o selfImp 1  <== WRONG
+A          US30           2026-10-07 06:05 S norm mn k 29 net-18 pB19/1 pD16/1 imp s1o0 disp 0/1 sig[0, 1] gap  -0.7 in    pdir up vpos -0.5 rngA 1.42 prev -1,-1.0,S selfImp 0
+A          US30           2026-10-07 10:05 S norm mn k 78 net-18 pB19/1 pD16/1 imp s3o0 disp 0/4 sig[0, 2] gap  -0.8 in    pdir up vpos +4.3 rngA 1.63 prev -1,2.0,S selfImp 1
+A          US30           2026-10-07 11:30 S norm mn k 95 net-18 pB19/1 pD16/1 imp s4o0 disp 0/5 sig[0, 3] gap  -0.7 in    pdir up vpos +4.3 rngA 1.33 prev -1,-1.0,S selfImp 1
+A          US30           2026-10-07 12:40 S norm mn k108 net-18 pB19/1 pD16/1 imp s6o0 disp 0/7 sig[0, 4] gap  -0.5 in    pdir up vpos +6.9 rngA 2.38 prev -1,2.0,S selfImp 1
+A          US30           2026-10-08 06:10 S norm mn k 31 net+20 pB0/20 pD0/19 imp s0o1 disp 1/0 sig[1, 0] gap  -1.3 in    pdir dn vpos +7.2 rngA 1.20 prev -1,-1.0,o selfImp 1
+A          US30           2026-10-08 11:15 S norm mn k 92 net+20 pB0/20 pD0/19 imp s5o2 disp 1/4 sig[1, 2] gap  -1.2 in    pdir dn vpos +8.8 rngA 1.89 prev -1,-1.0,S selfImp 1
+A          US30           2026-10-08 14:55 S norm mn k135 net+20 pB0/20 pD0/19 imp s13o2 disp 1/11 sig[1, 5] gap  -0.5 in    pdir dn vpos+11.7 rngA 1.06 prev -1,2.0,S selfImp 1
+A          US30           2026-10-08 23:15 L norm mn k236 net-20 pB0/20 pD0/19 imp s5o16 disp 3/14 sig[3, 6] gap  +0.4 in    pdir dn vpos -0.3 rngA 1.14 prev -1,2.0,S selfImp 1
+BNA#1      MCX_NATURALGAS 2026-10-09 18:25 L norm mn k112 net -8 pB3/11 pD1/9 imp s3o3 disp 3/1 sig[2, 1] gap  -1.4 in    pdir dn vpos -5.2 rngA 1.44 prev 1,-1.0,S selfImp 1
+BNA#2      MCX_NATURALGAS 2026-10-09 19:45 L norm mn k128 net -8 pB3/11 pD1/9 imp s5o3 disp 5/1 sig[3, 1] gap  -1.4 in    pdir dn vpos -0.4 rngA 0.96 prev 1,2.0,S selfImp 1
+BNA#3      MCX_NATURALGAS 2026-10-12 11:10 L ??   mn k 25 net +5 pB8/3 pD8/1 imp s0o0 disp 0/0 sig[0, 0] gap -21.1 in    pdir up vpos -7.3 rngA 0.82 prev 1,-1.0,o selfImp 1
+BNA#4      MCX_NATURALGAS 2026-10-12 13:10 S norm mn k 49 net -5 pB8/3 pD8/1 imp s2o3 disp 3/2 sig[1, 0] gap +22.5 in    pdir up vpos+11.1 rngA 1.09 prev 1,-1.0,S selfImp 1
+BNA#5      MCX_NATURALGAS 2026-10-12 16:55 S norm mn k 93 net -5 pB8/3 pD8/1 imp s7o3 disp 3/7 sig[1, 1] gap +17.3 in    pdir up vpos+13.5 rngA 3.35 prev -1,2.0,S selfImp 1
+BNA#6      MCX_NATURALGAS 2026-10-12 20:40 L HALF mn k139 net +5 pB8/3 pD8/1 imp s3o10 disp 3/10 sig[1, 2] gap -10.5 in    pdir up vpos -4.9 rngA 1.43 prev -1,2.0,S selfImp 1  <== WRONG
+BNA#7      MCX_NATURALGAS 2026-10-13 10:50 S norm mn k 21 net +5 pB5/10 pD5/10 imp s0o0 disp 0/0 sig[0, 0] gap  -1.9 in    pdir dn vpos +1.5 rngA 1.40 prev 1,2.0,o selfImp 1
+BNA#8      MCX_NATURALGAS 2026-10-13 11:20 L norm mn k 27 net -5 pB5/10 pD5/10 imp s1o1 disp 0/1 sig[0, 1] gap  +1.9 in    pdir dn vpos +2.5 rngA 0.93 prev -1,-1.0,S selfImp 1
+BNA#9      MCX_NATURALGAS 2026-10-13 13:00 S norm mn k 47 net +5 pB5/10 pD5/10 imp s1o2 disp 1/1 sig[1, 1] gap  -1.7 in    pdir dn vpos +0.9 rngA 1.24 prev 1,-1.0,S selfImp 1
+BNA#10     MCX_NATURALGAS 2026-10-13 14:45 S norm mn k 68 net +5 pB5/10 pD5/10 imp s4o2 disp 1/4 sig[1, 2] gap  -1.8 in    pdir dn vpos +6.5 rngA 1.55 prev -1,2.0,S selfImp 1
+BNA#11     MCX_NATURALGAS 2026-10-13 16:05 S norm mn k 84 net +5 pB5/10 pD5/10 imp s7o2 disp 1/7 sig[1, 3] gap  -1.8 in    pdir dn vpos+11.9 rngA 1.12 prev -1,2.0,S selfImp 1
+BNA#12     MCX_NATURALGAS 2026-10-14 09:25 L norm mn k  4 net +2 pB10/8 pD8/8 imp s0o0 disp 0/0 sig[0, 0] gap  +3.4 ABOVE pdir up vpos+13.7 rngA 0.83 prev -1,-1.0,o selfImp 1
+BNA#13     MCX_NATURALGAS 2026-10-14 14:40 S HALF -- model has no trade
+BNA#14     MCX_NATURALGAS 2026-10-14 19:10 S norm mn k121 net -2 pB10/8 pD8/8 imp s7o1 disp 1/7 sig[1, 2] gap  -2.2 ABOVE pdir up vpos -1.9 rngA 1.07 prev -1,2.0,S selfImp 1
+BNA#15     MCX_NATURALGAS 2026-10-15 09:50 L norm mT k  8 net-12 pB1/13 pD1/12 imp s0o0 disp 0/0 sig[0, 0] gap  +6.7 in    pdir dn vpos +3.5 rngA 0.85 prev -1,2.0,o selfImp 1  <== WRONG
+BNA#16     MCX_NATURALGAS 2026-10-15 14:35 L norm mn k 65 net-12 pB1/13 pD1/12 imp s1o1 disp 1/1 sig[1, 1] gap +12.6 in    pdir dn vpos +5.6 rngA 1.20 prev -1,-1.0,S selfImp 1
+BNA#17     MCX_NATURALGAS 2026-10-15 18:00 S norm mn k107 net+12 pB1/13 pD1/12 imp s1o4 disp 3/1 sig[3, 1] gap  -4.1 in    pdir dn vpos +0.9 rngA 1.63 prev 1,-1.0,S selfImp 1
+BNA#18     MCX_NATURALGAS 2026-10-15 22:00 S norm -- model has no trade
+BNI#19     NSE_NIFTY1     2026-10-05 10:30 S norm mn k 13 net +6 pB0/6 pD0/5 imp s0o1 disp 1/0 sig[1, 0] gap  -2.5 in    pdir dn vpos -3.3 rngA 1.09 prev 1,2.0,S selfImp 1
+BNI#20     NSE_NIFTY1     2026-10-06 09:50 L norm mn k  6 net -1 pB2/3 pD2/3 imp s1o0 disp 1/0 sig[0, 0] gap  +1.7 in    pdir up vpos +2.9 rngA 1.18 prev -1,-1.0,o selfImp 1
+BNI#21     NSE_NIFTY1     2026-10-06 15:20 L norm mn k 73 net -1 pB2/3 pD2/3 imp s3o0 disp 2/0 sig[1, 0] gap  +2.6 in    pdir up vpos +9.3 rngA 1.05 prev 1,2.0,S selfImp 1
+BNI#22     NSE_NIFTY1     2026-10-07 09:40 S norm mT k  4 net -4 pB4/0 pD3/0 imp s0o0 disp 0/0 sig[0, 0] gap  +3.3 in    pdir up vpos +4.4 rngA 1.32 prev 1,-1.0,o selfImp 1  <== WRONG
+BNI#23     NSE_NIFTY1     2026-10-07 10:30 L norm mn k 14 net +4 pB4/0 pD3/0 imp s0o1 disp 0/1 sig[0, 1] gap  -2.7 in    pdir up vpos -0.4 rngA 1.20 prev -1,-1.0,S selfImp 1
+BNI#24     NSE_NIFTY1     2026-10-07 11:00 L norm mn k 20 net +4 pB4/0 pD3/0 imp s1o1 disp 1/1 sig[1, 1] gap  -2.7 in    pdir up vpos -0.1 rngA 1.06 prev 1,-1.0,S selfImp 1
+BNI#25     NSE_NIFTY1     2026-10-07 13:15 S norm mn k 46 net -4 pB4/0 pD3/0 imp s1o2 disp 2/1 sig[2, 1] gap  +3.0 in    pdir up vpos +5.3 rngA 2.05 prev 1,-1.0,S selfImp 1
+BNI#26     NSE_NIFTY1     2026-10-08 14:05 S norm mn k 57 net +0 pB2/2 pD2/2 imp s3o0 disp 0/2 sig[0, 1] gap  +0.9 BELOW pdir dn vpos+12.5 rngA 1.41 prev -1,-1.0,o selfImp 1
+BNI#27     NSE_NIFTY1     2026-10-09 09:30 L norm mT k  2 net -4 pB0/4 pD0/3 imp s0o0 disp 0/0 sig[0, 0] gap  +2.2 in    pdir dn vpos +1.5 rngA 2.02 prev -1,-1.0,o selfImp 1  <== WRONG
+BNI#28     NSE_NIFTY1     2026-10-09 13:00 L norm -- model has no trade
+BNI#29     NSE_NIFTY1     2026-10-12 09:55 S norm mn k  7 net -5 pB5/0 pD3/0 imp s2o0 disp 0/0 sig[0, 0] gap  -0.6 in    pdir up vpos +0.3 rngA 1.54 prev 1,2.0,o selfImp 1
+BNI#30     NSE_NIFTY1     2026-10-12 12:10 S norm mn k 34 net -5 pB5/0 pD3/0 imp s6o0 disp 0/4 sig[0, 1] gap  -0.8 in    pdir up vpos +5.1 rngA 1.11 prev -1,2.0,S selfImp 1
+BNI#31     NSE_NIFTY1     2026-10-12 14:15 S norm mn k 59 net -5 pB5/0 pD3/0 imp s7o0 disp 0/5 sig[0, 2] gap  -0.9 in    pdir up vpos +5.3 rngA 1.47 prev -1,-1.0,S selfImp 1
+BNI#32     NSE_NIFTY1     2026-10-13 12:20 L norm mT k 36 net-10 pB0/10 pD0/8 imp s0o0 disp 0/0 sig[0, 0] gap  +0.9 in    pdir dn vpos +5.3 rngA 1.36 prev -1,-1.0,o selfImp 1  <== WRONG
+BNI#33     NSE_NIFTY1     2026-10-13 14:40 L norm -- model has no trade
+BNI#34     NSE_NIFTY1     2026-10-14 11:00 L norm mn k 20 net +5 pB5/0 pD4/0 imp s0o1 disp 0/0 sig[0, 0] gap  -2.3 in    pdir up vpos +3.3 rngA 0.98 prev 1,2.0,o selfImp 1
+BNI#35     NSE_NIFTY1     2026-10-14 12:20 L norm mn k 36 net +5 pB5/0 pD4/0 imp s1o1 disp 1/0 sig[1, 0] gap  -2.6 in    pdir up vpos +3.4 rngA 0.99 prev 1,-1.0,S selfImp 1
+BNI#36     NSE_NIFTY1     2026-10-15 09:30 L norm mn k  2 net -1 pB2/3 pD2/2 imp s0o0 disp 0/0 sig[0, 0] gap  +1.6 in    pdir dn vpos +2.2 rngA 1.30 prev 1,-1.0,o selfImp 1
+BNI#37     NSE_NIFTY1     2026-10-15 11:50 L norm -- model has no trade
+BNI#38     NSE_NIFTY1     2026-10-16 12:40 L norm mn k 40 net +7 pB7/0 pD5/0 imp s2o1 disp 2/0 sig[1, 0] gap  +2.3 in    pdir up vpos +7.9 rngA 0.85 prev 1,2.0,o selfImp 1
+BCR#39     CRUDE          2026-10-07 20:10 S norm mn k133 net +1 pB6/7 pD6/6 imp s2o6 disp 4/0 sig[3, 0] gap  -2.6 ABOVE pdir dn vpos -6.4 rngA 1.09 prev 1,-1.0,S selfImp 1
+BCR#40     CRUDE          2026-10-07 22:40 S norm mn k163 net +1 pB6/7 pD6/6 imp s5o6 disp 4/2 sig[3, 1] gap  -2.7 ABOVE pdir dn vpos -2.5 rngA 0.96 prev -1,2.0,S selfImp 1
+BCR#41     CRUDE          2026-10-08 10:50 L norm mn k 21 net +0 pB6/6 pD4/3 imp s0o0 disp 0/0 sig[0, 0] gap +10.7 in    pdir dn vpos +2.9 rngA 0.99 prev -1,-1.0,o selfImp 1
+BCR#42     CRUDE          2026-10-08 12:20 L norm mn k 39 net +0 pB6/6 pD4/3 imp s1o0 disp 1/0 sig[1, 0] gap +10.8 in    pdir dn vpos +8.1 rngA 0.93 prev 1,2.0,S selfImp 1
+BCR#43     CRUDE          2026-10-08 13:10 L norm mn k 48 net +0 pB6/6 pD4/3 imp s4o0 disp 4/0 sig[2, 0] gap  +8.4 in    pdir dn vpos+11.0 rngA 1.43 prev 1,2.0,S selfImp 1
+BCR#44     CRUDE          2026-10-08 20:25 L norm mn k136 net +0 pB6/6 pD4/3 imp s9o0 disp 8/0 sig[4, 0] gap  +5.4 in    pdir dn vpos+11.6 rngA 1.28 prev 1,2.0,S selfImp 1
+BCR#45     CRUDE          2026-10-09 10:35 S HALF mT k 17 net -9 pB10/1 pD9/1 imp s0o0 disp 0/0 sig[0, 0] gap  +6.6 in    pdir up vpos +9.6 rngA 1.25 prev 1,-1.0,o selfImp 1
+BCR#46     CRUDE          2026-10-09 11:55 L norm mn k 34 net +9 pB10/1 pD9/1 imp s0o1 disp 0/1 sig[0, 1] gap  -6.7 in    pdir up vpos -6.5 rngA 1.27 prev -1,-1.0,S selfImp 1
+BCR#47     CRUDE          2026-10-09 15:15 L norm mn k 74 net +9 pB10/1 pD9/1 imp s4o2 disp 4/2 sig[1, 1] gap  -6.2 in    pdir up vpos -4.9 rngA 1.34 prev 1,-1.0,S selfImp 1
+BCR#48     CRUDE          2026-10-09 20:30 L norm mn k137 net +9 pB10/1 pD9/1 imp s6o2 disp 6/2 sig[3, 1] gap  -4.5 in    pdir up vpos +0.1 rngA 1.08 prev 1,-1.0,S selfImp 1
+BCR#49     CRUDE          2026-10-12 11:55 L HALF mT k 34 net +7 pB9/2 pD8/2 imp s0o0 disp 0/0 sig[0, 0] gap -15.1 BELOW pdir up vpos -3.3 rngA 1.11 prev 1,-1.0,o selfImp 1
+BCR#50     CRUDE          2026-10-12 14:20 L norm mn k 63 net +7 pB9/2 pD8/2 imp s3o0 disp 2/0 sig[1, 0] gap -11.0 BELOW pdir up vpos -0.3 rngA 0.93 prev 1,-1.0,S selfImp 1
+BCR#51     CRUDE          2026-10-13 09:35 S HALF mT k  6 net -7 pB7/0 pD5/0 imp s0o0 disp 0/0 sig[0, 0] gap  +7.2 in    pdir up vpos +1.8 rngA 0.98 prev 1,2.0,o selfImp 1
+BCR#52     CRUDE          2026-10-13 11:00 S ??   mn k 21 net -7 pB7/0 pD5/0 imp s1o0 disp 0/1 sig[0, 1] gap +10.0 in    pdir up vpos +3.5 rngA 1.23 prev -1,-1.0,S selfImp 1
+BCR#53     CRUDE          2026-10-13 15:30 S norm mn k 77 net -7 pB7/0 pD5/0 imp s2o0 disp 0/2 sig[0, 2] gap +10.3 in    pdir up vpos +7.5 rngA 1.19 prev -1,-1.0,S selfImp 1
+BCR#54     CRUDE          2026-10-13 18:55 L norm mn k114 net +7 pB7/0 pD5/0 imp s0o4 disp 0/4 sig[0, 3] gap  -8.2 in    pdir up vpos -0.4 rngA 2.07 prev -1,-1.0,S selfImp 1
+BCR#55     CRUDE          2026-10-13 19:45 L norm mn k128 net +7 pB7/0 pD5/0 imp s3o4 disp 3/4 sig[1, 3] gap  -6.9 in    pdir up vpos +2.5 rngA 1.44 prev 1,2.0,S selfImp 1
+BCR#56     CRUDE          2026-10-14 11:15 S HALF mT k 23 net -2 pB6/4 pD6/4 imp s0o0 disp 0/0 sig[0, 0] gap  -4.9 ABOVE pdir up vpos -9.9 rngA 1.46 prev 1,2.0,o selfImp 1
+BCR#57     CRUDE          2026-10-15 16:15 L norm mn k 85 net +3 pB6/3 pD6/3 imp s3o3 disp 3/2 sig[2, 1] gap  -8.4 in    pdir up vpos -0.8 rngA 1.11 prev 1,-1.0,S selfImp 1
+BCR#58     CRUDE          2026-10-15 18:55 L norm mn k118 net +3 pB6/3 pD6/3 imp s7o3 disp 6/2 sig[3, 1] gap  -6.3 in    pdir up vpos +3.5 rngA 1.40 prev 1,-1.0,S selfImp 1
+BCR#59     CRUDE          2026-10-15 20:15 L norm mn k134 net +3 pB6/3 pD6/3 imp s9o3 disp 7/2 sig[4, 1] gap  -5.7 in    pdir up vpos +5.0 rngA 1.00 prev 1,-1.0,S selfImp 1
+BCR#60     CRUDE          2026-10-16 11:50 L norm mn k 33 net+10 pB13/3 pD11/2 imp s1o0 disp 0/0 sig[0, 0] gap  -5.0 in    pdir up vpos +7.9 rngA 1.16 prev 1,-1.0,o selfImp 1
+BCR#61     CRUDE          2026-10-16 15:40 L norm mn k 78 net+10 pB13/3 pD11/2 imp s2o0 disp 1/0 sig[1, 0] gap  -4.1 in    pdir up vpos +6.3 rngA 1.26 prev 1,-1.0,S selfImp 1
+BCR#62     CRUDE          2026-10-16 16:30 L norm mn k 87 net+10 pB13/3 pD11/2 imp s3o0 disp 2/0 sig[2, 0] gap  -4.2 in    pdir up vpos +6.9 rngA 1.59 prev 1,-1.0,S selfImp 1
+BCR#63     CRUDE          2026-10-16 18:35 L norm -- model has no trade
+BSE#64     SENSEX         2026-10-05 12:00 S norm mn k 32 net +6 pB1/7 pD0/7 imp s2o3 disp 3/2 sig[1, 1] gap  -4.0 in    pdir dn vpos +1.8 rngA 1.24 prev -1,-1.0,o selfImp 1
+BSE#65     SENSEX         2026-10-06 10:00 L norm mn k  6 net -1 pB3/4 pD3/4 imp s0o0 disp 0/0 sig[0, 0] gap  +2.3 in    pdir dn vpos +4.8 rngA 1.15 prev -1,-1.0,o selfImp 1
+BSE#66     SENSEX         2026-10-07 09:40 S norm mn k  4 net -3 pB3/0 pD2/0 imp s1o0 disp 0/0 sig[0, 0] gap  -0.4 in    pdir up vpos +1.8 rngA 1.08 prev 1,2.0,o selfImp 1
+BSE#67     SENSEX         2026-10-07 10:30 L norm mn k 14 net +3 pB3/0 pD2/0 imp s0o2 disp 0/1 sig[0, 1] gap  +0.3 in    pdir up vpos +3.1 rngA 1.38 prev -1,-1.0,S selfImp 1
+BSE#68     SENSEX         2026-10-07 11:00 L norm mn k 20 net +3 pB3/0 pD2/0 imp s1o2 disp 1/1 sig[1, 1] gap  +0.3 in    pdir up vpos +3.4 rngA 0.92 prev 1,-1.0,S selfImp 1
+BSE#69     SENSEX         2026-10-08 10:40 S norm mn k 16 net +1 pB3/4 pD3/3 imp s1o0 disp 0/1 sig[0, 1] gap  -0.0 in    pdir dn vpos +6.9 rngA 1.02 prev 1,-1.0,o selfImp 1
+BSE#70     SENSEX         2026-10-08 13:20 S norm mn k 48 net +1 pB3/4 pD3/3 imp s5o0 disp 0/4 sig[0, 2] gap  -0.0 in    pdir dn vpos+12.4 rngA 1.06 prev -1,2.0,S selfImp 1
+BSE#71     SENSEX         2026-10-09 10:05 L norm mn k 10 net -8 pB0/8 pD0/6 imp s1o0 disp 1/0 sig[1, 0] gap  +3.4 in    pdir dn vpos +3.6 rngA 0.83 prev -1,-1.0,o selfImp 1
+BSE#72     SENSEX         2026-10-12 09:40 S norm mn k  4 net-10 pB10/0 pD9/0 imp s1o0 disp 0/0 sig[0, 0] gap  -2.4 ABOVE pdir up vpos -0.3 rngA 0.94 prev 1,2.0,o selfImp 1
+BSE#73     SENSEX         2026-10-12 11:20 S norm mn k 23 net-10 pB10/0 pD9/0 imp s5o0 disp 0/4 sig[0, 1] gap  -2.8 ABOVE pdir up vpos +4.7 rngA 1.35 prev -1,2.0,S selfImp 1
+BSE#74     SENSEX         2026-10-13 12:20 L norm mn k 36 net-11 pB0/11 pD0/9 imp s4o0 disp 2/0 sig[1, 0] gap  +1.4 in    pdir dn vpos +5.9 rngA 1.26 prev -1,-1.0,o selfImp 1
+BSE#75     SENSEX         2026-10-13 14:40 L norm mn k 64 net-11 pB0/11 pD0/9 imp s7o0 disp 5/0 sig[2, 0] gap  +1.6 in    pdir dn vpos+13.4 rngA 0.98 prev 1,2.0,S selfImp 1
+BSE#76     SENSEX         2026-10-14 11:00 L norm mn k 20 net +9 pB9/0 pD7/0 imp s0o0 disp 0/0 sig[0, 0] gap  +0.6 ABOVE pdir up vpos +8.4 rngA 0.87 prev 1,2.0,o selfImp 1
+BSE#77     SENSEX         2026-10-15 09:20 L norm mn k  0 net -1 pB1/2 pD1/2 imp s0o0 disp 0/0 sig[0, 0] gap  +1.8 in    pdir dn vpos +2.1 rngA 3.31 prev 1,-1.0,o selfImp 1
+BSE#78     SENSEX         2026-10-15 10:50 L norm mn k 18 net -1 pB1/2 pD1/2 imp s6o0 disp 6/0 sig[2, 0] gap  +1.8 in    pdir dn vpos+10.4 rngA 0.98 prev 1,2.0,S selfImp 1
+BSE#79     SENSEX         2026-10-15 13:30 L norm mn k 50 net -1 pB1/2 pD1/2 imp s11o0 disp 10/0 sig[3, 0] gap  +2.5 in    pdir dn vpos+20.2 rngA 1.27 prev 1,2.0,S selfImp 1
+BSE#80     SENSEX         2026-10-16 12:40 L norm mn k 40 net+12 pB12/0 pD11/0 imp s4o0 disp 2/0 sig[1, 0] gap  +6.4 ABOVE pdir up vpos+13.3 rngA 1.03 prev 1,-1.0,o selfImp 1

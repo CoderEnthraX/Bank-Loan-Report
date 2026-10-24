@@ -1,0 +1,14 @@
+ALL   n= 955 hit1R 55.0% hit1.5R 45.2% hit2R 39.7% | E/trade 1R-exit +0.099 1.5R +0.131 2R +0.191 | total2R +182 PF 1.32
+TRAIN n= 595 hit1R 55.5% hit1.5R 44.7% hit2R 38.8% | E/trade 1R-exit +0.109 1.5R +0.118 2R +0.165 | total2R +98 PF 1.27
+TEST  n= 360 hit1R 54.2% hit1.5R 46.1% hit2R 41.1% | E/trade 1R-exit +0.083 1.5R +0.153 2R +0.233 | total2R +84 PF 1.40
+TEST E2 diff vs base +0.053 R/trade, 95% CI [-0.146, +0.264]
+  GC              n= 131 hit1R 53.4% hit1.5R 42.0% hit2R 39.7% | E/trade 1R-exit +0.069 1.5R +0.050 2R +0.191 | total2R +25 PF 1.32
+  EURUSD          n= 134 hit1R 59.0% hit1.5R 51.5% hit2R 44.0% | E/trade 1R-exit +0.179 1.5R +0.287 2R +0.321 | total2R +43 PF 1.57
+  NASDAQ          n= 143 hit1R 55.9% hit1.5R 45.5% hit2R 38.5% | E/trade 1R-exit +0.119 1.5R +0.136 2R +0.154 | total2R +22 PF 1.25
+  US30            n= 146 hit1R 50.7% hit1.5R 45.9% hit2R 39.7% | E/trade 1R-exit +0.014 1.5R +0.147 2R +0.192 | total2R +28 PF 1.32
+  CRUDE           n=  99 hit1R 62.6% hit1.5R 44.4% hit2R 39.4% | E/trade 1R-exit +0.253 1.5R +0.111 2R +0.182 | total2R +18 PF 1.30
+  NIFTY           n=  45 hit1R 66.7% hit1.5R 53.3% hit2R 42.2% | E/trade 1R-exit +0.333 1.5R +0.333 2R +0.267 | total2R +12 PF 1.46
+  SENSEX          n=  45 hit1R 66.7% hit1.5R 55.6% hit2R 48.9% | E/trade 1R-exit +0.333 1.5R +0.389 2R +0.467 | total2R +21 PF 1.91
+  ETH             n= 137 hit1R 43.1% hit1.5R 33.6% hit2R 28.5% | E/trade 1R-exit -0.139 1.5R -0.161 2R -0.146 | total2R -20 PF 0.80
+  NSE_NIFTY1      n=  25 hit1R 56.0% hit1.5R 56.0% hit2R 56.0% | E/trade 1R-exit +0.120 1.5R +0.400 2R +0.680 | total2R +17 PF 2.55
+  MCX_NATURALGAS  n=  50 hit1R 54.0% hit1.5R 46.0% hit2R 44.0% | E/trade 1R-exit +0.080 1.5R +0.150 2R +0.320 | total2R +16 PF 1.57

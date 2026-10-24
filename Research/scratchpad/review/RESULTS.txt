@@ -1,0 +1,225 @@
+
+===== strategy_exec
+VERDICT: With default settings the EXECUTION part reproduces the engine's trades: same arm, same entry bar, same exit bar and same direction. The rounding direction is safe: the entry is floored/ceiled at lim +/- 0.001 tick, the stop is floored for a long and ceiled for a short, and the target is ceiled for a long and floored for a short. This means any emulator fill, stop or target implies the engine event on the same bar. Where the engine and the emulator disagree, the code's fallbacks (missN cancel, Engine-exit close_all) cover what is left. Prices match except in three cases nothing in the code can remove: (a) a gap through the entry, stop or target fills at the open, while the engine books the level; (b) Market mode enters at the next open, while the engine books the signal close; (c) a bar that touches both the stop and the final target. In case (c) the engine always books a loss, but TradingView's O-H-L-C / O-L-H-C path can fill the target, so the result (win or loss) differs on the same exit bar. This is rare at the defaults (the stop and the 2R target are 3R apart), but it cannot be fixed without changing the engine rule; finding 1 adds a counter for it. The exState machine has no stuck path: state 1 always ends in an emulator fill, the engine's evCancel (expired or replaced, including replacement by a ghost), the missN path or a news/force-close cancel; state 2 always has a stop. It does not double-count: exClosed fires once per trade, exPnl collects partials before the close, Rule C is updated once per candle, and the pause/day-block counters are correct. Pine: all functions are defined before use, strategy.* calls inside functions and local blocks are legal, and no local name shadows a global; pynescript parses the whole file OK. Checked and fine: fill-bar stop (the exit placed at the arm is attached, so entry and stop both fill on the fill bar and exClosed runs through the closedNew branch), targets first active on fill+1, stop moves active from the next bar, expiry window A+1..A+5, REPLACED arm and new arm on the same bar (cancel, then re-place), ghost setups, the 5-fill cap (the engine never arms past it, so a fill can never be refused), Market mode on the next bar, sessions and gaps, SMALL_FRAC qty, leverage cap, close_all at the next open followed by re-arming on the cooldown bar, and the force-close / weekend / news cancel paths. The definite defects are in non-default settings: earn-back lets a later engine trade overwrite the exits of the position still open; the order in which partial exits are created can make the partials never fill; and the strategy does not close a position the engine never filled.
+--- [major] Earn-back ON: the next engine trade overwrites the exits of the position still open  (Auction_Retest_Strategy.pine:776)
+  DETAIL: With earnBack the strategy keeps its position after the engine's target exit (line 778 skips close_all). The engine then arms a new setup; section 5 skips it ('still in a trade'), but the engine still fills and moves that setup. Line 776 (exState == 2 and (evFill or evMove)) then calls f_setExits(exL, true), which re-places X4 (and X1..X3) with the NEW setup's stp/t1..tF. For a same-direction setup the old position gets the wrong stop and target. For an opposite setup, the long gets a sell stop above the market and a sell limit below it, so it closes at the next open for no reason. The same happens in the rare unexpected-fill case (finding 3).
+  FIX: Remember which engine setup the strategy took and follow only that setup.
+1) Add next to the other execution vars (after line 637):
+var int   exArm     = na     // engine armBar of the setup the strategy took
+2) In section 5, inside `if skipWhy == ""` (after line 857 `exPnl     := 0.0`):
+        exArm     := bar_index
+3) Replace lines 776-779 with:
+bool exMine = not na(exArm) and armBar == exArm
+if exState == 2 and exMine and (evFill or evMove)
+    f_setExits(exL, true)
+if evExit and exState == 2 and exMine and not earnBack
+    strategy.close_all(comment = "Engine exit")
+--- [major] Partial profits: X4 (100 %) is created before X1..X3, so it can reserve the whole position  (Auction_Retest_Strategy.pine:679)
+  DETAIL: At the arm, f_setExits(isL, false) creates only X4 with qty_percent = 100. X1..X3 are created later, on the fill bar. TradingView's emulator reserves each exit's quantity from the position in the order the exits were created, and changing an existing id (X4) does not move it to the back. X4 therefore keeps 100 % and the TP1..TP3 partials can end up with no quantity: they never close anything and the trade exits whole at the final target or the stop. I am confident about the reservation rule but have not run it in TradingView. The fix below is harmless either way, because all exits carry the same stop until the fill bar.
+  FIX: Create the partial exits at the arm too (stop only), so the creation order is X1, X2, X3, X4 from the start. Replace lines 679-680 with:
+    else
+        if pp1 > 0
+            strategy.exit("X1", eid, qty = exQty * pp1 / 100.0, stop = sPx)
+        if pp2 > 0
+            strategy.exit("X2", eid, qty = exQty * pp2 / 100.0, stop = sPx)
+        if pp3 > 0
+            strategy.exit("X3", eid, qty = exQty * pp3 / 100.0, stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, stop = sPx)
+--- [major] A bar touching both the stop and the final target: the engine books a loss, the emulator may book the target (cannot be fixed, add a counter and a note)  (Auction_Retest_Strategy.pine:723)
+  DETAIL: Engine step 1 counts a bar that touches both the stop and tF as the stop. The X4 order holds both the limit and the stop, so the emulator follows its intrabar path: for a long whose open is nearer the high (O-H-L-C), the target fills first. The exit bar is the same, but the strategy wins where the indicator shows -1R. The win flag in money management (line 723) follows the strategy's P&L, so streaks and recovery follow the strategy, not the indicator. Partial targets have the same issue. No order placed at the previous close can force stop-first, and use_bar_magnifier does not make it match the engine. This is rare at the defaults (stop and 2R target are 3R apart) and more frequent with stop moves.
+  FIX: Make the difference visible instead of silent.
+1) After line 637 add:
+var int   diffN     = 0      // exits where the emulator's result differs from the engine's (stop+target in one bar)
+2) Inside `if exClosed`, directly after line 723 `bool win = exPnl > 0`, add:
+    if evExit and win != evWin
+        diffN += 1
+3) In table row 8 (line 908), after the missN part, add:
+ + (diffN > 0 ? " · exit differs " + str.tostring(diffN) : "")
+4) Add to the header (after line 12): "//   - a bar that touches both the stop and the target counts as the stop in the engine; TradingView fills
+//     whichever its intrabar path reaches first, so such a trade can be a win in the strategy (table: exit differs)."
+--- [minor] An emulator fill the engine did not have is kept (no 'engine wins' close)  (Auction_Retest_Strategy.pine:717)
+  DETAIL: The rounding makes 'emulator filled' imply 'engine filled', except within the 1e-6-tick float tolerance in f_floorTick/f_ceilTick. If it ever happens, exState goes 1 -> 2 with evFill false: no targets are ever placed, the position runs on its stop alone, and every engine signal meanwhile is skipped as 'still in a trade'. The header promises that the engine wins on any disagreement, but this branch is missing.
+  FIX: Replace lines 717-718 with:
+bool exNewPos = exState == 1 and pos != 0
+if exNewPos
+    exState := 2
+and add at the start of section 3 (before line 768):
+if exNewPos and not evFill
+    // the emulator filled but the engine did not (should not happen): close it, the engine wins
+    strategy.close_all(comment = "Engine: no fill")
+    missN += 1
+--- [minor] Earn-back + partials + stop moves: a partial still open keeps its old stop  (Auction_Retest_Strategy.pine:674)
+  DETAIL: f_setExits re-sends X1..X3 only while the engine's tpHit < k. With earnBack the strategy's partial limits are pushed beyond t1..t3, so the engine can reach TP1 (tpHit = 1) before X1 has filled. When a stop move then fires, X1 is not re-sent and keeps its old stop, while X4 gets the new one. The guard should use the strategy's own fills, not the engine's.
+  FIX: Guard on whether the partial is still open instead of tpHit. Add `var float exPartDone = 0.0` after line 637. In section 1, after line 712, add:
+if closedNew and exState == 2 and pos != 0
+    exPartDone := math.abs(exQty) - math.abs(pos)
+Then in f_setExits use `exPartDone < exQty * pp1 / 100.0 - 1e-9` in place of `tpHit < 1`, `exPartDone < exQty * (pp1 + pp2) / 100.0 - 1e-9` in place of `tpHit < 2`, and `exPartDone < exQty * (pp1 + pp2 + pp3) / 100.0 - 1e-9` in place of `tpHit < 3`. Reset `exPartDone := 0.0` where a trade is taken (line 857).
+
+===== ea_port
+VERDICT: ENGINE PARITY: ProcessBar() matches ref.py and the Pine ENGINE block statement by statement on the default settings and on every optional setting I checked. Checked items: bar windows (priorHigh/sigHigh/entHigh use Hi(s+1..n), which equals high[1..n]; swing uses s+0..n-1; momMove, erDen, erDenB, the legN loop); vwHist[k] equals vwap[k], and the nHist guard equals Pine's na; the vwSlope/sgSlope comparison across the session start; ATR seeding (first value is the SMA of N true ranges, then RMA); the order of newDay counter reset, pdH/pdL, prevNet, half-stop terms, strict and open-outside checks, and the impulse count after the half test (warm gating as in ref.py); ghost (sessN>=1, vwBars>=3, vwSd>0; ghost trades still count fills, cooldown and leg); loss block; stop moves; res for a moved stop; fill-bar stop; expiry; keep/replace re-arm; entry modes; skip-Sunday-UTC; the day filter mapping (MQL5 0 = Sunday is correct). Three parity issues, listed below: the hours filter when start == end, a fixed server offset on DST brokers, and the missing Pine VWAP Anchor/Source inputs.
+COMPILE: no compile errors found. The CTrade Buy/Sell/BuyLimit/SellLimit/PositionModify/PositionClosePartial/OrderDelete/PositionClose calls, OrderCalcMargin, HistorySelect/HistoryDeal* and DEAL_FEE all have correct signatures. StringFormat has 21 specifiers and 21 arguments. There are no duplicate declarations in the same scope (the two `int n` are in different blocks) and no reserved-word identifiers. The only expected warnings are the long->ulong conversion in SetExpertMagicNumber and the datetime arithmetic.
+EXECUTION: bid-chart prices are correct (EntryPx/StopPx/TgtPx floor/ceil plus the spread, in both directions). The exState machine, missed-fill cancel, engine-exit sync close, deal accounting and Labouchere/recovery parity with the strategy are all fine. Problems: the EA state is not reset when MT5 re-initialises it (blocker); there is no handling for a broker fill the engine does not have, for rejected SL/TP modifications, for the stops level, for bars skipped during a disconnect, or for an armed setup at restart; the earn-back stop exit can be lost; and there are some minor edge cases. Exact fixes are below.
+--- [blocker] Engine/execution globals are not reset on re-init (input change, timeframe change), so the warm-up runs on top of stale state  (AuctionRetestEA.mq5:812)
+  DETAIL: When the user changes an input or the chart timeframe, MT5 does not reload the EA: it calls OnDeinit(REASON_PARAMETERS/REASON_CHARTCHANGE) and then OnInit, and global variables keep their values. OnInit resets only vwHist. These all carry over: bi, atrN/atrV/atrSum (already >= InpAtrLen, so the ATR is not re-seeded), lastDayKey, cum* VWAP sums, vwBars, sessN, st/lim/stp/armBar/fillBar/lastExit/lastFill (old bi values), the day counters, bullN/bearN/prevNet, sesH/pdH, and exState. The warm-up then replays 3000 old bars on top of this state. The ATR, VWAP, cooldown, legReset and half-stop state are wrong, and st can still be a stale live trade, so after any settings change the EA's signals differ from TradingView. A stale exState==1 also blocks every new setup ('still in a trade').
+  FIX: Add this function and call it as the first line of OnInit (before ArrayResize(vwHist,0), which it replaces):
+void ResetEngine()
+{
+   bi = -1; cumPV = 0; cumPV2 = 0; cumW = 0; cumP = 0; cumP2 = 0; cumN = 0; vwBars = 0; sessN = 0; ArrayResize(vwHist, 0);
+   atrV = 0; atrN = 0; atrSum = 0; lastDayKey = -1;
+   dayFills = 0; dayW = 0; dayL = 0; dayR = 0; dayRiskR = 0; lossDirBlk = 0;
+   bullN = 0; bearN = 0; prevNet = 0; havePrev = false;
+   sesO = 0; sesH = 0; sesL = 0; pdH = 0; pdL = 0; haveSes = false; havePd = false;
+   st = 0; armBar = -1; fillBar = -1; lastExit = -1; lastFill = -1; lastDir = 0;
+   lim = 0; stp = 0; stp0 = 0; trRisk = 0; t1 = 0; t2 = 0; t3 = 0; t4 = 0; tF = 0; tpHit = 0; trHalf = false; trGhost = false;
+   totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true;
+   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; gDrawOn = false;
+}
+(If you add lastAnchorKey / exSynced from the other findings, reset them here too: lastAnchorKey = -1; exSynced = false;)
+--- [major] A broker position the engine never entered is kept (spread-spike early fill, fill racing a cancel); it is never given a target or closed  (AuctionRetestEA.mq5:724)
+  DETAIL: The buy limit sits at lim + spread-at-placement. If the spread widens, the ask can reach it while the bid low stays above lim, so the broker fills and the engine does not. Line 687 then sets exState=2. If the engine later expires or replaces the setup (evCancel != 0), line 721 only handles exState==1. The position stays open with only the SL, never gets a TP (SetExits only runs on evFill/evMove), and every new engine setup is skipped as 'still in a trade'. The same happens when the limit fills in the moment between bar close and CancelPending (exState is 0 but a position exists). The EA's trades then differ from the engine's, which breaks the 'engine wins on any disagreement' rule.
+  FIX: Add a global: bool exSynced = false;   // the broker position is the engine's live trade
+After line 723 insert:
+   if(evFill && exState == 2) exSynced = true;
+   // engine wins: close a position the engine is not in (early fill on a spread spike, a fill racing a cancel,
+   // or an engine exit on a bar caught up after a disconnect); with earn-back a synced trade may outlive the engine exit
+   bool engHolds = (MathAbs(st) == 2 && exSynced) || (MathAbs(st) == 1 && !exSynced && exState == 2);
+   if(pos && !exClosed && !evExit && !engHolds && !(InpEarnBack && exSynced)) { CloseAll(); exState = 2; }   // its deals are counted on the next bar
+Set exSynced = false in the exClosed block (next to exState = 0; line 716) and at order placement (next to exState = 1; line 763). In the OnInit adoption (line 829) add exSynced = true. Note that a restart-mismatch position (line 830) is then also closed on the first bar, so change that Print text to say so.
+--- [major] SetExits: a rejected PositionModify (new stop or target already through, or inside the stops level) leaves the old SL and no TP  (AuctionRetestEA.mq5:632)
+  DETAIL: After a stop move, or on evFill, the new SL/TP is sent at bar open. If the bid is already through the moved stop or the target (a gap), or the level is inside SYMBOL_TRADE_STOPS_LEVEL/FREEZE_LEVEL, the server rejects the whole request, and the code only prints a message. The old stop stays (for example, no breakeven), and on evFill the target is never placed. The engine registers that stop or target on the bar that is now forming. With earn-back on, the engine-exit close at line 724 is skipped, so the position stays open on the wrong stop.
+  FIX: Replace SetExits with:
+void SetExits(bool withTarget)
+{
+   ulong tk; double vol, op;
+   if(!HasPosition(tk, vol, op)) return;
+   double sl = StopPx(exL), tp = withTarget ? TgtPx(exL, tF) : 0;
+   double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
+   double minD = MathMax((double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL), (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_FREEZE_LEVEL)) * _Point;
+   // price is already through the engine's stop or target: the engine exits on this bar, so exit now
+   if(exL ? (bid <= sl || (tp > 0 && bid >= tp)) : (ask >= sl || (tp > 0 && ask <= tp))) { CloseAll(); return; }
+   if(exL) { if(bid - sl < minD) sl = FloorTick(bid - minD); if(tp > 0 && tp - bid < minD) tp = CeilTick(bid + minD); }
+   else    { if(sl - ask < minD) sl = CeilTick(ask + minD); if(tp > 0 && ask - tp < minD) tp = FloorTick(ask - minD); }
+   if(!trade.PositionModify(tk, sl, tp))
+      Print("Stop/target update rejected (", trade.ResultRetcodeDescription(), "): SL ", DoubleToString(sl, _Digits), " TP ", DoubleToString(tp, _Digits));
+}
+(Clamped levels are only used inside the stops distance, and the engine-exit close at line 724 still syncs the exit.)
+--- [major] Pending entry ignores SYMBOL_TRADE_STOPS_LEVEL / FREEZE_LEVEL: limits close to price are rejected and the engine trade is missed  (AuctionRetestEA.mq5:758)
+  DETAIL: The code tests ep < ask (buy limit) and ep > bid (sell limit). A limit price that is valid but closer to the market than the stops level is rejected with 'Invalid price', which shows as skipN 'order rejected'. This is common because the model entry is often only a few ticks from the signal close, and the engine then fills that trade on the next bar.
+  FIX: Before line 755 add:
+         double minD = MathMax((double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL), (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_FREEZE_LEVEL)) * _Point;
+and replace lines 757-762 with:
+         else if(isL)
+            ok = ep <= ask - minD ? trade.BuyLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM")
+                                  : trade.Buy(v, _Symbol, 0, sl, 0, "ARM");     // at / through the level (or inside the stops distance): the engine fills on this bar
+         else
+            ok = ep >= bid + minD ? trade.SellLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM")
+                                  : trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
+--- [major] Hours filter: start == end blocks every bar, while Pine and ref.py treat it as 24 h  (AuctionRetestEA.mq5:499)
+  DETAIL: ref.py uses (a0 <= tod < b0) if a0 < b0 else (tod >= a0 or tod < b0), so equal start and end means always open; a Pine session such as "0000-0000" is also 24 h. The EA tests a0 <= b0, so with start == end it evaluates cur >= a0 && cur < a0, which is always false. No setup is ever armed, while the indicator and the strategy still arm.
+  FIX:    gHourOk = !InpHoursOn || (a0 < b0 ? (cur >= a0 && cur < b0) : (cur >= a0 || cur < b0));
+--- [major] Fixed server GMT offset: on DST brokers (GMT+2 winter / GMT+3 summer) the day filter, hours filter and skip-Sunday-UTC are 1 h off for half the year  (AuctionRetestEA.mq5:253)
+  DETAIL: UserTime/UtcTime subtract a constant InpServerGMT. Most MT5 FX/CFD brokers move their server clock with US daylight saving time (New York close = 00:00 server). From the second Sunday of March to the first Sunday of November, every converted time is 1 h wrong. Bars near the IST midnight day boundary, near the hours-window edges, and near the Sunday-UTC open are then gated differently from TradingView (Asia/Kolkata and UTC have no DST), so those signals differ.
+  FIX: Next to InpServerGMT add:
+enum ENUM_SRV_TZ { SRV_FIXED = 0,     // Fixed (Broker server time zone below)
+                   SRV_NYCLOSE = 1 }; // Auto: GMT+2 winter / GMT+3 US summer time (most FX brokers)
+input ENUM_SRV_TZ InpServerTz = SRV_NYCLOSE; // Broker server clock
+Replace lines 253-254 with:
+int NthSunday(int y, int mon, int n)
+{
+   MqlDateTime d; ZeroMemory(d); d.year = y; d.mon = mon; d.day = 1;
+   MqlDateTime f; TimeToStruct(StructToTime(d), f);
+   return 1 + (7 - f.day_of_week) % 7 + 7 * (n - 1);
+}
+double SrvGMT(datetime server)
+{
+   if(InpServerTz == SRV_FIXED) return InpServerGMT;
+   MqlDateTime d; TimeToStruct(server, d);
+   int ds = NthSunday(d.year, 3, 2), de = NthSunday(d.year, 11, 1);
+   bool dst = (d.mon > 3 && d.mon < 11) || (d.mon == 3 && d.day >= ds) || (d.mon == 11 && d.day < de);
+   return dst ? 3.0 : 2.0;
+}
+datetime UserTime(datetime server) { return server - (datetime)(SrvGMT(server) * 3600) + (datetime)(InpUserGMT * 3600); }
+datetime UtcTime(datetime server)  { return server - (datetime)(SrvGMT(server) * 3600); }
+--- [major] Engine inputs VWAP Anchor (Session/Week/Month) and VWAP Source exist in Pine but not in the EA  (AuctionRetestEA.mq5:332)
+  DETAIL: The shared Pine ENGINE INPUTS have vwapAnchor and vwapSrc. The Pine engine resets the VWAP, vwBars and sessN on newAnchor, and the day counters separately on newDay. The EA hard-codes a daily anchor and hlc3. With the defaults the signals match, but a user who picks Week/Month or another source in TradingView gets different VWAP, vwap filter, slope, setupOk, ghost and impulse results, and cannot set the same in the EA.
+  FIX: Inputs (after the SIGNAL MODEL group):
+enum ENUM_VW_ANCHOR { VW_SESSION = 0, // Session
+                      VW_WEEK    = 1, // Week
+                      VW_MONTH   = 2 };// Month
+input group "VWAP"
+input ENUM_VW_ANCHOR     InpVwapAnchor = VW_SESSION;    // Anchor
+input ENUM_APPLIED_PRICE InpVwapSrc    = PRICE_TYPICAL; // Source
+Global: int lastAnchorKey = -1;
+Replace lines 330-338 with:
+   double src = InpVwapSrc == PRICE_CLOSE ? c : InpVwapSrc == PRICE_OPEN ? o : InpVwapSrc == PRICE_HIGH ? h : InpVwapSrc == PRICE_LOW ? l :
+                InpVwapSrc == PRICE_MEDIAN ? (h + l) / 2.0 : InpVwapSrc == PRICE_WEIGHTED ? (h + l + 2.0 * c) / 4.0 : (h + l + c) / 3.0;
+   int key = DayKey(t);
+   bool newDay = (lastDayKey == -1) || (key != lastDayKey);
+   lastDayKey = key;
+   gNewDay = newDay;
+   MqlDateTime md; TimeToStruct(t, md);
+   int aKey = InpVwapAnchor == VW_WEEK ? (int)(((long)t + 3 * 86400) / (7 * 86400)) : InpVwapAnchor == VW_MONTH ? md.year * 12 + md.mon : key;   // weeks start Monday 00:00
+   bool newAnchor = (lastAnchorKey == -1) || (aKey != lastAnchorKey);
+   lastAnchorKey = aKey;
+   if(newAnchor) { cumPV = 0; cumPV2 = 0; cumW = 0; cumP = 0; cumP2 = 0; cumN = 0; vwBars = 0; if(bi > 0) sessN++; }
+   else vwBars++;
+(newDay stays the trigger for the day counters at line 392.)
+--- [major] Bars missed during a disconnect or a no-tick period are never processed by the engine  (AuctionRetestEA.mq5:841)
+  DETAIL: OnTick calls ProcessBar(1) once per new bar 0. If two or more bars close without a tick reaching the EA (connection loss, a terminal freeze, illiquid symbols), the bars between are skipped. Fills, expiries, exits, stop moves, ATR/VWAP updates and day counters for those bars are lost, bi advances by only one, and from then on the engine diverges from TradingView.
+  FIX: Global: datetime gLastDone = 0;   // open time of the last bar the engine processed
+In ProcessBar, after line 325 (datetime t = ...): gLastDone = t;
+Replace OnTick with:
+void OnTick()
+{
+   datetime t0 = iTime(_Symbol, _Period, 0);
+   if(t0 != gLastBarTime)
+   {
+      gLastBarTime = t0;
+      int sh = gLastDone > 0 ? iBarShift(_Symbol, _Period, gLastDone, true) : -1;   // 1 = nothing missed
+      bool caught = false;
+      for(int s = sh - 1; s >= 2; s--) { ProcessBar(s); caught = true; }          // bars missed while offline: engine only
+      OnNewBar();
+      if(caught && exState == 2 && MathAbs(st) == 2) SetExits(true);                  // re-sync stop moves of the missed bars
+   }
+   ManagePartials();
+}
+(An engine exit on a caught-up bar is then closed by the 'engine wins' rule from the early-fill finding.)
+--- [major] Restart drops the engine's currently armed setup: its pending order is deleted and never re-placed  (AuctionRetestEA.mq5:832)
+  DETAIL: After the warm-up the engine can be armed (st = +/-1, not ghost). OnInit cancels this EA's pending orders and does not place the order again, so the setup the indicator and the strategy show (and may fill in the next 1-5 bars) is never traded.
+  FIX: Move the body of step 5 (lines 738-766) into void TakeSetup(bool isL, bool newsBlk, bool flatNow) { ulong pTk; double pVol, pOpen; ... } and call it as: if(evArm) TakeSetup(evArmL, newsBlk, flatNow);
+Add a global: bool gRearm = false;
+In OnInit, after line 832: gRearm = MathAbs(st) == 1 && !trGhost && exState == 0;
+In OnTick, after the new-bar block and before ManagePartials:
+   if(gRearm) { gRearm = false; if(MathAbs(st) == 1 && !trGhost && exState == 0) { bool ns; bool nb = NewsBlock(UserTime(TimeCurrent()), ns, UserTime(TimeCurrent())); TakeSetup(st == 1, nb, false); } }
+(It is sent from OnTick, not OnInit, because trade requests from OnInit can fail before the terminal is connected. TakeSetup's market fallback covers a price that is already through the level.)
+--- [minor] With earn-back on, an engine STOP exit is not synced to the broker either  (AuctionRetestEA.mq5:724)
+  DETAIL: Earn-back only needs the broker to stay in after an engine WIN, because its target is extended. The broker SL is the same level as the engine stop, so on an engine stop exit the position should also be closed. If the SL modify was rejected or a spread spike kept it alive, the position stays open after the engine has stopped out.
+  FIX:    if(evExit && exState == 2 && (!InpEarnBack || !evWin)) CloseAll();                                       // engine exited: never stay in (earn-back only outlives a win)
+--- [minor] A partial close can leave less than the minimum volume, and the broker rejects it  (AuctionRetestEA.mq5:799)
+  DETAIL: The check is cv < vol. If vol - cv < SYMBOL_VOLUME_MIN, the request is rejected, and pDone[k] is set to true anyway, so that partial is silently skipped.
+  FIX:          if(cv >= vmin && vol - cv >= vmin - 1e-9) trade.PositionClosePartial(tk, NormalizeDouble(cv, 8));
+--- [minor] Warm-up start does not cover every lookback (brkLen+1, stopLen, momLen+1), so the first bars read prices past the end of history  (AuctionRetestEA.mq5:818)
+  DETAIL: start = bars - structLen - momLen - 5 is only safe when structLen + momLen covers every window. With a large brkLen or stopLen (allowed up to 400), Cl(s + InpBrkLen + 1) or Lo(s + j) on the oldest bars goes beyond the history and returns 0. That gives wrong momB, swing and erDenB values on the first warm-up bars (and a wrong 'need' check).
+  FIX:    int look = (int)MathMax(MathMax(InpStructLen, InpBrkLen + 1), MathMax(InpMomLen + 1, InpStopLen)) + 2;
+   int need = look + InpAtrLen + 10;
+   if(bars < need) { ... }
+   int start = (int)MathMin(InpWarmBars, bars - look - 1);
+--- [minor] INIT_FAILED unloads the EA; it does not 'retry'  (AuctionRetestEA.mq5:817)
+  DETAIL: Returning INIT_FAILED removes the EA from the chart, so the message 'the EA will retry' is wrong and the user is left without a running EA.
+  FIX:    if(bars < need) { Print("Not enough chart history yet (", bars, " bars, need ", need, "); scroll the chart back or load more history, then attach the EA again."); return INIT_FAILED; }
+
+===== pine_compile
+VERDICT: Both files parse with pynescript (Model: 292 top-level statements, Strategy: 428 statements, no errors). The ENGINE INPUTS, ENGINE and DRAW blocks are byte-identical in the two files (cmp on all three extracted blocks). I found one probable compile error, in the indicator only. I could not confirm it against the TradingView reference because the docs host returned 403 through the proxy, so it rests on my recollection of the alert() signature. Everything else I checked looks fine for Pine v6, and I found nothing in the strategy file. The fix does not touch any shared block, so byte identity is kept.
+--- [blocker] alert() freq argument is a series ternary  (Auction_Retest_Model.pine:590)
+  DETAIL: `alert(message, freq)` takes `freq` as an `input string`, as I recall the reference. Line 590 passes `evWin ? alert.freq_once_per_bar_close : alert.freq_once_per_bar`, which depends on the per-bar value evWin and so is a `series string`. TradingView would then reject the script with 'Cannot call alert with argument freq ... series string used but input string expected'. The other alert() calls (lines 583, 585, 587, 592) pass constant frequencies and are fine. The change is behaviour-neutral: the same message, with the same frequency on each branch.
+  FIX: Replace lines 589-590:
+    if evExit
+        alert(tag + (evWin ? "TP" + str.tostring(exitK) + " HIT " : "STOP HIT ") + f_r(evRes), evWin ? alert.freq_once_per_bar_close : alert.freq_once_per_bar)
+with:
+    if evExit
+        string exitMsg = tag + (evWin ? "TP" + str.tostring(exitK) + " HIT " : "STOP HIT ") + f_r(evRes)
+        if evWin
+            alert(exitMsg, alert.freq_once_per_bar_close)
+        else
+            alert(exitMsg, alert.freq_once_per_bar)
+(8-space body indent for exitMsg, 12-space for the alert calls; the surrounding `if alertsOn` stays unchanged.)

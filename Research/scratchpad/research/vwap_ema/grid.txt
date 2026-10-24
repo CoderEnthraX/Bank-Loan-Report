@@ -1,0 +1,42 @@
+A VWAP side (the model)                                                  1:1 n 1220 win 54.1% E +0.082 | 1:2 n 1154 win 39.0% E +0.170 tot  +196
+A No side filter                                                         1:1 n 1293 win 51.0% E +0.021 | 1:2 n 1251 win 35.5% E +0.065 tot   +81
+A EMA50 side (close vs EMA50 + slope)                                    1:1 n 1231 win 52.1% E +0.041 | 1:2 n 1169 win 37.5% E +0.124 tot  +145
+A EMA100 side (close vs EMA100 + slope)                                  1:1 n 1203 win 54.1% E +0.082 | 1:2 n 1127 win 38.3% E +0.150 tot  +169
+A EMA200 side (close vs EMA200 + slope)                                  1:1 n 1173 win 53.4% E +0.067 | 1:2 n 1095 win 37.6% E +0.129 tot  +141
+A EMA50 side, position only                                              1:1 n 1261 win 52.3% E +0.045 | 1:2 n 1213 win 36.9% E +0.106 tot  +128
+A EMA100 side, position only                                             1:1 n 1233 win 53.1% E +0.062 | 1:2 n 1164 win 37.0% E +0.111 tot  +129
+A EMA200 side, position only                                             1:1 n 1210 win 53.6% E +0.071 | 1:2 n 1128 win 38.0% E +0.141 tot  +159
+B EMA50>EMA100, close>EMA50                                              1:1 n 1086 win 53.2% E +0.064 | 1:2 n  987 win 36.4% E +0.091 tot   +90
+B EMA100>EMA200, close>EMA100                                            1:1 n 1023 win 51.1% E +0.022 | 1:2 n  926 win 36.1% E +0.082 tot   +76
+B EMA50>EMA200, close>EMA50                                              1:1 n 1056 win 51.7% E +0.034 | 1:2 n  963 win 36.3% E +0.090 tot   +87
+B EMA50>100>200, close>EMA50                                             1:1 n  938 win 51.1% E +0.021 | 1:2 n  831 win 35.5% E +0.065 tot   +54
+C VWAP + close>EMA200                                                    1:1 n 1156 win 53.6% E +0.073 | 1:2 n 1084 win 38.5% E +0.154 tot  +167
+C VWAP + close>EMA200 (skipped run invisibly)                            1:1 n 1000 win 53.8% E +0.076 | 1:2 n  963 win 39.6% E +0.187 tot  +180
+C VWAP + close>EMA100                                                    1:1 n 1194 win 54.2% E +0.084 | 1:2 n 1124 win 39.1% E +0.172 tot  +193
+C VWAP + close>EMA100 (skipped run invisibly)                            1:1 n 1131 win 53.8% E +0.075 | 1:2 n 1079 win 39.6% E +0.187 tot  +202
+C VWAP + close>EMA50                                                     1:1 n 1208 win 54.2% E +0.084 | 1:2 n 1138 win 39.2% E +0.176 tot  +200
+C VWAP + close>EMA50 (skipped run invisibly)                             1:1 n 1190 win 53.9% E +0.077 | 1:2 n 1127 win 39.3% E +0.179 tot  +202
+C VWAP + EMA50>EMA200                                                    1:1 n 1015 win 52.1% E +0.042 | 1:2 n  918 win 36.4% E +0.092 tot   +84
+C VWAP + EMA50>EMA200 (skipped run invisibly)                            1:1 n  749 win 53.0% E +0.060 | 1:2 n  711 win 39.2% E +0.177 tot  +126
+C VWAP + EMA50>EMA100                                                    1:1 n 1058 win 52.7% E +0.055 | 1:2 n  965 win 36.1% E +0.082 tot   +79
+C VWAP + EMA50>EMA100 (skipped run invisibly)                            1:1 n  798 win 53.0% E +0.060 | 1:2 n  761 win 38.4% E +0.151 tot  +115
+C VWAP + EMA100>EMA200                                                   1:1 n  972 win 51.1% E +0.023 | 1:2 n  876 win 36.0% E +0.079 tot   +69
+C VWAP + EMA100>EMA200 (skipped run invisibly)                           1:1 n  708 win 52.5% E +0.051 | 1:2 n  673 win 38.6% E +0.159 tot  +107
+D pullback to EMA50 (6 bars, 0.0 ATR) in EMA200 trend, no VWAP           1:1 n  570 win 47.2% E -0.056 | 1:2 n  529 win 34.2% E +0.026 tot   +14
+D pullback to EMA50 (6 bars, 0.0 ATR) in EMA200 trend, + VWAP            1:1 n  472 win 48.5% E -0.030 | 1:2 n  445 win 35.5% E +0.065 tot   +29
+D pullback to EMA50 (6 bars, 0.0 ATR) in EMA200 trend, + VWAP (skipped r 1:1 n  304 win 47.4% E -0.053 | 1:2 n  294 win 38.1% E +0.143 tot   +42
+D pullback to EMA50 (12 bars, 0.0 ATR) in EMA200 trend, no VWAP          1:1 n  727 win 49.0% E -0.021 | 1:2 n  655 win 35.3% E +0.058 tot   +38
+D pullback to EMA50 (12 bars, 0.0 ATR) in EMA200 trend, + VWAP           1:1 n  632 win 50.6% E +0.013 | 1:2 n  573 win 36.5% E +0.094 tot   +54
+D pullback to EMA50 (12 bars, 0.0 ATR) in EMA200 trend, + VWAP (skipped  1:1 n  417 win 50.6% E +0.012 | 1:2 n  401 win 38.7% E +0.160 tot   +64
+D pullback to EMA50 (6 bars, 0.5 ATR) in EMA200 trend, no VWAP           1:1 n  704 win 48.0% E -0.040 | 1:2 n  640 win 34.7% E +0.041 tot   +26
+D pullback to EMA50 (6 bars, 0.5 ATR) in EMA200 trend, + VWAP            1:1 n  606 win 49.3% E -0.013 | 1:2 n  557 win 35.9% E +0.077 tot   +43
+D pullback to EMA50 (6 bars, 0.5 ATR) in EMA200 trend, + VWAP (skipped r 1:1 n  402 win 49.5% E -0.010 | 1:2 n  384 win 38.3% E +0.148 tot   +57
+D pullback to EMA50 (12 bars, 0.5 ATR) in EMA200 trend, no VWAP          1:1 n  830 win 49.2% E -0.017 | 1:2 n  744 win 36.4% E +0.093 tot   +69
+D pullback to EMA50 (12 bars, 0.5 ATR) in EMA200 trend, + VWAP           1:1 n  742 win 50.7% E +0.013 | 1:2 n  666 win 37.5% E +0.126 tot   +84
+D pullback to EMA50 (12 bars, 0.5 ATR) in EMA200 trend, + VWAP (skipped  1:1 n  502 win 51.4% E +0.028 | 1:2 n  486 win 39.7% E +0.191 tot   +93
+E EMA50 bounce in EMA200 trend (standalone)                              1:1 n 1138 win 51.2% E +0.025 | 1:2 n 1067 win 35.1% E +0.052 tot   +55
+E EMA50 bounce in EMA200 trend + VWAP side (standalone)                  1:1 n  963 win 51.2% E +0.024 | 1:2 n  865 win 34.5% E +0.034 tot   +29
+E EMA50/EMA200 cross (standalone)                                        1:1 n  335 win 54.3% E +0.087 | 1:2 n  331 win 35.6% E +0.069 tot   +23
+E EMA50/EMA100 cross (standalone)                                        1:1 n  499 win 52.9% E +0.058 | 1:2 n  495 win 38.2% E +0.145 tot   +72
+E EMA20/EMA50 cross (standalone)                                         1:1 n  877 win 52.8% E +0.056 | 1:2 n  823 win 38.8% E +0.163 tot  +134
+E EMA20/EMA50 cross + VWAP side (standalone)                             1:1 n  737 win 53.3% E +0.066 | 1:2 n  693 win 38.4% E +0.152 tot  +105

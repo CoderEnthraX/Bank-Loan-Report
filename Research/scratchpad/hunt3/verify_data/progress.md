@@ -1,0 +1,4 @@
+# verify_data progress
+- baseline re-run OK: A 79/1/3 both; B 32 (provB4) / 36 (provB5). 36 option runs saved s*.txt e*.txt o*.txt; numbers mostly reproduce; diffs: dispAtr0.82 A exact 75/5/7 (claimed 76/4/7), 0.85 72/8/11 (claimed 73/7/11); dispAtrPrev alone A 79/1/3 dayStop on (claimed 79/1/4 = dayStopR0 value)
+- first-bar rule reproduced: A 79/1/2 (removes NIFTY 10-07 only; cap works for any T in [4.21,5.32), 4.0 fails); B matched 36 -> 36 but swaps #77 for #78 AND breaks #66 stop (first-bar impulse changes prevNet; netMin=2 restores). 10-15 09:55 arms (rng 0.81ATR, margin ~0.9pt) -> fill 10:00 exit 11:35 TP blocks #78; with dispAtr .81 10:10 arms->10:15 blocks #78 too. provB 5->6.
+- VWAP twap/ny CRUDE+SENSEX dayStop-on provB 4->2: removes 18:30 AND 21:35 (analyst said only 21:35); still loses #55/A CRUDE 22:10; reject stands. cooldown, dispAtr, dispAtrPrev, lag reproduce.

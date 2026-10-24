@@ -1,0 +1,21 @@
+{} n 1190 | TRAIN n735 E2 +0.131 d+0.000 | TEST n455 E2 +0.180 d+0.000 (E1 d+0.000 E15 d+0.000) | ALL tot +178 sym/trade 0 sym/tot 0
+{"skipLossDir": 1} n 1190 | TRAIN n735 E2 +0.131 d+0.000 | TEST n455 E2 +0.180 d+0.000 (E1 d+0.000 E15 d+0.000) | ALL tot +178 sym/trade 0 sym/tot 0
+{"skipLossDir": 3} n 1190 | TRAIN n735 E2 +0.135 d+0.004 | TEST n455 E2 +0.180 d+0.000 (E1 d+0.000 E15 d+0.000) | ALL tot +181 sym/trade 2 sym/tot 2
+{"skipLossDir": 6} n 1185 | TRAIN n732 E2 +0.135 d+0.005 | TEST n453 E2 +0.185 d+0.005 (E1 d-0.009 E15 d-0.001) | ALL tot +183 sym/trade 5 sym/tot 5
+{"skipLossDir": 12} n 1163 | TRAIN n721 E2 +0.107 d-0.024 | TEST n442 E2 +0.208 d+0.028 (E1 d+0.013 E15 d+0.015) | ALL tot +169 sym/trade 4 sym/tot 4
+{"skipLossDir": 24} n 1134 | TRAIN n700 E2 +0.110 d-0.021 | TEST n434 E2 +0.224 d+0.043 (E1 d+0.024 E15 d+0.036) | ALL tot +174 sym/trade 7 sym/tot 7
+{"skipLossDir": 48} n 1081 | TRAIN n670 E2 +0.151 d+0.020 | TEST n411 E2 +0.226 d+0.046 (E1 d+0.016 E15 d+0.032) | ALL tot +194 sym/trade 8 sym/tot 5
+{"skipLossDir": 100} n 1004 | TRAIN n618 E2 +0.141 d+0.010 | TEST n386 E2 +0.236 d+0.056 (E1 d+0.018 E15 d+0.041) | ALL tot +178 sym/trade 6 sym/tot 4
+{"skipLossDir": 1000} n 947 | TRAIN n583 E2 +0.137 d+0.007 | TEST n364 E2 +0.269 d+0.089 (E1 d+0.040 E15 d+0.069) | ALL tot +178 sym/trade 8 sym/tot 5
+{"skipLossOpp": 1000} n 889 | TRAIN n558 E2 +0.059 d-0.071 | TEST n331 E2 +0.006 d-0.174 (E1 d-0.056 E15 d-0.094) | ALL tot +35 sym/trade 1 sym/tot 0
+{"skipLossAny": 1000} n 446 | TRAIN n280 E2 +0.168 d+0.037 | TEST n166 E2 +0.084 d-0.096 (E1 d+0.073 E15 d+0.031) | ALL tot +61 sym/trade 4 sym/tot 0
+{"skipLossAny": 24} n 1045 | TRAIN n641 E2 +0.081 d-0.049 | TEST n404 E2 +0.121 d-0.059 (E1 d-0.049 E15 d-0.028) | ALL tot +101 sym/trade 4 sym/tot 3
+{"loc": [["pdRoom", "ge", -2]]} n 994 | TRAIN n616 E2 +0.125 d-0.006 | TEST n378 E2 +0.183 d+0.002 (E1 d-0.006 E15 d-0.021) | ALL tot +146 sym/trade 5 sym/tot 4
+{"loc": [["pdRoom", "ge", -2.5]]} n 1013 | TRAIN n626 E2 +0.131 d+0.000 | TEST n387 E2 +0.178 d-0.002 (E1 d-0.005 E15 d-0.014) | ALL tot +151 sym/trade 6 sym/tot 2
+{"loc": [["pdRoom", "ge", -3]]} n 1035 | TRAIN n644 E2 +0.137 d+0.006 | TEST n391 E2 +0.182 d+0.001 (E1 d+0.005 E15 d+0.001) | ALL tot +159 sym/trade 6 sym/tot 2
+{"loc": [["pdRoom", "ge", -3.4]]} n 1046 | TRAIN n650 E2 +0.149 d+0.019 | TEST n396 E2 +0.197 d+0.017 (E1 d+0.011 E15 d+0.012) | ALL tot +175 sym/trade 7 sym/tot 5
+{"loc": [["pdRoom", "ge", -4]]} n 1067 | TRAIN n665 E2 +0.150 d+0.020 | TEST n402 E2 +0.187 d+0.006 (E1 d+0.005 E15 d+0.002) | ALL tot +175 sym/trade 7 sym/tot 3
+{"loc": [["pdRoom", "ge", -4.5]]} n 1082 | TRAIN n674 E2 +0.162 d+0.031 | TEST n408 E2 +0.184 d+0.004 (E1 d-0.001 E15 d-0.002) | ALL tot +184 sym/trade 6 sym/tot 3
+{"loc": [["pdRoom", "ge", -5]]} n 1093 | TRAIN n683 E2 +0.151 d+0.020 | TEST n410 E2 +0.185 d+0.005 (E1 d-0.001 E15 d-0.001) | ALL tot +179 sym/trade 6 sym/tot 3
+{"loc": [["pdRoom", "ge", -6]]} n 1109 | TRAIN n691 E2 +0.155 d+0.024 | TEST n418 E2 +0.177 d-0.003 (E1 d-0.007 E15 d-0.004) | ALL tot +181 sym/trade 7 sym/tot 5
+{"loc": [["pdRoom", "ge", -8]]} n 1139 | TRAIN n707 E2 +0.137 d+0.007 | TEST n432 E2 +0.174 d-0.007 (E1 d-0.008 E15 d-0.011) | ALL tot +172 sym/trade 4 sym/tot 4

@@ -1,0 +1,11 @@
+M5 seeded 278 engine runs
+M5 109 moves
+
+M5 profit:bestB start: Hours: New York 18:30-22:30 IST + Choppy sessions max crosses = 8 + VWAP anchor = week | A +0.012 (n 722, L 10) B -0.043
+round 1: Entry = market (next bar) | A +0.014 (n 935, win 36.1%, W/L 6/15) | B -0.048 (n 924, W/L 5/16) | yrs+ 3 | score 0.42
+round 2: VWAP anchor = month | A +0.044 (n 884, win 37.2%, W/L 8/11) | B -0.017 (n 883, W/L 5/16) | yrs+ 3 | score 1.32
+round 3: stopAtr = 2.4 | A +0.091 (n 780, win 38.2%, W/L 7/13) | B +0.040 (n 779, W/L 8/16) | yrs+ 3 | score 2.54
+round 4: Choppy sessions max crosses = 6 | A +0.099 (n 764, win 38.5%, W/L 7/12) | B +0.041 (n 770, W/L 8/16) | yrs+ 3 | score 2.74
+final profit:bestB: {'hoursOn': True, 'hoursSess': (1830, 2230), 'chopOn': True, 'chopMax': 6.0, 'vwAnchorG': 'month', 'entryMode': 'market', 'stopAtr': 2.4}
+
+M5 streak:default start: default | A -0.191 (n 3608, L 19) B -0.023

@@ -1,0 +1,15 @@
+M5 trades done
+M5 exits done
+Traceback (most recent call last):
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/gold/final.py", line 51, in <module>
+    F['recovery'] = {n: recov(F['trades'][n], winR(F['cfg'][n])) for n in F['trades']}; save(); print(tf, 'recovery done', flush=True)
+                        ~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/gold/final.py", line 28, in recov
+    r = RC.simulate(seq, mode, cap=cap, exitR=exitR); r['cap'] = cap; out.append(r)
+  File "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/gold/recovery.py", line 26, in simulate
+    r = {MODES[11]: base * labU, MODES[12]: base * mult ** recLosses + base * recLosses, MODES[13]: base * 2 ** parWins, MODES[14]: base * rdUnits,
+                                                   ~~~~~^^~~~~~~~~~~
+OverflowError: (34, 'Numerical result out of range')
+M5 recovery done
+M5 profit neighbourhood done 102
+M5 streak neighbourhood done 102

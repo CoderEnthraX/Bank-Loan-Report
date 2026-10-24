@@ -1,0 +1,1 @@
+pynescript: both files parse OK (Model 293 stmts, Strategy 436). Engine/inputs/draw blocks byte-identical; files == templates+shared. warm/line bound/alert split verified. Now reviewing strategy logic.

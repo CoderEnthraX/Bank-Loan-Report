@@ -1,0 +1,28 @@
+F1 near1S<=0.525 (hyp-family TRAIN-best) ghost keep 62% ALL E2 +0.231 tot +170 | TRAIN n=440 +0.207 (+0.065) | TEST n=296 +0.267 (+0.063) hit2 42.2% E1 +0.095 | instr better 8/10 | dayCI [-0.034,+0.165] libCI [-0.154,+0.281]
+    per-instr dE2: GC:+0.17 EURUSD:-0.04 NASDAQ:-0.01 US30:+0.02 CRUDE:+0.15 NIFTY:+0.31 SENSEX:+0.17 ETH:+0.05 NSE_NIFTY1:+0.16 MCX_NATURALGAS:+0.17
+F1 near1S<=0.525 (hyp-family TRAIN-best) veto keep 81% ALL E2 +0.141 tot +136 | TRAIN n=588 +0.117 (-0.025) | TEST n=374 +0.179 (-0.025) hit2 39.3% E1 +0.048 | instr better 4/10 | dayCI [-0.130,+0.084] libCI [-0.226,+0.174]
+    per-instr dE2: GC:-0.05 EURUSD:-0.10 NASDAQ:-0.05 US30:-0.05 CRUDE:+0.08 NIFTY:+0.27 SENSEX:+0.08 ETH:-0.02 NSE_NIFTY1:-0.22 MCX_NATURALGAS:+0.22
+F2 rngS>=6.97 (same-session chop TRAIN-best) ghost keep 60% ALL E2 +0.220 tot +158 | TRAIN n=440 +0.214 (+0.072) | TEST n=278 +0.230 (+0.026) hit2 41.0% E1 +0.086 | instr better 6/10 | dayCI [-0.082,+0.130] libCI [-0.200,+0.254]
+    per-instr dE2: GC:+0.17 EURUSD:-0.06 NASDAQ:-0.00 US30:-0.03 CRUDE:+0.09 NIFTY:+0.31 SENSEX:+0.21 ETH:+0.11 NSE_NIFTY1:+0.20 MCX_NATURALGAS:-0.01
+F2 rngS>=6.97 (same-session chop TRAIN-best) veto keep 82% ALL E2 +0.174 tot +170 | TRAIN n=601 +0.168 (+0.026) | TEST n=375 +0.184 (-0.020) hit2 39.5% E1 +0.045 | instr better 5/10 | dayCI [-0.134,+0.090] libCI [-0.212,+0.181]
+    per-instr dE2: GC:-0.01 EURUSD:-0.09 NASDAQ:-0.01 US30:-0.08 CRUDE:+0.10 NIFTY:+0.31 SENSEX:+0.18 ETH:+0.10 NSE_NIFTY1:+0.04 MCX_NATURALGAS:-0.02
+F3 pEff<=0.561 (overall TRAIN-best, prev day) ghost keep 61% ALL E2 +0.206 tot +149 | TRAIN n=449 +0.223 (+0.081) | TEST n=275 +0.178 (-0.026) hit2 39.3% E1 +0.055 | instr better 7/10 | dayCI [-0.138,+0.089] libCI [-0.247,+0.199]
+    per-instr dE2: GC:+0.05 EURUSD:+0.12 NASDAQ:-0.07 US30:+0.09 CRUDE:+0.12 NIFTY:-0.01 SENSEX:-0.06 ETH:+0.00 NSE_NIFTY1:+0.36 MCX_NATURALGAS:+0.08
+F3 pEff<=0.561 (overall TRAIN-best, prev day) veto keep 61% ALL E2 +0.187 tot +136 | TRAIN n=449 +0.209 (+0.067) | TEST n=279 +0.151 (-0.053) hit2 38.4% E1 +0.039 | instr better 6/10 | dayCI [-0.170,+0.067] libCI [-0.267,+0.162]
+    per-instr dE2: GC:+0.05 EURUSD:+0.12 NASDAQ:-0.07 US30:-0.06 CRUDE:+0.12 NIFTY:-0.01 SENSEX:-0.06 ETH:+0.00 NSE_NIFTY1:+0.36 MCX_NATURALGAS:+0.04
+F4 xR2<=15.79 & rngS>=5.99 (composite TRAIN-best) ghost keep 68% ALL E2 +0.225 tot +181 | TRAIN n=497 +0.201 (+0.059) | TEST n=309 +0.262 (+0.058) hit2 42.1% E1 +0.094 | instr better 7/10 | dayCI [-0.031,+0.145] libCI [-0.163,+0.274]
+    per-instr dE2: GC:+0.15 EURUSD:+0.04 NASDAQ:+0.01 US30:-0.07 CRUDE:+0.05 NIFTY:+0.36 SENSEX:+0.21 ETH:+0.15 NSE_NIFTY1:-0.05 MCX_NATURALGAS:-0.08
+F4 xR2<=15.79 & rngS>=5.99 (composite TRAIN-best) veto keep 88% ALL E2 +0.155 tot +162 | TRAIN n=645 +0.140 (-0.002) | TEST n=402 +0.179 (-0.025) hit2 39.3% E1 +0.045 | instr better 3/10 | dayCI [-0.130,+0.070] libCI [-0.215,+0.174]
+    per-instr dE2: GC:-0.08 EURUSD:-0.03 NASDAQ:-0.06 US30:-0.04 CRUDE:+0.09 NIFTY:+0.24 SENSEX:-0.03 ETH:+0.11 NSE_NIFTY1:-0.13 MCX_NATURALGAS:-0.19
+F5 xR2<=9.73 (crossing-family TRAIN-best) ghost keep 72% ALL E2 +0.217 tot +187 | TRAIN n=513 +0.193 (+0.051) | TEST n=347 +0.254 (+0.050) hit2 41.8% E1 +0.124 | instr better 8/10 | dayCI [-0.024,+0.123] libCI [-0.150,+0.267]
+    per-instr dE2: GC:+0.08 EURUSD:+0.13 NASDAQ:-0.04 US30:+0.03 CRUDE:+0.05 NIFTY:+0.02 SENSEX:+0.07 ETH:+0.07 NSE_NIFTY1:+0.03 MCX_NATURALGAS:-0.04
+F5 xR2<=9.73 (crossing-family TRAIN-best) veto keep 86% ALL E2 +0.124 tot +127 | TRAIN n=615 +0.102 (-0.039) | TEST n=410 +0.156 (-0.048) hit2 38.5% E1 +0.083 | instr better 6/10 | dayCI [-0.123,+0.027] libCI [-0.237,+0.157]
+    per-instr dE2: GC:-0.15 EURUSD:+0.01 NASDAQ:-0.10 US30:-0.08 CRUDE:+0.05 NIFTY:+0.02 SENSEX:+0.11 ETH:-0.03 NSE_NIFTY1:+0.03 MCX_NATURALGAS:+0.01
+F5b xR2<=11.8 (pre-look, 20% veto) ghost     keep 81% ALL E2 +0.211 tot +203 | TRAIN n=586 +0.172 (+0.030) | TEST n=378 +0.270 (+0.066) hit2 42.3% E1 +0.127 | instr better 9/10 | dayCI [+0.008,+0.127] libCI [-0.125,+0.275]
+    per-instr dE2: GC:+0.05 EURUSD:+0.03 NASDAQ:-0.04 US30:+0.02 CRUDE:+0.02 NIFTY:+0.07 SENSEX:+0.16 ETH:+0.08 NSE_NIFTY1:+0.10 MCX_NATURALGAS:+0.06
+F5b xR2<=11.8 (pre-look, 20% veto) veto      keep 91% ALL E2 +0.155 tot +168 | TRAIN n=665 +0.123 (-0.019) | TEST n=421 +0.204 (+0.000) hit2 40.1% E1 +0.097 | instr better 6/10 | dayCI [-0.066,+0.066] libCI [-0.195,+0.199]
+    per-instr dE2: GC:-0.10 EURUSD:-0.01 NASDAQ:-0.08 US30:+0.01 CRUDE:+0.07 NIFTY:+0.04 SENSEX:+0.19 ETH:-0.02 NSE_NIFTY1:+0.02 MCX_NATURALGAS:+0.04
+F6 xR2+rngRel 10/20 (post-hoc, not TRAIN-best) ghost keep 74% ALL E2 +0.231 tot +204 | TRAIN n=545 +0.194 (+0.053) | TEST n=340 +0.288 (+0.084) hit2 42.9% E1 +0.106 | instr better 8/10 | dayCI [+0.016,+0.157] libCI [-0.111,+0.293]
+    per-instr dE2: GC:+0.13 EURUSD:+0.02 NASDAQ:+0.05 US30:-0.03 CRUDE:+0.05 NIFTY:+0.08 SENSEX:+0.13 ETH:+0.11 NSE_NIFTY1:-0.05 MCX_NATURALGAS:+0.04
+F6 xR2+rngRel 10/20 (post-hoc, not TRAIN-best) veto keep 90% ALL E2 +0.158 tot +169 | TRAIN n=656 +0.130 (-0.012) | TEST n=414 +0.203 (-0.001) hit2 40.1% E1 +0.082 | instr better 4/10 | dayCI [-0.089,+0.090] libCI [-0.192,+0.194]
+    per-instr dE2: GC:-0.02 EURUSD:-0.06 NASDAQ:-0.02 US30:-0.10 CRUDE:+0.08 NIFTY:-0.02 SENSEX:+0.08 ETH:+0.05 NSE_NIFTY1:-0.18 MCX_NATURALGAS:+0.10

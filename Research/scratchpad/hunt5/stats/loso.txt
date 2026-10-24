@@ -1,0 +1,23 @@
+per-symbol A, erMin 0.2 everywhere : {'CRUDE': (13, 0, 1), 'GC': (16, 0, 0), 'NASDAQ': (13, 0, 0), 'NIFTY': (10, 0, 0), 'US30': (9, 0, 0), 'SENSEX': (8, 0, 0), 'EURUSD': (7, 0, 0), 'ETH': (4, 0, 0)}
+per-symbol A, erMin 0 (dropped)    : {'CRUDE': (13, 0, 1), 'GC': (16, 0, 0), 'NASDAQ': (13, 0, 0), 'NIFTY': (10, 0, 0), 'US30': (9, 0, 0), 'SENSEX': (8, 0, 0), 'EURUSD': (7, 0, 0), 'ETH': (3, 1, 1)}
+=== rule mid
+CRUDE   others: taken-min 0.221 extras-below [0.192] -> thr 0.2064 | held-out: taken-min 0.230 extras [0.217, 0.17, 0.112, 0.157] | A 13/0/1 B 24/25   (erMin .2: 13/0/1; none: 13/0/1)
+GC      others: taken-min 0.230 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2231 | held-out: taken-min 0.221 extras [] | A 15/1/1   (erMin .2: 16/0/0; none: 16/0/0)
+NASDAQ  others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2189 | held-out: taken-min 0.266 extras [] | A 13/0/0   (erMin .2: 13/0/0; none: 13/0/0)
+NIFTY   others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2189 | held-out: taken-min 0.232 extras [] | A 10/0/0   (erMin .2: 10/0/0; none: 10/0/0)
+US30    others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2189 | held-out: taken-min 0.240 extras [] | A 9/0/0   (erMin .2: 9/0/0; none: 9/0/0)
+SENSEX  others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2189 | held-out: taken-min 0.230 extras [] | A 8/0/0 B 17/17   (erMin .2: 8/0/0; none: 8/0/0)
+EURUSD  others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2189 | held-out: taken-min 0.243 extras [] | A 7/0/0   (erMin .2: 7/0/0; none: 7/0/0)
+ETH     others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.217] -> thr 0.2189 | held-out: taken-min 0.322 extras [0.192] | A 4/0/0   (erMin .2: 4/0/0; none: 3/1/1)
+  LOSO total A {'exact': 79, 'miss': 1, 'extra': 2}
+=== rule low
+CRUDE   others: taken-min 0.221 extras-below [0.192] -> thr 0.1937 | held-out: taken-min 0.230 extras [0.217, 0.17, 0.112, 0.157] | A 13/0/1 B 24/25   (erMin .2: 13/0/1; none: 13/0/1)
+GC      others: taken-min 0.230 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2187 | held-out: taken-min 0.221 extras [] | A 16/0/0   (erMin .2: 16/0/0; none: 16/0/0)
+NASDAQ  others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2187 | held-out: taken-min 0.266 extras [] | A 13/0/0   (erMin .2: 13/0/0; none: 13/0/0)
+NIFTY   others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2187 | held-out: taken-min 0.232 extras [] | A 10/0/0   (erMin .2: 10/0/0; none: 10/0/0)
+US30    others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2187 | held-out: taken-min 0.240 extras [] | A 9/0/0   (erMin .2: 9/0/0; none: 9/0/0)
+SENSEX  others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2187 | held-out: taken-min 0.230 extras [] | A 8/0/0 B 17/17   (erMin .2: 8/0/0; none: 8/0/0)
+EURUSD  others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.192, 0.217] -> thr 0.2187 | held-out: taken-min 0.243 extras [] | A 7/0/0   (erMin .2: 7/0/0; none: 7/0/0)
+ETH     others: taken-min 0.221 extras-below [0.112, 0.157, 0.17, 0.217] -> thr 0.2187 | held-out: taken-min 0.322 extras [0.192] | A 4/0/0   (erMin .2: 4/0/0; none: 3/1/1)
+  LOSO total A {'exact': 80, 'miss': 0, 'extra': 1}
+B reference CRUDE/SENSEX at 0.2: (24, 25) (17, 17)  at 0: (21, 25) (17, 17)
