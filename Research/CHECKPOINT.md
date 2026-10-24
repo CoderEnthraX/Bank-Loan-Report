@@ -116,6 +116,14 @@ Other gold findings:
    - **Split 3 beats split 2** in most cases: similar profit, smaller drawdown.
    - **Best profit for the drawdown:** M15, split 3, $500 cap, "Start again": ratio 9.45 against 8.18 for fixed risk.
    - **Stress test** (extra 0.05 / 0.10 R cost per trade): H1 stays safe, M15 holds to about 0.05 R, M1 and M5 blow up.
+   - **Workbook reorganised by strategy (2026-10-24):**
+     - Sheets, in order:
+       - *Strategy guide*: pick by goal × timeframe, with links;
+       - *M1/M5/M15/H1 strategies*: every indicator input with its exact name, changed ones in yellow, then expected results, streaks and money;
+       - *All profitable settings*: a filterable list;
+       - then the money-management and research sheets.
+     - Goals: most profit; shortest losing streak (with partial close, and indicator-only); longest winning streak; highest win rate; most trades a day; every year positive; smoothest (total R / deepest fall); simplest; and one session only.
+     - Built by `gold/strategy_sheets.py`, called from `build_final.py`.
    - **Recovery simulator changes:**
      - partial closes now update Rule C's carried losses per part, as the strategy does (only the H1 and M15 low-streak Rule C rows moved, slightly);
      - the average stake per trade (`avgRisk`) is recorded.
@@ -133,6 +141,7 @@ Other gold findings:
 | Picks | `pickcfg.py TF` (`choose()`) | printed | seconds |
 | Final runs | `final.py TF` | `final_TF.pkl` (cfg, passed, trades, exits, recovery, neigh) | M1 25 min |
 | Rule C tests | `rulec.py` (split 1–5 × cap, each half), `rulec_caps.py` (cap $250 / $500 / $1,000 × Clamp / Start again), `rulec_stress.py` (+0.05 / 0.10 R) | `rulec*.pkl`, `rulec*.txt` | seconds |
+| Strategy catalogue | `catalog.py [TF …]`: one profitable strategy per goal per timeframe, re-run for full statistics | `catalog_TF.pkl` | M1 about 6 min |
 | Workbook | `build_final.py OUT.xlsx`, then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |
 

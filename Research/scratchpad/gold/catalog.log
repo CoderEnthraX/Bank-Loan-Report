@@ -1,0 +1,3 @@
+M15 strategies 9 scenarios 10 missing ['London session only', 'New York session only', 'London close session only']
+M5 strategies 4 scenarios 10 missing ['Asia session only', 'London session only', 'London close session only']
+M1 strategies 4 scenarios 9 missing ['Every year positive', 'Asia session only', 'London session only', 'New York session only']

@@ -590,7 +590,14 @@ def readme(wb, FIN):
     for tf in TFS:
         fn = S + '/gold/greedy_pool_%s.pkl' % tf
         if os.path.exists(fn): npool[tf] = len(pickle.load(open(fn, 'rb')))
-    L = ['Auction Retest indicator on FxPro MT5 GOLD, 4 Jan 2021 - 2 Oct 2026 (your 1-minute data): accuracy, TP1-TP4, streaks, best settings, recovery rules', '',
+    L = ['Auction Retest indicator on FxPro MT5 GOLD, 4 Jan 2021 - 2 Oct 2026 (your 1-minute data): profitable settings per goal, accuracy, TP1-TP4, streaks, recovery rules', '',
+         'HOW TO USE THIS FILE:',
+         '  1. Strategy guide: pick your goal (most profit, shortest losing streak, longest winning streak, highest win rate, most trades, every year positive, smoothest, simplest,',
+         '     one session only) and your timeframe. Click the strategy to jump to its column.',
+         '  2. <TF> strategies (M1, M5, M15, H1): one column per strategy. Every indicator input is listed with its exact name; yellow = change it to that value, grey = keep the default.',
+         '     Below the settings: what to expect - trades, win %, TP1-TP4 reached, R per trade in each half and each year, longest winning and losing streaks, deepest fall, $ results.',
+         '  3. All profitable settings: every setting that passed the profit rule, with a filter on each column (e.g. longest losing streak <= 6).',
+         '  4. Recovery rules and Rule C split test: money management. The rest of the sheets are the research detail.', '',
          'DATA: 2,037,975 one-minute bars from your MT5 export; 441 fake 00:00 "daily summary" bars removed. M5 / M15 / H1 were built from M1 on the broker clock (EET, UTC+2 / UTC+3 in summer).',
          'ENGINE: the same signal engine as the TradingView indicator / strategy and the MT5 EA (Python twin, checked trade-for-trade against the EA). VWAP and sessions reset at broker midnight; VWAP weights = tick volume.',
          'COSTS: the spread recorded in the MT5 data at each fill bar, as a share of the stop distance ("after spread"). On M1 / M5 the stop is small, so the spread eats a large part of every trade.',
@@ -609,7 +616,8 @@ def readme(wb, FIN):
          '  within 10% of the best. Low-streak pick = the shortest longest-losing-streak among settings that pass the same rule and keep a reasonable profit.',
          '  Because both halves were used to pick, expect live results to be weaker than these tables. Sheet Robustness shows how the picks behave when any one setting is changed again.',
          'COLOURS: blue = backtest results, black = formulas, green = links to another sheet. Partial close and recovery rules exist in the strategy and the EA only (not in the indicator).', '',
-         'SHEETS: Best settings | Summary | <TF> default / best / low-streak (year x month) | TP1-TP4 | Settings sweep | Combinations | Exits | Recovery rules | Rule C split test | Robustness | Hours | Streak math']
+         'SHEETS: Strategy guide | M1 / M5 / M15 / H1 strategies | All profitable settings | Recovery rules | Rule C split test | Summary | <TF> default / best / low-streak (year x month;',
+         '  best = strategy S1 "Most profit", low-streak = the "Shortest losing streak" strategy) | TP1-TP4 | Settings sweep | Combinations | Exits | Robustness | Hours | Streak math']
     for i, t in enumerate(L, 1): ws.cell(i, 1, t).font = Font(name=F, bold=(i == 1), size=11 if i == 1 else 10)
     ws.column_dimensions['A'].width = 190
 if __name__ == '__main__':
@@ -627,8 +635,15 @@ if __name__ == '__main__':
             yrows, t = ym_sheet(wb, sheet, FIN[tf]['trades'][prof], '%s - %s - accuracy per year and month' % (tf, PNAME[prof]), FIN[tf]['cfg'][prof])
             refs.append((tf, prof, sheet, (yrows, t)))
     summary(wb, refs); tp_sheet(wb, FIN); sweep_sheet(wb); combo_sheet(wb); exits_sheet(wb); rbest = recovery_sheet(wb, FIN); rulec_sheet(wb); robust_sheet(wb, FIN); hours_sheet(wb, FIN); math_sheet(wb, FIN)
-    best_sheet(wb, FIN, refs, rbest)
-    order = ['Read me', 'Best settings', 'Summary'] + [s for _, _, s, _ in refs] + ['TP1-TP4', 'Settings sweep', 'Combinations', 'Exits', 'Recovery rules', 'Rule C split test', 'Robustness', 'Hours', 'Streak math']
+    import strategy_sheets as SS
+    CAT = SS.load()
+    for tf in CAT:                       # the month sheets 'best' / 'low-streak' are the catalogue's Most profit / Shortest losing streak strategies
+        names = {n: s['cfg'] for s in CAT[tf]['strategies'] for n, _ in s['scen']}
+        assert names.get('Most profit') == FIN[tf]['cfg']['profit'] and names.get('Shortest losing streak') == FIN[tf]['cfg']['streak'], tf
+    links = {tf: SS.tf_sheet(wb, tf, CAT[tf]) for tf in TFS if tf in CAT}
+    SS.guide(wb, CAT, links); SS.allprof(wb, CAT)
+    order = (['Read me', 'Strategy guide'] + ['%s strategies' % tf for tf in TFS] + ['All profitable settings', 'Recovery rules', 'Rule C split test', 'Summary'] +
+             [s for _, _, s, _ in refs] + ['TP1-TP4', 'Settings sweep', 'Combinations', 'Exits', 'Robustness', 'Hours', 'Streak math'])
     wb._sheets = [wb[n] for n in order if n in wb.sheetnames]
     out = sys.argv[1] if len(sys.argv) > 1 else S + '/gold/Gold_2021_2026_Auction_Retest.xlsx'
     wb.save(out); print('saved', out, 'timeframes', list(FIN))
