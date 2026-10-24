@@ -104,6 +104,22 @@ Other gold findings:
 - **Robustness:** 76–94% of single changes around the picks stay profitable in both halves (M1: 62%). A tighter stop breaks every pick.
 - **Picks are fitted to both halves.** Choosing on 2021–23 alone kept only part of the gain in 2024–26, so expect weaker live results.
 
+5. **Rule C and Rule C split, split 1–5** (asked 2026-10-24; workbook sheet *Rule C split test*). The first recovery study used only the default split of 3.
+   - **Default settings:** every Rule C variant blew the $10k account.
+   - **Best settings, $500 hard cap (Clamp), split 3:**
+     - M15: +$83.7k, max drawdown 33%. Fixed risk: +$9.1k, 9%.
+     - H1: +$17.9k, 20%. Fixed risk: +$3.1k, 3%.
+     - M1: +$59k, 59%.
+     - M5: blew the account. With cap action "Start again": +$51.5k, 36%.
+   - **Per $ staked** it lost about the same as fixed risk. The extra profit comes from bigger stakes: the base grows with profit.
+   - **Without the cap,** split 1–3 blew M1, M5 and M15.
+   - **Split 3 beats split 2** in most cases: similar profit, smaller drawdown.
+   - **Best profit for the drawdown:** M15, split 3, $500 cap, "Start again": ratio 9.45 against 8.18 for fixed risk.
+   - **Stress test** (extra 0.05 / 0.10 R cost per trade): H1 stays safe, M15 holds to about 0.05 R, M1 and M5 blow up.
+   - **Recovery simulator changes:**
+     - partial closes now update Rule C's carried losses per part, as the strategy does (only the H1 and M15 low-streak Rule C rows moved, slightly);
+     - the average stake per trade (`avgRisk`) is recorded.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -116,6 +132,7 @@ Other gold findings:
 | Step-by-step search | `greedy.py TF full\|lite[th] maxRounds obj:start …` | `greedy_TF.pkl` (paths), `greedy_pool_TF.pkl` (every scored version) | per round: H1 40 s, M15 2 min, M5 5 min, M1 15 min |
 | Picks | `pickcfg.py TF` (`choose()`) | printed | seconds |
 | Final runs | `final.py TF` | `final_TF.pkl` (cfg, passed, trades, exits, recovery, neigh) | M1 25 min |
+| Rule C tests | `rulec.py` (split 1–5 × cap, each half), `rulec_caps.py` (cap $250 / $500 / $1,000 × Clamp / Start again), `rulec_stress.py` (+0.05 / 0.10 R) | `rulec*.pkl`, `rulec*.txt` | seconds |
 | Workbook | `build_final.py OUT.xlsx`, then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |
 

@@ -1,0 +1,32 @@
+
+M1 best settings
+   Off                      split 3              |    +5442 DD  13% |     +700 DD  22% |    -3626 DD  43%
+   Rule C split             split 2 cap $500 clamp |   +60098 DD  70% | BLOWN             | BLOWN            
+   Rule C split             split 3 cap $500 clamp |   +58982 DD  59% | BLOWN             | BLOWN            
+   Rule C split             split 3 cap $500 reset |   +17859 DD  46% |     +722 DD  55% |    -2886 DD  55%
+   Rule C                   split 3 cap $500 clamp |   +17975 DD  25% |   +12138 DD  52% | BLOWN            
+   Rule C                   split 3 cap $500 reset |    +7905 DD  30% |    +2543 DD  31% |    -3028 DD  55%
+
+M5 best settings
+   Off                      split 3              |    +6136 DD  17% |    +2462 DD  23% |     -888 DD  30%
+   Rule C split             split 2 cap $500 clamp | BLOWN             | BLOWN             | BLOWN            
+   Rule C split             split 3 cap $500 clamp | BLOWN             | BLOWN             | BLOWN            
+   Rule C split             split 3 cap $500 reset |   +51480 DD  36% |     -671 DD  58% |    -4432 DD  59%
+   Rule C                   split 3 cap $500 clamp | BLOWN             | BLOWN             | BLOWN            
+   Rule C                   split 3 cap $500 reset |   +11814 DD  26% |    +3273 DD  31% |     -281 DD  39%
+
+M15 best settings
+   Off                      split 3              |    +9077 DD   9% |    +5424 DD  11% |    +2097 DD  15%
+   Rule C split             split 2 cap $500 clamp |   +81503 DD  46% |   +48427 DD  57% | BLOWN            
+   Rule C split             split 3 cap $500 clamp |   +83689 DD  33% |   +49566 DD  54% |   +20433 DD  89%
+   Rule C split             split 3 cap $500 reset |   +67853 DD  36% |   +29708 DD  36% |     +280 DD  48%
+   Rule C                   split 3 cap $500 clamp |   +15106 DD  45% |   +11503 DD  51% |    +8412 DD  57%
+   Rule C                   split 3 cap $500 reset |   +12479 DD  18% |    +8939 DD  19% |    +5684 DD  21%
+
+H1 best settings
+   Off                      split 3              |    +3087 DD   3% |    +2507 DD   3% |    +1978 DD   4%
+   Rule C split             split 2 cap $500 clamp |   +21183 DD  19% |   +16090 DD  21% |   +12216 DD  23%
+   Rule C split             split 3 cap $500 clamp |   +17941 DD  20% |   +13563 DD  21% |   +10170 DD  20%
+   Rule C split             split 3 cap $500 reset |   +15920 DD  16% |   +11241 DD  17% |    +7477 DD  15%
+   Rule C                   split 3 cap $500 clamp |    +3676 DD   5% |    +3090 DD   5% |    +2557 DD   6%
+   Rule C                   split 3 cap $500 reset |    +3676 DD   5% |    +3090 DD   5% |    +2557 DD   6%

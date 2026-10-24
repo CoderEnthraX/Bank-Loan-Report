@@ -20,8 +20,10 @@ def winR(cfg):
     d = dict(greedy.defaults()); d.update(cfg); R = (d['tp1R'], d['tp2R'], d['tp3R'], d['tp4R'])[d['exitAt'] - 1]
     p = d['p1'] if d['exitAt'] > 1 else 0.0
     return p * d['tp1R'] + (1 - p) * R
-def recov(tr, exitR):
-    seq = [(x[1], x[4] / x[5]) for x in sorted(tr, key=lambda x: x[0])]
+def recov(tr, exitR, cfg=None):
+    """all rules on a trade sequence; with a partial close at TP1 each trade is passed in its two parts (Rule C updates its carried losses per part)"""
+    d = dict(greedy.defaults()); d.update(cfg or {}); p = d['p1'] if d['exitAt'] > 1 else 0.0; t1 = d['tp1R']
+    seq = [(x[1], x[4] / x[5], [(p * t1, p), (x[1] - p * t1, 1 - p)]) if (p and x[3][0]) else (x[1], x[4] / x[5]) for x in sorted(tr, key=lambda x: x[0])]
     out = []
     for mode in RC.MODES:
         for cap in (0.0, 500.0):
@@ -48,7 +50,7 @@ if __name__ == '__main__':
             res = pool.map(full, [(tf, c) for _, c in tasks])
             F['exits'] = {key: (c, r) for (key, c), r in zip(tasks, res)}; save(); print(tf, 'exits done', flush=True)
         if 'recovery' not in F:
-            F['recovery'] = {n: recov(F['trades'][n], winR(F['cfg'][n])) for n in F['trades']}; save(); print(tf, 'recovery done', flush=True)
+            F['recovery'] = {n: recov(F['trades'][n], winR(F['cfg'][n]), F['cfg'][n]) for n in F['trades']}; save(); print(tf, 'recovery done', flush=True)
         if 'neigh' not in F:
             MV = greedy.moves(tf, lite=tf in ('M5', 'M1'), th=0.05 if tf == 'M1' else 0.0); F['neigh'] = {}
             for n in ('profit', 'streak'):

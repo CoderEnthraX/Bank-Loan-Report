@@ -1,0 +1,208 @@
+
+M1 profit
+   Rule C       split 2 cap $ 250 clamp | net   +22049  DD $  6174 ( 24%)  ratio  3.57  
+   Rule C       split 2 cap $ 250 reset | net    +4419  DD $  2702 ( 20%)  ratio  1.64  
+   Rule C       split 2 cap $ 500 clamp | net   +27202  DD $  4680 ( 38%)  ratio  5.81  
+   Rule C       split 2 cap $ 500 reset | net   +11980  DD $  2767 ( 24%)  ratio  4.33  
+   Rule C       split 2 cap $1000 clamp | net   +28659  DD $  7646 ( 32%)  ratio  3.75  
+   Rule C       split 2 cap $1000 reset | net   +17113  DD $  4062 ( 35%)  ratio  4.21  
+   Rule C       split 3 cap $ 250 clamp | net   +15764  DD $  3786 ( 20%)  ratio  4.16  
+   Rule C       split 3 cap $ 250 reset | net   +10829  DD $  1882 ( 17%)  ratio  5.75  
+   Rule C       split 3 cap $ 500 clamp | net   +17975  DD $  4689 ( 25%)  ratio  3.83  
+   Rule C       split 3 cap $ 500 reset | net    +7905  DD $  3283 ( 30%)  ratio  2.41  
+   Rule C       split 3 cap $1000 clamp | net   +18562  DD $  6988 ( 28%)  ratio  2.66  
+   Rule C       split 3 cap $1000 reset | net    +8662  DD $  4245 ( 28%)  ratio  2.04  
+   Rule C split split 2 cap $ 250 clamp | net   +29285  DD $  7404 ( 45%)  ratio  3.96  
+   Rule C split split 2 cap $ 250 reset | net   +20527  DD $  7404 ( 33%)  ratio  2.77  
+   Rule C split split 2 cap $ 500 clamp | net   +60098  DD $ 14726 ( 70%)  ratio  4.08  
+   Rule C split split 2 cap $ 500 reset | net   +33849  DD $ 13006 ( 39%)  ratio  2.60  
+   Rule C split split 2 cap $1000 clamp | net   -10093  DD $ 14879 (101%)  ratio -0.68  BLOWN
+   Rule C split split 2 cap $1000 reset | net   +55215  DD $ 14518 ( 45%)  ratio  3.80  
+   Rule C split split 3 cap $ 250 clamp | net   +29287  DD $  7404 ( 42%)  ratio  3.96  
+   Rule C split split 3 cap $ 250 reset | net   +22304  DD $  7404 ( 30%)  ratio  3.01  
+   Rule C split split 3 cap $ 500 clamp | net   +58982  DD $ 14697 ( 59%)  ratio  4.01  
+   Rule C split split 3 cap $ 500 reset | net   +17859  DD $ 10923 ( 46%)  ratio  1.64  
+   Rule C split split 3 cap $1000 clamp | net   +98419  DD $ 26862 ( 70%)  ratio  3.66  
+   Rule C split split 3 cap $1000 reset | net   +18208  DD $ 14353 ( 54%)  ratio  1.27  
+
+M1 streak
+   Rule C       split 2 cap $ 250 clamp | net   +20249  DD $  4183 ( 34%)  ratio  4.84  
+   Rule C       split 2 cap $ 250 reset | net    +6555  DD $  2307 ( 13%)  ratio  2.84  
+   Rule C       split 2 cap $ 500 clamp | net   +24821  DD $  6900 ( 55%)  ratio  3.60  
+   Rule C       split 2 cap $ 500 reset | net   +12386  DD $  3033 ( 27%)  ratio  4.08  
+   Rule C       split 2 cap $1000 clamp | net   +26055  DD $  5618 ( 26%)  ratio  4.64  
+   Rule C       split 2 cap $1000 reset | net   +16100  DD $  3920 ( 35%)  ratio  4.11  
+   Rule C       split 3 cap $ 250 clamp | net   +14738  DD $  3791 ( 34%)  ratio  3.89  
+   Rule C       split 3 cap $ 250 reset | net    +7925  DD $  2094 ( 19%)  ratio  3.78  
+   Rule C       split 3 cap $ 500 clamp | net   +16914  DD $  3178 ( 27%)  ratio  5.32  
+   Rule C       split 3 cap $ 500 reset | net    +8678  DD $  2743 ( 25%)  ratio  3.16  
+   Rule C       split 3 cap $1000 clamp | net   +17271  DD $  2923 ( 24%)  ratio  5.91  
+   Rule C       split 3 cap $1000 reset | net   +17271  DD $  2923 ( 24%)  ratio  5.91  
+   Rule C split split 2 cap $ 250 clamp | net   +25644  DD $  7158 ( 47%)  ratio  3.58  
+   Rule C split split 2 cap $ 250 reset | net   +16610  DD $  5830 ( 25%)  ratio  2.85  
+   Rule C split split 2 cap $ 500 clamp | net   +51668  DD $ 14118 ( 70%)  ratio  3.66  
+   Rule C split split 2 cap $ 500 reset | net   +36518  DD $ 11261 ( 43%)  ratio  3.24  
+   Rule C split split 2 cap $1000 clamp | net   -10268  DD $ 13326 (102%)  ratio -0.77  BLOWN
+   Rule C split split 2 cap $1000 reset | net   +43200  DD $ 11990 ( 62%)  ratio  3.60  
+   Rule C split split 3 cap $ 250 clamp | net   +25894  DD $  7158 ( 40%)  ratio  3.62  
+   Rule C split split 3 cap $ 250 reset | net   +16451  DD $  5830 ( 35%)  ratio  2.82  
+   Rule C split split 3 cap $ 500 clamp | net   +50663  DD $ 14013 ( 67%)  ratio  3.62  
+   Rule C split split 3 cap $ 500 reset | net   +29940  DD $ 10387 ( 41%)  ratio  2.88  
+   Rule C split split 3 cap $1000 clamp | net   -10952  DD $ 15417 (107%)  ratio -0.71  BLOWN
+   Rule C split split 3 cap $1000 reset | net   +32556  DD $ 12595 ( 50%)  ratio  2.58  
+
+M5 profit
+   Rule C       split 2 cap $ 250 clamp | net   +11891  DD $  8161 ( 65%)  ratio  1.46  
+   Rule C       split 2 cap $ 250 reset | net    +5824  DD $  3802 ( 22%)  ratio  1.53  
+   Rule C       split 2 cap $ 500 clamp | net   -10049  DD $ 12080 (100%)  ratio -0.83  BLOWN
+   Rule C       split 2 cap $ 500 reset | net   +13230  DD $  4521 ( 34%)  ratio  2.93  
+   Rule C       split 2 cap $1000 clamp | net   -10368  DD $ 12563 (103%)  ratio -0.83  BLOWN
+   Rule C       split 2 cap $1000 reset | net   +15184  DD $  7473 ( 50%)  ratio  2.03  
+   Rule C       split 3 cap $ 250 clamp | net   +12711  DD $  7712 ( 67%)  ratio  1.65  
+   Rule C       split 3 cap $ 250 reset | net    +8771  DD $  2898 ( 26%)  ratio  3.03  
+   Rule C       split 3 cap $ 500 clamp | net   -10446  DD $ 11439 (104%)  ratio -0.91  BLOWN
+   Rule C       split 3 cap $ 500 reset | net   +11814  DD $  4216 ( 26%)  ratio  2.80  
+   Rule C       split 3 cap $1000 clamp | net   -10603  DD $ 11595 (105%)  ratio -0.91  BLOWN
+   Rule C       split 3 cap $1000 reset | net   +10665  DD $  6929 ( 39%)  ratio  1.54  
+   Rule C split split 2 cap $ 250 clamp | net   +32420  DD $  9155 ( 68%)  ratio  3.54  
+   Rule C split split 2 cap $ 250 reset | net   +27535  DD $  9155 ( 31%)  ratio  3.01  
+   Rule C split split 2 cap $ 500 clamp | net   -10410  DD $ 14689 (103%)  ratio -0.71  BLOWN
+   Rule C split split 2 cap $ 500 reset | net   +46684  DD $ 16385 ( 38%)  ratio  2.85  
+   Rule C split split 2 cap $1000 clamp | net   -10764  DD $ 17250 (105%)  ratio -0.62  BLOWN
+   Rule C split split 2 cap $1000 reset | net   +63837  DD $ 17625 ( 62%)  ratio  3.62  
+   Rule C split split 3 cap $ 250 clamp | net   +31638  DD $  9155 ( 71%)  ratio  3.46  
+   Rule C split split 3 cap $ 250 reset | net   +27926  DD $  9155 ( 30%)  ratio  3.05  
+   Rule C split split 3 cap $ 500 clamp | net   -10262  DD $ 11771 (102%)  ratio -0.87  BLOWN
+   Rule C split split 3 cap $ 500 reset | net   +51480  DD $ 16635 ( 36%)  ratio  3.09  
+   Rule C split split 3 cap $1000 clamp | net   -10612  DD $ 12121 (105%)  ratio -0.88  BLOWN
+   Rule C split split 3 cap $1000 reset | net   +47796  DD $ 20545 ( 40%)  ratio  2.33  
+
+M5 streak
+   Rule C       split 2 cap $ 250 clamp | net    +9789  DD $  4242 ( 34%)  ratio  2.31  
+   Rule C       split 2 cap $ 250 reset | net    +6371  DD $  1597 ( 10%)  ratio  3.99  
+   Rule C       split 2 cap $ 500 clamp | net   +12817  DD $  6563 ( 57%)  ratio  1.95  
+   Rule C       split 2 cap $ 500 reset | net    +5360  DD $  2631 ( 15%)  ratio  2.04  
+   Rule C       split 2 cap $1000 clamp | net   +14469  DD $  8753 ( 39%)  ratio  1.65  
+   Rule C       split 2 cap $1000 reset | net    +3875  DD $  5746 ( 34%)  ratio  0.67  
+   Rule C       split 3 cap $ 250 clamp | net    +9048  DD $  3311 ( 29%)  ratio  2.73  
+   Rule C       split 3 cap $ 250 reset | net    +3887  DD $  2183 ( 15%)  ratio  1.78  
+   Rule C       split 3 cap $ 500 clamp | net   +10359  DD $  3981 ( 20%)  ratio  2.60  
+   Rule C       split 3 cap $ 500 reset | net    +4310  DD $  3943 ( 27%)  ratio  1.09  
+   Rule C       split 3 cap $1000 clamp | net   +10551  DD $  5071 ( 25%)  ratio  2.08  
+   Rule C       split 3 cap $1000 reset | net    +7590  DD $  3370 ( 17%)  ratio  2.25  
+   Rule C split split 2 cap $ 250 clamp | net   +15618  DD $  6306 ( 40%)  ratio  2.48  
+   Rule C split split 2 cap $ 250 reset | net   +11815  DD $  6306 ( 32%)  ratio  1.87  
+   Rule C split split 2 cap $ 500 clamp | net   +31689  DD $ 12494 ( 72%)  ratio  2.54  
+   Rule C split split 2 cap $ 500 reset | net   +17583  DD $ 11121 ( 42%)  ratio  1.58  
+   Rule C split split 2 cap $1000 clamp | net   -10230  DD $ 13637 (102%)  ratio -0.75  BLOWN
+   Rule C split split 2 cap $1000 reset | net   +11136  DD $ 11256 ( 53%)  ratio  0.99  
+   Rule C split split 3 cap $ 250 clamp | net   +15631  DD $  6306 ( 40%)  ratio  2.48  
+   Rule C split split 3 cap $ 250 reset | net   +12612  DD $  6306 ( 30%)  ratio  2.00  
+   Rule C split split 3 cap $ 500 clamp | net   +29503  DD $ 12376 ( 68%)  ratio  2.38  
+   Rule C split split 3 cap $ 500 reset | net   +24417  DD $ 10784 ( 34%)  ratio  2.26  
+   Rule C split split 3 cap $1000 clamp | net   -10534  DD $ 13237 (104%)  ratio -0.80  BLOWN
+   Rule C split split 3 cap $1000 reset | net   +25316  DD $ 12183 ( 39%)  ratio  2.08  
+
+M15 profit
+   Rule C       split 2 cap $ 250 clamp | net   +18355  DD $  4330 ( 28%)  ratio  4.24  
+   Rule C       split 2 cap $ 250 reset | net    +9924  DD $  1958 ( 15%)  ratio  5.07  
+   Rule C       split 2 cap $ 500 clamp | net   +19832  DD $  7787 ( 48%)  ratio  2.55  
+   Rule C       split 2 cap $ 500 reset | net   +12637  DD $  3212 ( 23%)  ratio  3.93  
+   Rule C       split 2 cap $1000 clamp | net   +20347  DD $ 13858 ( 85%)  ratio  1.47  
+   Rule C       split 2 cap $1000 reset | net   +14725  DD $  4758 ( 29%)  ratio  3.09  
+   Rule C       split 3 cap $ 250 clamp | net   +14766  DD $  3917 ( 27%)  ratio  3.77  
+   Rule C       split 3 cap $ 250 reset | net   +12880  DD $  1791 ( 13%)  ratio  7.19  
+   Rule C       split 3 cap $ 500 clamp | net   +15106  DD $  6646 ( 45%)  ratio  2.27  
+   Rule C       split 3 cap $ 500 reset | net   +12479  DD $  2578 ( 18%)  ratio  4.84  
+   Rule C       split 3 cap $1000 clamp | net   +15197  DD $ 10847 ( 74%)  ratio  1.40  
+   Rule C       split 3 cap $1000 reset | net   +12168  DD $  3915 ( 27%)  ratio  3.11  
+   Rule C split split 2 cap $ 250 clamp | net   +43795  DD $  5549 ( 27%)  ratio  7.89  
+   Rule C split split 2 cap $ 250 reset | net   +37088  DD $  5096 ( 32%)  ratio  7.28  
+   Rule C split split 2 cap $ 500 clamp | net   +81503  DD $ 10813 ( 46%)  ratio  7.54  
+   Rule C split split 2 cap $ 500 reset | net   +66132  DD $  8229 ( 39%)  ratio  8.04  
+   Rule C split split 2 cap $1000 clamp | net  +130571  DD $ 19372 ( 42%)  ratio  6.74  
+   Rule C split split 2 cap $1000 reset | net   +62965  DD $  8782 ( 45%)  ratio  7.17  
+   Rule C split split 3 cap $ 250 clamp | net   +43322  DD $  5549 ( 26%)  ratio  7.81  
+   Rule C split split 3 cap $ 250 reset | net   +39567  DD $  5530 ( 31%)  ratio  7.16  
+   Rule C split split 3 cap $ 500 clamp | net   +83689  DD $ 10392 ( 33%)  ratio  8.05  
+   Rule C split split 3 cap $ 500 reset | net   +67853  DD $  7179 ( 36%)  ratio  9.45  
+   Rule C split split 3 cap $1000 clamp | net  +112909  DD $ 18489 ( 50%)  ratio  6.11  
+   Rule C split split 3 cap $1000 reset | net   +82664  DD $ 11707 ( 35%)  ratio  7.06  
+
+M15 streak
+   Rule C       split 2 cap $ 250 clamp | net    +6337  DD $  3342 ( 27%)  ratio  1.90  
+   Rule C       split 2 cap $ 250 reset | net    +4781  DD $  1453 ( 12%)  ratio  3.29  
+   Rule C       split 2 cap $ 500 clamp | net    +6458  DD $  5611 ( 45%)  ratio  1.15  
+   Rule C       split 2 cap $ 500 reset | net    +4854  DD $  1768 ( 14%)  ratio  2.75  
+   Rule C       split 2 cap $1000 clamp | net    +6817  DD $  7108 ( 57%)  ratio  0.96  
+   Rule C       split 2 cap $1000 reset | net    +4418  DD $  3187 ( 26%)  ratio  1.39  
+   Rule C       split 3 cap $ 250 clamp | net    +5133  DD $  3237 ( 27%)  ratio  1.59  
+   Rule C       split 3 cap $ 250 reset | net    +4179  DD $  1592 ( 13%)  ratio  2.63  
+   Rule C       split 3 cap $ 500 clamp | net    +5259  DD $  3904 ( 32%)  ratio  1.35  
+   Rule C       split 3 cap $ 500 reset | net    +4029  DD $  2256 ( 19%)  ratio  1.79  
+   Rule C       split 3 cap $1000 clamp | net    +5439  DD $  4778 ( 40%)  ratio  1.14  
+   Rule C       split 3 cap $1000 reset | net    +2312  DD $  3972 ( 33%)  ratio  0.58  
+   Rule C split split 2 cap $ 250 clamp | net   +17046  DD $  5251 ( 32%)  ratio  3.25  
+   Rule C split split 2 cap $ 250 reset | net   +10905  DD $  3814 ( 28%)  ratio  2.86  
+   Rule C split split 2 cap $ 500 clamp | net   +29294  DD $ 10116 ( 53%)  ratio  2.90  
+   Rule C split split 2 cap $ 500 reset | net   +13318  DD $  5126 ( 35%)  ratio  2.60  
+   Rule C split split 2 cap $1000 clamp | net   +38801  DD $ 16918 ( 86%)  ratio  2.29  
+   Rule C split split 2 cap $1000 reset | net   +25101  DD $  9414 ( 48%)  ratio  2.67  
+   Rule C split split 3 cap $ 250 clamp | net   +16383  DD $  5251 ( 34%)  ratio  3.12  
+   Rule C split split 3 cap $ 250 reset | net   +11560  DD $  3476 ( 26%)  ratio  3.33  
+   Rule C split split 3 cap $ 500 clamp | net   +25712  DD $  9891 ( 59%)  ratio  2.60  
+   Rule C split split 3 cap $ 500 reset | net   +15153  DD $  5927 ( 37%)  ratio  2.56  
+   Rule C split split 3 cap $1000 clamp | net   +31569  DD $ 14902 ( 90%)  ratio  2.12  
+   Rule C split split 3 cap $1000 reset | net   +17782  DD $  6885 ( 41%)  ratio  2.58  
+
+H1 profit
+   Rule C       split 2 cap $ 250 clamp | net    +4353  DD $  1006 (  8%)  ratio  4.33  
+   Rule C       split 2 cap $ 250 reset | net    +3223  DD $   728 (  7%)  ratio  4.42  
+   Rule C       split 2 cap $ 500 clamp | net    +4449  DD $  1139 (  9%)  ratio  3.91  
+   Rule C       split 2 cap $ 500 reset | net    +3508  DD $  1139 (  9%)  ratio  3.08  
+   Rule C       split 2 cap $1000 clamp | net    +4523  DD $  1139 (  9%)  ratio  3.97  
+   Rule C       split 2 cap $1000 reset | net    +4523  DD $  1139 (  9%)  ratio  3.97  
+   Rule C       split 3 cap $ 250 clamp | net    +3676  DD $   632 (  5%)  ratio  5.82  
+   Rule C       split 3 cap $ 250 reset | net    +3676  DD $   632 (  5%)  ratio  5.82  
+   Rule C       split 3 cap $ 500 clamp | net    +3676  DD $   632 (  5%)  ratio  5.82  
+   Rule C       split 3 cap $ 500 reset | net    +3676  DD $   632 (  5%)  ratio  5.82  
+   Rule C       split 3 cap $1000 clamp | net    +3676  DD $   632 (  5%)  ratio  5.82  
+   Rule C       split 3 cap $1000 reset | net    +3676  DD $   632 (  5%)  ratio  5.82  
+   Rule C split split 2 cap $ 250 clamp | net   +13506  DD $  2000 ( 12%)  ratio  6.75  
+   Rule C split split 2 cap $ 250 reset | net    +7263  DD $  1732 ( 13%)  ratio  4.19  
+   Rule C split split 2 cap $ 500 clamp | net   +21183  DD $  3600 ( 19%)  ratio  5.88  
+   Rule C split split 2 cap $ 500 reset | net   +18232  DD $  2788 ( 15%)  ratio  6.54  
+   Rule C split split 2 cap $1000 clamp | net   +25952  DD $  5548 ( 28%)  ratio  4.68  
+   Rule C split split 2 cap $1000 reset | net   +23390  DD $  3586 ( 18%)  ratio  6.52  
+   Rule C split split 3 cap $ 250 clamp | net   +12300  DD $  2000 ( 13%)  ratio  6.15  
+   Rule C split split 3 cap $ 250 reset | net   +12300  DD $  2000 ( 13%)  ratio  6.15  
+   Rule C split split 3 cap $ 500 clamp | net   +17941  DD $  3243 ( 20%)  ratio  5.53  
+   Rule C split split 3 cap $ 500 reset | net   +15920  DD $  2789 ( 16%)  ratio  5.71  
+   Rule C split split 3 cap $1000 clamp | net   +19001  DD $  4099 ( 25%)  ratio  4.64  
+   Rule C split split 3 cap $1000 reset | net   +16369  DD $  3349 ( 21%)  ratio  4.89  
+
+H1 streak
+   Rule C       split 2 cap $ 250 clamp | net    +1887  DD $   470 (  4%)  ratio  4.01  
+   Rule C       split 2 cap $ 250 reset | net    +1887  DD $   470 (  4%)  ratio  4.01  
+   Rule C       split 2 cap $ 500 clamp | net    +1887  DD $   470 (  4%)  ratio  4.01  
+   Rule C       split 2 cap $ 500 reset | net    +1887  DD $   470 (  4%)  ratio  4.01  
+   Rule C       split 2 cap $1000 clamp | net    +1887  DD $   470 (  4%)  ratio  4.01  
+   Rule C       split 2 cap $1000 reset | net    +1887  DD $   470 (  4%)  ratio  4.01  
+   Rule C       split 3 cap $ 250 clamp | net    +1775  DD $   348 (  3%)  ratio  5.11  
+   Rule C       split 3 cap $ 250 reset | net    +1775  DD $   348 (  3%)  ratio  5.11  
+   Rule C       split 3 cap $ 500 clamp | net    +1775  DD $   348 (  3%)  ratio  5.11  
+   Rule C       split 3 cap $ 500 reset | net    +1775  DD $   348 (  3%)  ratio  5.11  
+   Rule C       split 3 cap $1000 clamp | net    +1775  DD $   348 (  3%)  ratio  5.11  
+   Rule C       split 3 cap $1000 reset | net    +1775  DD $   348 (  3%)  ratio  5.11  
+   Rule C split split 2 cap $ 250 clamp | net    +5504  DD $  1443 (  9%)  ratio  3.81  
+   Rule C split split 2 cap $ 250 reset | net    +4416  DD $  1443 (  9%)  ratio  3.06  
+   Rule C split split 2 cap $ 500 clamp | net    +5705  DD $  2414 ( 14%)  ratio  2.36  
+   Rule C split split 2 cap $ 500 reset | net    +6162  DD $  1942 ( 11%)  ratio  3.17  
+   Rule C split split 2 cap $1000 clamp | net    +5443  DD $  3181 ( 18%)  ratio  1.71  
+   Rule C split split 2 cap $1000 reset | net    +5436  DD $  2494 ( 14%)  ratio  2.18  
+   Rule C split split 3 cap $ 250 clamp | net    +4946  DD $  1443 (  9%)  ratio  3.43  
+   Rule C split split 3 cap $ 250 reset | net    +4591  DD $  1443 (  9%)  ratio  3.18  
+   Rule C split split 3 cap $ 500 clamp | net    +4874  DD $  2242 ( 13%)  ratio  2.17  
+   Rule C split split 3 cap $ 500 reset | net    +4872  DD $  2042 ( 12%)  ratio  2.39  
+   Rule C split split 3 cap $1000 clamp | net    +5082  DD $  2357 ( 14%)  ratio  2.16  
+   Rule C split split 3 cap $1000 reset | net    +5082  DD $  2357 ( 14%)  ratio  2.16  

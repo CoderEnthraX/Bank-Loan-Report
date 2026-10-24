@@ -1,0 +1,264 @@
+
+M1 default (base $50) | Off: net -10035, max DD $10185 (100%), ratio -0.99
+   Rule C       split 1       | net    -11543  DD $  12800 (114%)  max risk $  6400  BLOWN | ratio -0.90 (x0.00 Off) | 21-23   -11543 DD 114% | 24-26   -22739 DD 199%
+   Rule C       split 1 cap   | net    -10373  DD $  10668 (104%)  max risk $   500  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -10373 DD 104% | 24-26   -10195 DD 102%
+   Rule C       split 2       | net    -12357  DD $  12532 (123%)  max risk $  4177  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -12357 DD 123% | 24-26   -14065 DD 138%
+   Rule C       split 2 cap   | net    -10102  DD $  10277 (101%)  max risk $   500  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -10102 DD 101% | 24-26   -10418 DD 104%
+   Rule C       split 3       | net    -12515  DD $  12664 (125%)  max risk $  3166  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -12515 DD 125% | 24-26   -13377 DD 132%
+   Rule C       split 3 cap   | net    -10456  DD $  10606 (104%)  max risk $   500  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10456 DD 104% | 24-26   -10469 DD 104%
+   Rule C       split 4       | net    -10779  DD $  10929 (108%)  max risk $  2186  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10779 DD 108% | 24-26   -11127 DD 111%
+   Rule C       split 4 cap   | net    -10067  DD $  10217 (101%)  max risk $   500  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10067 DD 101% | 24-26   -10146 DD 101%
+   Rule C       split 5       | net    -10831  DD $  10981 (108%)  max risk $  1897  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10831 DD 108% | 24-26   -11190 DD 111%
+   Rule C       split 5 cap   | net    -10166  DD $  10316 (102%)  max risk $   500  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10166 DD 102% | 24-26   -10087 DD 101%
+   Rule C split split 1       | net    -10718  DD $  12800 (106%)  max risk $  6400  BLOWN | ratio -0.84 (x0.00 Off) | 21-23   -10718 DD 106% | 24-26   -12995 DD 113%
+   Rule C split split 1 cap   | net    -10180  DD $  10499 (102%)  max risk $   500  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -10180 DD 102% | 24-26   -10473 DD 104%
+   Rule C split split 2       | net    -12357  DD $  12532 (123%)  max risk $  4177  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -12357 DD 123% | 24-26   -12669 DD 124%
+   Rule C split split 2 cap   | net    -10102  DD $  10277 (101%)  max risk $   500  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -10102 DD 101% | 24-26   -10016 DD 100%
+   Rule C split split 3       | net    -12515  DD $  12664 (125%)  max risk $  3166  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -12515 DD 125% | 24-26   -12170 DD 121%
+   Rule C split split 3 cap   | net    -10456  DD $  10606 (104%)  max risk $   500  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10456 DD 104% | 24-26   -10020 DD 100%
+   Rule C split split 4       | net    -10779  DD $  10929 (108%)  max risk $  2186  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10779 DD 108% | 24-26   -11985 DD 119%
+   Rule C split split 4 cap   | net    -10067  DD $  10217 (101%)  max risk $   500  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10067 DD 101% | 24-26   -10337 DD 103%
+   Rule C split split 5       | net    -10831  DD $  10981 (108%)  max risk $  1897  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10831 DD 108% | 24-26   -10092 DD 101%
+   Rule C split split 5 cap   | net    -10166  DD $  10316 (102%)  max risk $   500  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10166 DD 102% | 24-26   -10137 DD 101%
+
+M1 profit (base $50) | Off: net +5442, max DD $1481 (13%), ratio 3.67
+   Rule C       split 1       | net    -14587  DD $  25600 (122%)  max risk $ 12800  BLOWN | ratio -0.57 (x-0.16 Off) | 21-23   -14587 DD 122% | 24-26   -17967 DD 108%
+   Rule C       split 1 cap   | net    +45462  DD $  13108 ( 48%)  max risk $   500  ok    | ratio  3.47 (x0.94 Off) | 21-23   +24204 DD  48% | 24-26   +20757 DD  68%
+   Rule C       split 2       | net    +29313  DD $  12975 ( 38%)  max risk $  6487  ok    | ratio  2.26 (x0.61 Off) | 21-23   +13643 DD  38% | 24-26   +15670 DD  56%
+   Rule C       split 2 cap   | net    +27202  DD $   4680 ( 38%)  max risk $   500  ok    | ratio  5.81 (x1.58 Off) | 21-23   +12630 DD  38% | 24-26   +14572 DD  21%
+   Rule C       split 3       | net    +18741  DD $   6943 ( 28%)  max risk $  2314  ok    | ratio  2.70 (x0.73 Off) | 21-23    +8695 DD  28% | 24-26   +10036 DD  37%
+   Rule C       split 3 cap   | net    +17975  DD $   4689 ( 25%)  max risk $   500  ok    | ratio  3.83 (x1.04 Off) | 21-23    +8584 DD  25% | 24-26    +9381 DD  34%
+   Rule C       split 4       | net    +14600  DD $   4698 ( 20%)  max risk $  1175  ok    | ratio  3.11 (x0.85 Off) | 21-23    +6709 DD  18% | 24-26    +7839 DD  30%
+   Rule C       split 4 cap   | net    +14351  DD $   4438 ( 19%)  max risk $   500  ok    | ratio  3.23 (x0.88 Off) | 21-23    +6709 DD  18% | 24-26    +7589 DD  27%
+   Rule C       split 5       | net    +12353  DD $   3900 ( 20%)  max risk $   780  ok    | ratio  3.17 (x0.86 Off) | 21-23    +5654 DD  13% | 24-26    +6637 DD  29%
+   Rule C       split 5 cap   | net    +12262  DD $   3763 ( 19%)  max risk $   500  ok    | ratio  3.26 (x0.89 Off) | 21-23    +5654 DD  13% | 24-26    +6547 DD  27%
+   Rule C split split 1       | net    -47661  DD $ 123077 (144%)  max risk $ 61538  BLOWN | ratio -0.39 (x-0.11 Off) | 21-23   -47661 DD 144% | 24-26   -14308 DD 129%
+   Rule C split split 1 cap   | net    +54624  DD $  14748 ( 96%)  max risk $   500  ok    | ratio  3.70 (x1.01 Off) | 21-23   +25605 DD  96% | 24-26   +32672 DD  59%
+   Rule C split split 2       | net    -11811  DD $  16597 (112%)  max risk $  5532  BLOWN | ratio -0.71 (x-0.19 Off) | 21-23   -11811 DD 112% | 24-26   -17613 DD 106%
+   Rule C split split 2 cap   | net    +60098  DD $  14726 ( 70%)  max risk $   500  ok    | ratio  4.08 (x1.11 Off) | 21-23   +30670 DD  70% | 24-26   +27036 DD  77%
+   Rule C split split 3       | net    -10767  DD $  13345 (106%)  max risk $  3336  BLOWN | ratio -0.81 (x-0.22 Off) | 21-23   -10767 DD 106% | 24-26   -10539 DD 104%
+   Rule C split split 3 cap   | net    +58982  DD $  14697 ( 59%)  max risk $   500  ok    | ratio  4.01 (x1.09 Off) | 21-23   +30064 DD  59% | 24-26   +23612 DD  85%
+   Rule C split split 4       | net   +121683  DD $  45740 ( 52%)  max risk $ 11435  ok    | ratio  2.66 (x0.72 Off) | 21-23   +45769 DD  52% | 24-26   -14453 DD 114%
+   Rule C split split 4 cap   | net    +57725  DD $  14665 ( 51%)  max risk $   500  ok    | ratio  3.94 (x1.07 Off) | 21-23   +28798 DD  51% | 24-26   +23040 DD  73%
+   Rule C split split 5       | net    +99851  DD $  37361 ( 51%)  max risk $  7472  ok    | ratio  2.67 (x0.73 Off) | 21-23   +36024 DD  51% | 24-26   -10093 DD 100%
+   Rule C split split 5 cap   | net    +55799  DD $  14597 ( 41%)  max risk $   500  ok    | ratio  3.82 (x1.04 Off) | 21-23   +27137 DD  41% | 24-26   +24602 DD  53%
+
+M1 streak (base $50) | Off: net +4561, max DD $1467 (14%), ratio 3.11
+   Rule C       split 1       | net    -16366  DD $  25600 (133%)  max risk $ 12800  BLOWN | ratio -0.64 (x-0.21 Off) | 21-23   -16366 DD 133% | 24-26  +267472 DD  68%
+   Rule C       split 1 cap   | net    +43885  DD $   9960 ( 51%)  max risk $   500  ok    | ratio  4.41 (x1.42 Off) | 21-23   +18183 DD  51% | 24-26   +24546 DD  42%
+   Rule C       split 2       | net    +26512  DD $   5767 ( 25%)  max risk $  2883  ok    | ratio  4.60 (x1.48 Off) | 21-23   +11934 DD  25% | 24-26   +14523 DD  26%
+   Rule C       split 2 cap   | net    +24821  DD $   6900 ( 55%)  max risk $   500  ok    | ratio  3.60 (x1.16 Off) | 21-23   +10927 DD  55% | 24-26   +13838 DD  17%
+   Rule C       split 3       | net    +17271  DD $   2923 ( 24%)  max risk $   974  ok    | ratio  5.91 (x1.90 Off) | 21-23    +7530 DD  24% | 24-26    +9607 DD  16%
+   Rule C       split 3 cap   | net    +16914  DD $   3178 ( 27%)  max risk $   500  ok    | ratio  5.32 (x1.71 Off) | 21-23    +7395 DD  27% | 24-26    +9386 DD  18%
+   Rule C       split 4       | net    +13408  DD $   2615 ( 23%)  max risk $   654  ok    | ratio  5.13 (x1.65 Off) | 21-23    +5632 DD  23% | 24-26    +7651 DD  15%
+   Rule C       split 4 cap   | net    +13305  DD $   2920 ( 26%)  max risk $   500  ok    | ratio  4.56 (x1.47 Off) | 21-23    +5593 DD  26% | 24-26    +7587 DD  17%
+   Rule C       split 5       | net    +11368  DD $   2411 ( 19%)  max risk $   482  ok    | ratio  4.71 (x1.52 Off) | 21-23    +4666 DD  19% | 24-26    +6602 DD  15%
+   Rule C       split 5 cap   | net    +11368  DD $   2411 ( 19%)  max risk $   482  ok    | ratio  4.71 (x1.52 Off) | 21-23    +4666 DD  19% | 24-26    +6602 DD  15%
+   Rule C split split 1       | net    -57212  DD $ 122353 (163%)  max risk $ 61176  BLOWN | ratio -0.47 (x-0.15 Off) | 21-23   -57212 DD 163% | 24-26   -11830 DD 114%
+   Rule C split split 1 cap   | net    +49345  DD $  14209 ( 90%)  max risk $   500  ok    | ratio  3.47 (x1.12 Off) | 21-23   +16093 DD  90% | 24-26   +34567 DD  68%
+   Rule C split split 2       | net    -10445  DD $  13502 (103%)  max risk $  4501  BLOWN | ratio -0.77 (x-0.25 Off) | 21-23   -10445 DD 103% | 24-26  +121918 DD  66%
+   Rule C split split 2 cap   | net    +51668  DD $  14118 ( 70%)  max risk $   500  ok    | ratio  3.66 (x1.18 Off) | 21-23   +18507 DD  70% | 24-26   +28342 DD  87%
+   Rule C split split 3       | net    -11768  DD $  16423 (112%)  max risk $  4106  BLOWN | ratio -0.72 (x-0.23 Off) | 21-23   -11768 DD 112% | 24-26   +73007 DD  53%
+   Rule C split split 3 cap   | net    +50663  DD $  14013 ( 67%)  max risk $   500  ok    | ratio  3.62 (x1.16 Off) | 21-23   +18030 DD  67% | 24-26   +23179 DD  94%
+   Rule C split split 4       | net   +110320  DD $  24102 ( 75%)  max risk $  6026  ok    | ratio  4.58 (x1.47 Off) | 21-23   +35999 DD  75% | 24-26   +55774 DD  54%
+   Rule C split split 4 cap   | net    +49722  DD $  14056 ( 54%)  max risk $   500  ok    | ratio  3.54 (x1.14 Off) | 21-23   +17934 DD  54% | 24-26   +21572 DD  89%
+   Rule C split split 5       | net    +89451  DD $  23234 ( 44%)  max risk $  4647  ok    | ratio  3.85 (x1.24 Off) | 21-23   +26251 DD  44% | 24-26   +44604 DD  59%
+   Rule C split split 5 cap   | net    +47033  DD $  13919 ( 44%)  max risk $   500  ok    | ratio  3.38 (x1.09 Off) | 21-23   +15247 DD  44% | 24-26   +25093 DD  72%
+
+M5 default (base $50) | Off: net -10000, max DD $10121 (100%), ratio -0.99
+   Rule C       split 1       | net    -11431  DD $  12800 (113%)  max risk $  6400  BLOWN | ratio -0.89 (x0.00 Off) | 21-23   -11431 DD 113% | 24-26   -28038 DD 154%
+   Rule C       split 1 cap   | net    -10409  DD $  10594 (104%)  max risk $   500  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -10409 DD 104% | 24-26   -10356 DD 102%
+   Rule C       split 2       | net    -11140  DD $  12249 (110%)  max risk $  5042  BLOWN | ratio -0.91 (x0.00 Off) | 21-23   -11140 DD 110% | 24-26   +41839 DD  71%
+   Rule C       split 2 cap   | net    -10403  DD $  10943 (104%)  max risk $   500  BLOWN | ratio -0.95 (x0.00 Off) | 21-23   -10403 DD 104% | 24-26   -10103 DD 101%
+   Rule C       split 3       | net    -12395  DD $  12712 (123%)  max risk $  3178  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -12395 DD 123% | 24-26   +23492 DD  43%
+   Rule C       split 3 cap   | net    -10318  DD $  10618 (103%)  max risk $   500  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -10318 DD 103% | 24-26   -10015 DD 100%
+   Rule C       split 4       | net    -11527  DD $  11732 (115%)  max risk $  2346  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -11527 DD 115% | 24-26   -10307 DD 103%
+   Rule C       split 4 cap   | net    -10105  DD $  10310 (101%)  max risk $   500  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -10105 DD 101% | 24-26   -10006 DD 100%
+   Rule C       split 5       | net    -11056  DD $  11195 (110%)  max risk $  1866  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -11056 DD 110% | 24-26   -11511 DD 113%
+   Rule C       split 5 cap   | net    -10020  DD $  10159 (100%)  max risk $   500  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10020 DD 100% | 24-26   -10265 DD 102%
+   Rule C split split 1       | net    -14631  DD $  16000 (141%)  max risk $  8000  BLOWN | ratio -0.91 (x0.00 Off) | 21-23   -14631 DD 141% | 24-26   -54621 DD 121%
+   Rule C split split 1 cap   | net    -10409  DD $  10594 (104%)  max risk $   500  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -10409 DD 104% | 24-26   -10097 DD 101%
+   Rule C split split 2       | net    -14169  DD $  14878 (139%)  max risk $  4959  BLOWN | ratio -0.95 (x0.00 Off) | 21-23   -14169 DD 139% | 24-26   -19671 DD 141%
+   Rule C split split 2 cap   | net    -10308  DD $  10963 (103%)  max risk $   500  BLOWN | ratio -0.94 (x0.00 Off) | 21-23   -10308 DD 103% | 24-26   -10250 DD 101%
+   Rule C split split 3       | net    -11350  DD $  11653 (113%)  max risk $  2913  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -11350 DD 113% | 24-26   -11691 DD 112%
+   Rule C split split 3 cap   | net    -10393  DD $  10662 (104%)  max risk $   500  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -10393 DD 104% | 24-26   -10487 DD 104%
+   Rule C split split 4       | net    -12290  DD $  12495 (122%)  max risk $  2499  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -12290 DD 122% | 24-26   -10840 DD 105%
+   Rule C split split 4 cap   | net    -10003  DD $  10208 (100%)  max risk $   500  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -10003 DD 100% | 24-26   -10463 DD 104%
+   Rule C split split 5       | net    -11056  DD $  11195 (110%)  max risk $  1866  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -11056 DD 110% | 24-26   -10834 DD 107%
+   Rule C split split 5 cap   | net    -10020  DD $  10159 (100%)  max risk $   500  BLOWN | ratio -0.99 (x0.00 Off) | 21-23   -10020 DD 100% | 24-26   -10420 DD 104%
+
+M5 profit (base $50) | Off: net +6136, max DD $1831 (17%), ratio 3.35
+   Rule C       split 1       | net    -31650  DD $  51200 (173%)  max risk $ 25600  BLOWN | ratio -0.62 (x-0.18 Off) | 21-23   -31650 DD 173% | 24-26   -17815 DD 144%
+   Rule C       split 1 cap   | net    +27434  DD $  16610 ( 97%)  max risk $   500  ok    | ratio  1.65 (x0.49 Off) | 21-23   +25158 DD  97% | 24-26   -10245 DD 102%
+   Rule C       split 2       | net    -10780  DD $  12975 (106%)  max risk $  4325  BLOWN | ratio -0.83 (x-0.25 Off) | 21-23   -10780 DD 106% | 24-26   -16287 DD 148%
+   Rule C       split 2 cap   | net    -10049  DD $  12080 (100%)  max risk $   500  BLOWN | ratio -0.83 (x-0.25 Off) | 21-23   -10049 DD 100% | 24-26   -10148 DD 101%
+   Rule C       split 3       | net    -10232  DD $  11225 (102%)  max risk $  2806  BLOWN | ratio -0.91 (x-0.27 Off) | 21-23   -10232 DD 102% | 24-26   +10877 DD  53%
+   Rule C       split 3 cap   | net    -10446  DD $  11439 (104%)  max risk $   500  BLOWN | ratio -0.91 (x-0.27 Off) | 21-23   -10446 DD 104% | 24-26    +9931 DD  40%
+   Rule C       split 4       | net    +15252  DD $   9681 ( 90%)  max risk $  2420  ok    | ratio  1.58 (x0.47 Off) | 21-23    +7211 DD  90% | 24-26    +7998 DD  25%
+   Rule C       split 4 cap   | net    -10038  DD $  10767 (100%)  max risk $   500  BLOWN | ratio -0.93 (x-0.28 Off) | 21-23   -10038 DD 100% | 24-26    +7837 DD  24%
+   Rule C       split 5       | net    +12933  DD $   4955 ( 47%)  max risk $   991  ok    | ratio  2.61 (x0.78 Off) | 21-23    +6209 DD  47% | 24-26    +6662 DD  35%
+   Rule C       split 5 cap   | net    +12800  DD $   4487 ( 41%)  max risk $   500  ok    | ratio  2.85 (x0.85 Off) | 21-23    +6186 DD  41% | 24-26    +6551 DD  32%
+   Rule C split split 1       | net    -83347  DD $ 251509 (141%)  max risk $125754  BLOWN | ratio -0.33 (x-0.10 Off) | 21-23   -83347 DD 141% | 24-26   -69814 DD 198%
+   Rule C split split 1 cap   | net    -10308  DD $  15566 (102%)  max risk $   500  BLOWN | ratio -0.66 (x-0.20 Off) | 21-23   -10308 DD 102% | 24-26   +27564 DD  76%
+   Rule C split split 2       | net    -10442  DD $  18123 (102%)  max risk $  6041  BLOWN | ratio -0.58 (x-0.17 Off) | 21-23   -10442 DD 102% | 24-26   -10742 DD 105%
+   Rule C split split 2 cap   | net    -10410  DD $  14689 (103%)  max risk $   500  BLOWN | ratio -0.71 (x-0.21 Off) | 21-23   -10410 DD 103% | 24-26   +22032 DD  97%
+   Rule C split split 3       | net    -11644  DD $  13154 (114%)  max risk $  3288  BLOWN | ratio -0.89 (x-0.26 Off) | 21-23   -11644 DD 114% | 24-26   -11099 DD 107%
+   Rule C split split 3 cap   | net    -10262  DD $  11771 (102%)  max risk $   500  BLOWN | ratio -0.87 (x-0.26 Off) | 21-23   -10262 DD 102% | 24-26   -10332 DD 102%
+   Rule C split split 4       | net    -11415  DD $  12391 (113%)  max risk $  2478  BLOWN | ratio -0.92 (x-0.27 Off) | 21-23   -11415 DD 113% | 24-26   -10971 DD 107%
+   Rule C split split 4 cap   | net    -10043  DD $  11020 (100%)  max risk $   500  BLOWN | ratio -0.91 (x-0.27 Off) | 21-23   -10043 DD 100% | 24-26   -10035 DD 100%
+   Rule C split split 5       | net   +104752  DD $  46644 ( 82%)  max risk $  9329  ok    | ratio  2.25 (x0.67 Off) | 21-23   +40446 DD  82% | 24-26   -14628 DD 115%
+   Rule C split split 5 cap   | net    -10171  DD $  10795 (102%)  max risk $   500  BLOWN | ratio -0.94 (x-0.28 Off) | 21-23   -10171 DD 102% | 24-26   -10001 DD 100%
+
+M5 streak (base $50) | Off: net +3667, max DD $1261 (9%), ratio 2.91
+   Rule C       split 1       | net    -10351  DD $  15355 (102%)  max risk $  8042  BLOWN | ratio -0.67 (x-0.23 Off) | 21-23   -10351 DD 102% | 24-26   -18040 DD 160%
+   Rule C       split 1 cap   | net    +17372  DD $  10645 ( 67%)  max risk $   500  ok    | ratio  1.63 (x0.56 Off) | 21-23   +10678 DD  67% | 24-26    +5211 DD  84%
+   Rule C       split 2       | net    +15257  DD $  18112 ( 76%)  max risk $  9056  ok    | ratio  0.84 (x0.29 Off) | 21-23    +7046 DD  39% | 24-26   -11267 DD 108%
+   Rule C       split 2 cap   | net    +12817  DD $   6563 ( 57%)  max risk $   500  ok    | ratio  1.95 (x0.67 Off) | 21-23    +6205 DD  57% | 24-26    +6527 DD  33%
+   Rule C       split 3       | net    +10569  DD $   5357 ( 27%)  max risk $  1786  ok    | ratio  1.97 (x0.68 Off) | 21-23    +4677 DD  17% | 24-26    +5549 DD  36%
+   Rule C       split 3 cap   | net    +10359  DD $   3981 ( 20%)  max risk $   500  ok    | ratio  2.60 (x0.90 Off) | 21-23    +4674 DD  17% | 24-26    +5343 DD  27%
+   Rule C       split 4       | net     +8472  DD $   2725 ( 15%)  max risk $   681  ok    | ratio  3.11 (x1.07 Off) | 21-23    +3653 DD  11% | 24-26    +4520 DD  19%
+   Rule C       split 4 cap   | net     +8460  DD $   2680 ( 15%)  max risk $   500  ok    | ratio  3.16 (x1.09 Off) | 21-23    +3653 DD  11% | 24-26    +4508 DD  19%
+   Rule C       split 5       | net     +7225  DD $   1812 ( 11%)  max risk $   362  ok    | ratio  3.99 (x1.37 Off) | 21-23    +3117 DD   9% | 24-26    +3887 DD  13%
+   Rule C       split 5 cap   | net     +7225  DD $   1812 ( 11%)  max risk $   362  ok    | ratio  3.99 (x1.37 Off) | 21-23    +3117 DD   9% | 24-26    +3887 DD  13%
+   Rule C split split 1       | net    -11914  DD $  16649 (113%)  max risk $  8324  BLOWN | ratio -0.72 (x-0.25 Off) | 21-23   -11914 DD 113% | 24-26   -28651 DD 170%
+   Rule C split split 1 cap   | net    +34687  DD $  12550 ( 58%)  max risk $   500  ok    | ratio  2.76 (x0.95 Off) | 21-23   +17373 DD  58% | 24-26   +12564 DD  65%
+   Rule C split split 2       | net    -10097  DD $  13503 (101%)  max risk $  6037  BLOWN | ratio -0.75 (x-0.26 Off) | 21-23   -10097 DD 101% | 24-26   -10266 DD 102%
+   Rule C split split 2 cap   | net    +31689  DD $  12494 ( 72%)  max risk $   500  ok    | ratio  2.54 (x0.87 Off) | 21-23   +14543 DD  72% | 24-26    +8109 DD  80%
+   Rule C split split 3       | net    +83935  DD $  51565 ( 67%)  max risk $ 17188  ok    | ratio  1.63 (x0.56 Off) | 21-23   +28326 DD  67% | 24-26   -18622 DD 122%
+   Rule C split split 3 cap   | net    +29503  DD $  12376 ( 68%)  max risk $   500  ok    | ratio  2.38 (x0.82 Off) | 21-23   +12662 DD  68% | 24-26    +7062 DD  83%
+   Rule C split split 4       | net    +63180  DD $  25924 ( 37%)  max risk $  6481  ok    | ratio  2.44 (x0.84 Off) | 21-23   +18708 DD  36% | 24-26   +25933 DD  74%
+   Rule C split split 4 cap   | net    +27939  DD $  12338 ( 60%)  max risk $   500  ok    | ratio  2.26 (x0.78 Off) | 21-23   +11272 DD  60% | 24-26   +10272 DD  63%
+   Rule C split split 5       | net    +49546  DD $  17013 ( 35%)  max risk $  3403  ok    | ratio  2.91 (x1.00 Off) | 21-23   +12667 DD  30% | 24-26   +20261 DD  55%
+   Rule C split split 5 cap   | net    +27185  DD $  12207 ( 38%)  max risk $   500  ok    | ratio  2.23 (x0.77 Off) | 21-23   +10753 DD  38% | 24-26    +9974 DD  53%
+
+M15 default (base $50) | Off: net -10001, max DD $10574 (100%), ratio -0.95
+   Rule C       split 1       | net    -16800  DD $  51200 (115%)  max risk $ 25600  BLOWN | ratio -0.33 (x0.00 Off) | 21-23   -16800 DD 115% | 24-26   -28712 DD 158%
+   Rule C       split 1 cap   | net    -10245  DD $  16250 (102%)  max risk $   500  BLOWN | ratio -0.63 (x0.00 Off) | 21-23   -10245 DD 102% | 24-26   -10316 DD 103%
+   Rule C       split 2       | net    -20603  DD $  35230 (143%)  max risk $ 11743  BLOWN | ratio -0.58 (x0.00 Off) | 21-23   -20603 DD 143% | 24-26   -10204 DD 101%
+   Rule C       split 2 cap   | net    -10250  DD $  15184 (102%)  max risk $   500  BLOWN | ratio -0.68 (x0.00 Off) | 21-23   -10250 DD 102% | 24-26    +9791 DD  96%
+   Rule C       split 3       | net    -10664  DD $  18082 (104%)  max risk $  4521  BLOWN | ratio -0.59 (x0.00 Off) | 21-23   -10664 DD 104% | 24-26   +12400 DD  87%
+   Rule C       split 3 cap   | net    -10012  DD $  15643 (100%)  max risk $   500  BLOWN | ratio -0.64 (x0.00 Off) | 21-23   -10012 DD 100% | 24-26    +8907 DD  97%
+   Rule C       split 4       | net    +13365  DD $   9635 ( 67%)  max risk $  2409  ok    | ratio  1.39 (x0.00 Off) | 21-23    +4452 DD  67% | 24-26    +8913 DD  45%
+   Rule C       split 4 cap   | net    -10216  DD $  13834 (102%)  max risk $   500  BLOWN | ratio -0.74 (x0.00 Off) | 21-23   -10216 DD 102% | 24-26    +7194 DD  78%
+   Rule C       split 5       | net     +9459  DD $  10036 ( 80%)  max risk $  2007  ok    | ratio  0.94 (x0.00 Off) | 21-23    +2673 DD  80% | 24-26    +6786 DD  33%
+   Rule C       split 5 cap   | net    -10071  DD $  12615 (101%)  max risk $   500  BLOWN | ratio -0.80 (x0.00 Off) | 21-23   -10071 DD 101% | 24-26    +5552 DD  75%
+   Rule C split split 1       | net   -193677  DD $ 507139 (157%)  max risk $253570  BLOWN | ratio -0.38 (x0.00 Off) | 21-23  -193677 DD 157% | 24-26   -14139 DD 120%
+   Rule C split split 1 cap   | net    -10258  DD $  12908 (102%)  max risk $   500  BLOWN | ratio -0.79 (x0.00 Off) | 21-23   -10258 DD 102% | 24-26   -10230 DD 102%
+   Rule C split split 2       | net    -10754  DD $  33964 (102%)  max risk $ 11321  BLOWN | ratio -0.32 (x0.00 Off) | 21-23   -10754 DD 102% | 24-26   -15517 DD 143%
+   Rule C split split 2 cap   | net    -10154  DD $  14022 (101%)  max risk $   500  BLOWN | ratio -0.72 (x0.00 Off) | 21-23   -10154 DD 101% | 24-26   -10093 DD 101%
+   Rule C split split 3       | net    -12464  DD $  28962 (109%)  max risk $  7241  BLOWN | ratio -0.43 (x0.00 Off) | 21-23   -12464 DD 109% | 24-26   -14502 DD 111%
+   Rule C split split 3 cap   | net    -10362  DD $  13964 (103%)  max risk $   500  BLOWN | ratio -0.74 (x0.00 Off) | 21-23   -10362 DD 103% | 24-26   -10157 DD 101%
+   Rule C split split 4       | net    -11948  DD $  19284 (111%)  max risk $  3857  BLOWN | ratio -0.62 (x0.00 Off) | 21-23   -11948 DD 111% | 24-26   -16288 DD 124%
+   Rule C split split 4 cap   | net    -10207  DD $  12722 (102%)  max risk $   500  BLOWN | ratio -0.80 (x0.00 Off) | 21-23   -10207 DD 102% | 24-26   -10331 DD 103%
+   Rule C split split 5       | net    -13311  DD $  22543 (117%)  max risk $  3757  BLOWN | ratio -0.59 (x0.00 Off) | 21-23   -13311 DD 117% | 24-26   -11591 DD 108%
+   Rule C split split 5 cap   | net    -10321  DD $  12525 (103%)  max risk $   500  BLOWN | ratio -0.82 (x0.00 Off) | 21-23   -10321 DD 103% | 24-26   -10325 DD 102%
+
+M15 profit (base $50) | Off: net +9077, max DD $1110 (9%), ratio 8.18
+   Rule C       split 1       | net    -13409  DD $  51200 (107%)  max risk $ 25600  BLOWN | ratio -0.26 (x-0.03 Off) | 21-23   -13409 DD 107% | 24-26   -24000 DD 135%
+   Rule C       split 1 cap   | net    +36359  DD $   8948 ( 47%)  max risk $   500  ok    | ratio  4.06 (x0.50 Off) | 21-23   +15652 DD  47% | 24-26   +20620 DD  22%
+   Rule C       split 2       | net    -13095  DD $  19462 (119%)  max risk $  6487  BLOWN | ratio -0.67 (x-0.08 Off) | 21-23   -13095 DD 119% | 24-26   +11118 DD  41%
+   Rule C       split 2 cap   | net    +19832  DD $   7787 ( 48%)  max risk $   500  ok    | ratio  2.55 (x0.31 Off) | 21-23    +8927 DD  48% | 24-26   +10805 DD  19%
+   Rule C       split 3       | net    -13660  DD $  18331 (125%)  max risk $  4583  BLOWN | ratio -0.75 (x-0.09 Off) | 21-23   -13660 DD 125% | 24-26    +7855 DD  17%
+   Rule C       split 3 cap   | net    +15106  DD $   6646 ( 45%)  max risk $   500  ok    | ratio  2.27 (x0.28 Off) | 21-23    +7212 DD  45% | 24-26    +7797 DD  16%
+   Rule C       split 4       | net    +13042  DD $   6810 ( 49%)  max risk $  1702  ok    | ratio  1.92 (x0.23 Off) | 21-23    +6402 DD  49% | 24-26    +6571 DD  11%
+   Rule C       split 4 cap   | net    +12924  DD $   5476 ( 39%)  max risk $   500  ok    | ratio  2.36 (x0.29 Off) | 21-23    +6283 DD  39% | 24-26    +6571 DD  11%
+   Rule C       split 5       | net    +11763  DD $   3760 ( 28%)  max risk $   752  ok    | ratio  3.13 (x0.38 Off) | 21-23    +5822 DD  28% | 24-26    +5875 DD  10%
+   Rule C       split 5 cap   | net    +11724  DD $   3949 ( 29%)  max risk $   500  ok    | ratio  2.97 (x0.36 Off) | 21-23    +5783 DD  29% | 24-26    +5875 DD  10%
+   Rule C split split 1       | net    -12195  DD $  12800 (121%)  max risk $  6400  BLOWN | ratio -0.95 (x-0.12 Off) | 21-23   -12195 DD 121% | 24-26   -13850 DD 118%
+   Rule C split split 1 cap   | net    +86477  DD $  10870 ( 50%)  max risk $   500  ok    | ratio  7.96 (x0.97 Off) | 21-23   +40882 DD  50% | 24-26   +49496 DD  43%
+   Rule C split split 2       | net    -36595  DD $  80947 (149%)  max risk $ 26982  BLOWN | ratio -0.45 (x-0.06 Off) | 21-23   -36595 DD 149% | 24-26   +90240 DD  99%
+   Rule C split split 2 cap   | net    +81503  DD $  10813 ( 46%)  max risk $   500  ok    | ratio  7.54 (x0.92 Off) | 21-23   +36291 DD  46% | 24-26   +45791 DD  33%
+   Rule C split split 3       | net    -14301  DD $  42721 (111%)  max risk $ 10680  BLOWN | ratio -0.33 (x-0.04 Off) | 21-23   -14301 DD 111% | 24-26   +57405 DD  52%
+   Rule C split split 3 cap   | net    +83689  DD $  10392 ( 33%)  max risk $   500  ok    | ratio  8.05 (x0.98 Off) | 21-23   +38142 DD  33% | 24-26   +41510 DD  18%
+   Rule C split split 4       | net    -11189  DD $  31472 (104%)  max risk $  6294  BLOWN | ratio -0.36 (x-0.04 Off) | 21-23   -11189 DD 104% | 24-26   +44744 DD  39%
+   Rule C split split 4 cap   | net    +80065  DD $  10275 ( 37%)  max risk $   500  ok    | ratio  7.79 (x0.95 Off) | 21-23   +34555 DD  37% | 24-26   +36061 DD  19%
+   Rule C split split 5       | net    -14674  DD $  31622 (117%)  max risk $  5270  BLOWN | ratio -0.46 (x-0.06 Off) | 21-23   -14674 DD 117% | 24-26   +37392 DD  35%
+   Rule C split split 5 cap   | net    +77353  DD $  10298 ( 40%)  max risk $   500  ok    | ratio  7.51 (x0.92 Off) | 21-23   +32093 DD  40% | 24-26   +33640 DD  21%
+
+M15 streak (base $50) | Off: net +3704, max DD $1050 (9%), ratio 3.53
+   Rule C       split 1       | net    -23583  DD $  27593 (197%)  max risk $ 13804  BLOWN | ratio -0.85 (x-0.24 Off) | 21-23   -23583 DD 197% | 24-26    +6198 DD  20%
+   Rule C       split 1 cap   | net     +9836  DD $   7035 ( 52%)  max risk $   500  ok    | ratio  1.40 (x0.40 Off) | 21-23    +4237 DD  52% | 24-26    +5598 DD  15%
+   Rule C       split 2       | net     +6901  DD $   9556 ( 77%)  max risk $  4782  ok    | ratio  0.72 (x0.20 Off) | 21-23    +3553 DD  77% | 24-26    +3348 DD  10%
+   Rule C       split 2 cap   | net     +6458  DD $   5611 ( 45%)  max risk $   500  ok    | ratio  1.15 (x0.33 Off) | 21-23    +3122 DD  45% | 24-26    +3336 DD  10%
+   Rule C       split 3       | net     +5467  DD $   4736 ( 39%)  max risk $  1584  ok    | ratio  1.15 (x0.33 Off) | 21-23    +2930 DD  39% | 24-26    +2537 DD   7%
+   Rule C       split 3 cap   | net     +5259  DD $   3904 ( 32%)  max risk $   500  ok    | ratio  1.35 (x0.38 Off) | 21-23    +2722 DD  32% | 24-26    +2537 DD   7%
+   Rule C       split 4       | net     +4792  DD $   3018 ( 26%)  max risk $   758  ok    | ratio  1.59 (x0.45 Off) | 21-23    +2589 DD  26% | 24-26    +2203 DD   6%
+   Rule C       split 4 cap   | net     +4760  DD $   2993 ( 25%)  max risk $   500  ok    | ratio  1.59 (x0.45 Off) | 21-23    +2557 DD  25% | 24-26    +2203 DD   6%
+   Rule C       split 5       | net     +4375  DD $   2245 ( 19%)  max risk $   452  ok    | ratio  1.95 (x0.55 Off) | 21-23    +2344 DD  19% | 24-26    +2031 DD   5%
+   Rule C       split 5 cap   | net     +4375  DD $   2245 ( 19%)  max risk $   452  ok    | ratio  1.95 (x0.55 Off) | 21-23    +2344 DD  19% | 24-26    +2031 DD   5%
+   Rule C split split 1       | net    -43369  DD $  67119 (199%)  max risk $ 33626  BLOWN | ratio -0.65 (x-0.18 Off) | 21-23   -43369 DD 199% | 24-26   +43492 DD  69%
+   Rule C split split 1 cap   | net    +32221  DD $  10089 ( 49%)  max risk $   500  ok    | ratio  3.19 (x0.91 Off) | 21-23   +13305 DD  49% | 24-26   +14391 DD  25%
+   Rule C split split 2       | net    -10968  DD $  20664 (105%)  max risk $  6906  BLOWN | ratio -0.53 (x-0.15 Off) | 21-23   -10968 DD 105% | 24-26   +16689 DD  47%
+   Rule C split split 2 cap   | net    +29294  DD $  10116 ( 53%)  max risk $   500  ok    | ratio  2.90 (x0.82 Off) | 21-23   +11322 DD  53% | 24-26   +11771 DD  24%
+   Rule C split split 3       | net    -13098  DD $  19740 (119%)  max risk $  5093  BLOWN | ratio -0.66 (x-0.19 Off) | 21-23   -13098 DD 119% | 24-26    +9777 DD  33%
+   Rule C split split 3 cap   | net    +25712  DD $   9891 ( 59%)  max risk $   500  ok    | ratio  2.60 (x0.74 Off) | 21-23    +8650 DD  59% | 24-26    +9116 DD  24%
+   Rule C split split 4       | net    -12915  DD $  18243 (119%)  max risk $  3667  BLOWN | ratio -0.71 (x-0.20 Off) | 21-23   -12915 DD 119% | 24-26    +6643 DD  24%
+   Rule C split split 4 cap   | net    +24268  DD $   8658 ( 56%)  max risk $   500  ok    | ratio  2.80 (x0.79 Off) | 21-23    +7907 DD  56% | 24-26    +6388 DD  23%
+   Rule C split split 5       | net    +25273  DD $  11843 ( 83%)  max risk $  2386  ok    | ratio  2.13 (x0.61 Off) | 21-23    +8570 DD  83% | 24-26    +5808 DD  21%
+   Rule C split split 5 cap   | net    +22496  DD $   8359 ( 58%)  max risk $   500  ok    | ratio  2.69 (x0.76 Off) | 21-23    +6850 DD  58% | 24-26    +5753 DD  21%
+
+H1 default (base $50) | Off: net -1871, max DD $3678 (36%), ratio -0.51
+   Rule C       split 1       | net    -22167  DD $  25600 (191%)  max risk $ 12800  BLOWN | ratio -0.87 (x0.00 Off) | 21-23   -22167 DD 191% | 24-26   -12362 DD 123%
+   Rule C       split 1 cap   | net    -10003  DD $  12208 (100%)  max risk $   500  BLOWN | ratio -0.82 (x0.00 Off) | 21-23   -10003 DD 100% | 24-26    +2360 DD  62%
+   Rule C       split 2       | net    -12970  DD $  13683 (128%)  max risk $  4561  BLOWN | ratio -0.95 (x0.00 Off) | 21-23   -12970 DD 128% | 24-26    +6421 DD  38%
+   Rule C       split 2 cap   | net    -10241  DD $  10954 (102%)  max risk $   500  BLOWN | ratio -0.93 (x0.00 Off) | 21-23   -10241 DD 102% | 24-26    +4931 DD  60%
+   Rule C       split 3       | net    -12788  DD $  13242 (127%)  max risk $  3311  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -12788 DD 127% | 24-26    +3641 DD  29%
+   Rule C       split 3 cap   | net    -10022  DD $  10477 (100%)  max risk $   500  BLOWN | ratio -0.96 (x0.00 Off) | 21-23   -10022 DD 100% | 24-26    +3054 DD  58%
+   Rule C       split 4       | net    -10918  DD $  11272 (109%)  max risk $  2254  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -10918 DD 109% | 24-26    +2697 DD  20%
+   Rule C       split 4 cap   | net    -10320  DD $  10673 (103%)  max risk $   500  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -10320 DD 103% | 24-26    +2695 DD  20%
+   Rule C       split 5       | net    -11704  DD $  12004 (117%)  max risk $  2001  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -11704 DD 117% | 24-26    +2137 DD  16%
+   Rule C       split 5 cap   | net    -10156  DD $  10456 (102%)  max risk $   500  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -10156 DD 102% | 24-26    +2137 DD  16%
+   Rule C split split 1       | net    -13557  DD $  25600 (116%)  max risk $ 12800  BLOWN | ratio -0.53 (x0.00 Off) | 21-23   -13557 DD 116% | 24-26   -16596 DD 163%
+   Rule C split split 1 cap   | net    -10264  DD $  13408 (102%)  max risk $   500  BLOWN | ratio -0.77 (x0.00 Off) | 21-23   -10264 DD 102% | 24-26    +2867 DD  92%
+   Rule C split split 2       | net    -11228  DD $  12162 (111%)  max risk $  4054  BLOWN | ratio -0.92 (x0.00 Off) | 21-23   -11228 DD 111% | 24-26   -10278 DD 102%
+   Rule C split split 2 cap   | net    -10487  DD $  11421 (104%)  max risk $   500  BLOWN | ratio -0.92 (x0.00 Off) | 21-23   -10487 DD 104% | 24-26    +7178 DD  69%
+   Rule C split split 3       | net    -11911  DD $  12427 (118%)  max risk $  3107  BLOWN | ratio -0.96 (x0.00 Off) | 21-23   -11911 DD 118% | 24-26   +17889 DD  40%
+   Rule C split split 3 cap   | net    -10181  DD $  10697 (102%)  max risk $   500  BLOWN | ratio -0.95 (x0.00 Off) | 21-23   -10181 DD 102% | 24-26    +7524 DD  64%
+   Rule C split split 4       | net    -12473  DD $  12759 (124%)  max risk $  2552  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -12473 DD 124% | 24-26   +10381 DD  27%
+   Rule C split split 4 cap   | net    -10441  DD $  10727 (104%)  max risk $   500  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -10441 DD 104% | 24-26    +6297 DD  34%
+   Rule C split split 5       | net    -10755  DD $  11021 (107%)  max risk $  1837  BLOWN | ratio -0.98 (x0.00 Off) | 21-23   -10755 DD 107% | 24-26    +5651 DD  23%
+   Rule C split split 5 cap   | net    -10092  DD $  10359 (101%)  max risk $   500  BLOWN | ratio -0.97 (x0.00 Off) | 21-23   -10092 DD 101% | 24-26    +4339 DD  29%
+
+H1 profit (base $50) | Off: net +3087, max DD $400 (3%), ratio 7.72
+   Rule C       split 1       | net    +19063  DD $   6400 ( 35%)  max risk $  6400  ok    | ratio  2.98 (x0.39 Off) | 21-23    +8390 DD  31% | 24-26    +7574 DD  32%
+   Rule C       split 1 cap   | net     +9016  DD $   2300 ( 17%)  max risk $   500  ok    | ratio  3.92 (x0.51 Off) | 21-23    +4266 DD  17% | 24-26    +4593 DD  18%
+   Rule C       split 2       | net     +4523  DD $   1139 (  9%)  max risk $   570  ok    | ratio  3.97 (x0.51 Off) | 21-23    +2345 DD   7% | 24-26    +2137 DD   8%
+   Rule C       split 2 cap   | net     +4449  DD $   1139 (  9%)  max risk $   500  ok    | ratio  3.91 (x0.51 Off) | 21-23    +2345 DD   7% | 24-26    +2137 DD   8%
+   Rule C       split 3       | net     +3676  DD $    632 (  5%)  max risk $   211  ok    | ratio  5.82 (x0.75 Off) | 21-23    +1953 DD   5% | 24-26    +1691 DD   5%
+   Rule C       split 3 cap   | net     +3676  DD $    632 (  5%)  max risk $   211  ok    | ratio  5.82 (x0.75 Off) | 21-23    +1953 DD   5% | 24-26    +1691 DD   5%
+   Rule C       split 4       | net     +3351  DD $    488 (  4%)  max risk $   122  ok    | ratio  6.86 (x0.89 Off) | 21-23    +1786 DD   4% | 24-26    +1541 DD   4%
+   Rule C       split 4 cap   | net     +3351  DD $    488 (  4%)  max risk $   122  ok    | ratio  6.86 (x0.89 Off) | 21-23    +1786 DD   4% | 24-26    +1541 DD   4%
+   Rule C       split 5       | net     +3217  DD $    432 (  4%)  max risk $    86  ok    | ratio  7.45 (x0.96 Off) | 21-23    +1734 DD   4% | 24-26    +1472 DD   4%
+   Rule C       split 5 cap   | net     +3217  DD $    432 (  4%)  max risk $    86  ok    | ratio  7.45 (x0.96 Off) | 21-23    +1734 DD   4% | 24-26    +1472 DD   4%
+   Rule C split split 1       | net    -14139  DD $  60041 (107%)  max risk $ 30021  BLOWN | ratio -0.24 (x-0.03 Off) | 21-23   +45433 DD  66% | 24-26   +39944 DD  32%
+   Rule C split split 1 cap   | net    +25226  DD $   3800 ( 19%)  max risk $   500  ok    | ratio  6.64 (x0.86 Off) | 21-23   +11969 DD  19% | 24-26   +10035 DD  23%
+   Rule C split split 2       | net    +27490  DD $   8600 ( 44%)  max risk $  4300  ok    | ratio  3.20 (x0.41 Off) | 21-23    +9169 DD   9% | 24-26    +7504 DD   9%
+   Rule C split split 2 cap   | net    +21183  DD $   3600 ( 19%)  max risk $   500  ok    | ratio  5.88 (x0.76 Off) | 21-23    +8437 DD   9% | 24-26    +7171 DD   9%
+   Rule C split split 3       | net    +19214  DD $   4131 ( 25%)  max risk $  1377  ok    | ratio  4.65 (x0.60 Off) | 21-23    +5888 DD   8% | 24-26    +4097 DD   8%
+   Rule C split split 3 cap   | net    +17941  DD $   3243 ( 20%)  max risk $   500  ok    | ratio  5.53 (x0.72 Off) | 21-23    +5888 DD   8% | 24-26    +4097 DD   8%
+   Rule C split split 4       | net    +16861  DD $   3018 ( 19%)  max risk $   754  ok    | ratio  5.59 (x0.72 Off) | 21-23    +5233 DD   8% | 24-26    +3270 DD   8%
+   Rule C split split 4 cap   | net    +16418  DD $   2914 ( 19%)  max risk $   500  ok    | ratio  5.63 (x0.73 Off) | 21-23    +5233 DD   8% | 24-26    +3270 DD   8%
+   Rule C split split 5       | net    +14641  DD $   2583 ( 16%)  max risk $   517  ok    | ratio  5.67 (x0.73 Off) | 21-23    +4153 DD   8% | 24-26    +3161 DD   8%
+   Rule C split split 5 cap   | net    +14591  DD $   2583 ( 16%)  max risk $   500  ok    | ratio  5.65 (x0.73 Off) | 21-23    +4153 DD   8% | 24-26    +3161 DD   8%
+
+H1 streak (base $50) | Off: net +1683, max DD $289 (2%), ratio 5.83
+   Rule C       split 1       | net     +2675  DD $    907 (  7%)  max risk $   922  ok    | ratio  2.95 (x0.51 Off) | 21-23    +1403 DD   2% | 24-26    +1272 DD   8%
+   Rule C       split 1 cap   | net     +2248  DD $    907 (  7%)  max risk $   500  ok    | ratio  2.48 (x0.43 Off) | 21-23    +1403 DD   2% | 24-26     +845 DD   8%
+   Rule C       split 2       | net     +1887  DD $    470 (  4%)  max risk $   242  ok    | ratio  4.01 (x0.69 Off) | 21-23    +1112 DD   2% | 24-26     +775 DD   4%
+   Rule C       split 2 cap   | net     +1887  DD $    470 (  4%)  max risk $   242  ok    | ratio  4.01 (x0.69 Off) | 21-23    +1112 DD   2% | 24-26     +775 DD   4%
+   Rule C       split 3       | net     +1775  DD $    348 (  3%)  max risk $   121  ok    | ratio  5.11 (x0.88 Off) | 21-23    +1059 DD   2% | 24-26     +716 DD   3%
+   Rule C       split 3 cap   | net     +1775  DD $    348 (  3%)  max risk $   121  ok    | ratio  5.11 (x0.88 Off) | 21-23    +1059 DD   2% | 24-26     +716 DD   3%
+   Rule C       split 4       | net     +1712  DD $    302 (  3%)  max risk $    79  ok    | ratio  5.66 (x0.97 Off) | 21-23    +1024 DD   2% | 24-26     +687 DD   3%
+   Rule C       split 4 cap   | net     +1712  DD $    302 (  3%)  max risk $    79  ok    | ratio  5.66 (x0.97 Off) | 21-23    +1024 DD   2% | 24-26     +687 DD   3%
+   Rule C       split 5       | net     +1693  DD $    289 (  2%)  max risk $    61  ok    | ratio  5.85 (x1.00 Off) | 21-23    +1013 DD   2% | 24-26     +680 DD   3%
+   Rule C       split 5 cap   | net     +1693  DD $    289 (  2%)  max risk $    61  ok    | ratio  5.85 (x1.00 Off) | 21-23    +1013 DD   2% | 24-26     +680 DD   3%
+   Rule C split split 1       | net    +12200  DD $   7242 ( 33%)  max risk $  7361  ok    | ratio  1.68 (x0.29 Off) | 21-23    +3507 DD   7% | 24-26    +2801 DD  32%
+   Rule C split split 1 cap   | net     +7472  DD $   2526 ( 13%)  max risk $   500  ok    | ratio  2.96 (x0.51 Off) | 21-23    +3150 DD   7% | 24-26    +1228 DD  15%
+   Rule C split split 2       | net     +6023  DD $   3326 ( 19%)  max risk $  1716  ok    | ratio  1.81 (x0.31 Off) | 21-23    +2139 DD   7% | 24-26     +951 DD  12%
+   Rule C split split 2 cap   | net     +5705  DD $   2414 ( 14%)  max risk $   500  ok    | ratio  2.36 (x0.41 Off) | 21-23    +2139 DD   7% | 24-26     +724 DD  12%
+   Rule C split split 3       | net     +5082  DD $   2357 ( 14%)  max risk $   820  ok    | ratio  2.16 (x0.37 Off) | 21-23    +1825 DD   7% | 24-26     +874 DD   9%
+   Rule C split split 3 cap   | net     +4874  DD $   2242 ( 13%)  max risk $   500  ok    | ratio  2.17 (x0.37 Off) | 21-23    +1825 DD   7% | 24-26     +874 DD   9%
+   Rule C split split 4       | net     +4811  DD $   1968 ( 12%)  max risk $   517  ok    | ratio  2.44 (x0.42 Off) | 21-23    +1729 DD   6% | 24-26     +916 DD   8%
+   Rule C split split 4 cap   | net     +4794  DD $   1968 ( 12%)  max risk $   500  ok    | ratio  2.44 (x0.42 Off) | 21-23    +1729 DD   6% | 24-26     +916 DD   8%
+   Rule C split split 5       | net     +4527  DD $   1833 ( 11%)  max risk $   385  ok    | ratio  2.47 (x0.42 Off) | 21-23    +1605 DD   6% | 24-26     +917 DD   7%
+   Rule C split split 5 cap   | net     +4527  DD $   1833 ( 11%)  max risk $   385  ok    | ratio  2.47 (x0.42 Off) | 21-23    +1605 DD   6% | 24-26     +917 DD   7%

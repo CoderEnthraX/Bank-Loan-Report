@@ -6,12 +6,14 @@ MODES = ['Off', 'Recover all losses on the next trade', 'Recover losses over N t
          'Exact recovery at final TP', 'Step-up (+$ per loss in a row)', 'Fibonacci', "D'Alembert", 'Rule C: carry the losses', 'Rule C split', 'Labouchere',
          'Grand Martingale', 'Paroli', "Reverse D'Alembert", 'Delayed recovery', '% of equity', "Oscar's Grind"]
 def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0):
-    """trades: iterable of (R result, spread cost in R). Returns a dict of results."""
+    """trades: iterable of (R result, spread cost in R) or (R result, spread cost in R, parts). parts = [(R of the part, share of the position)]
+    for a trade with a partial close: Rule C's carried losses are then updated after each part, like the strategy (once per candle)."""
     eq = start; peak = start; maxDD = 0.0; maxDDp = 0.0; net = 0.0
     recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
     capStop = False; n = 0; maxRisk = 0.0; maxRiskPct = 0.0; ruined = False; ruinAt = None; gp = gl = 0.0
-    lossRun = 0.0; worstRun = 0.0
-    for k, (res, c) in enumerate(trades):
+    lossRun = 0.0; worstRun = 0.0; sumRisk = 0.0
+    for k, tr in enumerate(trades):
+        res, c = tr[0], tr[1]; parts = tr[2] if len(tr) > 2 else None
         if capStop or ruined: break
         add = recPool if mode == MODES[1] else recPool / recN if mode == MODES[2] else recPool * recPct / 100 if mode == MODES[3] else recPool / exitR if mode == MODES[5] else step * recLosses if mode == MODES[6] else 0.0
         fa = fb = 1.0
@@ -33,7 +35,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
                 recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
                 r = min(baseC, cap)
             else: r = cap
-        maxRisk = max(maxRisk, r); maxRiskPct = max(maxRiskPct, r / eq if eq > 0 else 9.99)
+        maxRisk = max(maxRisk, r); maxRiskPct = max(maxRiskPct, r / eq if eq > 0 else 9.99); sumRisk += r
         pnl = r * (res - c) / (1.0 + c); n += 1
         eq += pnl; net += pnl
         if pnl > 0: gp += pnl
@@ -42,7 +44,9 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         peak = max(peak, eq); dd = peak - eq; maxDD = max(maxDD, dd); maxDDp = max(maxDDp, dd / peak)
         if eq <= 0: ruined = True; ruinAt = k
         win = pnl > 0
-        carried = max(0.0, carried - pnl)
+        if parts:
+            for pr, pw in parts: carried = max(0.0, carried - r * (pr - pw * c) / (1.0 + c))
+        else: carried = max(0.0, carried - pnl)
         if win:
             recPool = max(0.0, recPool - pnl); recLosses = recLosses if recPool > 0 else 0
             dUnits = max(1, dUnits - 1); rdUnits += 1; parWins = 0 if parWins + 1 >= parN else parWins + 1
@@ -55,7 +59,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         oscP += pnl
         if oscP >= base: oscU = 1; oscP = 0.0
         elif win: oscU += 1
-    return dict(mode=mode, trades=n, net=net, end=eq, maxDD=maxDD, maxDDpct=maxDDp, maxRisk=maxRisk, maxRiskPct=maxRiskPct, ruined=ruined, ruinAt=ruinAt,
+    return dict(mode=mode, trades=n, avgRisk=sumRisk / n if n else 0.0, net=net, end=eq, maxDD=maxDD, maxDDpct=maxDDp, maxRisk=maxRisk, maxRiskPct=maxRiskPct, ruined=ruined, ruinAt=ruinAt,
                 pf=(gp / gl) if gl > 0 else float('inf'), worstRun=-worstRun, capStopped=capStop)
 if __name__ == '__main__':
     # sanity: Off on a +2/-1 sequence with no costs

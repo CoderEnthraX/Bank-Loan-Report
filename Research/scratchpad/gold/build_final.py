@@ -337,6 +337,90 @@ def recovery_sheet(wb, FIN):
             r += 1
     widths(ws, [9, 30, 34, 30, 8, 11, 11, 9, 10, 18, 9, 8, 11, 10]); ws.freeze_panes = 'D5'
     return best
+# ---------------------------------------------------------------- Rule C and Rule C split with the loss split over 1-5 trades
+def rulec_sheet(wb):
+    fn = S + '/gold/rulec.pkl'
+    if not os.path.exists(fn): return
+    D = pickle.load(open(fn, 'rb'))['rows']
+    ws = wb.create_sheet('Rule C split test')
+    title(ws, 'Rule C and Rule C split with the loss split over 1, 2, 3, 4 or 5 trades (2021-2026, after spread)',
+          'Rule C: carried = how far closed equity is below its last high; next risk = max(base, carried / split). Rule C split: the same, and the base steps up with total profit '
+          '(200 -> 200/3, 500 -> 500/5, 1000 -> 1000/8, then +1 part per +500). $10,000 start, $50 base, hard cap $500 with Clamp unless shown. Partial closes update the carried losses per part.')
+    ws.merge_cells('A2:Q2'); ws['A2'].alignment = Alignment(wrap_text=True, vertical='top'); ws.row_dimensions[2].height = 40
+    notes = ['WHAT IT SHOWS',
+             '1. With the best settings (profitable signals) and the hard cap on, Rule C split at split 2 or 3 made 5-9x the profit of fixed risk (Off), and per $ staked it lost about the same as Off.',
+             '2. Without the hard cap, Rule C split at split 1-3 blew the $10,000 account on M1, M5 and M15. With the default settings every Rule C variant blew the account.',
+             '3. Split 3 was the better choice than 2 on most cases: similar profit with a smaller drawdown (M15 best: 33% vs 46%). Drawdowns are still far larger than Off (16-70% vs 3-17%).',
+             '4. The cap action matters: "Start again" (forget the carried losses when the risk would pass the cap) kept M5 alive where Clamp blew it, and gave M15 its best profit for the drawdown.',
+             '5. Stress test (part 3): add 0.05-0.10 R of extra cost per trade (live slippage, weaker edge). H1 stays clearly profitable; M15 holds to about 0.05 R; M1 and M5 blow up - their edge is too thin.']
+    r = 4
+    for k, t in enumerate(notes): ws.cell(r + k, 1, t).font = font(bold=(k == 0), size=9)
+    r += len(notes) + 1
+    put(ws, r, 1, 'PART 1 - split 1 to 5, without and with the $500 hard cap (Clamp)', bold=True, fill=SUB); ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=10); r += 1
+    cols = ['Timeframe', 'Settings', 'Rule', 'Split', 'Hard cap', 'Net profit ($)', 'Max drawdown ($)', 'Max drawdown %', 'Average stake ($)', 'Largest stake ($)', 'Account blown?',
+            'Profit / max drawdown', 'vs Off (1 = same)', 'Profit per $ of average stake', 'Max drawdown per $ of average stake', '2021-23 alone: net ($)', '2024-26 alone: net ($)']
+    hdr(ws, r, cols, height=54); r += 1
+    for tf in TFS:
+        for prof, _ in PROF:
+            if (tf, prof) not in D: continue
+            offrow = None
+            for x in D[(tf, prof)]:
+                a, A, B = x['all'], x['A'], x['B']; off = x['mode'] == 'Off'
+                rule = 'Off (fixed $50)' if off else ('Rule C' if x['mode'].startswith('Rule C:') else 'Rule C split')
+                if off: offrow = r
+                fl = TOT if off else (BAD if a['ruined'] else None)
+                vals = [tf, PNAME[prof], rule, '-' if off else x['split'], '-' if off else ('$500' if x['cap'] else 'none'), round(a['net'], 2), round(a['maxDD'], 2), round(a['maxDDpct'], 4),
+                        round(a['avgRisk'], 2), round(a['maxRisk'], 2), ('YES, after %d trades' % a['ruinAt']) if a['ruined'] else 'no',
+                        '=IF(G{0}=0,"",F{0}/G{0})', '=IF(OR(L{1}="",L{1}<=0,L{0}=""),"",L{0}/L{1})' if offrow and not off else ('1' if off else ''),
+                        '=IF(I{0}=0,"",F{0}/I{0})', '=IF(I{0}=0,"",G{0}/I{0})',
+                        'BLOWN' if A['ruined'] else round(A['net'], 2), 'BLOWN' if B['ruined'] else round(B['net'], 2)]
+                for j, v in enumerate(vals, 1):
+                    isf = isinstance(v, str) and v.startswith('=')
+                    put(ws, r, j, v.format(r, offrow) if isf else (1 if v == '1' else v),
+                        '#,##0;(#,##0);-' if j in (6, 7, 9, 10, 16, 17) else '0.0%' if j == 8 else '0.00' if j in (12, 13) else '0.0' if j in (14, 15) else None,
+                        off, BLUE if (6 <= j <= 10 or j in (16, 17)) and not isf else None, fl)
+                r += 1
+            r += 1
+    fc = S + '/gold/rulec_caps.pkl'
+    if os.path.exists(fc):
+        C = pickle.load(open(fc, 'rb'))
+        r += 1; put(ws, r, 1, 'PART 2 - split 2 and 3: hard cap size and what happens when the risk would pass it (Clamp = trade at the cap, Start again = forget the carried losses)',
+                     bold=True, fill=SUB); ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=12); r += 1
+        hdr(ws, r, ['Timeframe', 'Settings', 'Rule', 'Split', 'Hard cap', 'If the risk would pass the cap', 'Net profit ($)', 'Max drawdown ($)', 'Max drawdown %', 'Account blown?',
+                    'Profit / max drawdown'], height=42); r += 1
+        for (tf, prof), rows in C.items():
+            for x in rows:
+                q = x['r']; fl = BAD if q['ruined'] else None
+                vals = [tf, PNAME[prof], 'Rule C' if x['mode'].startswith('Rule C:') else 'Rule C split', x['split'], '$%d' % x['cap'], 'Clamp' if x['act'] == 'clamp' else 'Start again',
+                        round(q['net'], 2), round(q['maxDD'], 2), round(q['maxDDpct'], 4), 'YES' if q['ruined'] else 'no', '=IF(H{0}=0,"",G{0}/H{0})']
+                for j, v in enumerate(vals, 1):
+                    isf = isinstance(v, str) and v.startswith('=')
+                    put(ws, r, j, v.format(r) if isf else v, '#,##0;(#,##0);-' if j in (7, 8) else '0.0%' if j == 9 else '0.00' if j == 11 else None, False,
+                        BLUE if 7 <= j <= 9 else None, fl)
+                r += 1
+            r += 1
+    fs = S + '/gold/rulec_stress.pkl'
+    if os.path.exists(fs):
+        T = pickle.load(open(fs, 'rb'))
+        r += 1; put(ws, r, 1, 'PART 3 - stress test on the best settings: the same runs with 0.05 R and 0.10 R of extra cost on every trade (slippage, a weaker live edge)',
+                     bold=True, fill=SUB); ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=12); r += 1
+        hdr(ws, r, ['Timeframe', 'Rule', 'Split', 'Hard cap / action', 'Net ($), as tested', 'Max DD %, as tested', 'Net ($), +0.05 R cost', 'Max DD %, +0.05 R', 'Net ($), +0.10 R cost',
+                    'Max DD %, +0.10 R'], height=42); r += 1
+        keys = sorted({k[2:] for k in T}, key=lambda k: (k[0] != 'Off', k[0], k[1], k[3]))
+        for tf in TFS:
+            for mode, split, cap, act in keys:
+                if (tf, 0.0, mode, split, cap, act) not in T: continue
+                vals = [tf, 'Off (fixed $50)' if mode == 'Off' else ('Rule C' if mode.startswith('Rule C:') else 'Rule C split'), '-' if mode == 'Off' else split,
+                        '-' if not cap else '$%d %s' % (cap, 'Clamp' if act == 'clamp' else 'Start again')]
+                for extra in (0.0, 0.05, 0.10):
+                    q = T[(tf, extra, mode, split, cap, act)]
+                    vals += ['BLOWN' if q['ruined'] else round(q['net'], 2), round(q['maxDDpct'], 4)]
+                for j, v in enumerate(vals, 1):
+                    put(ws, r, j, v, '#,##0;(#,##0);-' if j in (5, 7, 9) else '0.0%' if j in (6, 8, 10) else None, mode == 'Off', BLUE if j >= 5 else None,
+                        TOT if mode == 'Off' else (BAD if v == 'BLOWN' else None))
+                r += 1
+            r += 1
+    widths(ws, [9, 30, 14, 6, 9, 11, 11, 9, 9, 9, 16, 9, 9, 9, 10, 11, 11]); ws.freeze_panes = 'D11'
 # ---------------------------------------------------------------- robustness (neighbourhood of each pick)
 def robust_sheet(wb, FIN):
     ws = wb.create_sheet('Robustness')
@@ -454,8 +538,10 @@ def best_sheet(wb, FIN, refs, rbest):
                 'weaker than shown (the step-by-step search chosen on 2021-23 alone shows how much tuning gains fade out of sample).')
     ws['A2'].font = font(italic=True); ws.merge_cells('A2:H2'); ws['A2'].alignment = Alignment(wrap_text=True, vertical='top'); ws.row_dimensions[2].height = 54
     ws['A3'] = ('Recovery rules: across all timeframes fixed risk (Off) gave the best profit per unit of drawdown on average - the line per setting below shows the single best rule '
-                'for that setting (never risking more than $500 on one trade, never falling more than 40%). See the Recovery rules sheet.')
-    ws['A3'].font = font(italic=True); ws.merge_cells('A3:H3'); ws['A3'].alignment = Alignment(wrap_text=True, vertical='top'); ws.row_dimensions[3].height = 28
+                'for that setting (never risking more than $500 on one trade, never falling more than 40%). See the Recovery rules sheet. With the best (profit) settings, Rule C split at split 3 '
+                'with the $500 cap made 5.8x (H1) and 9.2x (M15) the profit of fixed risk with about the same loss per $ staked, but its drawdowns were 20% and 33% instead of 3% and 9%, '
+                'and without the cap it blew the account on M15 - see Rule C split test.')
+    ws['A3'].font = font(italic=True); ws.merge_cells('A3:H3'); ws['A3'].alignment = Alignment(wrap_text=True, vertical='top'); ws.row_dimensions[3].height = 40
     r = 5; tot = {(tf, prof): (sheet, t) for tf, prof, sheet, (_, t) in refs}
     for tf in TFS:
         if tf not in FIN: continue
@@ -523,7 +609,7 @@ def readme(wb, FIN):
          '  within 10% of the best. Low-streak pick = the shortest longest-losing-streak among settings that pass the same rule and keep a reasonable profit.',
          '  Because both halves were used to pick, expect live results to be weaker than these tables. Sheet Robustness shows how the picks behave when any one setting is changed again.',
          'COLOURS: blue = backtest results, black = formulas, green = links to another sheet. Partial close and recovery rules exist in the strategy and the EA only (not in the indicator).', '',
-         'SHEETS: Best settings | Summary | <TF> default / best / low-streak (year x month) | TP1-TP4 | Settings sweep | Combinations | Exits | Recovery rules | Robustness | Hours | Streak math']
+         'SHEETS: Best settings | Summary | <TF> default / best / low-streak (year x month) | TP1-TP4 | Settings sweep | Combinations | Exits | Recovery rules | Rule C split test | Robustness | Hours | Streak math']
     for i, t in enumerate(L, 1): ws.cell(i, 1, t).font = Font(name=F, bold=(i == 1), size=11 if i == 1 else 10)
     ws.column_dimensions['A'].width = 190
 if __name__ == '__main__':
@@ -540,9 +626,9 @@ if __name__ == '__main__':
             sheet = '%s %s' % (tf, suffix)
             yrows, t = ym_sheet(wb, sheet, FIN[tf]['trades'][prof], '%s - %s - accuracy per year and month' % (tf, PNAME[prof]), FIN[tf]['cfg'][prof])
             refs.append((tf, prof, sheet, (yrows, t)))
-    summary(wb, refs); tp_sheet(wb, FIN); sweep_sheet(wb); combo_sheet(wb); exits_sheet(wb); rbest = recovery_sheet(wb, FIN); robust_sheet(wb, FIN); hours_sheet(wb, FIN); math_sheet(wb, FIN)
+    summary(wb, refs); tp_sheet(wb, FIN); sweep_sheet(wb); combo_sheet(wb); exits_sheet(wb); rbest = recovery_sheet(wb, FIN); rulec_sheet(wb); robust_sheet(wb, FIN); hours_sheet(wb, FIN); math_sheet(wb, FIN)
     best_sheet(wb, FIN, refs, rbest)
-    order = ['Read me', 'Best settings', 'Summary'] + [s for _, _, s, _ in refs] + ['TP1-TP4', 'Settings sweep', 'Combinations', 'Exits', 'Recovery rules', 'Robustness', 'Hours', 'Streak math']
-    wb._sheets = [wb[n] for n in order]
+    order = ['Read me', 'Best settings', 'Summary'] + [s for _, _, s, _ in refs] + ['TP1-TP4', 'Settings sweep', 'Combinations', 'Exits', 'Recovery rules', 'Rule C split test', 'Robustness', 'Hours', 'Streak math']
+    wb._sheets = [wb[n] for n in order if n in wb.sheetnames]
     out = sys.argv[1] if len(sys.argv) > 1 else S + '/gold/Gold_2021_2026_Auction_Retest.xlsx'
     wb.save(out); print('saved', out, 'timeframes', list(FIN))

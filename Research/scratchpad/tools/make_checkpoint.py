@@ -68,7 +68,7 @@ def inputs():
 def results():
     dst = OUT + '/results/gold'; os.makedirs(dst, exist_ok=True); out = []
     g = S + '/gold/'
-    names = [f for f in os.listdir(g) if f.startswith(('slim_', 'greedy_pool_', 'anaA_', 'cands_')) and f.endswith('.pkl')]
+    names = [f for f in os.listdir(g) if f.startswith(('slim_', 'greedy_pool_', 'anaA_', 'cands_', 'rulec')) and f.endswith('.pkl')]
     names += ['greedy_%s.pkl' % tf for tf in TFS if os.path.exists(g + 'greedy_%s.pkl' % tf)]
     for f in sorted(names):
         target = f[len('slim_'):] if f.startswith('slim_final_') else f      # slim final_<TF>.pkl is restored under its normal name
