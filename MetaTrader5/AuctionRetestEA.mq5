@@ -25,9 +25,10 @@
 //| result). Use "Visualization" in the Strategy Tester to see them. |
 //| v3.2: optional kill zones (Indian time, four sessions, +-2 h).   |
 //| v3.3: optional minimum distance of the signal from the VWAP.     |
+//| v3.4: Crooks A and Crooks B loss recovery.                       |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.30"
+#property version   "3.40"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -62,7 +63,9 @@ enum ENUM_REC {
    REC_RDALE = 14, // Reverse D'Alembert
    REC_DELAY = 15, // Delayed recovery (after N losses)
    REC_EQPCT = 16, // % of equity
-   REC_OSC   = 17  // Oscar's Grind
+   REC_OSC   = 17, // Oscar's Grind
+   REC_CRA   = 18, // Crooks A (base, base, then recovery every 2nd trade)
+   REC_CRB   = 19  // Crooks B (Crooks A with the loss split over N trades)
 };
 
 //--- ENGINE inputs: same names, order and defaults as the shared Pine inputs
@@ -231,7 +234,7 @@ input int    InpRecN     = 3;      // N trades (Over N / Delayed)
 input double InpRecPct   = 50.0;   // % of losses (% mode)
 input double InpRecMult  = 2.0;    // Multiplier (Martingale / Grand)
 input double InpRecStep  = 25.0;   // Step amount (Step-up)
-input int    InpCSplit   = 3;      // Rule C: split the loss over this many trades
+input int    InpCSplit   = 3;      // Rule C / Crooks B: split the loss over this many trades
 input int    InpParN     = 3;      // Paroli: wins before reset
 input int    InpDelayN   = 2;      // Delayed: losses before recovery starts
 input double InpEqPct    = 1.0;    // % of equity (% mode)
@@ -317,6 +320,7 @@ string   tblKey[], tblVal[]; color tblCol[], tblBg[];
 double   dayPnl = 0; int lossRow = 0, winRow = 0; bool dayBlock = false; int pauseLeft = 0; bool paused = false;
 double   recPool = 0; int recLosses = 0; int dUnits = 1; double carried = 0; bool capStop = false;
 double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP = 0;
+double   crkL = 0; int crkN = 0; bool crkRec = false;   // Crooks: $ loss to win back, closed trades in the cycle, the open trade is a recovery trade
 double   totalNet = 0; int exW = 0, exLn = 0;
 
 //--- helpers ----------------------------------------------------------
@@ -679,6 +683,9 @@ void ProcessBar(int s)
    DrawBar(t);
 }
 
+//--- Crooks: the next trade is a recovery trade (trades 3, 5, 7 ... of the cycle)
+bool CrkRecNext() { return (InpRec == REC_CRA || InpRec == REC_CRB) && crkN >= 2 && crkN % 2 == 0; }
+
 //--- risk $ for the next trade (loss recovery + hard cap) -------------------
 double NextRisk(double exitR)
 {
@@ -710,6 +717,8 @@ double NextRisk(double exitR)
       case REC_DELAY: r = recLosses >= InpDelayN ? base + recPool / InpRecN : base; break;
       case REC_EQPCT: r = AccountInfoDouble(ACCOUNT_EQUITY) * InpEqPct / 100.0; break;
       case REC_OSC:   r = base * MathMin(oscU, oscNeed); break;
+      case REC_CRA:
+      case REC_CRB:   r = CrkRecNext() && exitR > 0 ? MathMax(base, crkL / (InpRec == REC_CRB ? InpCSplit : 1) / exitR) : base; break;
       default:        r = base;
    }
    if(InpCapOn && r > InpHardCap)
@@ -717,7 +726,7 @@ double NextRisk(double exitR)
       if(InpCapAction == CAP_STOP) capStop = true;
       else if(InpCapAction == CAP_RESET)
       {
-         recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0;
+         recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; crkL = 0; crkN = 0;
          r = MathMin(baseC, InpHardCap);
       }
       else r = InpHardCap;
@@ -955,14 +964,15 @@ void UpdateTable()
    bool   act = MathAbs(st) == 2 && !trGhost, armed = MathAbs(st) == 1 && !trGhost, has = act || armed;
    int    xk = (int)InpExitAt;
    string tps = has ? DoubleToString(t1, _Digits) + " | " + DoubleToString(t2, _Digits) + " | " + DoubleToString(t3, _Digits) + " | " + DoubleToString(t4, _Digits) : "-";
-   bool   isC = InpRec == REC_C || InpRec == REC_CS;
-   string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.3", white, C'61,143,214');
+   bool   isC = InpRec == REC_C || InpRec == REC_CS, isK = InpRec == REC_CRA || InpRec == REC_CRB;
+   string kTxt = DoubleToString(crkL, 2) + " | trade " + IntegerToString(crkN + 1) + ((exState != 0 ? crkRec : CrkRecNext()) ? " recovery" : " base") + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "");
+   string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
+   TblAdd("AUCTION RETEST", "EA v3.4", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
    TblAdd("RISK | LOTS", exState != 0 ? DoubleToString(exRiskAmt, 2) + " | " + DoubleToString(exLots, 2) : "base " + DoubleToString(InpBaseRisk, 2), white, cell);
-   TblAdd(isC ? "LOSSES CARRIED" : "RECOVERY POOL", rec, (isC ? carried : recPool) > 0 ? negC : white, cell);
+   TblAdd(isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", rec, (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white, cell);
    TblAdd("STREAK W | L", IntegerToString(winRow) + " | " + IntegerToString(lossRow) + " | total " + IntegerToString(exW) + "W/" + IntegerToString(exLn) + "L", white, cell);
    TblAdd("DAY P&L | FILLS", DoubleToString(dayPnl, 2) + " | " + IntegerToString(dayFills) + "/" + IntegerToString(InpMaxFills), dayPnl >= 0 ? posC : negC, cell);
    TblAdd("SIGNALS | TAKEN | SKIPPED", IntegerToString(sigN) + " | " + IntegerToString(takenN) + " | " + IntegerToString(skipN) + (missN > 0 ? " | missed " + IntegerToString(missN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN > 0 ? negC : white, cell);
@@ -1032,7 +1042,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
       else if(bid >= ep)                ok = trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
       else { ok = true; gVirt = true; }
    }
-   if(ok) { exState = 1; exArm = armBar; exSynced = false; takenN++; }
+   if(ok) { exState = 1; exArm = armBar; exSynced = false; takenN++; crkRec = CrkRecNext(); }
    else { skipN++; skipWhy = "order rejected"; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
 }
 
@@ -1077,6 +1087,10 @@ void BookClosed()
    }
    oscP += exPnl;
    if(oscP >= InpBaseRisk) { oscU = 1; oscP = 0; } else if(win) oscU++;
+   // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A: also when a recovery trade wins)
+   crkL = MathMax(0.0, crkL - exPnl);
+   if(crkL < 0.01 || (InpRec == REC_CRA && win && crkRec)) { crkL = 0; crkN = 0; } else crkN++;
+   crkRec = false;
    exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false;
    CancelPending();
 }

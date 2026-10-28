@@ -180,14 +180,24 @@ def tf_sheet(wb, tf, C):
     row('   deepest fall from a peak (%)', m('cs3_reset', lambda x: round(x['maxDDpct'], 4)), '0.0%')
     row('Rule C split, split 3, $500 hard cap, Clamp: net profit ($)', m('cs3_clamp', lambda x: 'BLOWN' if x['ruined'] else round(x['net'], 2)), '#,##0;(#,##0);-')
     row('   deepest fall from a peak (%)', m('cs3_clamp', lambda x: round(x['maxDDpct'], 4)), '0.0%')
+    mc = lambda key, f: [f(s['money']['mc'][key]) if s['money'].get('mc') else '-' for s in st]
+    for key, name, mk in (('crA_reset', 'Crooks A, $500 hard cap, Start again', ('Crooks A', 3, 500.0, 'reset')), ('crB3_reset', 'Crooks B, split 3, $500 hard cap, Start again', ('Crooks B', 3, 500.0, 'reset'))):
+        row(name + ': net profit ($)', m(key, lambda x: 'BLOWN' if x['ruined'] else round(x['net'], 2)), '#,##0;(#,##0);-')
+        row('   deepest fall from a peak (%)', m(key, lambda x: round(x['maxDDpct'], 4)), '0.0%')
+        row('   the same trades in 500 random orders: median net ($)', mc(mk, lambda q: round(q['med'], 2)), '#,##0;(#,##0);-')
+        row('   ... 95% of the random orders fall less than (%)', mc(mk, lambda q: round(q['dd95'], 4)), '0.0%')
     def advice(s):
         e = s['stats']['E']; rs = s['money']['cs3_reset']
-        if tf in ('M1', 'M5') or e < 0.08: return 'Fixed risk (Off). The edge is too thin for Rule C: 0.05 R of extra cost per trade can blow the account.'
+        if tf in ('M1', 'M5') or e < 0.08:
+            q = (s['money'].get('mc') or {}).get(('Crooks A', 3, 500.0, 'reset'))
+            return ('Fixed risk (Off). The edge is too thin for Rule C: 0.05 R of extra cost per trade can blow the account.' +
+                    (' Crooks A with the $500 cap (Start again): 1 in 20 random orders of these trades falls more than %.0f%% (Crooks A and B test).' % (100 * q['dd95']) if q else ''))
         if rs['ruined'] or rs['maxDDpct'] > 0.40: return 'Fixed risk (Off). Rule C split falls too far here.'
-        return 'Fixed risk (Off) for the smallest falls; Rule C split (split 3, $500 cap, Start again) for growth, if you accept the deeper falls shown above.'
+        return ('Fixed risk (Off) for the smallest falls; Rule C split (split 3, $500 cap, Start again) for growth, if you accept the deeper falls shown above. '
+                'Crooks A / B ($500 cap, Start again) sit in between: see the Crooks A and B test sheet.')
     put(ws, r, 2, 'Recommended money management', bold=True)
     for k, s in enumerate(st): put(ws, r, k0 + k, advice(s), wrap=True)
-    ws.row_dimensions[r].height = 64; r += 1
+    ws.row_dimensions[r].height = 100; r += 1
     widths(ws, [26, 52, 22, 16] + [26] * len(st)); ws.freeze_panes = '%s%d' % (CL(k0), head + 1)
     return {k: '%s!%s%d' % ("'%s strategies'" % tf, L(k), head) for k in range(len(st))}
 # ---------------------------------------------------------------- overview
@@ -213,21 +223,23 @@ def guide(wb, CAT, links):
     r += 1; put(ws, r, 1, 'PART 2 - every strategy', bold=True, fill=SUB); ws.merge_cells(start_row=r, start_column=1, end_row=r, end_column=5); r += 1
     cols = ['Strategy', 'Timeframe', 'Goal(s)', 'Works in', 'Trades per day', 'Profitable trades %', 'TP1 reached %',
             'R per trade 2021-23', 'R per trade 2024-26', 'R per trade 2021-2026', 'Years positive', 'Longest winning streak', 'Longest losing streak',
-            'Deepest fall (R)', 'Fixed $50: net ($)', 'Rule C split 3, $500 cap, Start again: net ($)', '... its deepest fall %', 'Settings to change (indicator names)']
+            'Deepest fall (R)', 'Fixed $50: net ($)', 'Rule C split 3, $500 cap, Start again: net ($)', '... its deepest fall %',
+            'Crooks A, $500 cap, Start again: net ($)', '... its deepest fall %', 'Settings to change (indicator names)']
     hdr(ws, r, cols, height=54); r += 1
     for tf in tfs:
         for k, s in enumerate(CAT[tf]['strategies']):
-            x = s['stats']; rs = s['money']['cs3_reset']
+            x = s['stats']; rs = s['money']['cs3_reset']; ca = s['money']['crA_reset']
             vals = [sid(tf, k), tf, ' + '.join(n for n, _ in s['scen']), works(s['cfg']), round(x['perday'], 3), round(x['prof'], 4), round(x['tp'][0], 4),
                     round(x['EA'], 4), round(x['EB'], 4), round(x['E'], 4), x['ypos'], x['maxW'], x['maxL'], round(x['ddR'], 2), round(s['money']['off']['net'], 2),
-                    'BLOWN' if rs['ruined'] else round(rs['net'], 2), round(rs['maxDDpct'], 4), labels.short(s['cfg'])]
+                    'BLOWN' if rs['ruined'] else round(rs['net'], 2), round(rs['maxDDpct'], 4), 'BLOWN' if ca['ruined'] else round(ca['net'], 2), round(ca['maxDDpct'], 4),
+                    labels.short(s['cfg'])]
             for j, v in enumerate(vals, 1):
-                c = put(ws, r, j, v, '0.00' if j == 5 else '0.0%' if j in (6, 7, 17) else '0.000' if j in (8, 9, 10) else '0.0' if j == 14 else '#,##0;(#,##0);-' if j in (15, 16) else None,
-                        j == 1, BLUE if 5 <= j <= 17 else None, wrap=(j in (3, 4, 18)))
+                c = put(ws, r, j, v, '0.00' if j == 5 else '0.0%' if j in (6, 7, 17, 19) else '0.000' if j in (8, 9, 10) else '0.0' if j == 14 else '#,##0;(#,##0);-' if j in (15, 16, 18) else None,
+                        j == 1, BLUE if 5 <= j <= 19 else None, wrap=(j in (3, 4, 20)))
                 if j == 1: c.hyperlink = '#' + links[tf][k]; c.font = Font(name=F, size=9, bold=True, color='0563C1', underline='single')
             ws.row_dimensions[r].height = 40; r += 1
         r += 1
-    widths(ws, [34, 26, 26, 26, 26, 9, 8, 9, 9, 9, 8, 9, 9, 8, 10, 12, 9, 90]); ws.freeze_panes = 'B6'
+    widths(ws, [34, 26, 26, 26, 26, 9, 8, 9, 9, 9, 8, 9, 9, 8, 10, 12, 9, 12, 9, 90]); ws.freeze_panes = 'B6'
 # ---------------------------------------------------------------- every profitable setting
 def allprof(wb, CAT):
     ws = wb.create_sheet('All profitable settings')

@@ -1,17 +1,18 @@
-"""The strategy's 17 loss-recovery rules (port of Auction_Retest_Strategy.pine, section 2 + the risk formula in section 5).
+"""The strategy's 19 loss-recovery rules (port of Auction_Retest_Strategy.pine, section 2 + the risk formula in section 5).
 Every trade is sized so that a stop-out loses exactly the computed $ risk INCLUDING the spread (like the strategy):
 pnl = risk$ x (R - c) / (1 + c), c = spread / stop distance. Fractional sizes, no leverage limit, $10,000 start."""
 import math
 MODES = ['Off', 'Recover all losses on the next trade', 'Recover losses over N trades', 'Recover a % of losses per trade', 'Martingale (multiply after each loss)',
          'Exact recovery at final TP', 'Step-up (+$ per loss in a row)', 'Fibonacci', "D'Alembert", 'Rule C: carry the losses', 'Rule C split', 'Labouchere',
-         'Grand Martingale', 'Paroli', "Reverse D'Alembert", 'Delayed recovery', '% of equity', "Oscar's Grind"]
-def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0):
+         'Grand Martingale', 'Paroli', "Reverse D'Alembert", 'Delayed recovery', '% of equity', "Oscar's Grind", 'Crooks A', 'Crooks B']
+def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0, trace=None):
     """trades: iterable of (R result, spread cost in R) or (R result, spread cost in R, parts). parts = [(R of the part, share of the position)]
     for a trade with a partial close: Rule C's carried losses are then updated after each part, like the strategy (once per candle)."""
     eq = start; peak = start; maxDD = 0.0; maxDDp = 0.0; net = 0.0
     recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
     capStop = False; n = 0; maxRisk = 0.0; maxRiskPct = 0.0; ruined = False; ruinAt = None; gp = gl = 0.0
     lossRun = 0.0; worstRun = 0.0; sumRisk = 0.0
+    crL = 0.0; crN = 0      # Crooks: $ loss to win back, closed trades in the cycle
     for k, tr in enumerate(trades):
         res, c = tr[0], tr[1]; parts = tr[2] if len(tr) > 2 else None
         if capStop or ruined: break
@@ -25,16 +26,20 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         baseC = max(base, min(stepBase, cap) if cap > 0 else stepBase) if mode == MODES[10] else base
         labU = lab[0] + lab[-1] if len(lab) > 1 else lab[0]
         oscNeed = int(max(1, math.ceil((base - oscP) / (base * exitR))))
+        crRec = mode in (MODES[18], MODES[19]) and crN >= 2 and crN % 2 == 0     # Crooks: trades 3, 5, 7 ... of a cycle are recovery trades
         r = {MODES[11]: base * labU, MODES[12]: base * mult ** min(recLosses, 200) + base * recLosses, MODES[13]: base * 2 ** parWins, MODES[14]: base * rdUnits,
              MODES[15]: (base + recPool / recN) if recLosses >= delayN else base, MODES[16]: eq * eqPct / 100.0, MODES[17]: base * min(oscU, oscNeed),
              MODES[4]: base * mult ** min(recLosses, 200), MODES[7]: base * (1.0 if recLosses == 0 else fb), MODES[8]: base * dUnits,
-             MODES[9]: max(baseC, carried / cSplit), MODES[10]: max(baseC, carried / cSplit)}.get(mode, base + add)
+             MODES[9]: max(baseC, carried / cSplit), MODES[10]: max(baseC, carried / cSplit),
+             MODES[18]: max(base, crL / exitR) if crRec else base, MODES[19]: max(base, crL / cSplit / exitR) if crRec else base}.get(mode, base + add)
         if cap > 0 and r > cap:
             if capAction == 'stop': capStop = True; break
             elif capAction == 'reset':
                 recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
+                crL = 0.0; crN = 0; crRec = False
                 r = min(baseC, cap)
             else: r = cap
+        if trace is not None: trace.append(r)
         maxRisk = max(maxRisk, r); maxRiskPct = max(maxRiskPct, r / eq if eq > 0 else 9.99); sumRisk += r
         pnl = r * (res - c) / (1.0 + c); n += 1
         eq += pnl; net += pnl
@@ -59,8 +64,20 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         oscP += pnl
         if oscP >= base: oscU = 1; oscP = 0.0
         elif win: oscU += 1
+        # Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back (A: also when a recovery trade wins)
+        crL = max(0.0, crL - pnl)
+        if crL < 0.01 or (mode == MODES[18] and win and crRec): crL = 0.0; crN = 0      # less than a cent left = all won back
+        else: crN += 1
     return dict(mode=mode, trades=n, avgRisk=sumRisk / n if n else 0.0, net=net, end=eq, maxDD=maxDD, maxDDpct=maxDDp, maxRisk=maxRisk, maxRiskPct=maxRiskPct, ruined=ruined, ruinAt=ruinAt,
                 pf=(gp / gl) if gl > 0 else float('inf'), worstRun=-worstRun, capStopped=capStop)
+def risks(trades, mode, **kw):
+    """the $ risk of each trade (for hand checks): re-runs the simulation on growing prefixes"""
+    out = []
+    for i in range(1, len(trades) + 1):
+        a = simulate(trades[:i - 1], mode, **kw)['avgRisk'] * (i - 1) if i > 1 else 0.0
+        b = simulate(trades[:i], mode, **kw)['avgRisk'] * i
+        out.append(round(b - a, 6))
+    return out
 if __name__ == '__main__':
     # sanity: Off on a +2/-1 sequence with no costs
     t = [(2.0, 0.0), (-1.0, 0.0), (-1.0, 0.0), (2.0, 0.0)]

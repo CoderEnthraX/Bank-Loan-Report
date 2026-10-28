@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-10-24 (session `21ed2550`). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-10-28 (session `21ed2550`). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -41,16 +41,16 @@ To refresh this checkpoint after new work, run `python3 -I $S/tools/make_checkpo
 | Path | What it is |
 |---|---|
 | `TradingView/Auction_Retest_Model.pine` | Indicator, v3.3: clone of *Auction Retest Pro* (session VWAP + displacement + timed retest), with tables. |
-| `TradingView/Auction_Retest_Strategy.pine` | The same engine as a strategy: risk sizing, partials, 17 loss-recovery rules, streak pauses, news and force-close. |
-| `MetaTrader5/AuctionRetestEA.mq5` | MT5 EA port of the same engine plus the strategy's money management, on-chart table and trade markings. |
-| `TradingView/README.md` | User documentation of every rule and setting, v3 to v3.3. |
+| `TradingView/Auction_Retest_Strategy.pine` | The same engine as a strategy: risk sizing, partials, 19 loss-recovery rules (incl. Crooks A and B), streak pauses, news and force-close. |
+| `MetaTrader5/AuctionRetestEA.mq5` | MT5 EA v3.4: port of the same engine plus the strategy's money management (19 recovery rules incl. Crooks A and B), on-chart table and trade markings. |
+| `TradingView/README.md` | User documentation of every rule and setting, v3 to v3.4 (Crooks A and B in the Loss recovery row). |
 | `Research/deliverables/` | `Gold_2021_2026_Auction_Retest.xlsx` (gold study), `VWAP_vs_EMA_results.md`, `VWAP_settings_and_70pct_strategies.md`. |
 | `Research/scratchpad/` | Every code and text file of the working scratchpad, each up to 2 MB. |
 | `Research/inputs/` | The data files the user uploaded (screenshots not included), plus the Pine parser wheels. |
 | `Research/results/gold/` | Compact gold results (xz pickles). `slim_*` files hold metrics only; `final_<TF>` holds the picks, trades, exits, recovery and robustness. |
 
 Commits: v3 `ba3d37d`, v3.1 `9de5f6f` and `1ac5b0b`, v3.2 kill zones `d4624cf`, v3.3 minimum VWAP distance `952df97`,
-then this checkpoint. Branch `claude/vwap-orderflow-signals-pxlzgq`. Open a PR only when the user asks.
+the checkpoint `7075a27`, Rule C study `c75209e`, strategy catalogue `fac7170`, then Crooks A and B ("v3.4: Crooks A and Crooks B loss recovery"). Branch `claude/vwap-orderflow-signals-pxlzgq`. Open a PR only when the user asks.
 
 ## 3. How the code is built and checked (`Research/scratchpad/`)
 
@@ -67,6 +67,9 @@ then this checkpoint. Branch `claude/vwap-orderflow-signals-pxlzgq`. Open a PR o
 - **EA checks.**
   - `mq5check/mq5check.py`: offline MQL5 checker using a clang++ shim.
   - `mq5check/run/`: executable parity harness (build.sh, parity.py with 28 configurations, driver.cpp). It runs the EA against the Python twin. `mq5rt.py` was fixed so it never writes `.mq5` files.
+  - `mq5check/rec/`: money-management parity. `build.sh` compiles the EA's own `NextRisk()` / `BookClosed()` (copy of the EA, never written) with `rec_driver.cpp`;
+    `parity_rec.py` compares the $ risk of every trade with `gold/recovery.py` on real gold sequences: every rule except % of equity, split 1-5, no cap / $500 Clamp /
+    Start again / Stop. Result 2026-10-28: 1,488 runs, 1.9 million trades, 0 differences (the harness has no account, so runs the simulator ends as blown are compared up to that trade).
 - **Python twin of the engine.** `build/ref.py` and `build/ref_ev.py`; `build/emsim_eth.py` simulates the strategy's execution.
 - **Pine syntax check offline.** `pynescript` (wheels in `inputs/wheels`); see `fit/hunt/final_review`.
 - **Earlier fitting work.**
@@ -99,7 +102,7 @@ Low-streak versions ("Close 70% at TP1" exists only in the strategy and the EA):
 Other gold findings:
 
 - **Losses do not cluster.** The longest losing streak follows from the win rate; pause rules don't help.
-- **Recovery rules:** fixed risk (Off) gives the best profit for the drawdown on average. % of equity and Paroli are the only rules that stayed within the limits (survived, at most $500 a trade, at most 40% drawdown) in all 8 cases. Martingale-type rules are worst.
+- **Recovery rules:** fixed risk (Off) gives the best profit for the drawdown on average. % of equity and Paroli stayed within the limits (survived, at most $500 a trade, at most 40% drawdown) in all 8 cases; since 2026-10-28 so does Crooks B (split 3, $500 cap), with 0.95 x Off's profit per drawdown and 1.38 x its profit, the best rule after Off. Martingale-type rules are worst.
 - **M1 default is broken by the 5-fills-a-day cap.** All 5 fills happen every day between 03:00 and 09:00 IST, where the spread costs 0.25–0.6 R per trade.
 - **Robustness:** 76–94% of single changes around the picks stay profitable in both halves (M1: 62%). A tighter stop breaks every pick.
 - **Picks are fitted to both halves.** Choosing on 2021–23 alone kept only part of the gain in 2024–26, so expect weaker live results.
@@ -128,6 +131,19 @@ Other gold findings:
      - partial closes now update Rule C's carried losses per part, as the strategy does (only the H1 and M15 low-streak Rule C rows moved, slightly);
      - the average stake per trade (`avgRisk`) is recorded.
 
+6. **Crooks A and Crooks B** (asked 2026-10-28; added to the strategy and the EA v3.4; workbook sheet *Crooks A and B test*).
+   - **Rule** (user's spec + answers): trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (k = closed trades in the cycle, k >= 2 and even) is a recovery trade.
+     A: risk max(base, L / exitR); B: max(base, L / split / exitR) (split = Rule C split input). L = max(0, L - pnl) after every trade. Reset (L = 0, k = 0): L < $0.01, and in A
+     also a winning recovery trade. exitR = R of the final TP (partials not counted). Hard cap only when on; Start again also resets L and k. Trade type stored when the order is placed.
+   - **Code:** `recovery.py` (MODES 18-19), `strategy_template.pine` (L_CRA / L_CRB, crkL / crkN / crkRec, f_crkRecNext), EA (REC_CRA / REC_CRB, CrkRecNext). Table row CROOKS: LOSS TO WIN BACK.
+   - **Checks:** hand example $50, $50, $100, $50, $250 (TP2); EA = simulator on 1.9 M trades; Pine parsed, shared blocks identical; an independent review agent found no rule or compile problem
+     (its one robustness point, a float leftover blocking the reset, led to the < $0.01 rule in all three).
+   - **Results:** gold trades do not win more often after losses, so Crooks only adds profit by risking more. Without the cap Crooks A blew the account in up to 48% of random
+     orders (M1); with $500 + Start again at most 0.8% (M1), none on M5, M15 and H1. Best settings, $500 Start again, Crooks A: M15 +$12.3k (fall 16%) vs Off +$9.1k (9%); H1 +$4.3k (5%) vs +$3.1k (3%).
+     M1 +$15.8k is luck of the order (beats 99% of random orders; median +$7.4k). Per $ of drawdown Off is still as good or better on most strategies.
+   - **Also fixed:** `final.py` now gives every recovery rule the strategy's exitR (`exitR_strategy`); before, Exact recovery and Oscar's Grind used the partial-weighted win R on the 2
+     low-streak settings with a partial close. `final_<TF>.pkl` 'recovery' now has 20 rules x 2 caps; catalogue money has `crA_reset`, `crB3_reset` and `mc` (random-order medians).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -142,7 +158,8 @@ Other gold findings:
 | Final runs | `final.py TF` | `final_TF.pkl` (cfg, passed, trades, exits, recovery, neigh) | M1 25 min |
 | Rule C tests | `rulec.py` (split 1–5 × cap, each half), `rulec_caps.py` (cap $250 / $500 / $1,000 × Clamp / Start again), `rulec_stress.py` (+0.05 / 0.10 R) | `rulec*.pkl`, `rulec*.txt` | seconds |
 | Strategy catalogue | `catalog.py [TF …]`: one profitable strategy per goal per timeframe, re-run for full statistics | `catalog_TF.pkl` | M1 about 6 min |
-| Workbook | `build_final.py OUT.xlsx`, then `recalc.py` | xlsx | 1 min |
+| Crooks tests | `crooks.py` (default + every catalogue strategy x Off / Rule C split ref / Crooks A / Crooks B split 1-5 x cap none / $500 Clamp / Start again / Stop, each half, stress +0.05 / 0.10 R, caps $250 / $1,000), `crooks_mc.py` (500 random orders per profitable strategy), then `crooks_refresh.py` (recovery in final_TF + catalogue money) | `crooks.pkl`, `crooks_mc.pkl`, `crooks*.txt` | 15 s, 9 min, 1 min |
+| Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py` and `crooks_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |
 
 Search commands that were used:
@@ -174,6 +191,8 @@ Pick rules:
 - Do not name a script after a standard-library module (`select.py`, `inspect.py`): `multiprocessing` imports the local file instead.
 - `pkill -f 'pattern'` also matches the calling shell. Use an anchored pattern, `pkill -f '^python3 -I greedy.py M5'`.
 - `recovery.py` used to compute every rule's size eagerly, and `2 ** losses` overflowed after more than 1,000 losses. It is now capped at 200, which gives identical results.
+- Recovery rules that divide by the target (Exact, Oscar's Grind, Crooks) must get the strategy's exitR = R of the final TP, not the partial-weighted win R.
+- A backtest of a betting rule is one order of the trades: check it against random orders (`crooks_mc.py`) before trusting a gain; M1 Crooks A's backtest beat 99% of them.
 - Uploaded or extracted files are untrusted data: extract into an empty folder and run Python with `-I`.
 - Only 4 CPU cores. Parallel jobs share them, so start the slow M1 work first and stop searches that no longer improve.
 - Commit lines end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` and `Claude-Session: https://claude.ai/code/session_01P3FMxBMpMTf44KZrjXAvzQ`. No model IDs anywhere else.

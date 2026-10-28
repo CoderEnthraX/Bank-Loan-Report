@@ -44,7 +44,7 @@ def slim_results():
 def mirror():
     dst = OUT + '/scratchpad'; n = size = 0; skipped = []
     for root, dirs, files in os.walk(S):
-        dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS and not d.startswith('.'))
+        dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS and not d.startswith(('.', 'tmp')))
         rel = os.path.relpath(root, S)
         for f in sorted(files):
             p = os.path.join(root, f)
@@ -68,7 +68,8 @@ def inputs():
 def results():
     dst = OUT + '/results/gold'; os.makedirs(dst, exist_ok=True); out = []
     g = S + '/gold/'
-    names = [f for f in os.listdir(g) if f.startswith(('slim_', 'greedy_pool_', 'anaA_', 'cands_', 'rulec', 'catalog_')) and f.endswith('.pkl')]
+    names = [f for f in os.listdir(g) if f.startswith(('slim_', 'greedy_pool_', 'anaA_', 'cands_', 'rulec', 'catalog_', 'crooks')) and f.endswith('.pkl')
+             and '_before_' not in f and '_v1' not in f]                      # backups made before a change stay local
     names += ['greedy_%s.pkl' % tf for tf in TFS if os.path.exists(g + 'greedy_%s.pkl' % tf)]
     for f in sorted(names):
         target = f[len('slim_'):] if f.startswith('slim_final_') else f      # slim final_<TF>.pkl is restored under its normal name
