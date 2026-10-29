@@ -325,6 +325,7 @@ double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP =
 double   crkL = 0; int crkN = 0; bool crkRec = false;   // Crooks: $ loss to win back, closed trades in the cycle, the open trade is a recovery trade
 bool     exT1 = false, exT1Half = false, exT1Be = false;   // Crooks TP1 rule: this trade, its TP1 half is booked, the rest's stop is at the entry
 double   exT1Stop = 0, exT1Tp1 = 0, exT1Tp2 = 0;              // its stop and its own TP1 / TP2 (the engine's levels change with its next setup)
+double   exKeepSl = 0;             // restart: the adopted position's stop when it was tighter than the engine's; never widened
 double   totalNet = 0; int exW = 0, exLn = 0;
 
 //--- helpers ----------------------------------------------------------
@@ -818,6 +819,7 @@ void SetExits(bool withTarget)
    if(!HasPosition(tk, vol, op)) return;
    double sl = StopPx(exL), tp = withTarget ? TgtPx(exL, tF) : 0;
    if(exT1) { sl = exT1Half ? NormalizeDouble(op, _Digits) : exT1Stop; tp = withTarget ? TgtPx(exL, exT1Tp2) : 0; }   // Crooks TP1 rule: rest to TP2, at the entry after TP1
+   if(exKeepSl > 0 && (exL ? exKeepSl > sl : exKeepSl < sl)) sl = exKeepSl;   // an adopted position keeps its tighter stop
    double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
    double minD = MinDist();
    // price is already through the engine's stop or target: the engine exits on this bar, so exit now
@@ -1058,7 +1060,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    double sprNow = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
    exCostPx = InpEarnBack && tv > 0 ? InpCommLot / (tv / ts) + sprNow : 0;
    exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((sd + sprNow) / ts * tv + InpCommLot);
-   exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1Stop = exT1 ? T1StopPx(isL, t1d) : 0; exT1Tp1 = t1; exT1Tp2 = t2;
+   exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1Stop = exT1 ? T1StopPx(isL, t1d) : 0; exT1Tp1 = t1; exT1Tp2 = t2; exKeepSl = 0;
    for(int q = 0; q < 3; q++) pDone[q] = false;
    CancelPending();
    gVirt = false;
@@ -1131,7 +1133,7 @@ void BookClosed()
    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A: also when a recovery trade wins)
    crkL = MathMax(0.0, crkL - exPnl);
    if(crkL < 0.01 || (InpRec == REC_CRA && win && crkRec)) { crkL = 0; crkN = 0; } else crkN++;
-   crkRec = false; exT1 = false; exT1Half = false; exT1Be = false;
+   crkRec = false; exT1 = false; exT1Half = false; exT1Be = false; exKeepSl = 0;
    exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false;
    CancelPending();
 }
@@ -1249,7 +1251,7 @@ void ResetEngine()
    st = 0; armBar = -1; fillBar = -1; lastExit = -1; lastFill = -1; lastDir = 0;
    lim = 0; stp = 0; stp0 = 0; trRisk = 0; t1 = 0; t2 = 0; t3 = 0; t4 = 0; tF = 0; tpHit = 0; trHalf = false; trGhost = false;
    totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true; gKzOk = true;
-   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false; exT1 = false; exT1Half = false; exT1Be = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0;
+   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false; exT1 = false; exT1Half = false; exT1Be = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0; exKeepSl = 0;
    sigN = 0; takenN = 0; skipN = 0; missN = 0; skipWhy = "";
    gVirt = false; gDayPend = false; gPrevT = 0; capStop = false;
    for(int q = 0; q < 3; q++) pDone[q] = false;
@@ -1290,9 +1292,10 @@ int OnInit()
       if((isL && st == 2) || (!isL && st == -2))
       {
          double oldSl = PositionGetDouble(POSITION_SL);
-         exState = 2; exL = isL; exLots = vol; exArm = armBar; exSynced = true; for(int q = 0; q < 3; q++) pDone[q] = tpHit >= q + 1; Print("Adopted open position #", tk, " (engine is in the same trade)."); SetExits(true);
-         // never widen the stop of an adopted position: a Crooks TP1-rule position is sized for its tighter stop
-         if(oldSl > 0 && (isL ? oldSl > StopPx(isL) : oldSl < StopPx(isL)) && PositionSelectByTicket(tk)) trade.PositionModify(tk, oldSl, PositionGetDouble(POSITION_TP));
+         exState = 2; exL = isL; exLots = vol; exArm = armBar; exSynced = true; for(int q = 0; q < 3; q++) pDone[q] = tpHit >= q + 1; Print("Adopted open position #", tk, " (engine is in the same trade).");
+         // never widen the stop of an adopted position (a Crooks TP1-rule position is sized for its tighter stop): SetExits keeps it from now on
+         exKeepSl = oldSl > 0 && (isL ? oldSl > StopPx(isL) : oldSl < StopPx(isL)) ? oldSl : 0;
+         SetExits(true);
       }
       else { exState = 2; Print("Open position #", tk, " does not match the engine state; it will be closed on the next bar (the engine wins)."); }
    }
