@@ -152,6 +152,9 @@ Other gold findings:
      to the entry once TP1 is booked (Pine from the next bar, EA at once). Impossible geometry (costs >= TP1 / 3) -> plain Crooks. The strategy ignores the engine's TP1 exit
      for this trade (still follows an engine loss exit); new signals are skipped while the rest runs.
    - **Simulator:** `gold/crooks_tp1.py` replays these trades on bars with TradingView's fill rules (emsim) and skips signals while busy; hand tests in the session log.
+   - **Review fixes (independent reviewer, then verified):** the trade keeps its own TP1 / TP2 (exT1Tp1 / exT1Tp2; the engine's t1 / t2 change with its next setup while
+     the rest runs on); EA: TP1 half rounded UP to the lot step, booked at the bar close if no tick did it (engine TP1 win), breakeven move retried until accepted (exT1Be),
+     SetExits skips no-op modifies, a restart never widens an adopted position's stop.
    - **Result:** 28,220 TP1-rule trades over every exit-at-TP1 setting: 25% reached TP1, 75% hit the tight stop (36% on the entry candle). Exit at TP1 is profitable
      only on 3 H1 settings; there, with $500 cap + Start again, random-order medians were negative with the rule and +$1.1k to +$1.3k without. Recommendation: off on gold.
 

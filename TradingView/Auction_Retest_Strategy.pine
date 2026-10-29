@@ -794,6 +794,8 @@ var bool  crkRec    = false  // Crooks: the trade in progress is a recovery trad
 var bool  exT1      = false  // Crooks TP1 rule: this trade banks the recovery amount at TP1 with half, the rest runs to TP2
 var float exT1Stop  = na     // its stop: a stop-out loses exactly the recovery amount
 var bool  exT1Half  = false  // the TP1 half is booked: the rest's stop is at the entry
+var float exT1Tp1   = na     // its own TP1 and TP2 (the engine's levels change with its next setup while the rest runs on)
+var float exT1Tp2   = na
 var int   exW       = 0
 var int   exLn      = 0
 // Crooks: the next trade is a recovery trade (trades 3, 5, 7 ... of the cycle)
@@ -834,8 +836,8 @@ f_exitsT1(bool isL, bool withTargets) =>
     float  sPx = exT1Half ? (isL ? f_floorTick(strategy.position_avg_price + syminfo.mintick * 0.001) : f_ceilTick(strategy.position_avg_price - syminfo.mintick * 0.001)) : exT1Stop
     if withTargets
         if not exT1Half
-            strategy.exit("X1", eid, qty = exQty * 0.5, limit = f_tgtPx(isL, t1), stop = sPx)
-        strategy.exit("X4", eid, qty_percent = 100, limit = f_tgtPx(isL, t2), stop = sPx)
+            strategy.exit("X1", eid, qty = exQty * 0.5, limit = f_tgtPx(isL, exT1Tp1), stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, limit = f_tgtPx(isL, exT1Tp2), stop = sPx)
     else
         strategy.exit("X1", eid, qty = exQty * 0.5, stop = sPx)
         strategy.exit("X4", eid, qty_percent = 100, stop = sPx)
@@ -1075,6 +1077,8 @@ if evArm
         exT1      := t1Ok
         exT1Stop  := t1S
         exT1Half  := false
+        exT1Tp1   := t1
+        exT1Tp2   := t2
         string eid = isL ? "L" : "S"
         if entryMode == E_MARKET
             strategy.entry(eid, isL ? strategy.long : strategy.short, qty = q)
