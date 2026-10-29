@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-10-28 (session `21ed2550`). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-10-29 (session `21ed2550`). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -42,7 +42,7 @@ To refresh this checkpoint after new work, run `python3 -I $S/tools/make_checkpo
 |---|---|
 | `TradingView/Auction_Retest_Model.pine` | Indicator, v3.3: clone of *Auction Retest Pro* (session VWAP + displacement + timed retest), with tables. |
 | `TradingView/Auction_Retest_Strategy.pine` | The same engine as a strategy: risk sizing, partials, 19 loss-recovery rules (incl. Crooks A and B), streak pauses, news and force-close. |
-| `MetaTrader5/AuctionRetestEA.mq5` | MT5 EA v3.4: port of the same engine plus the strategy's money management (19 recovery rules incl. Crooks A and B), on-chart table and trade markings. |
+| `MetaTrader5/AuctionRetestEA.mq5` | MT5 EA v3.5: port of the same engine plus the strategy's money management (19 recovery rules incl. Crooks A and B, Crooks TP1 rule), on-chart table and trade markings. |
 | `TradingView/README.md` | User documentation of every rule and setting, v3 to v3.4 (Crooks A and B in the Loss recovery row). |
 | `Research/deliverables/` | `Gold_2021_2026_Auction_Retest.xlsx` (gold study), `VWAP_vs_EMA_results.md`, `VWAP_settings_and_70pct_strategies.md`. |
 | `Research/scratchpad/` | Every code and text file of the working scratchpad, each up to 2 MB. |
@@ -70,6 +70,8 @@ the checkpoint `7075a27`, Rule C study `c75209e`, strategy catalogue `fac7170`, 
   - `mq5check/rec/`: money-management parity. `build.sh` compiles the EA's own `NextRisk()` / `BookClosed()` (copy of the EA, never written) with `rec_driver.cpp`;
     `parity_rec.py` compares the $ risk of every trade with `gold/recovery.py` on real gold sequences: every rule except % of equity, split 1-5, no cap / $500 Clamp /
     Start again / Stop. Result 2026-10-28: 1,488 runs, 1.9 million trades, 0 differences (the harness has no account, so runs the simulator ends as blown are compared up to that trade).
+    `parity_tp1.py` (REC_T1 mode of the driver; build.sh makes a harness-only copy of the runtime header with settable tick value / bid / ask, and an OrderCalcMargin stub):
+    the EA's TP1-rule decision and $ risk vs `gold/crooks_tp1.py` on the trades the simulator took. Result 2026-10-29: 224 runs, 381,509 trades (136,048 TP1-rule), 0 differences.
 - **Python twin of the engine.** `build/ref.py` and `build/ref_ev.py`; `build/emsim_eth.py` simulates the strategy's execution.
 - **Pine syntax check offline.** `pynescript` (wheels in `inputs/wheels`); see `fit/hunt/final_review`.
 - **Earlier fitting work.**
@@ -144,6 +146,15 @@ Other gold findings:
    - **Also fixed:** `final.py` now gives every recovery rule the strategy's exitR (`exitR_strategy`); before, Exact recovery and Oscar's Grind used the partial-weighted win R on the 2
      low-streak settings with a partial close. `final_<TF>.pkl` 'recovery' now has 20 rules x 2 caps; catalogue money has `crA_reset`, `crB3_reset` and `mc` (random-order medians).
 
+7. **Crooks TP1 rule** (asked 2026-10-29; strategy input "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", EA `InpCrkT1`, on by default; EA v3.5; workbook part 6).
+   - **Rule** (user's answers: the whole amount banked at TP1, the rest's stop to the entry): Final Exit At TP1, Crooks recovery trades only. T = max(base, X) after the cap.
+     Stop distance = TP1 / 2 - 1.5 x costs (rounded toward the entry); size = T / (stop distance x value + costs); half closes at TP1 (banks T), rest at TP2, its stop moves
+     to the entry once TP1 is booked (Pine from the next bar, EA at once). Impossible geometry (costs >= TP1 / 3) -> plain Crooks. The strategy ignores the engine's TP1 exit
+     for this trade (still follows an engine loss exit); new signals are skipped while the rest runs.
+   - **Simulator:** `gold/crooks_tp1.py` replays these trades on bars with TradingView's fill rules (emsim) and skips signals while busy; hand tests in the session log.
+   - **Result:** 28,220 TP1-rule trades over every exit-at-TP1 setting: 25% reached TP1, 75% hit the tight stop (36% on the entry candle). Exit at TP1 is profitable
+     only on 3 H1 settings; there, with $500 cap + Start again, random-order medians were negative with the rule and +$1.1k to +$1.3k without. Recommendation: off on gold.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -159,6 +170,7 @@ Other gold findings:
 | Rule C tests | `rulec.py` (split 1–5 × cap, each half), `rulec_caps.py` (cap $250 / $500 / $1,000 × Clamp / Start again), `rulec_stress.py` (+0.05 / 0.10 R) | `rulec*.pkl`, `rulec*.txt` | seconds |
 | Strategy catalogue | `catalog.py [TF …]`: one profitable strategy per goal per timeframe, re-run for full statistics | `catalog_TF.pkl` | M1 about 6 min |
 | Crooks tests | `crooks.py` (default + every catalogue strategy x Off / Rule C split ref / Crooks A / Crooks B split 1-5 x cap none / $500 Clamp / Start again / Stop, each half, stress +0.05 / 0.10 R, caps $250 / $1,000), `crooks_mc.py` (500 random orders per profitable strategy), then `crooks_refresh.py` (recovery in final_TF + catalogue money) | `crooks.pkl`, `crooks_mc.pkl`, `crooks*.txt` | 15 s, 9 min, 1 min |
+| Crooks TP1 rule | `crooks_tp1.py` (engine re-run at exit TP1: default / best / low-streak per TF + the 2 best H1 TP1-exit settings; bar replay, halves, 300 random orders) | `crooks_tp1.pkl`, `crooks_tp1.txt` | 1.5 min |
 | Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py` and `crooks_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |
 

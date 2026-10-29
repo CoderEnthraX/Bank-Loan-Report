@@ -13,6 +13,8 @@ void rec_part(double np);
 void rec_close();
 int rec_capstop();
 void rec_init();
+void rec_setup(double risk, double spread);
+int rec_t1();
 }
 int main(int argc, char** argv)
 {
@@ -26,6 +28,24 @@ int main(int argc, char** argv)
    rec_init();
    FILE* f = std::fopen(argv[1], "r");
    if(!f) return 2;
+   if(std::getenv("REC_T1"))
+   {
+      // TP1 mode: "risk spread u" per taken trade; prints the $ risk and whether the TP1 rule was used
+      double risk, spr, u;
+      while(std::fscanf(f, "%lf %lf %lf", &risk, &spr, &u) == 3)
+      {
+         rec_setup(risk, spr);
+         double r = rec_next(exitR);
+         if(rec_capstop()) { std::printf("STOP\n"); break; }
+         int t1 = rec_t1();
+         rec_take();
+         rec_part(r * u);
+         rec_close();
+         std::printf("R %.12g %d\n", r, t1);
+      }
+      std::fclose(f);
+      return 0;
+   }
    double res, c; int k;
    while(std::fscanf(f, "%lf %lf %d", &res, &c, &k) == 3)
    {

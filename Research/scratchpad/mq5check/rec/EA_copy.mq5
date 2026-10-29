@@ -26,9 +26,10 @@
 //| v3.2: optional kill zones (Indian time, four sessions, +-2 h).   |
 //| v3.3: optional minimum distance of the signal from the VWAP.     |
 //| v3.4: Crooks A and Crooks B loss recovery.                       |
+//| v3.5: Crooks at exit TP1: half banks the loss, rest runs to TP2. |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.40"
+#property version   "3.50"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -235,6 +236,7 @@ input double InpRecPct   = 50.0;   // % of losses (% mode)
 input double InpRecMult  = 2.0;    // Multiplier (Martingale / Grand)
 input double InpRecStep  = 25.0;   // Step amount (Step-up)
 input int    InpCSplit   = 3;      // Rule C / Crooks B: split the loss over this many trades
+input bool   InpCrkT1    = true;   // Crooks at exit TP1: bank the loss at TP1 with half, rest to TP2
 input int    InpParN     = 3;      // Paroli: wins before reset
 input int    InpDelayN   = 2;      // Delayed: losses before recovery starts
 input double InpEqPct    = 1.0;    // % of equity (% mode)
@@ -321,6 +323,7 @@ double   dayPnl = 0; int lossRow = 0, winRow = 0; bool dayBlock = false; int pau
 double   recPool = 0; int recLosses = 0; int dUnits = 1; double carried = 0; bool capStop = false;
 double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP = 0;
 double   crkL = 0; int crkN = 0; bool crkRec = false;   // Crooks: $ loss to win back, closed trades in the cycle, the open trade is a recovery trade
+bool     exT1 = false, exT1Half = false; double exT1Stop = 0;   // Crooks TP1 rule: this trade, its TP1 half is booked, its stop
 double   totalNet = 0; int exW = 0, exLn = 0;
 
 //--- helpers ----------------------------------------------------------
@@ -685,6 +688,17 @@ void ProcessBar(int s)
 
 //--- Crooks: the next trade is a recovery trade (trades 3, 5, 7 ... of the cycle)
 bool CrkRecNext() { return (InpRec == REC_CRA || InpRec == REC_CRB) && crkN >= 2 && crkN % 2 == 0; }
+//--- Crooks TP1 rule (exit at TP1, recovery trades): half of a double position banks the recovery amount at TP1, the rest runs to TP2.
+//--- Stop distance (bid chart) where a stop-out loses exactly that amount: TP1 / 2 - 1.5 x costs, on the tick grid toward the entry; 0 = not possible
+double CrkT1Dist()
+{
+   if(!InpCrkT1 || InpExitAt != EXIT_TP1 || !CrkRecNext()) return 0;
+   double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
+   if(tv <= 0 || ts <= 0) return 0;
+   double spr = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
+   double d = MathFloor((InpTp1R * trRisk / 2.0 - 1.5 * (spr + InpCommLot * ts / tv)) / ts + 1e-9) * ts;
+   return d >= ts ? d : 0;
+}
 
 //--- risk $ for the next trade (loss recovery + hard cap) -------------------
 double NextRisk(double exitR)
@@ -718,7 +732,12 @@ double NextRisk(double exitR)
       case REC_EQPCT: r = AccountInfoDouble(ACCOUNT_EQUITY) * InpEqPct / 100.0; break;
       case REC_OSC:   r = base * MathMin(oscU, oscNeed); break;
       case REC_CRA:
-      case REC_CRB:   r = CrkRecNext() && exitR > 0 ? MathMax(base, crkL / (InpRec == REC_CRB ? InpCSplit : 1) / exitR) : base; break;
+      case REC_CRB:
+      {
+         double x = crkL / (InpRec == REC_CRB ? InpCSplit : 1);
+         r = !CrkRecNext() ? base : CrkT1Dist() > 0 ? MathMax(base, x) : exitR > 0 ? MathMax(base, x / exitR) : base;   // TP1 rule: a stop-out loses x
+         break;
+      }
       default:        r = base;
    }
    if(InpCapOn && r > InpHardCap)
@@ -789,6 +808,7 @@ double Spr() { return InpBidChart ? MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBO
 double EntryPx(bool isL) { return isL ? FloorTick(lim + TickSize() * 0.001 + Spr()) : CeilTick(lim - TickSize() * 0.001); }
 double StopPx(bool isL)  { double tl = TickSize() * 0.001; return isL ? FloorTick(stp + tl) : CeilTick(stp - tl + Spr()); }
 double TgtPx(bool isL, double lvl) { double tl = TickSize() * 0.001; return isL ? CeilTick(lvl + exCostPx - tl) : FloorTick(lvl - exCostPx + tl + Spr()); }
+double T1StopPx(bool isL, double d) { return isL ? CeilTick(lim - d) : FloorTick(lim + d + Spr()); }   // Crooks TP1 rule stop, toward the entry
 
 double MinDist() { return MathMax((double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL), (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_FREEZE_LEVEL)) * _Point; }
 void SetExits(bool withTarget)
@@ -796,6 +816,7 @@ void SetExits(bool withTarget)
    ulong tk; double vol, op;
    if(!HasPosition(tk, vol, op)) return;
    double sl = StopPx(exL), tp = withTarget ? TgtPx(exL, tF) : 0;
+   if(exT1) { sl = exT1Half ? NormalizeDouble(op, _Digits) : exT1Stop; tp = withTarget ? TgtPx(exL, t2) : 0; }   // Crooks TP1 rule: rest to TP2, at the entry after TP1
    double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
    double minD = MinDist();
    // price is already through the engine's stop or target: the engine exits on this bar, so exit now
@@ -965,9 +986,10 @@ void UpdateTable()
    int    xk = (int)InpExitAt;
    string tps = has ? DoubleToString(t1, _Digits) + " | " + DoubleToString(t2, _Digits) + " | " + DoubleToString(t3, _Digits) + " | " + DoubleToString(t4, _Digits) : "-";
    bool   isC = InpRec == REC_C || InpRec == REC_CS, isK = InpRec == REC_CRA || InpRec == REC_CRB;
-   string kTxt = DoubleToString(crkL, 2) + " | trade " + IntegerToString(crkN + 1) + ((exState != 0 ? crkRec : CrkRecNext()) ? " recovery" : " base") + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "");
+   string kTxt = DoubleToString(crkL, 2) + " | trade " + IntegerToString(crkN + 1) + ((exState != 0 ? crkRec : CrkRecNext()) ? " recovery" : " base") + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
+                 + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.4", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v3.5", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -1010,19 +1032,22 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    sigN++;
    ulong pTk; double pVol, pOpen;
    double rAmt = NextRisk(ExitR());
-   double v = capStop ? 0 : LotsFor(rAmt, trRisk, lim, isL);
+   double t1d = CrkT1Dist();                         // after a cap restart this is 0: trade 1 of a new cycle
+   double sd = t1d > 0 ? t1d : trRisk;               // stop distance used for the size
+   double v = capStop ? 0 : LotsFor(rAmt, sd, lim, isL);
    bool posNow = HasPosition(pTk, pVol, pOpen);
    skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : v <= 0 ? "size 0" : "";
    if(skipWhy != "") { skipN++; return; }
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    double sprNow = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
    exCostPx = InpEarnBack && tv > 0 ? InpCommLot / (tv / ts) + sprNow : 0;
-   exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((trRisk + sprNow) / ts * tv + InpCommLot);
+   exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((sd + sprNow) / ts * tv + InpCommLot);
+   exT1 = t1d > 0; exT1Half = false; exT1Stop = exT1 ? T1StopPx(isL, t1d) : 0;
    for(int q = 0; q < 3; q++) pDone[q] = false;
    CancelPending();
    gVirt = false;
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double ep = EntryPx(isL), sl = StopPx(isL);
+   double ep = EntryPx(isL), sl = exT1 ? exT1Stop : StopPx(isL);
    double minD = MinDist();
    // the order's SL must respect the stops level; SetExits re-sends the engine's stop once the engine has filled
    if(isL) sl = MathMin(sl, FloorTick(MathMin(ep, bid) - minD));
@@ -1052,7 +1077,7 @@ void VirtualEntry()
    if(!gVirt) return;
    if(exState != 1) { gVirt = false; return; }
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double ep = EntryPx(exL), sl = StopPx(exL);
+   double ep = EntryPx(exL), sl = exT1 ? exT1Stop : StopPx(exL);
    if(exL ? ask <= ep : bid >= ep)
    {
       gVirt = false;
@@ -1090,7 +1115,7 @@ void BookClosed()
    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A: also when a recovery trade wins)
    crkL = MathMax(0.0, crkL - exPnl);
    if(crkL < 0.01 || (InpRec == REC_CRA && win && crkRec)) { crkL = 0; crkN = 0; } else crkN++;
-   crkRec = false;
+   crkRec = false; exT1 = false; exT1Half = false;
    exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false;
    CancelPending();
 }
@@ -1130,11 +1155,11 @@ void OnNewBar()
    }
    if(exState == 2 && exMine && MathAbs(st) == 2) exSynced = true;   // the engine is in the EA's setup (filled on this bar or a caught-up bar)
    if(exState == 2 && exMine && (evFill || evMove)) SetExits(true);
-   if(evExit && exState == 2 && exMine && (!InpEarnBack || !evWin)) CloseAll();               // engine exited: never stay in (earn-back only outlives a win)
+   if(evExit && exState == 2 && exMine && (!InpEarnBack || !evWin) && !(exT1 && (evWin || exT1Half))) CloseAll();   // engine exited: never stay in (earn-back and the Crooks TP1 rule only outlive a win)
    // engine wins: close a broker position the engine is not in (early fill on a spread spike, a fill racing a cancel,
    // or an engine exit on a bar caught up after a disconnect); with earn-back a synced trade may outlive the engine exit
    bool engHolds = (MathAbs(st) == 2 && exSynced && exMine) || (MathAbs(st) == 1 && !exSynced && exState == 2 && exMine);
-   if(pos && !exClosed && !evExit && !engHolds && !(InpEarnBack && exSynced))
+   if(pos && !exClosed && !evExit && !engHolds && !(InpEarnBack && exSynced) && !(exT1 && exSynced))
    {
       CloseAll(); exState = 2;   // booked on the next bar unless the exit deal is already visible
       ulong cTk; double cVol, cOp;
@@ -1176,6 +1201,15 @@ void ManagePartials()
    pp[0] = InpP1; pp[1] = InpP2; pp[2] = InpP3;
    double step = InpLotStep > 0 ? InpLotStep : SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
    double vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+   if(exT1)
+   {
+      // Crooks TP1 rule: half closes at TP1 and banks the whole recovery amount, then the rest's stop moves to the entry (it runs to TP2)
+      if(exT1Half || !(exL ? px >= t1 + exCostPx : px <= t1 - exCostPx)) return;
+      double cv = MathFloor(exLots * 0.5 / step + 1e-9) * step;
+      if(cv >= vmin && vol - cv >= vmin - 1e-9) { trade.PositionClosePartial(tk, NormalizeDouble(cv, 8)); exT1Half = true; SetExits(true); }
+      else CloseAll();                                // too small to split: close it all at TP1
+      return;
+   }
    for(int k = 0; k < 3; k++)
    {
       if(k + 1 >= exitK || pp[k] <= 0 || pDone[k]) continue;
@@ -1199,7 +1233,7 @@ void ResetEngine()
    st = 0; armBar = -1; fillBar = -1; lastExit = -1; lastFill = -1; lastDir = 0;
    lim = 0; stp = 0; stp0 = 0; trRisk = 0; t1 = 0; t2 = 0; t3 = 0; t4 = 0; tF = 0; tpHit = 0; trHalf = false; trGhost = false;
    totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true; gKzOk = true;
-   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false;
+   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false; exT1 = false; exT1Half = false; exT1Stop = 0;
    sigN = 0; takenN = 0; skipN = 0; missN = 0; skipWhy = "";
    gVirt = false; gDayPend = false; gPrevT = 0; capStop = false;
    for(int q = 0; q < 3; q++) pDone[q] = false;

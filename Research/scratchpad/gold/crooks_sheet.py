@@ -49,7 +49,10 @@ def crooks_sheet(wb):
         '"If The Risk Would Exceed The Cap" = "Start again from the base risk". The final target is "Exit At" (TP1-TP4).',
         'MT5 EA, group LOSS RECOVERY: Loss recovery (InpRec) = Crooks A / Crooks B; InpCSplit = the split (Crooks B). RISK: InpCapOn = true, InpHardCap = 500, '
         'InpCapAction = Start again from the base risk. The EA keeps the cycle in memory: after an EA restart it starts at trade 1 of a new cycle.',
-        'Chart table row "CROOKS: LOSS TO WIN BACK": the $ still to win back, the number of the next (or open) trade in the cycle and whether it is a base or a recovery trade.'], h=30)
+        'Chart table row "CROOKS: LOSS TO WIN BACK": the $ still to win back, the number of the next (or open) trade in the cycle and whether it is a base or a recovery trade.',
+        'TP1 rule (switch "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", EA InpCrkT1; on by default): only with Final Exit At = TP1, on the recovery trades. The position is doubled, '
+        'half closes at TP1 and banks the whole recovery amount, the other half runs to TP2 with its stop moved to the entry; the stop sits where a stop-out loses exactly the recovery amount '
+        '(TP1 / 2 - 1.5 x costs = 0.3R with TP1 0.6R and no costs). Tested in part 6: it loses on gold - untick it.'], h=30)
     # ---- findings, built from the results
     best = {tf: find(tf, 'Most profit') for tf in TFS}
     def mc(k, m, s, c, a): return M.get(k, {}).get('rules', {}).get((m, s, c, a))
@@ -94,7 +97,7 @@ def crooks_sheet(wb):
         '9. A bigger split in Crooks B is the gentle version (less extra profit, less extra fall). On H1, Crooks B split 4-5 never risked more than the base on %d of %d strategies: '
         'the losses there never grow large enough, so it trades like Off.' % (h1base, len(h1)),
         '10. Partial close at TP1 (low-streak strategies marked "strategy and EA only"): the recovery size still divides by the final target R, so a recovery win pays back less than the loss.',
-        _vs_all()], h=30)
+        _vs_all(), _tp1_finding()], h=30)
     # ---- PART 1: quick answer
     r = section(ws, r, 'PART 1 - quick answer: the best settings per timeframe with the main Crooks choices ($500 cap, Start again) vs Off', 15)
     hdr(ws, r, ['Timeframe', 'Strategy', 'Final target R', 'Rule', 'Split', 'Hard cap', 'Backtest net ($)', 'Backtest deepest fall %', 'Average risk ($)', 'Largest risk ($)',
@@ -190,6 +193,7 @@ def crooks_sheet(wb):
                     BAD if q['ruined'] else None)
             r += 1
         r += 1
+    r = _tp1_part(ws, r)
     widths(ws, [9, 40, 9, 16, 7, 18, 11, 11, 10, 10, 10, 11, 18, 10, 10, 11, 10, 11, 10, 14])
     ws.freeze_panes = 'C1'
 def _vs_all():
@@ -211,6 +215,67 @@ def _vs_all():
     return ('11. Against all 19 rules (sheet Recovery rules, $500 cap = Clamp): on the %d profitable best / low-streak settings, %s%s (split 3) is the best rule after Off that stayed within '
             'the limits in every case - %.2f x Off\'s profit per $ of drawdown with %.2f x its profit. Next: %s.' % (
                 cases, m, ' + $500 cap' if c else '', sum(q for q, _ in v) / len(v), sum(g for _, g in v) / len(v), others))
+def _tp1_load():
+    fn = S + '/gold/crooks_tp1.pkl'
+    return pickle.load(open(fn, 'rb')) if os.path.exists(fn) else None
+def _tp1_finding():
+    T = _tp1_load()
+    if not T: return '12. TP1 rule: not tested.'
+    tot = {}
+    for d in T.values():
+        for k, v in d['geo']['kinds'].items(): tot[k] = tot.get(k, 0) + v
+    n = sum(tot.values()); st = sum(v for k, v in tot.items() if k.startswith('stop')); fb = tot.get('stop on the fill bar', 0)
+    prof = [(k, d) for k, d in T.items() if d['rows'][0]['all']['net'] > 0]                # settings that are profitable with the exit at TP1
+    def rng(key, rule): v = [d['mc'][key + (rule,)]['med'] for _, d in prof]; return (min(v), max(v)) if v else (0.0, 0.0)
+    a1, a2 = rng(('Crooks A', 3, 500.0, 'reset'), True); p1, p2 = rng(('Crooks A', 3, 500.0, 'reset'), False)
+    b1, b2 = rng(('Crooks B', 3, 500.0, 'reset'), True); q1, q2 = rng(('Crooks B', 3, 500.0, 'reset'), False)
+    o = [d['rows'][0]['all']['net'] for _, d in prof]
+    blow = [d['mc'][(m, s, 0.0, 'clamp', True)]['ruin'] for _, d in prof for m, s in (('Crooks B', 2), ('Crooks B', 3))]
+    blowp = [d['mc'][(m, s, 0.0, 'clamp', False)]['ruin'] for _, d in prof for m, s in (('Crooks B', 2), ('Crooks B', 3))]
+    return ('12. TP1 rule (part 6): of %s TP1-rule trades on every exit-at-TP1 setting tested, only %.0f%% reached TP1; %.0f%% hit the tight stop (%.0f%% on the entry candle itself). '
+            'On the only settings that are profitable with the exit at TP1 (%d, all H1; Off %s to %s), with the $500 cap and Start again the random-order median was %s to %s with the TP1 rule '
+            'against %s to %s with the plain rule (Crooks A), and %s to %s against %s to %s (Crooks B split 3). Without the cap its median can look higher, but it blew the account in %.0f-%.0f%% of '
+            'the random orders (plain rule %.0f-%.0f%%). Keep the TP1 rule off on gold.' % (
+                format(n, ','), 100 * (n - st) / n, 100 * st / n, 100 * fb / n, len(prof), usd(min(o)), usd(max(o)), usd(a1), usd(a2), usd(p1), usd(p2), usd(b1), usd(b2), usd(q1), usd(q2),
+                100 * min(blow), 100 * max(blow), 100 * min(blowp), 100 * max(blowp)))
+def _tp1_part(ws, r):
+    """PART 6: the TP1 rule on every exit-at-TP1 setting (crooks_tp1.pkl)"""
+    T = _tp1_load()
+    if not T: return r
+    order = sorted(T, key=lambda k: (TFS.index(k[0]), k[1]))
+    r += 1; r = section(ws, r, 'PART 6 - TP1 rule (Final Exit At TP1): the recovery trade banks the recovery amount at TP1 with half of a double position, the rest runs to TP2; '
+                               'its stop loses exactly the recovery amount (replayed bar by bar like TradingView; new signals are skipped while the rest runs on)', 19)
+    hdr(ws, r, ['Timeframe', 'Settings (all with Final Exit At TP1)', 'TP1 R', 'Trades', 'R per trade after spread', 'TP1 rule possible (share of trades)', 'As a TP1-rule trade: reached TP1',
+                '... hit the tight stop', '... stopped on the entry candle', '... average result (x the recovery amount)', 'Settings to change (indicator names)'], height=66); r += 1
+    import labels
+    for k in order:
+        d = T[k]; g = d['geo']; n = sum(g['kinds'].values()) or 1
+        st = sum(v for kk, v in g['kinds'].items() if kk.startswith('stop')); fb = g['kinds'].get('stop on the fill bar', 0)
+        vals = [k[0], k[1], d['tp1R'], g['n'], round(g['E'], 4), round(g['possible'], 4), round((n - st) / n, 4), round(st / n, 4), round(fb / n, 4), round(g['avgPnlT'], 3),
+                labels.short(d['cfg'])]
+        for j, v in enumerate(vals, 1):
+            put(ws, r, j, v, '0.000' if j in (5, 10) else '0.0%' if j in (6, 7, 8, 9) else '0.00' if j == 3 else '#,##0' if j == 4 else None, False, BLUE if 3 <= j <= 10 else None,
+                wrap=(j == 11))
+        ws.row_dimensions[r].height = 24; r += 1
+    r += 1
+    hdr(ws, r, ['Timeframe', 'Settings', 'TP1 R', 'Rule', 'Split', 'Hard cap', 'TP1 rule', 'Net profit ($)', 'Max drawdown %', 'Largest risk ($)', 'Account', 'Trades taken',
+                'TP1-rule trades', 'Signals skipped (rest still running)', '2021-23 net ($)', '2024-26 net ($)', 'Random orders: median net ($)', 'Random orders: 95% fall less than',
+                'Random orders: account blown'], height=66); r += 1
+    for k in order:
+        d = T[k]
+        for x in d['rows']:
+            a, A, B = x['all'], x['A'], x['B']; off = x['mode'] == 'Off'; q = d['mc'].get((x['mode'], x['split'], x['cap'], x['act'], x['tp1rule']))
+            st = 'BLOWN after %d trades' % (a['trades']) if a['ruined'] else ('stopped by the cap' if a['capStopped'] else 'survived')
+            vals = [k[0], k[1], d['tp1R'], rule(x['mode']), split_txt(x['mode'], x['split']), cap_txt(x['cap'], x['act']), '-' if off else ('on' if x['tp1rule'] else 'off (plain Crooks)'),
+                    round(a['net'], 2), round(a['maxDDpct'], 4), round(a['maxRisk'], 2), st, a['trades'], a['tp1trades'], a['skipped'],
+                    'BLOWN' if A['ruined'] else round(A['net'], 2), 'BLOWN' if B['ruined'] else round(B['net'], 2),
+                    round(q['med'], 2) if q else '-', round(q['dd95'], 4) if q else '-', round(q['ruin'], 4) if q else '-']
+            for j, v in enumerate(vals, 1):
+                put(ws, r, j, v, USD if j in (8, 10, 15, 16, 17) else '0.0%' if j in (9, 18, 19) else '0.00' if j == 3 else '#,##0' if j in (12, 13, 14) else None, off,
+                    BLUE if (j == 3 or j >= 8) and j != 11 else None, TOT if off else (BAD if a['ruined'] else None))
+            r += 1
+        r += 1
+    return r
 def _after_losses(tf, i):
     """share of profitable trades overall and right after two losses, for one strategy (crooks.sources order)"""
     import crooks

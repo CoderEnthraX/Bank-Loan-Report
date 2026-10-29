@@ -121,6 +121,7 @@ recPct   = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.
 recMult  = input.float(2.0, "Multiplier (Martingale)", minval = 1.0, step = 0.25, group = GRP_L)
 recStep  = input.float(25.0, "Step $ (Step-up)", minval = 0.0, step = 5.0, group = GRP_L)
 cSplit   = input.int(3, "Split The Loss Over This Many Trades (Rule C, Crooks B)", minval = 1, group = GRP_L, tooltip = "1 = win it all back in one trade.")
+crkT1On  = input.bool(true, "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", group = GRP_L, tooltip = "Only with Crooks A / B, Final Exit At TP1, and only on the recovery trades (3, 5, 7 ...). The position is doubled: half closes at TP1 and banks the whole recovery amount, then the stop of the other half moves to the entry and that half closes at TP2. The stop sits where a stop-out loses exactly the recovery amount: TP1 / 2 minus 1.5 x the costs from the entry (0.3R with TP1 = 0.6R and no costs). Costs above TP1 / 3 -> that trade uses the normal Crooks size. While the rest runs on, new signals are skipped.\nGold 2021-2026: the tight stop is hit on most of these trades; see the workbook before using it.")
 parN     = input.int(3, "Wins Before Reset (Paroli)", minval = 1, group = GRP_L)
 delayN   = input.int(2, "Losses Before Recovery Starts (Delayed)", minval = 1, group = GRP_L)
 eqPct    = input.float(1.0, "Risk % Of Equity (% mode)", minval = 0.01, step = 0.1, group = GRP_L)
@@ -194,6 +195,9 @@ var float oscP      = 0.0    // Oscar's Grind cycle profit
 var float crkL      = 0.0    // Crooks: $ loss to win back in this cycle
 var int   crkN      = 0      // Crooks: closed trades in this cycle
 var bool  crkRec    = false  // Crooks: the trade in progress is a recovery trade
+var bool  exT1      = false  // Crooks TP1 rule: this trade banks the recovery amount at TP1 with half, the rest runs to TP2
+var float exT1Stop  = na     // its stop: a stop-out loses exactly the recovery amount
+var bool  exT1Half  = false  // the TP1 half is booked: the rest's stop is at the entry
 var int   exW       = 0
 var int   exLn      = 0
 // Crooks: the next trade is a recovery trade (trades 3, 5, 7 ... of the cycle)
@@ -208,7 +212,7 @@ if newDay
 
 f_tgtPx(bool isL, float lvl) => isL ? f_ceilTick(lvl + exCostPx - syminfo.mintick * 0.001) : f_floorTick(lvl - exCostPx + syminfo.mintick * 0.001)
 // exits of the executed trade: partials before the final exit and the final exit, all with the current stop
-f_setExits(bool isL, bool withTargets) =>
+f_exitsStd(bool isL, bool withTargets) =>
     string eid = isL ? "L" : "S"
     float  sPx = f_stopPx(isL)
     // created in the order X1, X2, X3, X4 from the arm on, so the partials keep their reserved quantity
@@ -228,6 +232,22 @@ f_setExits(bool isL, bool withTargets) =>
         if pp3 > 0
             strategy.exit("X3", eid, qty = exQty * pp3 / 100.0, stop = sPx)
         strategy.exit("X4", eid, qty_percent = 100, stop = sPx)
+// Crooks TP1 rule: half closes at TP1, the rest at TP2; once TP1 is booked the rest's stop is the entry
+f_exitsT1(bool isL, bool withTargets) =>
+    string eid = isL ? "L" : "S"
+    float  sPx = exT1Half ? (isL ? f_floorTick(strategy.position_avg_price + syminfo.mintick * 0.001) : f_ceilTick(strategy.position_avg_price - syminfo.mintick * 0.001)) : exT1Stop
+    if withTargets
+        if not exT1Half
+            strategy.exit("X1", eid, qty = exQty * 0.5, limit = f_tgtPx(isL, t1), stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, limit = f_tgtPx(isL, t2), stop = sPx)
+    else
+        strategy.exit("X1", eid, qty = exQty * 0.5, stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, stop = sPx)
+f_setExits(bool isL, bool withTargets) =>
+    if exT1
+        f_exitsT1(isL, withTargets)
+    else
+        f_exitsStd(isL, withTargets)
 
 // ── time filters and news windows (execution only) ──
 int   curM   = hour(time, tzUse) * 60 + minute(time, tzUse)
@@ -275,12 +295,16 @@ if exNewPos
 bool exClosed = (exState == 1 and pos == 0 and closedNew) or (exState == 2 and pos == 0)
 if closedNew and exState == 2 and pos != 0
     exPartDone := math.abs(exQty) - math.abs(pos)
+    // Crooks TP1 rule: the TP1 half is booked, the rest's stop moves to the entry (from the next bar)
+    if exT1 and not exT1Half and exPartDone > 0
+        exT1Half := true
+        f_setExits(exL, true)
 
 // ── 2. an executed trade has closed: streaks, pauses and loss recovery ──
 if exClosed
     bool win = exPnl > 0
     // only comparable when no partial was taken and the exit is the engine exit of the setup the strategy took
-    if evExit and pp1 + pp2 + pp3 == 0 and not na(exArm) and armBar == exArm and win != (evRes > 0)
+    if evExit and pp1 + pp2 + pp3 == 0 and not exT1 and not na(exArm) and armBar == exArm and win != (evRes > 0)
         diffN += 1
     dayPnl  += exPnl
     exW     += win ? 1 : 0
@@ -329,6 +353,8 @@ if exClosed
     else
         crkN += 1
     crkRec := false
+    exT1     := false
+    exT1Half := false
     exState := 0
     exPnl   := 0.0
     exArm   := na
@@ -352,8 +378,8 @@ if evFill and exState == 1 and pos == 0 and not exClosed
     missN   += 1
 if exState == 2 and exMine and (evFill or evMove)
     f_setExits(exL, true)
-// the engine exited: never stay in (with earn-back only a target win may run on to the extended target)
-if evExit and exState == 2 and exMine and (not earnBack or not evWin)
+// the engine exited: never stay in (with earn-back only a target win may run on to the extended target; a Crooks TP1-rule trade runs its rest to TP2)
+if evExit and exState == 2 and exMine and (not earnBack or not evWin) and not (exT1 and (evWin or exT1Half))
     strategy.close_all(comment = "Engine exit")
 
 // ── 4. force-close time / weekend start / news: close the position, cancel a working entry ──
@@ -394,7 +420,15 @@ if evArm
     float labU  = array.size(labSeq) > 1 ? array.first(labSeq) + array.last(labSeq) : array.first(labSeq)
     int   oscNeed = int(math.max(1, math.ceil((baseRisk - oscP) / (baseRisk * exitR))))
     // Crooks: trades 1 and 2 of a cycle risk the base, then trades 3, 5, 7 ... are recovery trades
-    float crkR  = f_crkRecNext() ? math.max(baseRisk, crkL / (recMode == L_CRB ? cSplit : 1) / exitR) : baseRisk
+    // TP1 rule (Final Exit At TP1): half of a double position banks the recovery amount at TP1, the rest runs to TP2; the stop sits where
+    // a stop-out loses exactly that amount: TP1 / 2 - 1.5 x costs from the entry, on the tick grid toward the entry
+    float pvf   = syminfo.pointvalue * fx
+    float eP    = f_entryPx(isL)
+    float t1D   = pvf > 0 ? tp1R * rp / 2.0 - 1.5 * costUnit / pvf : 0.0
+    float t1S   = isL ? f_ceilTick(eP - t1D) : f_floorTick(eP + t1D)
+    bool  t1Ok  = crkT1On and exitK == 1 and f_crkRecNext() and t1D > 0 and (isL ? eP - t1S : t1S - eP) >= syminfo.mintick * 0.5
+    float crkX  = crkL / (recMode == L_CRB ? cSplit : 1)
+    float crkR  = f_crkRecNext() ? (t1Ok ? math.max(baseRisk, crkX) : math.max(baseRisk, crkX / exitR)) : baseRisk
     float rUsd = recMode == L_LAB ? baseRisk * labU : recMode == L_GMART ? baseRisk * math.pow(recMult, recLosses) + baseRisk * recLosses : recMode == L_PAR ? baseRisk * math.pow(2, parWins) : recMode == L_RDALE ? baseRisk * rdUnits : recMode == L_DELAY ? (recLosses >= delayN ? baseRisk + recPool / recN : baseRisk) : recMode == L_EQPCT ? strategy.equity * eqPct / 100.0 : recMode == L_OSC ? baseRisk * math.min(oscU, oscNeed) : recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : recMode == L_FIB ? baseRisk * (recLosses == 0 ? 1.0 : fb) : recMode == L_DALE ? baseRisk * dUnits : recMode == L_C or recMode == L_CS ? math.max(baseC, carried / cSplit) : recMode == L_CRA or recMode == L_CRB ? crkR : baseRisk + add
     // hard cap
     if capOn and rUsd > hardCap
@@ -415,8 +449,9 @@ if evArm
             rUsd      := math.min(baseC, hardCap)
         else
             rUsd := hardCap
+    t1Ok := t1Ok and f_crkRecNext()       // a cap restart makes it trade 1 of a new cycle
     // stop-out loss per unit incl. costs, so the $ risk (and the hard cap) covers them
-    float perUnit = rp * syminfo.pointvalue * fx + costUnit
+    float perUnit = (t1Ok ? math.abs(eP - t1S) : rp) * syminfo.pointvalue * fx + costUnit
     float q       = perUnit > 0 ? rUsd / perUnit : 0.0
     // leverage: position value may not exceed equity x leverage
     float unitVal = lim * syminfo.pointvalue * fx
@@ -441,6 +476,9 @@ if evArm
         exArm     := bar_index
         exPartDone := 0.0
         crkRec    := f_crkRecNext()
+        exT1      := t1Ok
+        exT1Stop  := t1S
+        exT1Half  := false
         string eid = isL ? "L" : "S"
         if entryMode == E_MARKET
             strategy.entry(eid, isL ? strategy.long : strategy.short, qty = q)
@@ -490,7 +528,7 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     f_row(mon, 4, "RISK · QTY · LOTS", exState != 0 ? f_usd(exRiskUsd) + " · " + str.tostring(exQty, "#,##0.##") + " · " + str.tostring(lots, "#,##0.##") : "base " + f_usd(baseRisk), white)
     bool   isC = recMode == L_C or recMode == L_CS
     bool   isK = recMode == L_CRA or recMode == L_CRB
-    string kTxt = f_usd(crkL) + " · trade " + str.tostring(crkN + 1) + ((exState != 0 ? crkRec : f_crkRecNext()) ? " recovery" : " base") + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "")
+    string kTxt = f_usd(crkL) + " · trade " + str.tostring(crkN + 1) + ((exState != 0 ? crkRec : f_crkRecNext()) ? " recovery" : " base") + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "")
     f_row(mon, 5, isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", recMode == L_OFF ? "off" : isC ? f_usd(carried) + " · split " + str.tostring(cSplit) : isK ? kTxt : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : recMode == L_RDALE ? " · " + str.tostring(rdUnits) + " units" : recMode == L_OSC ? " · " + str.tostring(oscU) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white)
     f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(exW) + "W/" + str.tostring(exLn) + "L", white)
     f_row(mon, 7, "DAY P&L · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayPnl >= 0 ? posC : negC)
