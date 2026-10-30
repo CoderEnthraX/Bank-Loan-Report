@@ -163,7 +163,7 @@ Other gold findings:
 
 8. **Crooks C and Crooks D** (asked 2026-10-30; strategy and EA v3.6; workbook sheet *Crooks A-D test*, renamed from *Crooks A and B test*).
    - **Rule** (user's spec): C: base until a trade wins; the trade after a win is a recovery trade while L > 0 (risk max(base, L / exitR)); a losing recovery trade -> base until
-     the next win. D: base, base, recovery (k >= 2 and (k - 2) % 3 == 0: trades 3, 6, 9 ...). Both reset like A (a winning recovery trade, or L < $0.01); Start again also clears
+     the next win. D: base, base, recovery (k >= 2 and (k - 2) % 3 == 0: trades 3, 6, 9 ...). D resets like A (a winning recovery trade, or L < $0.01); C only when L < $0.01 since item 11; Start again also clears
      the last-win flag. The Crooks TP1 rule applies to their recovery trades too.
    - **Code:** `recovery.py` MODES 20-21 (state `crW`), `crooks_tp1.py`, `strategy_template.pine` (L_CRC / L_CRD, `crkW`, `f_crkRecNext`), EA (REC_CRC = 20 / REC_CRD = 21,
      `crkW`, `CrkRecNext()`). Table: C shows "base, waiting for a win".
@@ -187,6 +187,15 @@ Other gold findings:
 10. **TradingView warnings** (2026-10-30): the user's screenshots showed 34 inline-title warnings in the strategy (24 in the indicator). Every settings line now has one
     title (e.g. "Targets TP1 · TP2 · TP3 · TP4 (R)"); the day boxes, kill zones and Allow Long / Short got their own lines. Defaults, options and limits are unchanged
     (`pinecheck/inputs_cmp.py`). The workbook labels (`strategy_sheets.py`, `labels.py`) use the new titles.
+11. **Crooks C keeps the leftover** (asked 2026-10-30, after the user's OANDA M5 trade lists: trade #82 owed $27,400 but the 1:100 leverage limit cut the
+    recovery trade to about $6,200, it won, and the old rule then forgot the other $21,481). Now a Crooks C cycle ends only when the loss is all back
+    (L < $0.01): a winning recovery trade that leaves part of the loss is followed by another recovery trade. A and D unchanged. Code: the reset in
+    `recovery.py`, `crooks_tp1.py`, the strategy and the EA no longer lists C. Checks: hand cases; rec parity 1,584 runs, 2,027,096 trades, 0 differences;
+    TP1 parity 336 runs, 576,082 trades, 0 differences. Gold, 25 profitable strategies, $500 cap + Start again: more net than Off on 18 (was 17), better
+    profit per drawdown on 5 (was 7); best M15 +$13.1k, fall 16% (was +$11.7k). Replay of the user's TP2 list (`tools/csvcheck/whatif.py`, reproduces the
+    file within $1 on 736 of 773 trades): their settings (no cap, 1:100, $100k) -52.4k with the old rule, about -$100k (account gone) with the new one;
+    with $500 + Start again -$7.3k vs -$7.4k; fixed $50 -$3.8k. The list's stop-outs fill $0.10 past the stop (Properties slippage) and pay $0.07/oz,
+    neither in the strategy's cost inputs.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
