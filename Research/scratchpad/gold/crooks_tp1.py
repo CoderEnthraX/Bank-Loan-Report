@@ -107,7 +107,7 @@ def simulate(tr, mode, base=50.0, cap=0.0, capAction='clamp', cSplit=3, tp1rule=
         if eq <= 0: ruined = True; ruinAt = k; break
         win = pnl > 0
         crL = max(0.0, crL - pnl)
-        if crL < 0.01 or (mode in ('Crooks A', 'Crooks C', 'Crooks D') and win and rec): crL = 0.0; crN = 0
+        if crL < 0.01 or (mode in ('Crooks A', 'Crooks D') and win and rec): crL = 0.0; crN = 0      # C keeps a leftover
         else: crN += 1
         crW = win
     return dict(mode=mode, trades=n, skipped=nsk, tp1trades=nsp, fallback=nfb, kinds=kinds, avgRisk=sumRisk / n if n else 0.0, maxRisk=maxRisk, net=net, end=eq,

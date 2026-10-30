@@ -39,8 +39,10 @@ def crooks_sheet(wb):
         'Crooks B: the same alternation, but recovery risk = max(base, loss to win back / split / final target R), with split = the Rule C split setting, and a new cycle starts only when the '
         'whole loss is won back (a recovery win that leaves some of the loss keeps alternating). Split 1 = Crooks A sizing with the Crooks B reset.',
         'Crooks C: every trade risks the base until a trade wins; the trade right after a win is a recovery trade (sized like Crooks A) while a loss is still owed. A losing recovery trade -> base '
-        'trades again until the next win. Example, TP2: 4 losses ($200 owed), trade 5 wins +$50 ($150 owed), trade 6 risks $150; if it loses ($300 owed), trade 7 is $50 and so on.',
-        'Crooks D: like Crooks A, but two base trades between recovery trades: base, base, recovery, base, base, recovery (trades 3, 6, 9 ...). Crooks C and D start a new cycle like Crooks A '
+        'trades again until the next win. Example, TP2: 4 losses ($200 owed), trade 5 wins +$50 ($150 owed), trade 6 risks $150; if it loses ($300 owed), trade 7 is $50 and so on. '
+        'A new cycle starts only when the whole loss is won back (since 2026-10-30): a recovery trade that wins but leaves part of the loss (hard cap Clamp, leverage limit, costs) '
+        'is followed by another recovery trade for the rest.',
+        'Crooks D: like Crooks A, but two base trades between recovery trades: base, base, recovery, base, base, recovery (trades 3, 6, 9 ...). Crooks D starts a new cycle like Crooks A '
         '(a winning recovery trade, or winning everything back).',
         'Example, 5 losses in a row, base $50, final target TP2 (1R), Crooks A: risks $50, $50, $100, $50, $250. Same with TP4 (2R): $50, $50, $50, $50, $100. '
         'Hard cap: only when it is switched on; "Start again" = forget the loss to win back and trade 1 of a new cycle at the base risk.',

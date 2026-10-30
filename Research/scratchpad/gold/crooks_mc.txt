@@ -20,9 +20,9 @@ M1 | Most profit (Most profit, Longest winning streak, Highest win rate, Smoothe
    Crooks B split 5                       | real    +7308 (beats  58%) | median    +7170  5% worst    +6076 | DD median  21%  95% worst  66% | blown  1.8%  DD>40% 16.6%  losing  1.8%
    Crooks B split 5 cap $500 clamp        | real    +7308 (beats  59%) | median    +7162  5% worst    +5946 | DD median  21%  95% worst  68% | blown  1.2%  DD>40% 16.4%  losing  1.6%
    Crooks B split 5 cap $500 start again  | real    +7308 (beats  65%) | median    +7039  5% worst    +3157 | DD median  21%  95% worst  48% | blown  0.0%  DD>40% 10.8%  losing  0.2%
-   Crooks C                               | real   +17535 (beats  84%) | median   +16235  5% worst   -16270 | DD median  67%  95% worst 138% | blown 33.4%  DD>40% 69.6%  losing 33.4%
-   Crooks C cap $500 clamp                | real    +9454 (beats  75%) | median    +7078  5% worst     -233 | DD median  35%  95% worst  71% | blown  0.2%  DD>40% 36.4%  losing  5.6%
-   Crooks C cap $500 start again          | real    +4561 (beats  24%) | median    +6323  5% worst    +1836 | DD median  25%  95% worst  48% | blown  0.0%  DD>40% 10.0%  losing  1.0%
+   Crooks C                               | real   +18469 (beats  75%) | median   +17586  5% worst   -16279 | DD median  72%  95% worst 138% | blown 35.8%  DD>40% 72.4%  losing 35.8%
+   Crooks C cap $500 clamp                | real   +15841 (beats  79%) | median   +13182  5% worst   -10118 | DD median  49%  95% worst 101% | blown 11.4%  DD>40% 64.6%  losing 13.2%
+   Crooks C cap $500 start again          | real    +4678 (beats  28%) | median    +6274  5% worst    +1998 | DD median  26%  95% worst  48% | blown  0.0%  DD>40%  9.4%  losing  1.0%
    Crooks D                               | real   -14679 (beats  12%) | median   +18504  5% worst   -16982 | DD median  70%  95% worst 140% | blown 34.0%  DD>40% 73.6%  losing 34.2%
    Crooks D cap $500 clamp                | real    +7648 (beats  44%) | median    +8235  5% worst      -89 | DD median  34%  95% worst  71% | blown  1.2%  DD>40% 35.6%  losing  5.2%
    Crooks D cap $500 start again          | real    +8603 (beats  70%) | median    +7065  5% worst    +2529 | DD median  26%  95% worst  47% | blown  0.0%  DD>40% 12.4%  losing  0.8%
@@ -48,9 +48,9 @@ M1 | Shortest losing streak (Shortest losing streak, Shortest losing streak - in
    Crooks B split 5                       | real    +6515 (beats  67%) | median    +6296  5% worst    +4458 | DD median  21%  95% worst  85% | blown  2.8%  DD>40% 19.0%  losing  3.0%
    Crooks B split 5 cap $500 clamp        | real    +6515 (beats  68%) | median    +6288  5% worst    +3884 | DD median  21%  95% worst  77% | blown  2.4%  DD>40% 19.0%  losing  3.2%
    Crooks B split 5 cap $500 start again  | real    +6515 (beats  75%) | median    +6115  5% worst    +2085 | DD median  21%  95% worst  50% | blown  0.0%  DD>40% 14.2%  losing  0.4%
-   Crooks C                               | real   +15313 (beats  67%) | median   +14390  5% worst   -15729 | DD median  75%  95% worst 138% | blown 38.0%  DD>40% 73.4%  losing 38.0%
-   Crooks C cap $500 clamp                | real    +5732 (beats  46%) | median    +6008  5% worst     -749 | DD median  35%  95% worst  73% | blown  0.4%  DD>40% 37.6%  losing  6.0%
-   Crooks C cap $500 start again          | real    +6244 (beats  65%) | median    +5414  5% worst    +1012 | DD median  26%  95% worst  49% | blown  0.0%  DD>40% 12.4%  losing  2.6%
+   Crooks C                               | real   +16641 (beats  72%) | median   +15672  5% worst   -15900 | DD median  81%  95% worst 138% | blown 40.2%  DD>40% 75.4%  losing 40.2%
+   Crooks C cap $500 clamp                | real   +12322 (beats  52%) | median   +12139  5% worst   -10202 | DD median  49%  95% worst 102% | blown 13.2%  DD>40% 66.6%  losing 14.8%
+   Crooks C cap $500 start again          | real    +6442 (beats  66%) | median    +5394  5% worst     +933 | DD median  26%  95% worst  49% | blown  0.0%  DD>40% 12.8%  losing  2.6%
    Crooks D                               | real   -15123 (beats   9%) | median   +16482  5% worst   -16542 | DD median  71%  95% worst 140% | blown 38.4%  DD>40% 72.6%  losing 38.4%
    Crooks D cap $500 clamp                | real    +6887 (beats  51%) | median    +6763  5% worst    -1332 | DD median  37%  95% worst  80% | blown  1.6%  DD>40% 43.0%  losing  7.6%
    Crooks D cap $500 start again          | real    +6261 (beats  53%) | median    +5880  5% worst     +600 | DD median  27%  95% worst  52% | blown  0.0%  DD>40% 13.0%  losing  3.4%
@@ -76,9 +76,9 @@ M1 | Most trades a day (Most trades a day) | exit R 2.00 | 2111 trades | 500 ran
    Crooks B split 5                       | real    +6386 (beats  36%) | median    +6646  5% worst   -10019 | DD median  24%  95% worst 101% | blown  5.2%  DD>40% 21.2%  losing  5.6%
    Crooks B split 5 cap $500 clamp        | real    +6386 (beats  37%) | median    +6646  5% worst    +3126 | DD median  24%  95% worst  86% | blown  3.4%  DD>40% 21.8%  losing  4.6%
    Crooks B split 5 cap $500 start again  | real    +6386 (beats  49%) | median    +6410  5% worst    +2462 | DD median  24%  95% worst  56% | blown  0.0%  DD>40% 17.0%  losing  1.6%
-   Crooks C                               | real   +18804 (beats  91%) | median   +16497  5% worst   -16774 | DD median  75%  95% worst 139% | blown 37.6%  DD>40% 73.8%  losing 37.6%
-   Crooks C cap $500 clamp                | real    +9130 (beats  72%) | median    +6635  5% worst    -2528 | DD median  36%  95% worst  84% | blown  3.2%  DD>40% 40.0%  losing 10.8%
-   Crooks C cap $500 start again          | real    +6197 (beats  59%) | median    +5548  5% worst     +630 | DD median  27%  95% worst  53% | blown  0.2%  DD>40% 14.8%  losing  3.8%
+   Crooks C                               | real   +19743 (beats  88%) | median   +17928  5% worst   -17985 | DD median  79%  95% worst 141% | blown 39.6%  DD>40% 76.8%  losing 39.6%
+   Crooks C cap $500 clamp                | real   +10880 (beats  38%) | median   +13063  5% worst   -10252 | DD median  53%  95% worst 102% | blown 17.0%  DD>40% 69.0%  losing 21.6%
+   Crooks C cap $500 start again          | real    +6780 (beats  67%) | median    +5698  5% worst     +529 | DD median  27%  95% worst  54% | blown  0.2%  DD>40% 16.0%  losing  3.6%
    Crooks D                               | real   -11610 (beats  32%) | median   +18249  5% worst   -17377 | DD median  87%  95% worst 143% | blown 44.2%  DD>40% 80.6%  losing 44.2%
    Crooks D cap $500 clamp                | real    +6648 (beats  50%) | median    +6707  5% worst    -1251 | DD median  40%  95% worst  83% | blown  1.4%  DD>40% 50.6%  losing  8.6%
    Crooks D cap $500 start again          | real    +6959 (beats  66%) | median    +5579  5% worst      -92 | DD median  30%  95% worst  58% | blown  0.2%  DD>40% 22.0%  losing  5.2%
@@ -104,9 +104,9 @@ M1 | Simplest (Simplest) | exit R 2.00 | 2006 trades | 500 random orders
    Crooks B split 5                       | real    +6032 (beats  40%) | median    +6195  5% worst    +2472 | DD median  26%  95% worst  94% | blown  4.2%  DD>40% 25.6%  losing  4.8%
    Crooks B split 5 cap $500 clamp        | real    +6032 (beats  41%) | median    +6173  5% worst    +2172 | DD median  26%  95% worst  91% | blown  3.6%  DD>40% 25.6%  losing  4.6%
    Crooks B split 5 cap $500 start again  | real    +6032 (beats  54%) | median    +5931  5% worst    +1772 | DD median  26%  95% worst  54% | blown  0.0%  DD>40% 19.2%  losing  2.0%
-   Crooks C                               | real   +16784 (beats  76%) | median   +15218  5% worst   -16450 | DD median  79%  95% worst 140% | blown 39.2%  DD>40% 77.2%  losing 39.2%
-   Crooks C cap $500 clamp                | real    +7085 (beats  62%) | median    +5953  5% worst    -2169 | DD median  39%  95% worst  78% | blown  1.2%  DD>40% 47.4%  losing 10.6%
-   Crooks C cap $500 start again          | real    +2078 (beats  16%) | median    +5050  5% worst     +447 | DD median  29%  95% worst  52% | blown  0.0%  DD>40% 19.2%  losing  3.8%
+   Crooks C                               | real   +18059 (beats  77%) | median   +17003  5% worst   -16286 | DD median  80%  95% worst 140% | blown 41.8%  DD>40% 79.6%  losing 41.8%
+   Crooks C cap $500 clamp                | real   +14175 (beats  74%) | median   +11952  5% worst   -10229 | DD median  57%  95% worst 102% | blown 15.8%  DD>40% 76.4%  losing 18.6%
+   Crooks C cap $500 start again          | real    +2283 (beats  16%) | median    +5130  5% worst     +400 | DD median  29%  95% worst  53% | blown  0.0%  DD>40% 18.4%  losing  3.8%
    Crooks D                               | real   +18449 (beats  60%) | median   +17583  5% worst   -16838 | DD median  83%  95% worst 141% | blown 40.6%  DD>40% 78.8%  losing 40.8%
    Crooks D cap $500 clamp                | real   +11066 (beats  86%) | median    +6269  5% worst    -2064 | DD median  38%  95% worst  80% | blown  1.8%  DD>40% 45.6%  losing 10.0%
    Crooks D cap $500 start again          | real    +6437 (beats  66%) | median    +5231  5% worst     -411 | DD median  31%  95% worst  59% | blown  0.0%  DD>40% 21.4%  losing  6.6%
@@ -132,9 +132,9 @@ M5 | Most profit (Most profit, Smoothest, New York session only) | exit R 2.50 |
    Crooks B split 5                       | real    +7510 (beats  81%) | median    +7124  5% worst    +6314 | DD median  16%  95% worst  37% | blown  0.6%  DD>40%  3.8%  losing  0.6%
    Crooks B split 5 cap $500 clamp        | real    +7510 (beats  81%) | median    +7124  5% worst    +6314 | DD median  16%  95% worst  37% | blown  0.6%  DD>40%  3.8%  losing  0.6%
    Crooks B split 5 cap $500 start again  | real    +7510 (beats  82%) | median    +7107  5% worst    +6038 | DD median  16%  95% worst  37% | blown  0.0%  DD>40%  3.8%  losing  0.0%
-   Crooks C                               | real   +15076 (beats  82%) | median   +14023  5% worst   -14068 | DD median  51%  95% worst 128% | blown 25.4%  DD>40% 60.2%  losing 25.6%
-   Crooks C cap $500 clamp                | real    +9740 (beats  66%) | median    +8364  5% worst    +1298 | DD median  30%  95% worst  65% | blown  0.6%  DD>40% 27.0%  losing  3.0%
-   Crooks C cap $500 start again          | real    +6925 (beats  44%) | median    +7376  5% worst    +3091 | DD median  22%  95% worst  42% | blown  0.0%  DD>40%  5.4%  losing  0.2%
+   Crooks C                               | real   +15305 (beats  74%) | median   +14542  5% worst   -14536 | DD median  52%  95% worst 129% | blown 28.0%  DD>40% 61.4%  losing 28.2%
+   Crooks C cap $500 clamp                | real   +14294 (beats  84%) | median   +12350  5% worst   -10053 | DD median  40%  95% worst 101% | blown  8.2%  DD>40% 50.4%  losing 11.0%
+   Crooks C cap $500 start again          | real    +7003 (beats  46%) | median    +7333  5% worst    +3060 | DD median  22%  95% worst  41% | blown  0.0%  DD>40%  5.0%  losing  0.2%
    Crooks D                               | real   +15637 (beats  37%) | median   +16677  5% worst   -14707 | DD median  53%  95% worst 132% | blown 29.6%  DD>40% 61.2%  losing 29.6%
    Crooks D cap $500 clamp                | real    +6461 (beats  24%) | median    +9533  5% worst    +2276 | DD median  30%  95% worst  68% | blown  0.8%  DD>40% 31.2%  losing  2.6%
    Crooks D cap $500 start again          | real    +4832 (beats  16%) | median    +8034  5% worst    +2809 | DD median  25%  95% worst  44% | blown  0.0%  DD>40%  9.4%  losing  0.4%
@@ -160,9 +160,9 @@ M5 | Shortest losing streak (Shortest losing streak, Shortest losing streak - in
    Crooks B split 5                       | real    +4335 (beats  41%) | median    +4435  5% worst    +3810 | DD median  15%  95% worst  42% | blown  0.6%  DD>40%  7.0%  losing  0.6%
    Crooks B split 5 cap $500 clamp        | real    +4335 (beats  41%) | median    +4430  5% worst    +3809 | DD median  15%  95% worst  43% | blown  0.6%  DD>40%  7.0%  losing  0.6%
    Crooks B split 5 cap $500 start again  | real    +4335 (beats  44%) | median    +4399  5% worst    +1189 | DD median  15%  95% worst  41% | blown  0.0%  DD>40%  5.2%  losing  0.4%
-   Crooks C                               | real    -1289 (beats   5%) | median    +5111  5% worst    -1119 | DD median  20%  95% worst  70% | blown  3.4%  DD>40% 17.4%  losing  6.2%
-   Crooks C cap $500 clamp                | real    -1298 (beats   0%) | median    +4611  5% worst    +1006 | DD median  19%  95% worst  39% | blown  0.0%  DD>40%  4.4%  losing  2.2%
-   Crooks C cap $500 start again          | real     +878 (beats   1%) | median    +4353  5% worst    +2039 | DD median  17%  95% worst  30% | blown  0.0%  DD>40%  0.8%  losing  0.2%
+   Crooks C                               | real   +11917 (beats  63%) | median   +11569  5% worst   -15582 | DD median  49%  95% worst 138% | blown 26.8%  DD>40% 58.2%  losing 27.0%
+   Crooks C cap $500 clamp                | real    +8948 (beats  36%) | median    +9947  5% worst   -10012 | DD median  40%  95% worst 100% | blown  5.6%  DD>40% 50.0%  losing  8.6%
+   Crooks C cap $500 start again          | real    +1685 (beats   8%) | median    +5005  5% worst    +1169 | DD median  22%  95% worst  41% | blown  0.0%  DD>40%  5.2%  losing  1.4%
    Crooks D                               | real    +5683 (beats  73%) | median    +5018  5% worst     +545 | DD median  19%  95% worst  61% | blown  1.4%  DD>40% 14.0%  losing  3.8%
    Crooks D cap $500 clamp                | real    +5683 (beats  84%) | median    +4471  5% worst    +1420 | DD median  19%  95% worst  37% | blown  0.0%  DD>40%  3.0%  losing  1.4%
    Crooks D cap $500 start again          | real    +5683 (beats  90%) | median    +4209  5% worst    +2105 | DD median  17%  95% worst  30% | blown  0.0%  DD>40%  0.8%  losing  0.0%
@@ -188,9 +188,9 @@ M5 | Most trades a day (Most trades a day) | exit R 2.00 | 1805 trades | 500 ran
    Crooks B split 5                       | real    +7725 (beats  51%) | median    +7721  5% worst    +6853 | DD median  18%  95% worst  53% | blown  1.0%  DD>40% 10.4%  losing  1.4%
    Crooks B split 5 cap $500 clamp        | real    +7725 (beats  51%) | median    +7713  5% worst    +6853 | DD median  18%  95% worst  54% | blown  0.6%  DD>40% 10.0%  losing  1.0%
    Crooks B split 5 cap $500 start again  | real    +7725 (beats  56%) | median    +7654  5% worst    +4028 | DD median  18%  95% worst  43% | blown  0.0%  DD>40%  6.0%  losing  0.0%
-   Crooks C                               | real   +16208 (beats  47%) | median   +16382  5% worst   -16729 | DD median  60%  95% worst 142% | blown 32.4%  DD>40% 66.4%  losing 32.6%
-   Crooks C cap $500 clamp                | real   +10136 (beats  68%) | median    +8720  5% worst    +1818 | DD median  31%  95% worst  64% | blown  0.6%  DD>40% 28.2%  losing  2.4%
-   Crooks C cap $500 start again          | real    +7862 (beats  54%) | median    +7681  5% worst    +3389 | DD median  22%  95% worst  40% | blown  0.0%  DD>40%  4.8%  losing  0.0%
+   Crooks C                               | real   +16749 (beats  42%) | median   +17330  5% worst   -16594 | DD median  61%  95% worst 142% | blown 34.4%  DD>40% 67.4%  losing 34.6%
+   Crooks C cap $500 clamp                | real   +14766 (beats  60%) | median   +14077  5% worst   -10045 | DD median  42%  95% worst 100% | blown  7.4%  DD>40% 53.8%  losing  8.8%
+   Crooks C cap $500 start again          | real    +7589 (beats  49%) | median    +7657  5% worst    +3379 | DD median  22%  95% worst  40% | blown  0.0%  DD>40%  4.8%  losing  0.0%
    Crooks D                               | real   -10286 (beats  29%) | median   +18443  5% worst   -16166 | DD median  62%  95% worst 139% | blown 32.0%  DD>40% 70.8%  losing 32.0%
    Crooks D cap $500 clamp                | real   +10906 (beats  69%) | median    +9093  5% worst    +1501 | DD median  32%  95% worst  69% | blown  0.6%  DD>40% 33.0%  losing  2.6%
    Crooks D cap $500 start again          | real   +15254 (beats 100%) | median    +7860  5% worst    +3191 | DD median  25%  95% worst  44% | blown  0.0%  DD>40%  8.0%  losing  0.4%
@@ -216,9 +216,9 @@ M5 | Simplest (Simplest) | exit R 2.00 | 1488 trades | 500 random orders
    Crooks B split 5                       | real    +5925 (beats  88%) | median    +5396  5% worst    +4013 | DD median  19%  95% worst  60% | blown  1.8%  DD>40% 12.4%  losing  2.2%
    Crooks B split 5 cap $500 clamp        | real    +5925 (beats  88%) | median    +5389  5% worst    +4083 | DD median  19%  95% worst  61% | blown  1.0%  DD>40% 12.4%  losing  1.6%
    Crooks B split 5 cap $500 start again  | real    +5925 (beats  90%) | median    +5322  5% worst    +1610 | DD median  19%  95% worst  45% | blown  0.0%  DD>40%  8.8%  losing  0.4%
-   Crooks C                               | real   +11720 (beats  42%) | median   +12237  5% worst   -14996 | DD median  55%  95% worst 134% | blown 30.4%  DD>40% 61.6%  losing 30.4%
-   Crooks C cap $500 clamp                | real    +2137 (beats  17%) | median    +5999  5% worst     -844 | DD median  31%  95% worst  69% | blown  0.6%  DD>40% 30.4%  losing  7.4%
-   Crooks C cap $500 start again          | real    +3713 (beats  24%) | median    +5368  5% worst    +1118 | DD median  23%  95% worst  44% | blown  0.0%  DD>40%  7.6%  losing  3.4%
+   Crooks C                               | real   +13684 (beats  64%) | median   +13278  5% worst   -15334 | DD median  59%  95% worst 136% | blown 32.8%  DD>40% 63.2%  losing 32.8%
+   Crooks C cap $500 clamp                | real    +2239 (beats  18%) | median   +10517  5% worst   -10181 | DD median  46%  95% worst 101% | blown 12.0%  DD>40% 60.0%  losing 15.2%
+   Crooks C cap $500 start again          | real    +4030 (beats  30%) | median    +5233  5% worst     +789 | DD median  23%  95% worst  44% | blown  0.0%  DD>40%  8.0%  losing  2.8%
    Crooks D                               | real   +14776 (beats  72%) | median   +13890  5% worst   -15529 | DD median  55%  95% worst 139% | blown 27.8%  DD>40% 65.2%  losing 27.8%
    Crooks D cap $500 clamp                | real   +10565 (beats  90%) | median    +6246  5% worst     -134 | DD median  31%  95% worst  68% | blown  0.6%  DD>40% 31.4%  losing  5.8%
    Crooks D cap $500 start again          | real    +3073 (beats  21%) | median    +5470  5% worst    +1058 | DD median  25%  95% worst  46% | blown  0.0%  DD>40% 10.4%  losing  1.0%
@@ -244,9 +244,9 @@ M15 | Most profit (Most profit) | exit R 2.00 | 1388 trades | 500 random orders
    Crooks B split 5                       | real    +9302 (beats  28%) | median    +9418  5% worst    +9145 | DD median   9%  95% worst  18% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +9302 (beats  28%) | median    +9418  5% worst    +9145 | DD median   9%  95% worst  18% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +9302 (beats  29%) | median    +9417  5% worst    +9141 | DD median   9%  95% worst  18% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real   +13356 (beats  78%) | median   +12564  5% worst    +5127 | DD median  19%  95% worst  93% | blown  4.6%  DD>40% 20.4%  losing  4.8%
-   Crooks C cap $500 clamp                | real   +11467 (beats  61%) | median   +10989  5% worst    +7617 | DD median  17%  95% worst  34% | blown  0.0%  DD>40%  2.2%  losing  0.0%
-   Crooks C cap $500 start again          | real   +11698 (beats  80%) | median   +10529  5% worst    +7856 | DD median  13%  95% worst  23% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real   +15492 (beats  73%) | median   +15102  5% worst   -12816 | DD median  27%  95% worst 121% | blown 10.0%  DD>40% 31.8%  losing 10.0%
+   Crooks C cap $500 clamp                | real   +14725 (beats  67%) | median   +14361  5% worst   +11393 | DD median  23%  95% worst  60% | blown  0.4%  DD>40% 16.8%  losing  0.4%
+   Crooks C cap $500 start again          | real   +13071 (beats  88%) | median   +11025  5% worst    +7521 | DD median  13%  95% worst  25% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real   +12310 (beats  35%) | median   +12994  5% worst    +2585 | DD median  19%  95% worst 100% | blown  5.0%  DD>40% 18.8%  losing  5.0%
    Crooks D cap $500 clamp                | real   +11708 (beats  55%) | median   +11495  5% worst    +7339 | DD median  16%  95% worst  35% | blown  0.0%  DD>40%  1.2%  losing  0.0%
    Crooks D cap $500 start again          | real   +12230 (beats  82%) | median   +10809  5% worst    +7819 | DD median  13%  95% worst  22% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -272,9 +272,9 @@ M15 | Shortest losing streak (Shortest losing streak) | exit R 2.00 | 1137 trade
    Crooks B split 5                       | real    +3820 (beats  76%) | median    +3757  5% worst    +3703 | DD median   7%  95% worst  12% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +3820 (beats  76%) | median    +3757  5% worst    +3703 | DD median   7%  95% worst  12% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +3820 (beats  76%) | median    +3757  5% worst    +3703 | DD median   7%  95% worst  12% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real    +1857 (beats   0%) | median    +3996  5% worst    +3105 | DD median   7%  95% worst  16% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C cap $500 clamp                | real    +1872 (beats   0%) | median    +3996  5% worst    +2970 | DD median   7%  95% worst  16% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C cap $500 start again          | real    +2744 (beats   2%) | median    +3987  5% worst    +3105 | DD median   7%  95% worst  14% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real    +5936 (beats  57%) | median    +5878  5% worst    +2796 | DD median  15%  95% worst  98% | blown  4.8%  DD>40% 12.8%  losing  4.8%
+   Crooks C cap $500 clamp                | real    +5861 (beats  61%) | median    +5727  5% worst    +4517 | DD median  15%  95% worst  46% | blown  0.0%  DD>40%  8.0%  losing  0.2%
+   Crooks C cap $500 start again          | real    +3225 (beats  15%) | median    +4622  5% worst    +2575 | DD median  11%  95% worst  21% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real    +3979 (beats  52%) | median    +3966  5% worst    +3206 | DD median   7%  95% worst  15% | blown  0.0%  DD>40%  0.4%  losing  0.4%
    Crooks D cap $500 clamp                | real    +3979 (beats  52%) | median    +3966  5% worst    +3116 | DD median   7%  95% worst  15% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D cap $500 start again          | real    +3979 (beats  52%) | median    +3965  5% worst    +3134 | DD median   7%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -300,9 +300,9 @@ M15 | Shortest losing streak - indicator only (Shortest losing streak - indicato
    Crooks B split 5                       | real    +7351 (beats  10%) | median    +7546  5% worst    +7309 | DD median   8%  95% worst  16% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +7351 (beats  10%) | median    +7546  5% worst    +7309 | DD median   8%  95% worst  16% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +7351 (beats  10%) | median    +7546  5% worst    +7303 | DD median   8%  95% worst  16% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real   +11349 (beats  92%) | median   +10086  5% worst    +1903 | DD median  18%  95% worst  97% | blown  4.8%  DD>40% 19.0%  losing  5.0%
-   Crooks C cap $500 clamp                | real   +10893 (beats  93%) | median    +8872  5% worst    +5699 | DD median  16%  95% worst  35% | blown  0.0%  DD>40%  2.4%  losing  0.2%
-   Crooks C cap $500 start again          | real   +10013 (beats  89%) | median    +8346  5% worst    +6226 | DD median  13%  95% worst  22% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real   +11894 (beats  33%) | median   +12164  5% worst   -11717 | DD median  22%  95% worst 114% | blown  8.6%  DD>40% 27.8%  losing  8.6%
+   Crooks C cap $500 clamp                | real   +10699 (beats  20%) | median   +11580  5% worst    +8761 | DD median  21%  95% worst  54% | blown  0.0%  DD>40% 13.4%  losing  0.0%
+   Crooks C cap $500 start again          | real   +10555 (beats  89%) | median    +8604  5% worst    +5965 | DD median  13%  95% worst  24% | blown  0.0%  DD>40%  0.4%  losing  0.0%
    Crooks D                               | real   +11081 (beats  72%) | median   +10537  5% worst    +3887 | DD median  18%  95% worst  96% | blown  4.6%  DD>40% 19.0%  losing  4.6%
    Crooks D cap $500 clamp                | real   +10128 (beats  71%) | median    +9248  5% worst    +5747 | DD median  16%  95% worst  33% | blown  0.0%  DD>40%  2.6%  losing  0.2%
    Crooks D cap $500 start again          | real   +10229 (beats  87%) | median    +8554  5% worst    +6020 | DD median  13%  95% worst  25% | blown  0.0%  DD>40%  0.4%  losing  0.0%
@@ -328,9 +328,9 @@ M15 | Longest winning streak (Longest winning streak) | exit R 2.00 | 1207 trade
    Crooks B split 5                       | real    +4174 (beats  30%) | median    +4199  5% worst    +4150 | DD median   6%  95% worst  11% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +4174 (beats  30%) | median    +4199  5% worst    +4150 | DD median   6%  95% worst  11% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +4174 (beats  30%) | median    +4199  5% worst    +4150 | DD median   6%  95% worst  11% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real    +4604 (beats  70%) | median    +4464  5% worst    +3781 | DD median   7%  95% worst  14% | blown  0.0%  DD>40%  0.2%  losing  0.0%
-   Crooks C cap $500 clamp                | real    +4604 (beats  70%) | median    +4464  5% worst    +3721 | DD median   7%  95% worst  14% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C cap $500 start again          | real    +4604 (beats  71%) | median    +4454  5% worst    +3652 | DD median   7%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real    +6689 (beats  78%) | median    +6456  5% worst    +5818 | DD median  14%  95% worst  59% | blown  2.4%  DD>40%  9.4%  losing  2.4%
+   Crooks C cap $500 clamp                | real    +6631 (beats  81%) | median    +6358  5% worst    +5531 | DD median  14%  95% worst  40% | blown  0.0%  DD>40%  5.0%  losing  0.2%
+   Crooks C cap $500 start again          | real    +4741 (beats  34%) | median    +5217  5% worst    +3242 | DD median  11%  95% worst  19% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real    +4361 (beats  43%) | median    +4403  5% worst    +3560 | DD median   7%  95% worst  16% | blown  0.0%  DD>40%  0.2%  losing  0.0%
    Crooks D cap $500 clamp                | real    +4361 (beats  43%) | median    +4403  5% worst    +3453 | DD median   7%  95% worst  15% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D cap $500 start again          | real    +4361 (beats  44%) | median    +4401  5% worst    +3546 | DD median   7%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -356,9 +356,9 @@ M15 | Highest win rate (Highest win rate) | exit R 2.00 | 1388 trades | 500 rand
    Crooks B split 5                       | real    +3867 (beats  61%) | median    +3845  5% worst    +3771 | DD median   7%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +3867 (beats  61%) | median    +3845  5% worst    +3771 | DD median   7%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +3867 (beats  61%) | median    +3845  5% worst    +3771 | DD median   7%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real    +3958 (beats  41%) | median    +4013  5% worst    +3272 | DD median   7%  95% worst  14% | blown  0.0%  DD>40%  0.2%  losing  0.0%
-   Crooks C cap $500 clamp                | real    +3958 (beats  41%) | median    +4013  5% worst    +3239 | DD median   7%  95% worst  14% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C cap $500 start again          | real    +3958 (beats  42%) | median    +4012  5% worst    +3208 | DD median   7%  95% worst  14% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real    +5957 (beats  26%) | median    +6191  5% worst    +1451 | DD median  14%  95% worst 100% | blown  5.0%  DD>40% 15.4%  losing  5.0%
+   Crooks C cap $500 clamp                | real    +5927 (beats  36%) | median    +6076  5% worst    +4521 | DD median  15%  95% worst  47% | blown  0.2%  DD>40%  9.4%  losing  0.6%
+   Crooks C cap $500 start again          | real    +4049 (beats  28%) | median    +4652  5% worst    +2730 | DD median  12%  95% worst  23% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real    +3679 (beats  15%) | median    +4013  5% worst    +3392 | DD median   7%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D cap $500 clamp                | real    +3679 (beats  15%) | median    +4013  5% worst    +3360 | DD median   7%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D cap $500 start again          | real    +3679 (beats  17%) | median    +4013  5% worst    +3282 | DD median   7%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -384,9 +384,9 @@ M15 | Most trades a day (Most trades a day) | exit R 2.00 | 1776 trades | 500 ra
    Crooks B split 5                       | real    +6067 (beats  60%) | median    +5996  5% worst    +5592 | DD median  12%  95% worst  28% | blown  0.2%  DD>40%  1.6%  losing  0.2%
    Crooks B split 5 cap $500 clamp        | real    +6067 (beats  60%) | median    +5996  5% worst    +5585 | DD median  12%  95% worst  28% | blown  0.2%  DD>40%  1.8%  losing  0.2%
    Crooks B split 5 cap $500 start again  | real    +6067 (beats  62%) | median    +5986  5% worst    +5539 | DD median  12%  95% worst  28% | blown  0.0%  DD>40%  1.0%  losing  0.0%
-   Crooks C                               | real    +4927 (beats  14%) | median    +6864  5% worst    +2071 | DD median  17%  95% worst  61% | blown  2.2%  DD>40%  9.4%  losing  3.4%
-   Crooks C cap $500 clamp                | real    +4780 (beats  16%) | median    +6457  5% worst    +3400 | DD median  16%  95% worst  33% | blown  0.0%  DD>40%  2.4%  losing  0.8%
-   Crooks C cap $500 start again          | real    +4956 (beats  17%) | median    +6154  5% worst    +3973 | DD median  15%  95% worst  26% | blown  0.0%  DD>40%  0.2%  losing  0.0%
+   Crooks C                               | real   +12909 (beats  58%) | median   +12798  5% worst   -14650 | DD median  38%  95% worst 136% | blown 17.4%  DD>40% 47.4%  losing 17.6%
+   Crooks C cap $500 clamp                | real   -10141 (beats   1%) | median   +11611  5% worst    +6033 | DD median  33%  95% worst  84% | blown  2.2%  DD>40% 35.2%  losing  2.8%
+   Crooks C cap $500 start again          | real    +6846 (beats  48%) | median    +7038  5% worst    +3237 | DD median  18%  95% worst  32% | blown  0.0%  DD>40%  0.8%  losing  0.0%
    Crooks D                               | real    +6844 (beats  48%) | median    +6902  5% worst    +2481 | DD median  16%  95% worst  49% | blown  0.8%  DD>40%  9.6%  losing  1.8%
    Crooks D cap $500 clamp                | real    +6190 (beats  43%) | median    +6454  5% worst    +3414 | DD median  16%  95% worst  32% | blown  0.0%  DD>40%  1.4%  losing  0.2%
    Crooks D cap $500 start again          | real    +6236 (beats  51%) | median    +6210  5% worst    +3771 | DD median  15%  95% worst  25% | blown  0.0%  DD>40%  0.2%  losing  0.0%
@@ -412,9 +412,9 @@ M15 | Every year positive (Every year positive) | exit R 2.00 | 1377 trades | 50
    Crooks B split 5                       | real    +9988 (beats  24%) | median   +10123  5% worst    +9886 | DD median   8%  95% worst  16% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +9988 (beats  24%) | median   +10123  5% worst    +9886 | DD median   8%  95% worst  16% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +9988 (beats  24%) | median   +10123  5% worst    +9886 | DD median   8%  95% worst  16% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real   +13938 (beats  69%) | median   +13257  5% worst    +5996 | DD median  17%  95% worst  81% | blown  3.6%  DD>40% 15.6%  losing  3.6%
-   Crooks C cap $500 clamp                | real   +12049 (beats  52%) | median   +11928  5% worst    +8469 | DD median  15%  95% worst  32% | blown  0.0%  DD>40%  1.0%  losing  0.0%
-   Crooks C cap $500 start again          | real   +12281 (beats  73%) | median   +11169  5% worst    +8694 | DD median  12%  95% worst  21% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real   +15882 (beats  62%) | median   +15669  5% worst   -12796 | DD median  22%  95% worst 120% | blown  9.0%  DD>40% 29.2%  losing  9.0%
+   Crooks C cap $500 clamp                | real   +15006 (beats  51%) | median   +14955  5% worst   +12399 | DD median  20%  95% worst  55% | blown  0.0%  DD>40% 12.6%  losing  0.0%
+   Crooks C cap $500 start again          | real   +12477 (beats  66%) | median   +11651  5% worst    +8607 | DD median  13%  95% worst  24% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real   +14442 (beats  73%) | median   +13726  5% worst    +3460 | DD median  19%  95% worst 102% | blown  5.0%  DD>40% 18.6%  losing  5.0%
    Crooks D cap $500 clamp                | real   +14098 (beats  89%) | median   +12210  5% worst    +8152 | DD median  15%  95% worst  35% | blown  0.0%  DD>40%  2.6%  losing  0.0%
    Crooks D cap $500 start again          | real   +14139 (beats  95%) | median   +11605  5% worst    +8442 | DD median  13%  95% worst  22% | blown  0.0%  DD>40%  0.2%  losing  0.0%
@@ -440,9 +440,9 @@ M15 | Simplest (Simplest) | exit R 2.00 | 1179 trades | 500 random orders
    Crooks B split 5                       | real    +5618 (beats  51%) | median    +5607  5% worst    +5071 | DD median  15%  95% worst  38% | blown  0.4%  DD>40%  4.2%  losing  0.4%
    Crooks B split 5 cap $500 clamp        | real    +5618 (beats  51%) | median    +5604  5% worst    +5071 | DD median  15%  95% worst  39% | blown  0.4%  DD>40%  4.2%  losing  0.6%
    Crooks B split 5 cap $500 start again  | real    +5618 (beats  54%) | median    +5584  5% worst    +2603 | DD median  15%  95% worst  35% | blown  0.0%  DD>40%  2.4%  losing  0.0%
-   Crooks C                               | real   +11942 (beats  65%) | median   +11509  5% worst   -15465 | DD median  40%  95% worst 137% | blown 21.2%  DD>40% 49.8%  losing 21.4%
-   Crooks C cap $500 clamp                | real    +7376 (beats  58%) | median    +6685  5% worst    +1026 | DD median  26%  95% worst  56% | blown  0.2%  DD>40% 16.8%  losing  2.8%
-   Crooks C cap $500 start again          | real    +6176 (beats  60%) | median    +5614  5% worst    +2343 | DD median  20%  95% worst  38% | blown  0.0%  DD>40%  2.8%  losing  0.8%
+   Crooks C                               | real   +12079 (beats  54%) | median   +11972  5% worst   -15411 | DD median  41%  95% worst 136% | blown 22.2%  DD>40% 51.0%  losing 22.4%
+   Crooks C cap $500 clamp                | real   +10300 (beats  51%) | median   +10237  5% worst     +972 | DD median  35%  95% worst  82% | blown  2.2%  DD>40% 40.4%  losing  4.2%
+   Crooks C cap $500 start again          | real    +6236 (beats  59%) | median    +5622  5% worst    +2258 | DD median  20%  95% worst  38% | blown  0.0%  DD>40%  3.0%  losing  1.0%
    Crooks D                               | real   -11963 (beats  15%) | median   +13067  5% worst   -15446 | DD median  53%  95% worst 135% | blown 24.4%  DD>40% 61.6%  losing 24.8%
    Crooks D cap $500 clamp                | real    +5825 (beats  36%) | median    +6970  5% worst     +859 | DD median  29%  95% worst  60% | blown  0.2%  DD>40% 22.8%  losing  2.4%
    Crooks D cap $500 start again          | real    +7213 (beats  69%) | median    +5910  5% worst    +2322 | DD median  21%  95% worst  37% | blown  0.0%  DD>40%  3.0%  losing  0.8%
@@ -468,9 +468,9 @@ M15 | Asia session only (Asia session only) | exit R 2.00 | 712 trades | 500 ran
    Crooks B split 5                       | real    +1440 (beats   3%) | median    +2144  5% worst    +1762 | DD median  13%  95% worst  32% | blown  0.2%  DD>40%  2.6%  losing  0.8%
    Crooks B split 5 cap $500 clamp        | real    +1440 (beats   3%) | median    +2144  5% worst    +1770 | DD median  13%  95% worst  32% | blown  0.0%  DD>40%  2.6%  losing  0.6%
    Crooks B split 5 cap $500 start again  | real    +1440 (beats   3%) | median    +2141  5% worst    +1745 | DD median  13%  95% worst  32% | blown  0.0%  DD>40%  1.8%  losing  2.2%
-   Crooks C                               | real    +3091 (beats  36%) | median    +3629  5% worst   -11769 | DD median  22%  95% worst 116% | blown  8.8%  DD>40% 25.8%  losing 12.2%
-   Crooks C cap $500 clamp                | real    +2816 (beats  56%) | median    +2481  5% worst    -1186 | DD median  21%  95% worst  47% | blown  0.0%  DD>40%  8.6%  losing 13.0%
-   Crooks C cap $500 start again          | real    +1970 (beats  43%) | median    +2138  5% worst      +10 | DD median  17%  95% worst  31% | blown  0.0%  DD>40%  0.6%  losing  4.6%
+   Crooks C                               | real    +4957 (beats  24%) | median    +5568  5% worst   -14424 | DD median  33%  95% worst 134% | blown 17.4%  DD>40% 41.2%  losing 18.0%
+   Crooks C cap $500 clamp                | real    +2920 (beats  22%) | median    +4842  5% worst    -4551 | DD median  31%  95% worst  95% | blown  3.8%  DD>40% 36.8%  losing 10.4%
+   Crooks C cap $500 start again          | real     +660 (beats  14%) | median    +2305  5% worst     -328 | DD median  19%  95% worst  32% | blown  0.0%  DD>40%  0.6%  losing  6.6%
    Crooks D                               | real    +4891 (beats  87%) | median    +3902  5% worst   -10886 | DD median  23%  95% worst 108% | blown  7.6%  DD>40% 26.2%  losing  9.8%
    Crooks D cap $500 clamp                | real    +2952 (beats  56%) | median    +2558  5% worst     -749 | DD median  21%  95% worst  48% | blown  0.0%  DD>40%  8.8%  losing 10.0%
    Crooks D cap $500 start again          | real    +2290 (beats  52%) | median    +2166  5% worst     -312 | DD median  18%  95% worst  34% | blown  0.0%  DD>40%  1.4%  losing  7.6%
@@ -496,9 +496,9 @@ H1 | Most profit (Most profit, Every year positive) | exit R 2.00 | 186 trades |
    Crooks B split 5                       | real    +3087 (beats  36%) | median    +3087  5% worst    +3087 | DD median   4%  95% worst   7% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +3087 (beats  36%) | median    +3087  5% worst    +3087 | DD median   4%  95% worst   7% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +3087 (beats  36%) | median    +3087  5% worst    +3087 | DD median   4%  95% worst   7% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real    +3649 (beats  66%) | median    +3551  5% worst    +3204 | DD median   5%  95% worst  22% | blown  0.6%  DD>40%  2.4%  losing  0.6%
-   Crooks C cap $500 clamp                | real    +3649 (beats  72%) | median    +3511  5% worst    +2481 | DD median   5%  95% worst  17% | blown  0.0%  DD>40%  0.4%  losing  0.2%
-   Crooks C cap $500 start again          | real    +3649 (beats  74%) | median    +3493  5% worst    +2403 | DD median   5%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real    +3649 (beats  66%) | median    +3554  5% worst    +3207 | DD median   5%  95% worst  22% | blown  0.6%  DD>40%  2.4%  losing  0.6%
+   Crooks C cap $500 clamp                | real    +3649 (beats  67%) | median    +3542  5% worst    +3115 | DD median   5%  95% worst  19% | blown  0.0%  DD>40%  0.6%  losing  0.2%
+   Crooks C cap $500 start again          | real    +3649 (beats  75%) | median    +3496  5% worst    +2392 | DD median   5%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real    +3832 (beats  56%) | median    +3808  5% worst    +3322 | DD median   6%  95% worst  24% | blown  0.6%  DD>40%  1.8%  losing  0.6%
    Crooks D cap $500 clamp                | real    +3832 (beats  66%) | median    +3691  5% worst    +2681 | DD median   6%  95% worst  19% | blown  0.0%  DD>40%  0.2%  losing  0.0%
    Crooks D cap $500 start again          | real    +3832 (beats  69%) | median    +3683  5% worst    +2509 | DD median   6%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -524,9 +524,9 @@ H1 | Shortest losing streak (Shortest losing streak) | exit R 2.00 | 195 trades 
    Crooks B split 5                       | real    +1683 (beats  10%) | median    +1683  5% worst    +1683 | DD median   3%  95% worst   4% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +1683 (beats  10%) | median    +1683  5% worst    +1683 | DD median   3%  95% worst   4% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +1683 (beats  10%) | median    +1683  5% worst    +1683 | DD median   3%  95% worst   4% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real    +1664 (beats  11%) | median    +1729  5% worst    +1626 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C cap $500 clamp                | real    +1664 (beats  11%) | median    +1729  5% worst    +1626 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C cap $500 start again          | real    +1664 (beats  11%) | median    +1729  5% worst    +1626 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real    +1746 (beats   7%) | median    +1851  5% worst    +1741 | DD median   3%  95% worst   7% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C cap $500 clamp                | real    +1746 (beats   7%) | median    +1850  5% worst    +1741 | DD median   3%  95% worst   7% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C cap $500 start again          | real    +1746 (beats   9%) | median    +1846  5% worst    +1723 | DD median   3%  95% worst   7% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real    +1687 (beats  25%) | median    +1726  5% worst    +1627 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D cap $500 clamp                | real    +1687 (beats  25%) | median    +1726  5% worst    +1620 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D cap $500 start again          | real    +1687 (beats  25%) | median    +1726  5% worst    +1620 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -552,9 +552,9 @@ H1 | Shortest losing streak - indicator only (Shortest losing streak - indicator
    Crooks B split 5                       | real    +2620 (beats  24%) | median    +2625  5% worst    +2615 | DD median   5%  95% worst   8% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +2620 (beats  24%) | median    +2625  5% worst    +2615 | DD median   5%  95% worst   8% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +2620 (beats  24%) | median    +2625  5% worst    +2615 | DD median   5%  95% worst   8% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real    +2942 (beats   6%) | median    +3442  5% worst    +2888 | DD median   8%  95% worst  36% | blown  1.4%  DD>40%  3.8%  losing  1.8%
-   Crooks C cap $500 clamp                | real    +2942 (beats  25%) | median    +3289  5% worst    +1669 | DD median   8%  95% worst  23% | blown  0.0%  DD>40%  0.4%  losing  1.2%
-   Crooks C cap $500 start again          | real    +2942 (beats  41%) | median    +3162  5% worst    +1868 | DD median   8%  95% worst  15% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real    +2951 (beats   6%) | median    +3450  5% worst    +2910 | DD median   8%  95% worst  35% | blown  1.4%  DD>40%  3.8%  losing  1.8%
+   Crooks C cap $500 clamp                | real    +2951 (beats  10%) | median    +3388  5% worst    +2754 | DD median   8%  95% worst  27% | blown  0.0%  DD>40%  1.6%  losing  0.8%
+   Crooks C cap $500 start again          | real    +2951 (beats  41%) | median    +3163  5% worst    +1844 | DD median   8%  95% worst  15% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real    +3170 (beats   7%) | median    +3769  5% worst    +3086 | DD median   9%  95% worst  46% | blown  1.0%  DD>40%  6.2%  losing  1.6%
    Crooks D cap $500 clamp                | real    +3170 (beats  31%) | median    +3513  5% worst    +1710 | DD median   9%  95% worst  27% | blown  0.0%  DD>40%  1.0%  losing  0.8%
    Crooks D cap $500 start again          | real    +3170 (beats  48%) | median    +3229  5% worst    +1645 | DD median   9%  95% worst  17% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -580,9 +580,9 @@ H1 | Longest winning streak (Longest winning streak) | exit R 2.00 | 261 trades 
    Crooks B split 5                       | real    +1385 (beats   2%) | median    +1385  5% worst    +1385 | DD median   4%  95% worst   6% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +1385 (beats   2%) | median    +1385  5% worst    +1385 | DD median   4%  95% worst   6% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +1385 (beats   2%) | median    +1385  5% worst    +1385 | DD median   4%  95% worst   6% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real    +1448 (beats  35%) | median    +1492  5% worst    +1229 | DD median   4%  95% worst   9% | blown  0.0%  DD>40%  0.2%  losing  0.4%
-   Crooks C cap $500 clamp                | real    +1448 (beats  36%) | median    +1492  5% worst    +1227 | DD median   4%  95% worst   9% | blown  0.0%  DD>40%  0.0%  losing  0.4%
-   Crooks C cap $500 start again          | real    +1448 (beats  36%) | median    +1492  5% worst    +1173 | DD median   4%  95% worst  10% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real    +1842 (beats  68%) | median    +1781  5% worst    +1571 | DD median   5%  95% worst  16% | blown  0.0%  DD>40%  1.0%  losing  0.2%
+   Crooks C cap $500 clamp                | real    +1842 (beats  70%) | median    +1778  5% worst    +1546 | DD median   5%  95% worst  17% | blown  0.0%  DD>40%  0.0%  losing  0.6%
+   Crooks C cap $500 start again          | real    +1842 (beats  75%) | median    +1749  5% worst     +859 | DD median   5%  95% worst  12% | blown  0.0%  DD>40%  0.0%  losing  0.4%
    Crooks D                               | real    +1433 (beats  34%) | median    +1477  5% worst    +1200 | DD median   4%  95% worst   9% | blown  0.0%  DD>40%  0.0%  losing  0.4%
    Crooks D cap $500 clamp                | real    +1433 (beats  34%) | median    +1477  5% worst    +1183 | DD median   4%  95% worst   9% | blown  0.0%  DD>40%  0.0%  losing  0.4%
    Crooks D cap $500 start again          | real    +1433 (beats  34%) | median    +1477  5% worst    +1150 | DD median   4%  95% worst   9% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -608,9 +608,9 @@ H1 | Highest win rate (Highest win rate) | exit R 2.00 | 200 trades | 500 random
    Crooks B split 5                       | real    +1707 (beats  65%) | median    +1707  5% worst    +1707 | DD median   3%  95% worst   4% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +1707 (beats  65%) | median    +1707  5% worst    +1707 | DD median   3%  95% worst   4% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +1707 (beats  65%) | median    +1707  5% worst    +1707 | DD median   3%  95% worst   4% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real    +1710 (beats  17%) | median    +1754  5% worst    +1628 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C cap $500 clamp                | real    +1710 (beats  17%) | median    +1754  5% worst    +1628 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C cap $500 start again          | real    +1710 (beats  17%) | median    +1754  5% worst    +1628 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real    +1798 (beats  15%) | median    +1874  5% worst    +1765 | DD median   3%  95% worst   9% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C cap $500 clamp                | real    +1798 (beats  16%) | median    +1872  5% worst    +1765 | DD median   3%  95% worst   9% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C cap $500 start again          | real    +1798 (beats  19%) | median    +1866  5% worst    +1708 | DD median   3%  95% worst   9% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real    +1617 (beats   4%) | median    +1737  5% worst    +1642 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D cap $500 clamp                | real    +1617 (beats   4%) | median    +1737  5% worst    +1642 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D cap $500 start again          | real    +1617 (beats   4%) | median    +1737  5% worst    +1642 | DD median   3%  95% worst   5% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -636,9 +636,9 @@ H1 | Most trades a day (Most trades a day) | exit R 3.00 | 542 trades | 500 rand
    Crooks B split 5                       | real    +3210 (beats  24%) | median    +3329  5% worst    +3109 | DD median  12%  95% worst  24% | blown  0.0%  DD>40%  1.4%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +3210 (beats  24%) | median    +3329  5% worst    +3109 | DD median  12%  95% worst  24% | blown  0.0%  DD>40%  1.4%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +3210 (beats  25%) | median    +3329  5% worst    +3104 | DD median  12%  95% worst  24% | blown  0.0%  DD>40%  1.4%  losing  0.4%
-   Crooks C                               | real    +6143 (beats  66%) | median    +5804  5% worst   -11689 | DD median  26%  95% worst 115% | blown  8.4%  DD>40% 32.4%  losing  8.8%
-   Crooks C cap $500 clamp                | real    +6143 (beats  93%) | median    +4287  5% worst     -117 | DD median  24%  95% worst  55% | blown  0.4%  DD>40% 14.4%  losing  5.6%
-   Crooks C cap $500 start again          | real    +6143 (beats  97%) | median    +3525  5% worst     +983 | DD median  19%  95% worst  33% | blown  0.0%  DD>40%  1.0%  losing  1.2%
+   Crooks C                               | real    +6208 (beats  67%) | median    +5855  5% worst   -11772 | DD median  26%  95% worst 115% | blown  8.6%  DD>40% 32.4%  losing  9.0%
+   Crooks C cap $500 clamp                | real    +6208 (beats  85%) | median    +5397  5% worst    -1368 | DD median  27%  95% worst  76% | blown  2.4%  DD>40% 24.6%  losing  7.0%
+   Crooks C cap $500 start again          | real    +6208 (beats  97%) | median    +3525  5% worst     +910 | DD median  19%  95% worst  33% | blown  0.0%  DD>40%  1.0%  losing  1.2%
    Crooks D                               | real    +7328 (beats  56%) | median    +7217  5% worst   -12791 | DD median  31%  95% worst 122% | blown 14.2%  DD>40% 40.8%  losing 14.2%
    Crooks D cap $500 clamp                | real    +5362 (beats  56%) | median    +4972  5% worst     -413 | DD median  26%  95% worst  61% | blown  0.6%  DD>40% 21.0%  losing  7.4%
    Crooks D cap $500 start again          | real    +5943 (beats  82%) | median    +4269  5% worst     +519 | DD median  20%  95% worst  38% | blown  0.0%  DD>40%  4.0%  losing  2.8%
@@ -664,9 +664,9 @@ H1 | Smoothest (Smoothest) | exit R 2.00 | 208 trades | 500 random orders
    Crooks B split 5                       | real    +3133 (beats  21%) | median    +3133  5% worst    +3131 | DD median   4%  95% worst   7% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 clamp        | real    +3133 (beats  21%) | median    +3133  5% worst    +3131 | DD median   4%  95% worst   7% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks B split 5 cap $500 start again  | real    +3133 (beats  21%) | median    +3133  5% worst    +3131 | DD median   4%  95% worst   7% | blown  0.0%  DD>40%  0.0%  losing  0.0%
-   Crooks C                               | real    +3412 (beats  10%) | median    +3705  5% worst    +3286 | DD median   6%  95% worst  22% | blown  0.6%  DD>40%  1.8%  losing  0.6%
-   Crooks C cap $500 clamp                | real    +3412 (beats  22%) | median    +3650  5% worst    +2520 | DD median   6%  95% worst  19% | blown  0.0%  DD>40%  0.2%  losing  0.0%
-   Crooks C cap $500 start again          | real    +3412 (beats  30%) | median    +3607  5% worst    +2481 | DD median   6%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
+   Crooks C                               | real    +3417 (beats   9%) | median    +3708  5% worst    +3299 | DD median   6%  95% worst  22% | blown  0.6%  DD>40%  1.8%  losing  0.6%
+   Crooks C cap $500 clamp                | real    +3417 (beats  15%) | median    +3688  5% worst    +3127 | DD median   6%  95% worst  19% | blown  0.0%  DD>40%  0.2%  losing  0.2%
+   Crooks C cap $500 start again          | real    +3417 (beats  31%) | median    +3608  5% worst    +2472 | DD median   6%  95% worst  13% | blown  0.0%  DD>40%  0.0%  losing  0.0%
    Crooks D                               | real    +3898 (beats  46%) | median    +3980  5% worst    +3378 | DD median   7%  95% worst  28% | blown  0.8%  DD>40%  3.0%  losing  0.8%
    Crooks D cap $500 clamp                | real    +3898 (beats  58%) | median    +3868  5% worst    +2446 | DD median   7%  95% worst  21% | blown  0.0%  DD>40%  0.4%  losing  0.2%
    Crooks D cap $500 start again          | real    +3898 (beats  66%) | median    +3742  5% worst    +2536 | DD median   7%  95% worst  14% | blown  0.0%  DD>40%  0.0%  losing  0.0%
@@ -692,9 +692,9 @@ H1 | Simplest (Simplest) | exit R 2.00 | 498 trades | 500 random orders
    Crooks B split 5                       | real    +2508 (beats   3%) | median    +2764  5% worst    +2561 | DD median   9%  95% worst  20% | blown  0.0%  DD>40%  0.2%  losing  0.2%
    Crooks B split 5 cap $500 clamp        | real    +2508 (beats   3%) | median    +2764  5% worst    +2561 | DD median   9%  95% worst  20% | blown  0.0%  DD>40%  0.2%  losing  0.2%
    Crooks B split 5 cap $500 start again  | real    +2508 (beats   3%) | median    +2764  5% worst    +2561 | DD median   9%  95% worst  20% | blown  0.0%  DD>40%  0.0%  losing  0.2%
-   Crooks C                               | real    +5112 (beats  40%) | median    +5247  5% worst   -11697 | DD median  23%  95% worst 113% | blown  8.4%  DD>40% 26.4%  losing  8.4%
-   Crooks C cap $500 clamp                | real    +3507 (beats  47%) | median    +3637  5% worst     -232 | DD median  19%  95% worst  43% | blown  0.0%  DD>40%  7.6%  losing  5.6%
-   Crooks C cap $500 start again          | real    +2026 (beats  20%) | median    +3130  5% worst     +885 | DD median  15%  95% worst  26% | blown  0.0%  DD>40%  0.2%  losing  1.2%
+   Crooks C                               | real    +5175 (beats  37%) | median    +5356  5% worst   -11774 | DD median  23%  95% worst 115% | blown  8.6%  DD>40% 27.4%  losing  8.6%
+   Crooks C cap $500 clamp                | real    +5001 (beats  58%) | median    +4857  5% worst     +443 | DD median  22%  95% worst  69% | blown  0.6%  DD>40% 21.6%  losing  4.0%
+   Crooks C cap $500 start again          | real    +1619 (beats  13%) | median    +3136  5% worst     +939 | DD median  15%  95% worst  26% | blown  0.0%  DD>40%  0.4%  losing  1.2%
    Crooks D                               | real    +5959 (beats  51%) | median    +5940  5% worst   -13549 | DD median  25%  95% worst 129% | blown 11.8%  DD>40% 28.8%  losing 12.0%
    Crooks D cap $500 clamp                | real    +3991 (beats  52%) | median    +3957  5% worst     +117 | DD median  21%  95% worst  47% | blown  0.0%  DD>40%  9.2%  losing  4.2%
    Crooks D cap $500 start again          | real    +2746 (beats  33%) | median    +3369  5% worst     +923 | DD median  15%  95% worst  28% | blown  0.0%  DD>40%  0.2%  losing  2.0%

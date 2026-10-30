@@ -67,9 +67,10 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         oscP += pnl
         if oscP >= base: oscU = 1; oscP = 0.0
         elif win: oscU += 1
-        # Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back (A: also when a recovery trade wins)
+        # Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back (A, D: also when a recovery trade wins;
+        # C keeps a leftover: a recovery trade that wins without winning everything back is followed by another recovery trade)
         crL = max(0.0, crL - pnl)
-        if crL < 0.01 or (mode in (MODES[18], MODES[20], MODES[21]) and win and crRec): crL = 0.0; crN = 0      # less than a cent left = all won back
+        if crL < 0.01 or (mode in (MODES[18], MODES[21]) and win and crRec): crL = 0.0; crN = 0      # less than a cent left = all won back
         else: crN += 1
         crW = win
     return dict(mode=mode, trades=n, avgRisk=sumRisk / n if n else 0.0, net=net, end=eq, maxDD=maxDD, maxDDpct=maxDDp, maxRisk=maxRisk, maxRiskPct=maxRiskPct, ruined=ruined, ruinAt=ruinAt,

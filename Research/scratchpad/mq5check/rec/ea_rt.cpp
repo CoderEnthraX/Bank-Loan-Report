@@ -1152,9 +1152,9 @@ void BookClosed()
    }
    oscP += exPnl;
    if(oscP >= InpBaseRisk) { oscU = 1; oscP = 0; } else if(win) oscU++;
-   // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, C, D: also when a recovery trade wins)
+   // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, D: also when a recovery trade wins; C keeps a leftover)
    crkL = MathMax(0.0, crkL - exPnl);
-   if(crkL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRC || InpRec == REC_CRD) && win && crkRec)) { crkL = 0; crkN = 0; } else crkN++;
+   if(crkL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRD) && win && crkRec)) { crkL = 0; crkN = 0; } else crkN++;
    crkW = win;
    crkRec = false; exT1 = false; exT1Half = false; exT1Be = false; exKeepSl = 0;
    exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false;

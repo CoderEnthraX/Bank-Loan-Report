@@ -286,7 +286,7 @@ RNOTE = {'Off': 'fixed $50 risk', 'Recover all losses on the next trade': 'risk 
          'Paroli': 'x2 after a win, 3-win reset', "Reverse D'Alembert": '+1 unit after a win', 'Delayed recovery': 'starts after 2 losses', '% of equity': '1% of equity',
          "Oscar's Grind": '+1 unit after a win until +1 unit up', 'Crooks A': 'base, base, then every 2nd trade risks loss / final TP R; resets on a recovery win',
          'Crooks B': 'as Crooks A, recovery = loss / 3 / final TP R; resets when all is won back',
-         'Crooks C': 'base until a win, then one recovery trade (loss / final TP R)', 'Crooks D': 'base, base, recovery (every 3rd trade); resets like Crooks A'}
+         'Crooks C': 'base until a win, then a recovery trade after each win until the loss is back (loss / final TP R)', 'Crooks D': 'base, base, recovery (every 3rd trade); resets like Crooks A'}
 def recovery_sheet(wb, FIN):
     ws = wb.create_sheet('Recovery rules')
     title(ws, 'All 21 loss-recovery rules of the strategy + Off, on each timeframe and setting (2021-2026, after spread)',
