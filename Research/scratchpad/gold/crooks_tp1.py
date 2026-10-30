@@ -78,12 +78,13 @@ def trades_for(arg):
                         R1=R1, spx=P['SP'][x['fill']]))
     return tf, cfg, out, tp1R, tp2R
 def simulate(tr, mode, base=50.0, cap=0.0, capAction='clamp', cSplit=3, tp1rule=True, exitR=0.6, start=10000.0, skips=True, trace=None):
-    """Off / Crooks A / Crooks B on the trades of an exit-at-TP1 setting. tp1rule=False = the plain Crooks rule (risk max(base, T / TP1 R), engine exit)."""
+    """Off / Crooks A / B / C / D on the trades of an exit-at-TP1 setting. tp1rule=False = the plain Crooks rule (risk max(base, T / TP1 R), engine exit)."""
     eq = start; peak = start; maxDD = maxDDp = 0.0; net = 0.0; gp = gl = 0.0; n = 0; nsk = 0; nsp = nfb = 0; sumRisk = maxRisk = 0.0
-    crL = 0.0; crN = 0; busy = -1; ruined = capStop = False; ruinAt = None; lossRun = worstRun = 0.0; kinds = {}
+    crL = 0.0; crN = 0; crW = False; busy = -1; ruined = capStop = False; ruinAt = None; lossRun = worstRun = 0.0; kinds = {}
     for k, x in enumerate(tr):
         if skips and x['arm'] < busy: nsk += 1; continue                # still in a TP1-rule trade: this signal is skipped
-        rec = mode in ('Crooks A', 'Crooks B') and crN >= 2 and crN % 2 == 0
+        rec = ((mode in ('Crooks A', 'Crooks B') and crN >= 2 and crN % 2 == 0) or (mode == 'Crooks C' and crW and crL > 0)
+               or (mode == 'Crooks D' and crN >= 2 and (crN - 2) % 3 == 0))
         X = crL / (cSplit if mode == 'Crooks B' else 1)
         sp = rec and tp1rule and x['sp'] is not None
         r = max(base, X) if sp else max(base, X / exitR) if rec else base
@@ -92,7 +93,7 @@ def simulate(tr, mode, base=50.0, cap=0.0, capAction='clamp', cSplit=3, tp1rule=
                 capStop = True
                 if trace is not None: trace.append((x, r, None, sp))          # the signal that stopped trading
                 break
-            elif capAction == 'reset': crL = 0.0; crN = 0; rec = sp = False; r = min(base, cap)
+            elif capAction == 'reset': crL = 0.0; crN = 0; crW = False; rec = sp = False; r = min(base, cap)
             else: r = cap
         if sp:
             pnl = r * x['sp'][0]; busy = x['sp'][1]; nsp += 1; kinds[x['sp'][2]] = kinds.get(x['sp'][2], 0) + 1
@@ -106,8 +107,9 @@ def simulate(tr, mode, base=50.0, cap=0.0, capAction='clamp', cSplit=3, tp1rule=
         if eq <= 0: ruined = True; ruinAt = k; break
         win = pnl > 0
         crL = max(0.0, crL - pnl)
-        if crL < 0.01 or (mode == 'Crooks A' and win and rec): crL = 0.0; crN = 0
+        if crL < 0.01 or (mode in ('Crooks A', 'Crooks C', 'Crooks D') and win and rec): crL = 0.0; crN = 0
         else: crN += 1
+        crW = win
     return dict(mode=mode, trades=n, skipped=nsk, tp1trades=nsp, fallback=nfb, kinds=kinds, avgRisk=sumRisk / n if n else 0.0, maxRisk=maxRisk, net=net, end=eq,
                 maxDD=maxDD, maxDDpct=maxDDp, ruined=ruined, ruinAt=ruinAt, capStopped=capStop, pf=gp / gl if gl > 0 else float('inf'), worstRun=-worstRun,
                 ratio=net / maxDD if maxDD > 0 else 0.0)

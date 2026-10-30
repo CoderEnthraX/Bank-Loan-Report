@@ -18,7 +18,10 @@ for tf in crooks.TFS:
         seq = crooks.sequence(s['trades'], s['cfg']); xr = crooks.exit_r(s['cfg']); trs = [(res, c, parts) for _, res, c, parts in seq]
         s['money']['crA_reset'] = RC.simulate(trs, 'Crooks A', cap=500.0, capAction='reset', exitR=xr)
         s['money']['crB3_reset'] = RC.simulate(trs, 'Crooks B', cap=500.0, capAction='reset', cSplit=3, exitR=xr)
+        s['money']['crC_reset'] = RC.simulate(trs, 'Crooks C', cap=500.0, capAction='reset', exitR=xr)
+        s['money']['crD_reset'] = RC.simulate(trs, 'Crooks D', cap=500.0, capAction='reset', exitR=xr)
         i = [k for k, d in enumerate(src) if d['cfg'] == s['cfg'] and d['name'] == s['scen'][0][0]][0]
         mc = MC.get((tf, i))
-        s['money']['mc'] = {k: mc['rules'][k] for k in (('Crooks A', 3, 500.0, 'reset'), ('Crooks B', 3, 500.0, 'reset'), ('Off', 3, 0.0, 'clamp'))} if mc else None
+        s['money']['mc'] = {k: mc['rules'][k] for k in (('Crooks A', 3, 500.0, 'reset'), ('Crooks B', 3, 500.0, 'reset'), ('Crooks C', 3, 500.0, 'reset'),
+                                                        ('Crooks D', 3, 500.0, 'reset'), ('Off', 3, 0.0, 'clamp'))} if mc else None
     save(C, fc); print(tf, 'catalogue money', len(C['strategies']), 'strategies, random orders for', sum(1 for s in C['strategies'] if s['money']['mc']))

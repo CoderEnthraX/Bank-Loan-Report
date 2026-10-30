@@ -19,7 +19,7 @@ IN = dict(
     # TARGETS AND EXIT
     tp1R=0.6, tp2R=1.0, tp3R=1.5, tp4R=2.0, exitAt=4, mv1On=False, mv1R=0.0, mv2On=False, mv2R=0.6, mv3On=False, mv3R=1.0,
     # ACCURACY FILTERS
-    noChase=False, noChaseSig=2.4, lossBlock=False, chopOn=False, chopMax=12.0, emaOn=False, emaMax=1.65, minVwOn=False, minVwAtr=1.0,
+    noChase=False, noChaseSig=2.4, lossBlock=False, chopOn=False, chopMax=12.0, emaOn=False, emaMax=1.65, minVwOn=False, minVwAtr=1.0, maxVwOn=False, maxVwDist=5.0, maxVwUnit='atr',
     # DAYS AND HOURS (IST)
     dayOn=False, days=(True, True, True, True, True, True, True), hoursOn=False, hoursSess=(600, 2300),
     # KILL ZONES (IST minutes; Asia, London, New York, London close) and the shift in hours
@@ -48,7 +48,7 @@ def run(sym, opts=None):
     bullN = bearN = 0; prevNet = None; sesO = sesH = sesL = pdH = pdL = None
     # trade state
     st = 0; armBar = fillBar = lastExit = lastFill = None; lastDir = 0
-    lim = stp = stp0 = trRisk = None; t = [None] * 4; tF = None; tpHit = 0; trHalf = False; trGhost = False
+    lim = stp = stp0 = trRisk = None; t = [None] * 4; tF = None; tpHit = 0; trHalf = False; trGhost = False; trVwd = trVwdA = None
     trades = []; cur = None
     # optional filters: VWAP crosses this VWAP period; 1-hour (UTC) candles built from the bars and their EMA20 (hE[0..3] = last 4 completed hours)
     vxSide = vxN = 0; hK = hC = None; hNum = 0; hSum = 0.0; hE = [None] * 4; hA = 2.0 / 21.0
@@ -114,7 +114,7 @@ def run(sym, opts=None):
             touched = True if p['entryMode'] == 'market' else (L[i] <= lim + mt * 0.001 if isL else H[i] >= lim - mt * 0.001)
             if touched and dayFills < p['maxFills']:
                 st = 2 if isL else -2; fillBar = i; lastFill = i; lastDir = d; tpHit = 0; dayFills += 1
-                cur = dict(dir=d, arm=armBar, fill=i, entry=lim, stop=stp, exit=None, res=None, half=trHalf, ghost=trGhost); trades.append(cur)
+                cur = dict(dir=d, arm=armBar, fill=i, entry=lim, stop=stp, exit=None, res=None, half=trHalf, ghost=trGhost, vwd=trVwd, vwdA=trVwdA); trades.append(cur)
                 if (L[i] <= stp + mt * 0.001 if isL else H[i] >= stp - mt * 0.001):
                     if not trGhost:
                         dayRiskR += -1.0 if p['fillBarStopR'] else 0.0
@@ -204,8 +204,11 @@ def run(sym, opts=None):
                 chopNo = p['chopOn'] and vxRate > p['chopMax']
                 emaNo = p['emaOn'] and emaSpd is not None and emaSpd > p['emaMax']
                 nearNo = p['minVwOn'] and d * (C[i] - V[i]) < p['minVwAtr'] * A
-                ghost = ghost or chopNo or emaNo or nearNo
-                st = d; armBar = i; lim = entry; stp = stop; stp0 = stop; trRisk = risk; trHalf = half; trGhost = ghost
+                # signal close too far from the VWAP (either side), in ATR or in price
+                vwd = abs(C[i] - V[i])
+                farNo = p['maxVwOn'] and vwd > (p['maxVwDist'] if p['maxVwUnit'] == 'price' else p['maxVwDist'] * A)
+                ghost = ghost or chopNo or emaNo or nearNo or farNo
+                st = d; armBar = i; lim = entry; stp = stop; stp0 = stop; trRisk = risk; trHalf = half; trGhost = ghost; trVwd = vwd; trVwdA = vwd / A
                 t = [lim + d * p['tp1R'] * risk, lim + d * p['tp2R'] * risk, lim + d * p['tp3R'] * risk, lim + d * p['tp4R'] * risk]
                 tF = t[p['exitAt'] - 1]
     return trades

@@ -1,12 +1,9 @@
 done 25
-M1 recovery {'default': 40, 'profit': 40, 'streak': 40}
+M1 recovery {'default': 44, 'profit': 44, 'streak': 44}
 M1 catalogue money 4 strategies, random orders for 4
-M5 recovery {'default': 40, 'profit': 40, 'streak': 40}
+M5 recovery {'default': 44, 'profit': 44, 'streak': 44}
 M5 catalogue money 4 strategies, random orders for 4
-M15 recovery {'default': 40, 'profit': 40, 'streak': 40}
+M15 recovery {'default': 44, 'profit': 44, 'streak': 44}
 M15 catalogue money 9 strategies, random orders for 9
-H1 recovery {'default': 40, 'profit': 40, 'streak': 40}
+H1 recovery {'default': 44, 'profit': 44, 'streak': 44}
 H1 catalogue money 8 strategies, random orders for 8
-MC diff lines: 22
-parsed ok 506 Auction_Retest_Strategy.pine
-   tabs 0 trailing spaces 0 indent not x4 (non-comment, may be line continuations): []

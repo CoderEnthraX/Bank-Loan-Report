@@ -1,16 +1,16 @@
 """Crooks TP1 rule: the EA's own NextRisk() / CrkT1Dist() / BookClosed() vs gold/crooks_tp1.py on the trades the simulator took
-(exit at TP1, every source, Crooks A / B, caps). Per trade: the $ risk and whether the TP1 rule is used. The path P&L comes from the simulator."""
+(exit at TP1, every source, Crooks A / B / C / D, caps). Per trade: the $ risk and whether the TP1 rule is used. The path P&L comes from the simulator."""
 import sys, os, pickle, subprocess, tempfile
 S = '/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad'
 sys.path.insert(0, S + '/gold')
 import crooks_tp1 as K
 H = S + '/mq5check/rec/rec_harness'
-REC = {'Crooks A': 18, 'Crooks B': 19}; ACT = {'clamp': 0, 'stop': 1, 'reset': 2}
+REC = {'Crooks A': 18, 'Crooks B': 19, 'Crooks C': 20, 'Crooks D': 21}; ACT = {'clamp': 0, 'stop': 1, 'reset': 2}
 D = pickle.load(open(S + '/gold/crooks_tp1.pkl', 'rb'))
 tdir = tempfile.TemporaryDirectory(); runs = bad = ntr = nt1 = 0
 for (tf, name), d in D.items():
     tr = d['trades']
-    for mode, split in (('Crooks A', 3), ('Crooks B', 2), ('Crooks B', 3), ('Crooks B', 5)):
+    for mode, split in (('Crooks A', 3), ('Crooks B', 2), ('Crooks B', 3), ('Crooks B', 5), ('Crooks C', 3), ('Crooks D', 3)):
         for cap, act in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'), (500.0, 'stop')):
             trace = []; r = K.simulate(tr, mode, cap=cap, capAction=act, cSplit=split, tp1rule=True, exitR=d['tp1R'], start=1e12, trace=trace)
             path = os.path.join(tdir.name, 'seq.txt')

@@ -13,7 +13,7 @@ import recovery as RC, greedy
 TFS = ('M1', 'M5', 'M15', 'H1')
 CAPV = ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'), (500.0, 'stop'))
 VARIANTS = ([('Off', 3, 0.0, 'clamp'), ('Rule C split', 3, 500.0, 'reset')] + [('Crooks A', 3, c, a) for c, a in CAPV] +
-            [('Crooks B', s, c, a) for s in (1, 2, 3, 4, 5) for c, a in CAPV])
+            [('Crooks B', s, c, a) for s in (1, 2, 3, 4, 5) for c, a in CAPV] + [(m, 3, c, a) for m in ('Crooks C', 'Crooks D') for c, a in CAPV])
 def exit_r(cfg):
     d = dict(greedy.defaults()); d.update(cfg)
     return (d['tp1R'], d['tp2R'], d['tp3R'], d['tp4R'])[d['exitAt'] - 1]
@@ -42,7 +42,7 @@ def job(arg):
     A = [x for x in seq if x[0].year <= 2023]; B = [x for x in seq if x[0].year >= 2024]
     rows = [dict(mode=m, split=s, cap=c, act=a, all=run(seq, m, s, c, a, xr), A=run(A, m, s, c, a, xr), B=run(B, m, s, c, a, xr)) for m, s, c, a in VARIANTS]
     stress = {(m, s, c, a, e): run(seq, m, s, c, a, xr, extra=e) for m, s, c, a in VARIANTS if c == 0 or a != 'stop' for e in (0.05, 0.10)}
-    caps = {(m, s, c, a): run(seq, m, s, c, a, xr) for m in ('Crooks A', 'Crooks B') for s in ((3,) if m == 'Crooks A' else (1, 2, 3))
+    caps = {(m, s, c, a): run(seq, m, s, c, a, xr) for m in ('Crooks A', 'Crooks B', 'Crooks C', 'Crooks D') for s in ((1, 2, 3) if m == 'Crooks B' else (3,))
             for c in (250.0, 1000.0) for a in ('clamp', 'reset')}
     return tf, i, dict(name=src['name'], scen=src['scen'], cfg=src['cfg'], exitR=xr, n=len(seq), rows=rows, stress=stress, caps=caps)
 def ok(r): return (not r['ruined']) and r['net'] > 0 and r['maxRisk'] <= 500.0 + 1e-9 and r['maxDDpct'] <= 0.40

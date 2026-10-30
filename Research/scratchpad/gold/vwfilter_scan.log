@@ -1,0 +1,233 @@
+
+M1 Default settings (Default settings) | 7425 trades | R/trade after spread -0.459 (21-23 -0.684, 24-26 -0.215) | longest losing streak 22
+   by distance (ATR): 0.0-0.5: 15 tr -1.302 | 0.5-1.0: 257 tr -0.526 | 1.0-1.5: 798 tr -0.510 | 1.5-2.0: 1038 tr -0.479 | 2.0-2.5: 941 tr -0.559 | 2.5-3.0: 746 tr -0.412 | 3.0-4.0: 1044 tr -0.485 | 4.0-5.0: 768 tr -0.441 | 5.0-up: 1818 tr -0.369
+   atr   cut-off chosen on 21-23: <= 3.75   keeps   62% | 21-23 R -2643.3 -> -1765.5 | 24-26 R  -763.9 ->  -544.4 (R/trade -0.215 -> -0.249) | longest losing streak 22 -> 20
+   sigma cut-off chosen on 21-23: <= 2.0    keeps   63% | 21-23 R -2643.3 -> -1579.5 | 24-26 R  -763.9 ->  -449.7 (R/trade -0.215 -> -0.197) | longest losing streak 22 -> 20
+   price cut-off chosen on 21-23: <= 1.17   keeps   45% | 21-23 R -2643.3 -> -1994.9 | 24-26 R  -763.9 ->  -417.4 (R/trade -0.215 -> -0.438) | longest losing streak 22 -> 22
+
+M1 Default settings exit TP2 (Default settings) | 7425 trades | R/trade after spread -0.492 (21-23 -0.730, 24-26 -0.234) | longest losing streak 24
+   by distance (ATR): 0.0-0.5: 16 tr -1.431 | 0.5-1.0: 246 tr -0.610 | 1.0-1.5: 765 tr -0.542 | 1.5-2.0: 1003 tr -0.543 | 2.0-2.5: 920 tr -0.535 | 2.5-3.0: 746 tr -0.445 | 3.0-4.0: 1126 tr -0.492 | 4.0-5.0: 855 tr -0.468 | 5.0-up: 1748 tr -0.424
+   atr   cut-off chosen on 21-23: <= 3.75   keeps   61% | 21-23 R -2819.9 -> -1855.3 | 24-26 R  -831.9 ->  -566.6 (R/trade -0.234 -> -0.260) | longest losing streak 24 -> 15
+   sigma cut-off chosen on 21-23: <= 2.0    keeps   62% | 21-23 R -2819.9 -> -1725.6 | 24-26 R  -831.9 ->  -534.6 (R/trade -0.234 -> -0.238) | longest losing streak 24 -> 16
+   price cut-off chosen on 21-23: <= 1.13   keeps   45% | 21-23 R -2819.9 -> -2085.6 | 24-26 R  -831.9 ->  -438.8 (R/trade -0.234 -> -0.463) | longest losing streak 24 -> 18
+
+M1 M1-S1 (Most profit, Longest winning streak) | 1958 trades | R/trade after spread +0.057 (21-23 +0.054, 24-26 +0.060) | longest losing streak 14
+   by distance (ATR): 0.0-0.5: 1 tr -1.233 | 0.5-1.0: 13 tr -0.112 | 1.0-1.5: 27 tr -0.272 | 1.5-2.0: 45 tr +0.347 | 2.0-2.5: 54 tr +0.002 | 2.5-3.0: 35 tr +0.418 | 3.0-4.0: 79 tr +0.365 | 4.0-5.0: 62 tr +0.026 | 5.0-up: 1617 tr +0.036
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   99% | 21-23 R   +53.4 ->   +52.7 | 24-26 R   +58.7 ->   +59.8 (R/trade +0.060 -> +0.062) | longest losing streak 14 -> 16
+   price cut-off chosen on 21-23: <= 34.02  keeps   60% | 21-23 R   +53.4 ->   +67.5 | 24-26 R   +58.7 ->   +22.0 (R/trade +0.060 -> +0.049) | longest losing streak 14 -> 14
+
+M1 M1-S1 exit TP2 (Most profit, Longest winning streak) | 2305 trades | R/trade after spread -0.014 (21-23 -0.006, 24-26 -0.023) | longest losing streak 8
+   by distance (ATR): 0.0-0.5: 1 tr +0.767 | 0.5-1.0: 15 tr +0.025 | 1.0-1.5: 28 tr -0.122 | 1.5-2.0: 48 tr +0.114 | 2.0-2.5: 55 tr -0.144 | 2.5-3.0: 36 tr +0.185 | 3.0-4.0: 83 tr +0.187 | 4.0-5.0: 68 tr +0.048 | 5.0-up: 1938 tr -0.026
+   sigma cut-off chosen on 21-23: <= 2.0    keeps   82% | 21-23 R    -6.8 ->    -6.3 | 24-26 R   -26.1 ->   -14.9 (R/trade -0.023 -> -0.016) | longest losing streak 8 -> 8
+   price cut-off chosen on 21-23: <= 42.75  keeps   68% | 21-23 R    -6.8 ->   +14.8 | 24-26 R   -26.1 ->   -15.6 (R/trade -0.023 -> -0.027) | longest losing streak 8 -> 7
+
+M1 M1-S2 (Shortest losing streak, Shortest losing streak - indicator only) | 1802 trades | R/trade after spread +0.052 (21-23 +0.029, 24-26 +0.075) | longest losing streak 12
+   by distance (ATR): 0.0-0.5: 1 tr -1.233 | 0.5-1.0: 10 tr -0.137 | 1.0-1.5: 24 tr -0.182 | 1.5-2.0: 39 tr +0.330 | 2.0-2.5: 49 tr -0.012 | 2.5-3.0: 28 tr +0.358 | 3.0-4.0: 68 tr +0.239 | 4.0-5.0: 56 tr -0.023 | 5.0-up: 1503 tr +0.043
+   sigma cut-off chosen on 21-23: <= 2.0    keeps   84% | 21-23 R   +26.0 ->   +33.1 | 24-26 R   +67.0 ->   +62.2 (R/trade +0.075 -> +0.084) | longest losing streak 12 -> 11
+   price cut-off chosen on 21-23: <= 34.2   keeps   60% | 21-23 R   +26.0 ->   +45.2 | 24-26 R   +67.0 ->   +21.7 (R/trade +0.075 -> +0.053) | longest losing streak 12 -> 13
+
+M1 M1-S2 exit TP2 (Shortest losing streak, Shortest losing streak - indicator only) | 2016 trades | R/trade after spread -0.023 (21-23 -0.020, 24-26 -0.027) | longest losing streak 8
+   by distance (ATR): 0.0-0.5: 1 tr +0.767 | 0.5-1.0: 10 tr -0.237 | 1.0-1.5: 25 tr -0.016 | 1.5-2.0: 40 tr +0.047 | 2.0-2.5: 50 tr -0.173 | 2.5-3.0: 30 tr +0.099 | 3.0-4.0: 72 tr +0.096 | 4.0-5.0: 58 tr +0.062 | 5.0-up: 1702 tr -0.028
+   sigma cut-off chosen on 21-23: <= 1.5    keeps   65% | 21-23 R   -20.2 ->    -4.4 | 24-26 R   -26.6 ->   -39.4 (R/trade -0.027 -> -0.062) | longest losing streak 8 -> 8
+   price cut-off chosen on 21-23: <= 34.36  keeps   60% | 21-23 R   -20.2 ->    -1.0 | 24-26 R   -26.6 ->   -21.0 (R/trade -0.027 -> -0.047) | longest losing streak 8 -> 7
+
+M1 M1-S3 (Most trades a day) | 2111 trades | R/trade after spread +0.044 (21-23 +0.063, 24-26 +0.025) | longest losing streak 14
+   by distance (ATR): 0.0-0.5: 2 tr +0.377 | 0.5-1.0: 18 tr +0.127 | 1.0-1.5: 32 tr -0.194 | 1.5-2.0: 52 tr +0.334 | 2.0-2.5: 50 tr -0.271 | 2.5-3.0: 38 tr +0.304 | 3.0-4.0: 92 tr +0.298 | 4.0-5.0: 65 tr +0.069 | 5.0-up: 1742 tr +0.023
+   sigma cut-off chosen on 21-23: <= 2.5    keeps   93% | 21-23 R   +66.2 ->   +67.2 | 24-26 R   +26.5 ->   +28.6 (R/trade +0.025 -> +0.029) | longest losing streak 14 -> 14
+   price cut-off chosen on 21-23: <= 96.97  keeps   90% | 21-23 R   +66.2 ->   +71.5 | 24-26 R   +26.5 ->   +10.6 (R/trade +0.025 -> +0.012) | longest losing streak 14 -> 14
+
+M1 M1-S4 (Simplest) | 2006 trades | R/trade after spread +0.041 (21-23 +0.049, 24-26 +0.034) | longest losing streak 14
+   by distance (ATR): 0.0-0.5: 1 tr -1.233 | 0.5-1.0: 14 tr -0.180 | 1.0-1.5: 29 tr -0.221 | 1.5-2.0: 49 tr +0.235 | 2.0-2.5: 54 tr -0.110 | 2.5-3.0: 37 tr +0.423 | 3.0-4.0: 84 tr +0.352 | 4.0-5.0: 63 tr +0.008 | 5.0-up: 1651 tr +0.025
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   99% | 21-23 R   +48.9 ->   +46.2 | 24-26 R   +34.3 ->   +37.3 (R/trade +0.034 -> +0.037) | longest losing streak 14 -> 16
+   price cut-off chosen on 21-23: <= 88.25  keeps   87% | 21-23 R   +48.9 ->   +54.6 | 24-26 R   +34.3 ->   +31.8 (R/trade +0.034 -> +0.041) | longest losing streak 14 -> 14
+
+M5 Default settings (Default settings) | 6958 trades | R/trade after spread -0.110 (21-23 -0.191, 24-26 -0.023) | longest losing streak 19
+   by distance (ATR): 0.0-0.5: 22 tr -0.494 | 0.5-1.0: 317 tr -0.197 | 1.0-1.5: 854 tr -0.167 | 1.5-2.0: 1070 tr -0.157 | 2.0-2.5: 924 tr -0.103 | 2.5-3.0: 720 tr -0.026 | 3.0-4.0: 1023 tr -0.065 | 4.0-5.0: 730 tr -0.128 | 5.0-up: 1298 tr -0.082
+   atr   cut-off chosen on 21-23: <= 3.25   keeps   60% | 21-23 R  -687.8 ->  -400.8 | 24-26 R   -76.3 ->   -71.2 (R/trade -0.023 -> -0.037) | longest losing streak 19 -> 17
+   sigma cut-off chosen on 21-23: <= 2.25   keeps   68% | 21-23 R  -687.8 ->  -445.4 | 24-26 R   -76.3 ->   -94.2 (R/trade -0.023 -> -0.042) | longest losing streak 19 -> 17
+   price cut-off chosen on 21-23: <= 3.55   keeps   45% | 21-23 R  -687.8 ->  -505.2 | 24-26 R   -76.3 ->   -94.5 (R/trade -0.023 -> -0.108) | longest losing streak 19 -> 16
+
+M5 Default settings exit TP2 (Default settings) | 7280 trades | R/trade after spread -0.117 (21-23 -0.194, 24-26 -0.034) | longest losing streak 11
+   by distance (ATR): 0.0-0.5: 24 tr -0.424 | 0.5-1.0: 332 tr -0.181 | 1.0-1.5: 915 tr -0.180 | 1.5-2.0: 1107 tr -0.136 | 2.0-2.5: 958 tr -0.125 | 2.5-3.0: 780 tr -0.047 | 3.0-4.0: 1147 tr -0.091 | 4.0-5.0: 821 tr -0.109 | 5.0-up: 1196 tr -0.097
+   atr   cut-off chosen on 21-23: <= 3.25   keeps   61% | 21-23 R  -736.0 ->  -448.3 | 24-26 R  -117.1 ->   -82.2 (R/trade -0.034 -> -0.040) | longest losing streak 11 -> 10
+   sigma cut-off chosen on 21-23: <= 2.25   keeps   66% | 21-23 R  -736.0 ->  -480.5 | 24-26 R  -117.1 ->   -69.0 (R/trade -0.034 -> -0.030) | longest losing streak 11 -> 11
+   price cut-off chosen on 21-23: <= 3.3    keeps   45% | 21-23 R  -736.0 ->  -510.5 | 24-26 R  -117.1 ->  -145.0 (R/trade -0.034 -> -0.161) | longest losing streak 11 -> 11
+
+M5 M5-S1 (Most profit, Smoothest) | 1472 trades | R/trade after spread +0.087 (21-23 +0.097, 24-26 +0.078) | longest losing streak 21
+   by distance (ATR): 0.5-1.0: 17 tr +0.169 | 1.0-1.5: 59 tr +0.088 | 1.5-2.0: 52 tr -0.366 | 2.0-2.5: 60 tr +0.130 | 2.5-3.0: 49 tr -0.606 | 3.0-4.0: 107 tr +0.372 | 4.0-5.0: 85 tr -0.048 | 5.0-up: 1043 tr +0.120
+   sigma cut-off chosen on 21-23: <= 2.0    keeps   79% | 21-23 R   +71.0 ->   +97.8 | 24-26 R   +57.4 ->   +44.9 (R/trade +0.078 -> +0.077) | longest losing streak 21 -> 18
+   price cut-off chosen on 21-23: <= 31.36  keeps   57% | 21-23 R   +71.0 ->   +79.5 | 24-26 R   +57.4 ->    +1.6 (R/trade +0.078 -> +0.005) | longest losing streak 21 -> 21
+
+M5 M5-S1 exit TP2 (Most profit, Smoothest) | 1820 trades | R/trade after spread +0.017 (21-23 +0.015, 24-26 +0.018) | longest losing streak 9
+   by distance (ATR): 0.5-1.0: 17 tr -0.008 | 1.0-1.5: 64 tr +0.180 | 1.5-2.0: 55 tr -0.019 | 2.0-2.5: 60 tr +0.062 | 2.5-3.0: 52 tr -0.189 | 3.0-4.0: 117 tr +0.025 | 4.0-5.0: 96 tr -0.119 | 5.0-up: 1359 tr +0.025
+   sigma cut-off chosen on 21-23: <= 2.0    keeps   77% | 21-23 R   +13.8 ->   +24.7 | 24-26 R   +16.5 ->    +9.0 (R/trade +0.018 -> +0.013) | longest losing streak 9 -> 9
+   price cut-off chosen on 21-23: <= 34.41  keeps   60% | 21-23 R   +13.8 ->   +18.0 | 24-26 R   +16.5 ->   +10.5 (R/trade +0.018 -> +0.025) | longest losing streak 9 -> 8
+
+M5 M5-S2 (Shortest losing streak, Shortest losing streak - indicator only) | 1692 trades | R/trade after spread +0.045 (21-23 +0.047, 24-26 +0.043) | longest losing streak 9
+   by distance (ATR): 0.5-1.0: 17 tr -0.137 | 1.0-1.5: 64 tr +0.177 | 1.5-2.0: 55 tr -0.121 | 2.0-2.5: 60 tr +0.099 | 2.5-3.0: 52 tr -0.169 | 3.0-4.0: 115 tr +0.157 | 4.0-5.0: 90 tr -0.072 | 5.0-up: 1239 tr +0.053
+   sigma cut-off chosen on 21-23: <= 3.5    keeps   98% | 21-23 R   +39.5 ->   +44.7 | 24-26 R   +36.6 ->   +39.9 (R/trade +0.043 -> +0.048) | longest losing streak 9 -> 9
+   price cut-off chosen on 21-23: <= 106.28 keeps   92% | 21-23 R   +39.5 ->   +40.0 | 24-26 R   +36.6 ->   +25.5 (R/trade +0.043 -> +0.035) | longest losing streak 9 -> 9
+
+M5 M5-S2 exit TP2 (Shortest losing streak, Shortest losing streak - indicator only) | 1820 trades | R/trade after spread +0.017 (21-23 +0.015, 24-26 +0.018) | longest losing streak 9
+   by distance (ATR): 0.5-1.0: 17 tr -0.008 | 1.0-1.5: 64 tr +0.180 | 1.5-2.0: 55 tr -0.019 | 2.0-2.5: 60 tr +0.062 | 2.5-3.0: 52 tr -0.189 | 3.0-4.0: 117 tr +0.025 | 4.0-5.0: 96 tr -0.119 | 5.0-up: 1359 tr +0.025
+   sigma cut-off chosen on 21-23: <= 2.0    keeps   77% | 21-23 R   +13.8 ->   +24.7 | 24-26 R   +16.5 ->    +9.0 (R/trade +0.018 -> +0.013) | longest losing streak 9 -> 9
+   price cut-off chosen on 21-23: <= 34.41  keeps   60% | 21-23 R   +13.8 ->   +18.0 | 24-26 R   +16.5 ->   +10.5 (R/trade +0.018 -> +0.025) | longest losing streak 9 -> 8
+
+M5 M5-S3 (Most trades a day) | 1805 trades | R/trade after spread +0.072 (21-23 +0.066, 24-26 +0.079) | longest losing streak 13
+   by distance (ATR): 0.5-1.0: 21 tr -0.622 | 1.0-1.5: 79 tr +0.293 | 1.5-2.0: 68 tr -0.376 | 2.0-2.5: 72 tr +0.131 | 2.5-3.0: 64 tr -0.051 | 3.0-4.0: 129 tr +0.125 | 4.0-5.0: 100 tr +0.078 | 5.0-up: 1272 tr +0.091
+   sigma cut-off chosen on 21-23: <= 2.0    keeps   80% | 21-23 R   +59.7 ->   +73.5 | 24-26 R   +70.7 ->   +99.1 (R/trade +0.079 -> +0.140) | longest losing streak 13 -> 13
+   price cut-off chosen on 21-23: <= 45.29  keeps   70% | 21-23 R   +59.7 ->   +65.0 | 24-26 R   +70.7 ->   +29.6 (R/trade +0.079 -> +0.061) | longest losing streak 13 -> 12
+
+M5 M5-S4 (Simplest) | 1488 trades | R/trade after spread +0.058 (21-23 +0.070, 24-26 +0.045) | longest losing streak 20
+   by distance (ATR): 0.5-1.0: 17 tr +0.166 | 1.0-1.5: 58 tr +0.194 | 1.5-2.0: 51 tr -0.460 | 2.0-2.5: 57 tr +0.486 | 2.5-3.0: 46 tr -0.329 | 3.0-4.0: 102 tr +0.104 | 4.0-5.0: 86 tr -0.140 | 5.0-up: 1071 tr +0.079
+   sigma cut-off chosen on 21-23: <= 2.0    keeps   82% | 21-23 R   +53.9 ->   +59.8 | 24-26 R   +32.1 ->   +15.3 (R/trade +0.045 -> +0.026) | longest losing streak 20 -> 20
+   price cut-off chosen on 21-23: <= 126.05 keeps   95% | 21-23 R   +53.9 ->   +53.9 | 24-26 R   +32.1 ->   +12.9 (R/trade +0.045 -> +0.020) | longest losing streak 20 -> 20
+
+M15 Default settings (Default settings) | 3169 trades | R/trade after spread -0.055 (21-23 -0.102, 24-26 -0.007) | longest losing streak 18
+   by distance (ATR): 0.0-0.5: 24 tr +0.055 | 0.5-1.0: 196 tr -0.036 | 1.0-1.5: 485 tr +0.024 | 1.5-2.0: 564 tr -0.103 | 2.0-2.5: 491 tr -0.107 | 2.5-3.0: 366 tr -0.129 | 3.0-4.0: 506 tr +0.045 | 4.0-5.0: 285 tr -0.068 | 5.0-up: 252 tr -0.100
+   atr   cut-off chosen on 21-23: <= 3.5    keeps   76% | 21-23 R  -163.9 ->  -124.5 | 24-26 R   -10.2 ->    -3.3 (R/trade -0.007 -> -0.003) | longest losing streak 18 -> 14
+   sigma cut-off chosen on 21-23: <= 2.5    keeps   68% | 21-23 R  -163.9 ->   -82.1 | 24-26 R   -10.2 ->   -25.1 (R/trade -0.007 -> -0.023) | longest losing streak 18 -> 11
+   price cut-off chosen on 21-23: <= 5.65   keeps   43% | 21-23 R  -163.9 ->  -116.6 | 24-26 R   -10.2 ->   -10.1 (R/trade -0.007 -> -0.029) | longest losing streak 18 -> 15
+
+M15 Default settings exit TP2 (Default settings) | 3892 trades | R/trade after spread -0.081 (21-23 -0.108, 24-26 -0.053) | longest losing streak 9
+   by distance (ATR): 0.0-0.5: 25 tr -0.349 | 0.5-1.0: 245 tr -0.080 | 1.0-1.5: 599 tr -0.053 | 1.5-2.0: 705 tr -0.109 | 2.0-2.5: 608 tr -0.147 | 2.5-3.0: 448 tr -0.112 | 3.0-4.0: 642 tr -0.010 | 4.0-5.0: 347 tr -0.022 | 5.0-up: 273 tr -0.098
+   atr   cut-off chosen on 21-23: <= 2.75   keeps   62% | 21-23 R  -215.8 ->  -167.8 | 24-26 R  -101.3 ->   -91.0 (R/trade -0.053 -> -0.080) | longest losing streak 9 -> 9
+   sigma cut-off chosen on 21-23: <= 2.5    keeps   69% | 21-23 R  -215.8 ->  -126.8 | 24-26 R  -101.3 ->   -63.8 (R/trade -0.053 -> -0.047) | longest losing streak 9 -> 9
+   price cut-off chosen on 21-23: <= 5.42   keeps   42% | 21-23 R  -215.8 ->  -148.8 | 24-26 R  -101.3 ->   -53.5 (R/trade -0.053 -> -0.125) | longest losing streak 9 -> 7
+
+M15 M15-S1 (Most profit) | 1388 trades | R/trade after spread +0.134 (21-23 +0.135, 24-26 +0.132) | longest losing streak 17
+   by distance (ATR): 0.0-0.5: 11 tr +0.060 | 0.5-1.0: 82 tr +0.283 | 1.0-1.5: 207 tr +0.044 | 1.5-2.0: 207 tr +0.117 | 2.0-2.5: 201 tr +0.163 | 2.5-3.0: 161 tr +0.030 | 3.0-4.0: 220 tr +0.124 | 4.0-5.0: 135 tr +0.273 | 5.0-up: 164 tr +0.163
+   atr   cut-off chosen on 21-23: <= 6.0    keeps   94% | 21-23 R   +92.9 ->   +89.0 | 24-26 R   +92.8 ->   +72.1 (R/trade +0.132 -> +0.109) | longest losing streak 17 -> 15
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   98% | 21-23 R   +92.9 ->   +94.3 | 24-26 R   +92.8 ->   +83.9 (R/trade +0.132 -> +0.122) | longest losing streak 17 -> 16
+   price cut-off chosen on 21-23: <= 43.5   keeps   95% | 21-23 R   +92.9 ->   +93.9 | 24-26 R   +92.8 ->   +64.1 (R/trade +0.132 -> +0.101) | longest losing streak 17 -> 17
+
+M15 M15-S1 exit TP2 (Most profit) | 1940 trades | R/trade after spread +0.043 (21-23 +0.014, 24-26 +0.073) | longest losing streak 11
+   by distance (ATR): 0.0-0.5: 14 tr -0.326 | 0.5-1.0: 113 tr +0.123 | 1.0-1.5: 286 tr +0.069 | 1.5-2.0: 267 tr +0.057 | 2.0-2.5: 258 tr -0.006 | 2.5-3.0: 212 tr -0.039 | 3.0-4.0: 328 tr +0.026 | 4.0-5.0: 235 tr +0.065 | 5.0-up: 227 tr +0.115
+   atr   cut-off chosen on 21-23: <= 5.0    keeps   88% | 21-23 R   +13.1 ->   +13.3 | 24-26 R   +71.0 ->   +44.7 (R/trade +0.073 -> +0.052) | longest losing streak 11 -> 10
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   97% | 21-23 R   +13.1 ->   +15.6 | 24-26 R   +71.0 ->   +62.1 (R/trade +0.073 -> +0.065) | longest losing streak 11 -> 11
+   price cut-off chosen on 21-23: <= 35.14  keeps   92% | 21-23 R   +13.1 ->   +13.1 | 24-26 R   +71.0 ->   +47.5 (R/trade +0.073 -> +0.057) | longest losing streak 11 -> 11
+
+M15 M15-S2 (Shortest losing streak) | 1137 trades | R/trade after spread +0.066 (21-23 +0.065, 24-26 +0.068) | longest losing streak 5
+   by distance (ATR): 0.0-0.5: 7 tr +0.284 | 0.5-1.0: 51 tr +0.072 | 1.0-1.5: 164 tr +0.051 | 1.5-2.0: 174 tr +0.077 | 2.0-2.5: 180 tr +0.108 | 2.5-3.0: 145 tr -0.028 | 3.0-4.0: 203 tr +0.064 | 4.0-5.0: 114 tr +0.169 | 5.0-up: 99 tr +0.004
+   atr   cut-off chosen on 21-23: <= 6.0    keeps   96% | 21-23 R   +37.9 ->   +35.5 | 24-26 R   +37.6 ->   +37.8 (R/trade +0.068 -> +0.071) | longest losing streak 5 -> 5
+   sigma cut-off chosen on 21-23: <= 3.5    keeps   93% | 21-23 R   +37.9 ->   +36.9 | 24-26 R   +37.6 ->   +28.5 (R/trade +0.068 -> +0.055) | longest losing streak 5 -> 5
+   price cut-off chosen on 21-23: <= 32.24  keeps   92% | 21-23 R   +37.9 ->   +39.9 | 24-26 R   +37.6 ->   +36.3 (R/trade +0.068 -> +0.078) | longest losing streak 5 -> 5
+
+M15 M15-S2 exit TP2 (Shortest losing streak) | 1558 trades | R/trade after spread +0.021 (21-23 -0.000, 24-26 +0.043) | longest losing streak 5
+   by distance (ATR): 0.0-0.5: 8 tr -0.105 | 0.5-1.0: 75 tr -0.005 | 1.0-1.5: 218 tr +0.083 | 1.5-2.0: 242 tr +0.028 | 2.0-2.5: 221 tr -0.022 | 2.5-3.0: 188 tr -0.015 | 3.0-4.0: 285 tr +0.028 | 4.0-5.0: 194 tr +0.026 | 5.0-up: 127 tr +0.032
+   atr   cut-off chosen on 21-23: <= 5.0    keeps   92% | 21-23 R    -0.0 ->    +0.8 | 24-26 R   +33.1 ->   +28.2 (R/trade +0.043 -> +0.040) | longest losing streak 5 -> 5
+   sigma cut-off chosen on 21-23: <= 2.5    keeps   62% | 21-23 R    -0.0 ->    +0.5 | 24-26 R   +33.1 ->   +20.6 (R/trade +0.043 -> +0.043) | longest losing streak 5 -> 4
+   price cut-off chosen on 21-23: <= 7.05   keeps   45% | 21-23 R    -0.0 ->    +2.9 | 24-26 R   +33.1 ->   +11.4 (R/trade +0.043 -> +0.054) | longest losing streak 5 -> 4
+
+M15 M15-S3 (Shortest losing streak - indicator only, Smoothest) | 1129 trades | R/trade after spread +0.132 (21-23 +0.134, 24-26 +0.129) | longest losing streak 8
+   by distance (ATR): 0.0-0.5: 69 tr +0.127 | 0.5-1.0: 110 tr +0.127 | 1.0-1.5: 157 tr +0.237 | 1.5-2.0: 155 tr +0.008 | 2.0-2.5: 140 tr +0.077 | 2.5-3.0: 118 tr -0.028 | 3.0-4.0: 177 tr +0.186 | 4.0-5.0: 100 tr +0.454 | 5.0-up: 103 tr +0.016
+   atr   cut-off chosen on 21-23: <= 6.0    keeps   96% | 21-23 R   +75.5 ->   +75.0 | 24-26 R   +73.4 ->   +75.5 (R/trade +0.129 -> +0.138) | longest losing streak 8 -> 8
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   97% | 21-23 R   +75.5 ->   +71.9 | 24-26 R   +73.4 ->   +71.5 (R/trade +0.129 -> +0.130) | longest losing streak 8 -> 9
+   price cut-off chosen on 21-23: <= 49.42  keeps   97% | 21-23 R   +75.5 ->   +76.5 | 24-26 R   +73.4 ->   +57.5 (R/trade +0.129 -> +0.107) | longest losing streak 8 -> 8
+
+M15 M15-S4 (Longest winning streak) | 1207 trades | R/trade after spread +0.070 (21-23 +0.077, 24-26 +0.064) | longest losing streak 6
+   by distance (ATR): 0.0-0.5: 11 tr -0.092 | 0.5-1.0: 60 tr +0.102 | 1.0-1.5: 147 tr +0.107 | 1.5-2.0: 168 tr +0.086 | 2.0-2.5: 173 tr +0.105 | 2.5-3.0: 151 tr -0.038 | 3.0-4.0: 211 tr +0.045 | 4.0-5.0: 125 tr +0.165 | 5.0-up: 161 tr +0.043
+   atr   cut-off chosen on 21-23: <= 6.0    keeps   93% | 21-23 R   +46.1 ->   +46.7 | 24-26 R   +38.6 ->   +30.7 (R/trade +0.064 -> +0.055) | longest losing streak 6 -> 6
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   98% | 21-23 R   +46.1 ->   +44.2 | 24-26 R   +38.6 ->   +36.0 (R/trade +0.064 -> +0.061) | longest losing streak 6 -> 6
+   price cut-off chosen on 21-23: <= 44.16  keeps   95% | 21-23 R   +46.1 ->   +47.1 | 24-26 R   +38.6 ->   +29.9 (R/trade +0.064 -> +0.055) | longest losing streak 6 -> 6
+
+M15 M15-S5 (Highest win rate) | 1388 trades | R/trade after spread +0.055 (21-23 +0.067, 24-26 +0.044) | longest losing streak 5
+   by distance (ATR): 0.0-0.5: 11 tr -0.035 | 0.5-1.0: 82 tr +0.134 | 1.0-1.5: 207 tr +0.078 | 1.5-2.0: 207 tr +0.066 | 2.0-2.5: 201 tr +0.064 | 2.5-3.0: 161 tr -0.052 | 3.0-4.0: 220 tr +0.036 | 4.0-5.0: 135 tr +0.125 | 5.0-up: 164 tr +0.044
+   atr   cut-off chosen on 21-23: <= 6.0    keeps   94% | 21-23 R   +46.0 ->   +45.6 | 24-26 R   +30.9 ->   +23.8 (R/trade +0.044 -> +0.036) | longest losing streak 5 -> 5
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   98% | 21-23 R   +46.0 ->   +47.7 | 24-26 R   +30.9 ->   +28.3 (R/trade +0.044 -> +0.041) | longest losing streak 5 -> 5
+   price cut-off chosen on 21-23: <= 34.26  keeps   92% | 21-23 R   +46.0 ->   +47.5 | 24-26 R   +30.9 ->   +20.9 (R/trade +0.044 -> +0.035) | longest losing streak 5 -> 5
+
+M15 M15-S6 (Most trades a day) | 1776 trades | R/trade after spread +0.062 (21-23 +0.042, 24-26 +0.082) | longest losing streak 11
+   by distance (ATR): 0.0-0.5: 11 tr -0.141 | 0.5-1.0: 109 tr +0.126 | 1.0-1.5: 280 tr +0.063 | 1.5-2.0: 278 tr -0.013 | 2.0-2.5: 269 tr +0.083 | 2.5-3.0: 211 tr +0.048 | 3.0-4.0: 277 tr +0.080 | 4.0-5.0: 178 tr +0.107 | 5.0-up: 163 tr +0.065
+   atr   cut-off chosen on 21-23: <= 6.0    keeps   95% | 21-23 R   +37.3 ->   +39.2 | 24-26 R   +72.9 ->   +62.3 (R/trade +0.082 -> +0.073) | longest losing streak 11 -> 11
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   98% | 21-23 R   +37.3 ->   +39.9 | 24-26 R   +72.9 ->   +68.6 (R/trade +0.082 -> +0.079) | longest losing streak 11 -> 11
+   price cut-off chosen on 21-23: <= 40.42  keeps   95% | 21-23 R   +37.3 ->   +39.3 | 24-26 R   +72.9 ->   +50.0 (R/trade +0.082 -> +0.062) | longest losing streak 11 -> 11
+
+M15 M15-S7 (Every year positive) | 1377 trades | R/trade after spread +0.146 (21-23 +0.145, 24-26 +0.147) | longest losing streak 17
+   by distance (ATR): 0.0-0.5: 11 tr +0.060 | 0.5-1.0: 85 tr +0.274 | 1.0-1.5: 199 tr +0.073 | 1.5-2.0: 203 tr +0.143 | 2.0-2.5: 190 tr +0.195 | 2.5-3.0: 161 tr +0.074 | 3.0-4.0: 229 tr +0.118 | 4.0-5.0: 135 tr +0.220 | 5.0-up: 164 tr +0.170
+   atr   cut-off chosen on 21-23: <= 6.0    keeps   94% | 21-23 R   +98.2 ->   +94.2 | 24-26 R  +102.8 ->   +82.1 (R/trade +0.147 -> +0.125) | longest losing streak 17 -> 15
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   98% | 21-23 R   +98.2 ->  +100.6 | 24-26 R  +102.8 ->   +94.9 (R/trade +0.147 -> +0.138) | longest losing streak 17 -> 16
+   price cut-off chosen on 21-23: <= 43.5   keeps   95% | 21-23 R   +98.2 ->   +99.3 | 24-26 R  +102.8 ->   +73.1 (R/trade +0.147 -> +0.116) | longest losing streak 17 -> 17
+
+M15 M15-S8 (Simplest) | 1179 trades | R/trade after spread +0.084 (21-23 +0.083, 24-26 +0.084) | longest losing streak 18
+   by distance (ATR): 0.0-0.5: 11 tr -0.207 | 0.5-1.0: 75 tr +0.185 | 1.0-1.5: 169 tr -0.069 | 1.5-2.0: 173 tr +0.045 | 2.0-2.5: 166 tr +0.011 | 2.5-3.0: 122 tr +0.112 | 3.0-4.0: 175 tr +0.079 | 4.0-5.0: 130 tr +0.254 | 5.0-up: 158 tr +0.182
+   atr   cut-off chosen on 21-23: <= 6.0    keeps   92% | 21-23 R   +50.8 ->   +48.8 | 24-26 R   +47.9 ->   +24.1 (R/trade +0.084 -> +0.046) | longest losing streak 18 -> 16
+   sigma cut-off chosen on 21-23: <= 4.0    keeps   98% | 21-23 R   +50.8 ->   +50.1 | 24-26 R   +47.9 ->   +38.0 (R/trade +0.084 -> +0.068) | longest losing streak 18 -> 17
+   price cut-off chosen on 21-23: <= 40.42  keeps   95% | 21-23 R   +50.8 ->   +52.8 | 24-26 R   +47.9 ->   +36.1 (R/trade +0.084 -> +0.070) | longest losing streak 18 -> 18
+
+M15 M15-S9 (Asia session only) | 712 trades | R/trade after spread +0.051 (21-23 +0.071, 24-26 +0.030) | longest losing streak 21
+   by distance (ATR): 0.5-1.0: 98 tr +0.029 | 1.0-1.5: 238 tr +0.086 | 1.5-2.0: 187 tr -0.038 | 2.0-2.5: 101 tr -0.006 | 2.5-3.0: 59 tr +0.243 | 3.0-4.0: 26 tr +0.174 | 4.0-5.0: 3 tr +0.662
+   atr   cut-off chosen on 21-23: <= 3.25   keeps   98% | 21-23 R   +25.9 ->   +30.1 | 24-26 R   +10.5 ->    +6.6 (R/trade +0.030 -> +0.020) | longest losing streak 21 -> 20
+   sigma cut-off chosen on 21-23: <= 3.0    keeps   90% | 21-23 R   +25.9 ->   +25.4 | 24-26 R   +10.5 ->   +14.3 (R/trade +0.030 -> +0.048) | longest losing streak 21 -> 20
+   price cut-off chosen on 21-23: <= 6.47   keeps   75% | 21-23 R   +25.9 ->   +29.1 | 24-26 R   +10.5 ->    -3.9 (R/trade +0.030 -> -0.022) | longest losing streak 21 -> 8
+
+H1 Default settings (Default settings) | 884 trades | R/trade after spread -0.045 (21-23 -0.103, 24-26 +0.019) | longest losing streak 15
+   by distance (ATR): 0.0-0.5: 26 tr -0.213 | 0.5-1.0: 150 tr -0.109 | 1.0-1.5: 234 tr -0.036 | 1.5-2.0: 185 tr -0.146 | 2.0-2.5: 135 tr +0.138 | 2.5-3.0: 75 tr +0.022 | 3.0-4.0: 60 tr -0.017 | 4.0-5.0: 13 tr +0.368 | 5.0-up: 6 tr -1.015
+   atr   cut-off chosen on 21-23: <= 1.75   keeps   58% | 21-23 R   -47.6 ->   -31.3 | 24-26 R    +8.2 ->    -8.3 (R/trade +0.019 -> -0.035) | longest losing streak 15 -> 15
+   sigma cut-off chosen on 21-23: <= 2.5    keeps   63% | 21-23 R   -47.6 ->   -31.8 | 24-26 R    +8.2 ->   +21.6 (R/trade +0.019 -> +0.080) | longest losing streak 15 -> 12
+   price cut-off chosen on 21-23: <= 8.89   keeps   48% | 21-23 R   -47.6 ->   -35.8 | 24-26 R    +8.2 ->    -4.5 (R/trade +0.019 -> -0.042) | longest losing streak 15 -> 17
+
+H1 Default settings exit TP2 (Default settings) | 1098 trades | R/trade after spread -0.085 (21-23 -0.152, 24-26 -0.016) | longest losing streak 10
+   by distance (ATR): 0.0-0.5: 32 tr -0.211 | 0.5-1.0: 182 tr -0.017 | 1.0-1.5: 291 tr -0.033 | 1.5-2.0: 238 tr -0.197 | 2.0-2.5: 174 tr -0.064 | 2.5-3.0: 90 tr -0.085 | 3.0-4.0: 73 tr -0.113 | 4.0-5.0: 13 tr +0.215 | 5.0-up: 5 tr -0.619
+   atr   cut-off chosen on 21-23: <= 2.0    keeps   68% | 21-23 R   -84.8 ->   -52.9 | 24-26 R    -8.8 ->   -13.3 (R/trade -0.016 -> -0.037) | longest losing streak 10 -> 14
+   sigma cut-off chosen on 21-23: <= 2.5    keeps   63% | 21-23 R   -84.8 ->   -48.8 | 24-26 R    -8.8 ->    +4.0 (R/trade -0.016 -> +0.011) | longest losing streak 10 -> 8
+   price cut-off chosen on 21-23: <= 8.27   keeps   42% | 21-23 R   -84.8 ->   -51.2 | 24-26 R    -8.8 ->    +2.3 (R/trade -0.016 -> +0.019) | longest losing streak 10 -> 14
+
+H1 H1-S1 (Most profit, Every year positive) | 186 trades | R/trade after spread +0.337 (21-23 +0.362, 24-26 +0.311) | longest losing streak 8
+   by distance (ATR): 0.0-0.5: 17 tr +0.222 | 0.5-1.0: 60 tr +0.429 | 1.0-1.5: 60 tr +0.279 | 1.5-2.0: 23 tr +0.292 | 2.0-2.5: 7 tr +0.275 | 2.5-3.0: 3 tr -1.007 | 3.0-4.0: 10 tr +0.493 | 4.0-5.0: 5 tr +0.785 | 5.0-up: 1 tr +1.990
+   atr   cut-off chosen on 21-23: <= 5.25   keeps  100% | 21-23 R   +34.4 ->   +34.4 | 24-26 R   +28.3 ->   +28.3 (R/trade +0.311 -> +0.311) | longest losing streak 8 -> 8
+   sigma cut-off chosen on 21-23: <= 2.0    keeps  100% | 21-23 R   +34.4 ->   +34.4 | 24-26 R   +28.3 ->   +28.3 (R/trade +0.311 -> +0.311) | longest losing streak 8 -> 8
+   price cut-off chosen on 21-23: <= 6.21   keeps   50% | 21-23 R   +34.4 ->   +34.8 | 24-26 R   +28.3 ->    +1.8 (R/trade +0.311 -> +0.093) | longest losing streak 8 -> 7
+
+H1 H1-S1 exit TP2 (Most profit, Every year positive) | 244 trades | R/trade after spread +0.032 (21-23 +0.065, 24-26 +0.001) | longest losing streak 6
+   by distance (ATR): 0.0-0.5: 21 tr -0.156 | 0.5-1.0: 81 tr +0.015 | 1.0-1.5: 85 tr +0.040 | 1.5-2.0: 26 tr +0.141 | 2.0-2.5: 10 tr +0.192 | 2.5-3.0: 6 tr -0.339 | 3.0-4.0: 10 tr +0.193 | 4.0-5.0: 4 tr -0.015 | 5.0-up: 1 tr +0.990
+   atr   cut-off chosen on 21-23: <= 5.25   keeps  100% | 21-23 R    +7.6 ->    +7.6 | 24-26 R    +0.1 ->    +0.1 (R/trade +0.001 -> +0.001) | longest losing streak 6 -> 6
+   sigma cut-off chosen on 21-23: <= 2.0    keeps  100% | 21-23 R    +7.6 ->    +7.6 | 24-26 R    +0.1 ->    +0.1 (R/trade +0.001 -> +0.001) | longest losing streak 6 -> 6
+   price cut-off chosen on 21-23: <= 31.59  keeps   92% | 21-23 R    +7.6 ->    +7.6 | 24-26 R    +0.1 ->    -0.8 (R/trade +0.001 -> -0.008) | longest losing streak 6 -> 6
+
+H1 H1-S2 (Shortest losing streak) | 195 trades | R/trade after spread +0.176 (21-23 +0.213, 24-26 +0.139) | longest losing streak 3
+   by distance (ATR): 0.0-0.5: 2 tr -0.014 | 0.5-1.0: 14 tr +0.329 | 1.0-1.5: 26 tr +0.255 | 1.5-2.0: 32 tr +0.365 | 2.0-2.5: 21 tr +0.270 | 2.5-3.0: 17 tr -0.157 | 3.0-4.0: 34 tr +0.057 | 4.0-5.0: 14 tr +0.235 | 5.0-up: 35 tr +0.093
+   atr   cut-off chosen on 21-23: <= 5.75   keeps   86% | 21-23 R   +20.9 ->   +22.7 | 24-26 R   +13.5 ->   +11.4 (R/trade +0.139 -> +0.129) | longest losing streak 3 -> 3
+   sigma cut-off chosen on 21-23: <= 1.25   keeps  100% | 21-23 R   +20.9 ->   +20.9 | 24-26 R   +13.5 ->   +13.5 (R/trade +0.139 -> +0.139) | longest losing streak 3 -> 3
+   price cut-off chosen on 21-23: <= 17.67  keeps   55% | 21-23 R   +20.9 ->   +23.5 | 24-26 R   +13.5 ->    +3.5 (R/trade +0.139 -> +0.088) | longest losing streak 3 -> 3
+
+H1 H1-S2 exit TP2 (Shortest losing streak) | 220 trades | R/trade after spread +0.088 (21-23 +0.091, 24-26 +0.086) | longest losing streak 5
+   by distance (ATR): 0.0-0.5: 2 tr -0.164 | 0.5-1.0: 15 tr +0.315 | 1.0-1.5: 26 tr +0.186 | 1.5-2.0: 32 tr +0.310 | 2.0-2.5: 26 tr +0.052 | 2.5-3.0: 20 tr -0.188 | 3.0-4.0: 39 tr +0.038 | 4.0-5.0: 19 tr +0.221 | 5.0-up: 41 tr -0.072
+   atr   cut-off chosen on 21-23: <= 3.25   keeps   60% | 21-23 R    +9.4 ->   +13.3 | 24-26 R   +10.1 ->    +4.6 (R/trade +0.086 -> +0.067) | longest losing streak 5 -> 3
+   sigma cut-off chosen on 21-23: <= 1.0    keeps   71% | 21-23 R    +9.4 ->    +9.8 | 24-26 R   +10.1 ->    +8.7 (R/trade +0.086 -> +0.101) | longest losing streak 5 -> 3
+   price cut-off chosen on 21-23: <= 17.62  keeps   50% | 21-23 R    +9.4 ->   +14.0 | 24-26 R   +10.1 ->    +0.7 (R/trade +0.086 -> +0.017) | longest losing streak 5 -> 3
+
+H1 H1-S3 (Shortest losing streak - indicator only) | 228 trades | R/trade after spread +0.232 (21-23 +0.133, 24-26 +0.326) | longest losing streak 6
+   by distance (ATR): 0.0-0.5: 22 tr -0.199 | 0.5-1.0: 62 tr +0.184 | 1.0-1.5: 59 tr +0.250 | 1.5-2.0: 33 tr +0.442 | 2.0-2.5: 20 tr +0.037 | 2.5-3.0: 11 tr +0.083 | 3.0-4.0: 15 tr +0.591 | 4.0-5.0: 5 tr +0.783 | 5.0-up: 1 tr +1.989
+   atr   cut-off chosen on 21-23: <= 5.25   keeps  100% | 21-23 R   +14.7 ->   +14.7 | 24-26 R   +38.1 ->   +38.1 (R/trade +0.326 -> +0.326) | longest losing streak 6 -> 6
+   sigma cut-off chosen on 21-23: <= 2.0    keeps  100% | 21-23 R   +14.7 ->   +14.7 | 24-26 R   +38.1 ->   +38.1 (R/trade +0.326 -> +0.326) | longest losing streak 6 -> 6
+   price cut-off chosen on 21-23: <= 31.59  keeps   90% | 21-23 R   +14.7 ->   +14.7 | 24-26 R   +38.1 ->   +16.2 (R/trade +0.326 -> +0.172) | longest losing streak 6 -> 8
+
+H1 H1-S4 (Longest winning streak) | 261 trades | R/trade after spread +0.108 (21-23 +0.100, 24-26 +0.116) | longest losing streak 6
+   by distance (ATR): 0.0-0.5: 3 tr -0.353 | 0.5-1.0: 17 tr +0.160 | 1.0-1.5: 33 tr +0.015 | 1.5-2.0: 40 tr +0.369 | 2.0-2.5: 32 tr +0.254 | 2.5-3.0: 30 tr -0.143 | 3.0-4.0: 42 tr -0.079 | 4.0-5.0: 21 tr +0.493 | 5.0-up: 43 tr +0.009
+   atr   cut-off chosen on 21-23: <= 3.25   keeps   65% | 21-23 R   +12.7 ->   +17.7 | 24-26 R   +15.5 ->    +6.0 (R/trade +0.116 -> +0.073) | longest losing streak 6 -> 5
+   sigma cut-off chosen on 21-23: <= 1.25   keeps  100% | 21-23 R   +12.7 ->   +12.7 | 24-26 R   +15.5 ->   +15.5 (R/trade +0.116 -> +0.116) | longest losing streak 6 -> 6
+   price cut-off chosen on 21-23: <= 17.95  keeps   57% | 21-23 R   +12.7 ->   +15.5 | 24-26 R   +15.5 ->    -5.1 (R/trade +0.116 -> -0.096) | longest losing streak 6 -> 6
+
+H1 H1-S5 (Highest win rate) | 200 trades | R/trade after spread +0.174 (21-23 +0.220, 24-26 +0.127) | longest losing streak 4
+   by distance (ATR): 0.0-0.5: 2 tr -0.014 | 0.5-1.0: 14 tr +0.265 | 1.0-1.5: 27 tr +0.208 | 1.5-2.0: 33 tr +0.357 | 2.0-2.5: 23 tr +0.254 | 2.5-3.0: 18 tr -0.143 | 3.0-4.0: 34 tr +0.056 | 4.0-5.0: 14 tr +0.381 | 5.0-up: 35 tr +0.093
+   atr   cut-off chosen on 21-23: <= 5.75   keeps   86% | 21-23 R   +22.2 ->   +24.0 | 24-26 R   +12.6 ->   +10.5 (R/trade +0.127 -> +0.116) | longest losing streak 4 -> 4
+   sigma cut-off chosen on 21-23: <= 1.25   keeps  100% | 21-23 R   +22.2 ->   +22.2 | 24-26 R   +12.6 ->   +12.6 (R/trade +0.127 -> +0.127) | longest losing streak 4 -> 4
+   price cut-off chosen on 21-23: <= 23.74  keeps   65% | 21-23 R   +22.2 ->   +23.0 | 24-26 R   +12.6 ->    +6.1 (R/trade +0.127 -> +0.121) | longest losing streak 4 -> 4
+
+H1 H1-S6 (Most trades a day) | 542 trades | R/trade after spread +0.119 (21-23 +0.144, 24-26 +0.092) | longest losing streak 16
+   by distance (ATR): 0.0-0.5: 4 tr +0.977 | 0.5-1.0: 34 tr +0.391 | 1.0-1.5: 36 tr -0.129 | 1.5-2.0: 50 tr -0.137 | 2.0-2.5: 36 tr +0.536 | 2.5-3.0: 39 tr -0.300 | 3.0-4.0: 59 tr +0.201 | 4.0-5.0: 43 tr +0.005 | 5.0-up: 241 tr +0.162
+   atr   cut-off chosen on 21-23: <= 6.0    keeps   62% | 21-23 R   +40.3 ->   +61.1 | 24-26 R   +24.1 ->    +8.8 (R/trade +0.092 -> +0.053) | longest losing streak 16 -> 14
+   sigma cut-off chosen on 21-23: <= 2.25   keeps   77% | 21-23 R   +40.3 ->   +57.7 | 24-26 R   +24.1 ->   +10.5 (R/trade +0.092 -> +0.052) | longest losing streak 16 -> 13
+   price cut-off chosen on 21-23: <= 35.8   keeps   62% | 21-23 R   +40.3 ->   +64.7 | 24-26 R   +24.1 ->   +21.9 (R/trade +0.092 -> +0.175) | longest losing streak 16 -> 13
+
+H1 H1-S7 (Smoothest) | 208 trades | R/trade after spread +0.309 (21-23 +0.412, 24-26 +0.209) | longest losing streak 7
+   by distance (ATR): 0.0-0.5: 3 tr +0.982 | 0.5-1.0: 15 tr +0.386 | 1.0-1.5: 26 tr +0.363 | 1.5-2.0: 33 tr +0.712 | 2.0-2.5: 24 tr +0.227 | 2.5-3.0: 17 tr -0.132 | 3.0-4.0: 39 tr +0.060 | 4.0-5.0: 14 tr +0.485 | 5.0-up: 37 tr +0.276
+   atr   cut-off chosen on 21-23: <= 5.75   keeps   86% | 21-23 R   +42.0 ->   +43.5 | 24-26 R   +22.2 ->   +18.3 (R/trade +0.209 -> +0.192) | longest losing streak 7 -> 7
+   sigma cut-off chosen on 21-23: <= 1.25   keeps  100% | 21-23 R   +42.0 ->   +42.0 | 24-26 R   +22.2 ->   +22.2 (R/trade +0.209 -> +0.209) | longest losing streak 7 -> 7
+   price cut-off chosen on 21-23: <= 70.29  keeps   95% | 21-23 R   +42.0 ->   +42.0 | 24-26 R   +22.2 ->   +24.2 (R/trade +0.209 -> +0.255) | longest losing streak 7 -> 7
+
+H1 H1-S8 (Simplest) | 498 trades | R/trade after spread +0.105 (21-23 +0.097, 24-26 +0.113) | longest losing streak 12
+   by distance (ATR): 0.0-0.5: 3 tr -0.031 | 0.5-1.0: 19 tr +0.244 | 1.0-1.5: 38 tr +0.081 | 1.5-2.0: 49 tr +0.328 | 2.0-2.5: 38 tr +0.001 | 2.5-3.0: 36 tr -0.269 | 3.0-4.0: 65 tr +0.224 | 4.0-5.0: 37 tr -0.127 | 5.0-up: 213 tr +0.134
+   sigma cut-off chosen on 21-23: <= 1.75   keeps   78% | 21-23 R   +23.7 ->   +26.5 | 24-26 R   +28.7 ->   +13.1 (R/trade +0.113 -> +0.065) | longest losing streak 12 -> 11
+   price cut-off chosen on 21-23: <= 31.21  keeps   55% | 21-23 R   +23.7 ->   +40.1 | 24-26 R   +28.7 ->    +2.8 (R/trade +0.113 -> +0.024) | longest losing streak 12 -> 15

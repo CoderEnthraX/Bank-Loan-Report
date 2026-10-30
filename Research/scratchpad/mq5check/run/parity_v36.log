@@ -1,0 +1,36 @@
+config                     ref      EA identical  stats
+default                   1178    1178      1178  stats OK
+halfCap                   1178    1178      1178  stats OK
+chopOn+chopMax12           985     985       985  stats OK
+emaOn+emaMax1.65           842     842       842  stats OK
+noChase                    761     761       761  stats OK
+noChase+skipFirstSess      761     761       761  stats OK
+mv2On+mv2R0               1211    1211      1211  stats OK
+mv1On(0)+mv3On(1.0)       1240    1240      1240  stats OK
+deepOn                    1182    1182      1182  stats OK
+halfStrict                1178    1178      1178  stats OK
+lossBlock                  905     905       905  stats OK
+exitAt2                   1261    1261      1261  stats OK
+entry pct30               1202    1202      1202  stats OK
+entry market              1287    1287      1287  stats OK
+rearmKeep off             1246    1246      1246  stats OK
+stopMode swing            1168    1168      1168  stats OK
+days Mon/Wed/Fri           698     698       698  stats OK
+hours 1000-2000            847     847       847  stats OK
+killzones all, shift 0     906     906       906  stats OK
+killzones Asia+NY, +1      528     528       528  stats OK
+killzones Lon+LC, -2       507     507       507  stats OK
+killzones all, +2          822     822       822  stats OK
+min 1 ATR from VWAP       1119    1119      1119  stats OK
+min 1 ATR + Don't Chase 2.0     530     530       530  stats OK
+min 0.5 ATR + chop + ema     709     709       709  stats OK
+dayStopR2                  898     898       898  stats OK
+maxFills2                  591     591       591  stats OK
+chop+ema+halfCap           712     712       712  stats OK
+max 3 ATR from VWAP        623     623       623  stats OK
+max distance on, default value (both sides)     898     898       898  stats OK
+max 1.5 ATR + min 0.5 ATR     192     192       192  stats OK
+max price 2.0              192     192       192  stats OK
+max price 0.0015           120     120       120  stats OK
+max price 40 + noChase     490     490       490  stats OK
+ALL IDENTICAL

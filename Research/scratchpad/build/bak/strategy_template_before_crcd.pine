@@ -1,0 +1,552 @@
+//@version=6
+// ═══════════════════════════════════════════════════════════════════════════════════════
+//  AUCTION RETEST STRATEGY — the Auction Retest Model as a backtestable strategy
+//
+//  SAME SIGNALS AS THE INDICATOR: the ENGINE block below is byte-identical to the one in
+//  Auction_Retest_Model.pine. It decides every setup, fill, stop move and exit from the chart's bars.
+//  The EXECUTION part only copies those decisions into orders and never feeds back into them:
+//   - the entry limit and the stop sit on the tick grid so that they trigger on exactly the bars where
+//     the engine's (unrounded) levels are touched;
+//   - the targets are only added after the fill bar (the indicator never takes a target on its fill bar);
+//   - if TradingView's fill simulator ever disagrees (a missed fill, a fill the engine does not have, a
+//     position still open after the engine's exit), the engine wins: the order is cancelled / the position closed.
+//   - a bar that touches both the stop and the target counts as the stop in the engine; TradingView fills
+//     whichever its intrabar path reaches first, so such a trade can be a win in the strategy (table: exit differs).
+//  With the default settings the strategy takes every trade the indicator shows. Execution settings
+//  (risk, costs, partials, streak stops, force-close, news) are strategy-only and OFF by default; when
+//  they block a signal it is counted in the table as SKIPPED.
+//
+//  LEVERAGE: set it with the "Leverage" input (default 1:100). TradingView's own margin check is off
+//  (margin 0 in Properties): with its default 100 % margin it silently rejects orders bigger than the
+//  account. COSTS: TradingView only charges what is set in Settings -> Properties -> Commission. Enter
+//  the value shown in the table row "SET PROPERTIES COMMISSION" (it includes the spread input).
+// ═══════════════════════════════════════════════════════════════════════════════════════
+strategy("Auction Retest Strategy [VWAP Displacement + Retest]", shorttitle = "ARS", overlay = true, initial_capital = 10000, currency = currency.USD, default_qty_type = strategy.fixed, default_qty_value = 1, pyramiding = 0, commission_type = strategy.commission.cash_per_contract, commission_value = 0, slippage = 0, process_orders_on_close = false, backtest_fill_limits_assumption = 0, margin_long = 0, margin_short = 0, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
+
+// ═════════════════════════════════════ INPUTS ═════════════════════════════════════════
+
+{{INPUTS}}
+
+GRP_P = "PARTIAL PROFITS (strategy only)"
+p1Pct = input.float(0.0, "Close % At TP1", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_P)
+p2Pct = input.float(0.0, "Close % At TP2", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_P)
+p3Pct = input.float(0.0, "Close % At TP3", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_P, tooltip = "Share of the ORIGINAL position closed at each target before the final exit (0 = no partial). The trade itself still ends at the final exit or the stop, like the indicator.")
+float pp1 = exitK > 1 ? p1Pct : 0.0
+float pp2 = exitK > 2 ? p2Pct : 0.0
+float pp3 = exitK > 3 ? p3Pct : 0.0
+if barstate.isfirst and pp1 + pp2 + pp3 >= 100.0
+    runtime.error("Partial close % before the final target must add up to less than 100 so something is left for the final exit.")
+
+GRP_R = "RISK AND POSITION SIZE (strategy only)"
+baseRisk   = input.float(50.0, "Base Risk Per Trade ($)", minval = 0.01, step = 5.0, group = GRP_R, tooltip = "Every trade risks this amount, whatever the stop size: quantity = risk / (stop distance x point value + costs per unit), converted to the account currency.")
+CAP_CLAMP = "Clamp risk to the cap"
+CAP_STOP  = "Stop trading"
+CAP_RESET = "Start again from the base risk"
+capOn      = input.bool(false, "Hard Cap: Max Loss Per Trade ($)", inline = "cap", group = GRP_R, tooltip = "No trade may risk more than this amount (the stop-out loss incl. commission and spread). Applies to every loss-recovery mode.")
+hardCap    = input.float(500.0, "", minval = 0.01, step = 50.0, inline = "cap", group = GRP_R)
+capAction  = input.string(CAP_CLAMP, "If The Risk Would Exceed The Cap", options = [CAP_CLAMP, CAP_STOP, CAP_RESET], group = GRP_R, tooltip = "Clamp: trade at the cap.\nStop trading: take no more trades for the rest of the backtest.\nStart again: forget the carried losses / losing run and trade at the base risk.")
+LOT_AUTO = "Auto (by ticker)"
+LOT_FIX  = "Broker fixed (units below)"
+lotMode    = input.string(LOT_AUTO, "Lot Size", options = [LOT_AUTO, LOT_FIX], inline = "lot", group = GRP_R, tooltip = "Auto: forex 100,000 units · gold 100 oz · silver 5,000 oz · platinum/palladium 100 oz · crypto 1 coin · oil CFDs (USOIL, UKOIL, WTI, BRENT, XTI, XBR) 1,000 bbl · natural gas CFDs (NATGAS, XNG, NGAS) 10,000 MMBtu · any futures contract (CL, NG, GC, MCX CRUDEOIL, ...) 1 contract · indices, stocks, others 1.\nBroker fixed: every symbol uses the units entered here (e.g. 100).\nLots only affect the lot display, the lot step and the per-lot commission; the $ risk sizing is the same either way.")
+unitsLot   = input.float(100.0, "", minval = 0.000001, inline = "lot", group = GRP_R)
+leverage   = input.float(100.0, "Leverage (1:x, 0 = unlimited)", minval = 0.0, step = 10.0, group = GRP_R, tooltip = "Position value (quantity x price) may not exceed equity x leverage. If the risk-based size is larger, it is reduced to fit, as your broker would. 0 = no limit.")
+lotStep    = input.float(0.0, "Lot Step (0 = auto)", minval = 0.0, step = 0.01, group = GRP_R, tooltip = "Position size is rounded DOWN to this many lots. 0 = auto: futures 1 contract, everything else 0.01 lot.")
+SMALL_FRAC = "Fractional size (backtest only)"
+SMALL_MIN  = "Trade minimum size (risks more)"
+SMALL_SKIP = "Skip the trade"
+smallMode  = input.string(SMALL_FRAC, "If Size Is Below 1 Lot Step", options = [SMALL_FRAC, SMALL_MIN, SMALL_SKIP], group = GRP_R, tooltip = "When the risk-based size rounds below one lot step (e.g. $50 risk on COMEX gold futures, where 1 contract with a $7 stop risks $700):\nFractional: trade the exact fractional size so the backtest keeps the $ risk (not possible with a real broker).\nMinimum size: trade 1 lot step and risk more; skipped if that breaks the hard cap.\nSkip: no trade.")
+
+GRP_C = "SPREAD AND COMMISSION (strategy only)"
+spreadIn  = input.float(0.0, "Spread (price)", minval = 0.0, step = 0.01, group = GRP_C, tooltip = "In PRICE units: gold 0.16 = 16 cents, EURUSD 0.00010 = 1 pip. Counted as a cost (in the $ risk sizing and in the Properties commission shown in the table). Orders are placed at the chart's levels, so the trades stay identical to the indicator.")
+commLot   = input.float(0.0, "Commission ($ per lot, round trip)", minval = 0.0, step = 0.5, group = GRP_C, tooltip = "Used in the sizing, the earn-back and the value to enter in Settings -> Properties -> Commission (cash per contract), which is what TradingView actually charges.")
+earnBack  = input.bool(false, "Extend Targets To Earn Back Commission + Spread", group = GRP_C, tooltip = "The strategy's targets are pushed further by the round-trip costs, so a target hit nets its full R. The indicator's targets are not moved, so with this ON the strategy can exit later than the indicator (and skip the indicator's next signal while it is still in the trade).")
+
+GRP_K = "STREAKS AND PAUSES (strategy only)"
+lStopOn   = input.bool(false, "Stop For The Day After N Losses In A Row", inline = "ls", group = GRP_K)
+lStopN    = input.int(2, "", minval = 1, inline = "ls", group = GRP_K)
+wStopOn   = input.bool(false, "Stop For The Day After N Wins In A Row", inline = "ws", group = GRP_K)
+wStopN    = input.int(3, "", minval = 1, inline = "ws", group = GRP_K)
+pauseOn   = input.bool(false, "Pause After N Losses In A Row · For Days", inline = "ps", group = GRP_K)
+pauseN    = input.int(3, "", minval = 1, inline = "ps", group = GRP_K)
+pauseDays = input.int(1, "", minval = 1, maxval = 3, inline = "ps", group = GRP_K, tooltip = "Stops trading for the rest of today plus this many full trading days, then the streak count restarts.")
+
+GRP_X = "FORCE-CLOSE, WEEKEND AND NEWS (strategy only)"
+fcOn      = input.bool(false, "Force-Close Open Trades At (hour : minute)", inline = "fc", group = GRP_X)
+fcHour    = input.int(2, "", minval = 0, maxval = 23, inline = "fc", group = GRP_X)
+fcMin     = input.int(0, "", minval = 0, maxval = 59, inline = "fc", group = GRP_X, tooltip = "Every day at this time (time zone in DAYS AND HOURS) any open trade is closed at market and a working entry is cancelled.")
+weekendOn = input.bool(false, "Close Open Trades When Saturday Starts", group = GRP_X, tooltip = "To stop NEW setups on Saturday/Sunday untick those days in DAYS AND HOURS (they then disappear from the indicator too).")
+newsPre   = input.int(60, "No New Trades Before News (minutes)", minval = 0, group = GRP_X, tooltip = "For every news window that is on: no new trades from this many minutes before it starts until it ends. Any open trade is closed and any working entry cancelled when the window starts.")
+dNewsOn   = input.bool(false, "Daily News Window", inline = "dn", group = GRP_X)
+dNewsSess = input.session("1800-1900", "", inline = "dn", group = GRP_X, tooltip = "Repeats every day in the time zone of DAYS AND HOURS (e.g. US data at 8:30 New York = 18:00 IST).")
+n1On  = input.bool(false, "News 1 (start · minutes)", inline = "n1", group = GRP_X)
+n1T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n1", group = GRP_X)
+n1Dur = input.int(60, "", minval = 1, inline = "n1", group = GRP_X)
+n2On  = input.bool(false, "News 2 (start · minutes)", inline = "n2", group = GRP_X)
+n2T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n2", group = GRP_X)
+n2Dur = input.int(60, "", minval = 1, inline = "n2", group = GRP_X)
+n3On  = input.bool(false, "News 3 (start · minutes)", inline = "n3", group = GRP_X)
+n3T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n3", group = GRP_X)
+n3Dur = input.int(60, "", minval = 1, inline = "n3", group = GRP_X)
+n4On  = input.bool(false, "News 4 (start · minutes)", inline = "n4", group = GRP_X)
+n4T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n4", group = GRP_X)
+n4Dur = input.int(60, "", minval = 1, inline = "n4", group = GRP_X)
+n5On  = input.bool(false, "News 5 (start · minutes)", inline = "n5", group = GRP_X)
+n5T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n5", group = GRP_X)
+n5Dur = input.int(60, "", minval = 1, inline = "n5", group = GRP_X, tooltip = "One-off news events: pick the date and start time and the length in minutes.")
+
+GRP_L = "LOSS RECOVERY (strategy only)"
+L_OFF   = "Off"
+L_ALL   = "Recover all losses on the next trade"
+L_SPLIT = "Recover losses over N trades"
+L_PART  = "Recover a % of losses per trade"
+L_MART  = "Martingale (multiply after each loss)"
+L_EXACT = "Exact recovery at final TP"
+L_STEP  = "Step-up (+$ per loss in a row)"
+L_FIB   = "Fibonacci (1,1,2,3,5... x base)"
+L_DALE  = "D'Alembert (+1 unit per loss, -1 per win)"
+L_C     = "Rule C: carry the losses"
+L_CS    = "Rule C split: carry losses + base grows with profit"
+L_LAB   = "Labouchere (cancellation 1-2-3)"
+L_GMART = "Grand Martingale (x mult + 1 base per loss)"
+L_PAR   = "Paroli (double after wins, reset after N)"
+L_RDALE = "Reverse D'Alembert (+1 unit per win, -1 per loss)"
+L_DELAY = "Delayed recovery (after N losses, over N trades)"
+L_EQPCT = "% of equity"
+L_OSC   = "Oscar's Grind (+1 unit per win until +1 base)"
+L_CRA   = "Crooks A (base, base, then recovery every 2nd trade)"
+L_CRB   = "Crooks B (Crooks A with the loss split over N trades)"
+recMode  = input.string(L_OFF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE, L_C, L_CS, L_LAB, L_GMART, L_PAR, L_RDALE, L_DELAY, L_EQPCT, L_OSC, L_CRA, L_CRB], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nExact at final TP: base + losses / final target R, so a final-target win repays the losses plus a normal win (risks less than 'All').\nStep-up: base + step $ x losses in a row.\nFibonacci: base x 1, 1, 2, 3, 5, 8... by losses in a row.\nD'Alembert: base x units; +1 unit after a loss, -1 after a win (minimum 1).\nRule C: carried = how far closed-trade equity is below its last high (updated once per candle from that candle's closed P&L incl. commission); next risk = max(base, carried / split).\nRule C split: as Rule C, but the base steps up with total profit: 200 -> 200/3, 500 -> 500/5, 1000 -> 1000/8, then every +500 adds one part (1500/9, 2000/10 ...); base = max(base risk, min(step base, hard cap)).\nLabouchere: units list 1-2-3; risk = base x (first + last); a loss adds that sum to the list, a win removes both ends; empty list starts again.\nGrand Martingale: base x mult ^ losses + base x losses.\nParoli: base x 2 ^ wins in a row, back to base after N wins or any loss.\nReverse D'Alembert: +1 unit after a win, -1 after a loss (minimum 1).\nDelayed recovery: base until N losses in a row, then base + losses / N trades.\n% of equity: risk this % of current equity.\nOscar's Grind: units +1 after each win (never more than needed to finish +1 base for the cycle), unchanged after a loss; the cycle ends at +1 base profit.\nCrooks A: trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (3, 5, 7 ...) is a recovery trade risking max(base, loss to win back / final target R), e.g. $250 with TP4 (2R) as the final target -> $125; the trades between risk the base. Losses add to the loss to win back, wins reduce it; a winning recovery trade starts a new cycle.\nCrooks B: as Crooks A, but the recovery trade risks max(base, loss / split / final target R) (split = the Rule C split setting) and a new cycle starts only when the whole loss is won back.\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use the Hard Cap to limit it.")
+recN     = input.int(3, "N Trades (Over N)", minval = 1, group = GRP_L)
+recPct   = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.0, step = 5.0, group = GRP_L)
+recMult  = input.float(2.0, "Multiplier (Martingale)", minval = 1.0, step = 0.25, group = GRP_L)
+recStep  = input.float(25.0, "Step $ (Step-up)", minval = 0.0, step = 5.0, group = GRP_L)
+cSplit   = input.int(3, "Split The Loss Over This Many Trades (Rule C, Crooks B)", minval = 1, group = GRP_L, tooltip = "1 = win it all back in one trade.")
+crkT1On  = input.bool(true, "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", group = GRP_L, tooltip = "Only with Crooks A / B, Final Exit At TP1, and only on the recovery trades (3, 5, 7 ...). The position is doubled: half closes at TP1 and banks the whole recovery amount, then the stop of the other half moves to the entry and that half closes at TP2. The stop sits where a stop-out loses exactly the recovery amount: TP1 / 2 minus 1.5 x the costs from the entry (0.3R with TP1 = 0.6R and no costs). Costs above TP1 / 3 -> that trade uses the normal Crooks size. While the rest runs on, new signals are skipped.\nGold 2021-2026: the tight stop is hit on most of these trades; see the workbook before using it.")
+parN     = input.int(3, "Wins Before Reset (Paroli)", minval = 1, group = GRP_L)
+delayN   = input.int(2, "Losses Before Recovery Starts (Delayed)", minval = 1, group = GRP_L)
+eqPct    = input.float(1.0, "Risk % Of Equity (% mode)", minval = 0.01, step = 0.1, group = GRP_L)
+
+GRP_D = "DISPLAY"
+showTable = input.bool(true, "Show Table", group = GRP_D)
+tablePos  = input.string("Top Right", "Position", options = ["Top Right", "Top Left", "Bottom Right", "Bottom Left"], group = GRP_D)
+tableTz   = input.string("Asia/Kolkata", "Date Timezone", options = ["Asia/Kolkata", "Exchange", "UTC", "America/New_York", "Europe/London", "Asia/Dubai", "Asia/Singapore"], group = GRP_D, tooltip = "Timezone used for the DATA RANGE dates.")
+
+// ═══════════════════════════════════════ ENGINE ═══════════════════════════════════════
+
+{{ENGINE}}
+
+// ══════════════════════════ EXECUTION (strategy only, follows the engine) ═════════════
+
+float  fx       = nz(request.currency_rate(syminfo.currency, strategy.account_currency, ignore_invalid_currency = true), 1.0)
+string tkU      = str.upper(syminfo.ticker)
+f_has(string a) => str.contains(tkU, a)
+bool   isFut    = syminfo.type == "futures"
+bool   isCrypto = syminfo.type == "crypto" or f_has("BTC") or f_has("ETH") or f_has("XRP") or f_has("SOL") or f_has("LTC") or f_has("BNB") or f_has("ADA") or f_has("DOGE") or f_has("DOT") or f_has("AVAX") or f_has("LINK") or f_has("MATIC") or f_has("TRX") or f_has("BCH") or f_has("SHIB") or f_has("TON") or f_has("USDT")
+bool   isGold   = f_has("XAU") or f_has("GOLD")
+bool   isSilver = f_has("XAG") or f_has("SILVER")
+bool   isPgm    = f_has("XPT") or f_has("XPD") or f_has("PLAT") or f_has("PALL")
+bool   isOil    = f_has("USOIL") or f_has("UKOIL") or f_has("WTI") or f_has("BRENT") or f_has("XTI") or f_has("XBR") or f_has("CRUDE") or f_has("OIL")
+bool   isGas    = f_has("NATGAS") or f_has("XNG") or f_has("NGAS") or f_has("NATURALGAS")
+float  unitsAuto = isFut ? 1.0 : syminfo.type == "forex" and not (isGold or isSilver or isPgm) ? 100000.0 : isGold ? 100.0 : isSilver ? 5000.0 : isPgm ? 100.0 : isCrypto ? 1.0 : isOil ? 1000.0 : isGas ? 10000.0 : 1.0
+float  unitsPer  = lotMode == LOT_FIX ? unitsLot : unitsAuto
+float  stepLots  = lotStep > 0 ? lotStep : isFut and lotMode == LOT_AUTO ? 1.0 : 0.01
+// costs per unit in the account currency: round-trip commission + spread
+float  costUnit  = commLot / unitsPer + spreadIn * syminfo.pointvalue * fx
+
+// order prices on the tick grid that trigger on exactly the bars where the engine's unrounded level is touched
+f_floorTick(float x) => math.round_to_mintick(math.floor(x / syminfo.mintick + 1e-6) * syminfo.mintick)
+f_ceilTick(float x)  => math.round_to_mintick(math.ceil(x / syminfo.mintick - 1e-6) * syminfo.mintick)
+f_entryPx(bool isL)  => isL ? f_floorTick(lim + syminfo.mintick * 0.001) : f_ceilTick(lim - syminfo.mintick * 0.001)
+f_stopPx(bool isL)   => isL ? f_floorTick(stp + syminfo.mintick * 0.001) : f_ceilTick(stp - syminfo.mintick * 0.001)
+
+// execution state
+var int   exState   = 0      // 0 nothing · 1 entry order working · 2 in a position
+var bool  exL       = true
+var float exQty     = na
+var float exRiskUsd = na
+var float exCostPx  = 0.0    // earn-back: target push in price
+var float exPnl     = 0.0    // realised P&L of the executed trade (partials included)
+var int   nClosed   = 0
+var int   sigN      = 0
+var int   takenN    = 0
+var int   skipN     = 0
+var int   missN     = 0
+var int   diffN     = 0      // exits where the emulator's result differs from the engine's (stop + target in one bar)
+var int   exArm     = na     // engine armBar of the setup the strategy took
+var float exPartDone = 0.0   // quantity already closed by partial exits
+var string skipWhy  = ""
+// money management state
+var float dayPnl    = 0.0
+var int   lossRow   = 0
+var int   winRow    = 0
+var bool  dayBlock  = false
+var int   pauseLeft = 0
+var bool  paused    = false
+var float recPool   = 0.0    // unrecovered $ losses
+var int   recLosses = 0      // losses in a row while losses are unrecovered
+var int   dUnits    = 1      // D'Alembert units
+var float carried   = 0.0    // Rule C: closed-trade equity below its last high
+var bool  capStop   = false  // hard cap "Stop trading" fired
+var array<float> labSeq = array.from(1.0, 2.0, 3.0)   // Labouchere units
+var int   parWins   = 0      // Paroli wins in a row
+var int   rdUnits   = 1      // Reverse D'Alembert units
+var int   oscU      = 1      // Oscar's Grind units
+var float oscP      = 0.0    // Oscar's Grind cycle profit
+var float crkL      = 0.0    // Crooks: $ loss to win back in this cycle
+var int   crkN      = 0      // Crooks: closed trades in this cycle
+var bool  crkRec    = false  // Crooks: the trade in progress is a recovery trade
+var bool  exT1      = false  // Crooks TP1 rule: this trade banks the recovery amount at TP1 with half, the rest runs to TP2
+var float exT1Stop  = na     // its stop: a stop-out loses exactly the recovery amount
+var bool  exT1Half  = false  // the TP1 half is booked: the rest's stop is at the entry
+var float exT1Tp1   = na     // its own TP1 and TP2 (the engine's levels change with its next setup while the rest runs on)
+var float exT1Tp2   = na
+var int   exW       = 0
+var int   exLn      = 0
+// Crooks: the next trade is a recovery trade (trades 3, 5, 7 ... of the cycle)
+f_crkRecNext() => (recMode == L_CRA or recMode == L_CRB) and crkN >= 2 and crkN % 2 == 0
+
+if newDay
+    dayPnl   := 0.0
+    dayBlock := false
+    paused   := pauseLeft > 0
+    if pauseLeft > 0
+        pauseLeft -= 1
+
+f_tgtPx(bool isL, float lvl) => isL ? f_ceilTick(lvl + exCostPx - syminfo.mintick * 0.001) : f_floorTick(lvl - exCostPx + syminfo.mintick * 0.001)
+// exits of the executed trade: partials before the final exit and the final exit, all with the current stop
+f_exitsStd(bool isL, bool withTargets) =>
+    string eid = isL ? "L" : "S"
+    float  sPx = f_stopPx(isL)
+    // created in the order X1, X2, X3, X4 from the arm on, so the partials keep their reserved quantity
+    if withTargets
+        if pp1 > 0 and exPartDone < exQty * pp1 / 100.0 - 1e-9
+            strategy.exit("X1", eid, qty = exQty * pp1 / 100.0, limit = f_tgtPx(isL, t1), stop = sPx)
+        if pp2 > 0 and exPartDone < exQty * (pp1 + pp2) / 100.0 - 1e-9
+            strategy.exit("X2", eid, qty = exQty * pp2 / 100.0, limit = f_tgtPx(isL, t2), stop = sPx)
+        if pp3 > 0 and exPartDone < exQty * (pp1 + pp2 + pp3) / 100.0 - 1e-9
+            strategy.exit("X3", eid, qty = exQty * pp3 / 100.0, limit = f_tgtPx(isL, t3), stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, limit = f_tgtPx(isL, tF), stop = sPx)
+    else
+        if pp1 > 0
+            strategy.exit("X1", eid, qty = exQty * pp1 / 100.0, stop = sPx)
+        if pp2 > 0
+            strategy.exit("X2", eid, qty = exQty * pp2 / 100.0, stop = sPx)
+        if pp3 > 0
+            strategy.exit("X3", eid, qty = exQty * pp3 / 100.0, stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, stop = sPx)
+// Crooks TP1 rule: half closes at TP1, the rest at TP2; once TP1 is booked the rest's stop is the entry
+f_exitsT1(bool isL, bool withTargets) =>
+    string eid = isL ? "L" : "S"
+    float  sPx = exT1Half ? (isL ? f_floorTick(strategy.position_avg_price + syminfo.mintick * 0.001) : f_ceilTick(strategy.position_avg_price - syminfo.mintick * 0.001)) : exT1Stop
+    if withTargets
+        if not exT1Half
+            strategy.exit("X1", eid, qty = exQty * 0.5, limit = f_tgtPx(isL, exT1Tp1), stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, limit = f_tgtPx(isL, exT1Tp2), stop = sPx)
+    else
+        strategy.exit("X1", eid, qty = exQty * 0.5, stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, stop = sPx)
+f_setExits(bool isL, bool withTargets) =>
+    if exT1
+        f_exitsT1(isL, withTargets)
+    else
+        f_exitsStd(isL, withTargets)
+
+// ── time filters and news windows (execution only) ──
+int   curM   = hour(time, tzUse) * 60 + minute(time, tzUse)
+int   prevM  = hour(time[1], tzUse) * 60 + minute(time[1], tzUse)
+int   fcM    = fcHour * 60 + fcMin
+bool  fcNow  = fcOn and (curM >= prevM ? (prevM < fcM and curM >= fcM) : (fcM > prevM or fcM <= curM))
+int   dowNow    = dayofweek(time, tzUse)
+int   dowPrev   = dayofweek(time[1], tzUse)
+bool  wkndStart = weekendOn and dowNow == dayofweek.saturday and dowPrev != dayofweek.saturday
+int   preMs  = newsPre * 60000
+int   prevT  = nz(time[1], time)
+f_nBlock(bool on, int t0, int dur) => on and time >= t0 - preMs and time < t0 + dur * 60000
+f_nStart(bool on, int t0) => on and time >= t0 and prevT < t0
+// computed on every bar (outside the and/or chains) so their history is consistent
+bool  inDNews   = not na(time(timeframe.period, dNewsSess, tzUse))
+bool  dNewsIn   = dNewsOn and inDNews
+bool  dNewsPrev = dNewsOn and inDNews[1]
+// daily window: block from newsPre minutes before its start until it ends
+bool  dPre = false
+if dNewsOn and newsPre > 0
+    int sH = int(str.tonumber(str.substring(dNewsSess, 0, 2)))
+    int sM = int(str.tonumber(str.substring(dNewsSess, 2, 4)))
+    int dStart = sH * 60 + sM
+    int diff = (dStart - curM + 1440) % 1440
+    dPre := diff > 0 and diff <= newsPre
+bool  newsBlock = dNewsIn or dPre or f_nBlock(n1On, n1T, n1Dur) or f_nBlock(n2On, n2T, n2Dur) or f_nBlock(n3On, n3T, n3Dur) or f_nBlock(n4On, n4T, n4Dur) or f_nBlock(n5On, n5T, n5Dur)
+bool  newsStart = (dNewsIn and not dNewsPrev) or f_nStart(n1On, n1T) or f_nStart(n2On, n2T) or f_nStart(n3On, n3T) or f_nStart(n4On, n4T) or f_nStart(n5On, n5T)
+bool  flatNow   = fcNow or wkndStart or newsStart
+
+// ── 1. what the broker emulator did on this bar ──
+float newPnl    = 0.0
+bool  closedNew = strategy.closedtrades > nClosed
+if closedNew
+    for k = nClosed to strategy.closedtrades - 1
+        newPnl += strategy.closedtrades.profit(k)
+    nClosed := strategy.closedtrades
+exPnl += newPnl
+// Rule C: once per candle, after all of this candle's closed trades (partials included)
+if closedNew
+    carried := math.max(0.0, carried - newPnl)
+float pos = strategy.position_size
+bool exNewPos = exState == 1 and pos != 0
+if exNewPos
+    exState := 2
+bool exClosed = (exState == 1 and pos == 0 and closedNew) or (exState == 2 and pos == 0)
+if closedNew and exState == 2 and pos != 0
+    exPartDone := math.abs(exQty) - math.abs(pos)
+    // Crooks TP1 rule: the TP1 half is booked, the rest's stop moves to the entry (from the next bar)
+    if exT1 and not exT1Half and exPartDone > 0
+        exT1Half := true
+        f_setExits(exL, true)
+
+// ── 2. an executed trade has closed: streaks, pauses and loss recovery ──
+if exClosed
+    bool win = exPnl > 0
+    // only comparable when no partial was taken and the exit is the engine exit of the setup the strategy took
+    if evExit and pp1 + pp2 + pp3 == 0 and not exT1 and not na(exArm) and armBar == exArm and win != (evRes > 0)
+        diffN += 1
+    dayPnl  += exPnl
+    exW     += win ? 1 : 0
+    exLn    += win ? 0 : 1
+    lossRow := win ? 0 : lossRow + 1
+    winRow  := win ? winRow + 1 : 0
+    if lStopOn and lossRow >= lStopN
+        dayBlock := true
+    if wStopOn and winRow >= wStopN
+        dayBlock := true
+    if pauseOn and lossRow >= pauseN
+        dayBlock  := true
+        pauseLeft := pauseDays
+        lossRow   := 0
+    if win
+        recPool   := math.max(0.0, recPool - exPnl)
+        recLosses := recPool > 0 ? recLosses : 0
+        dUnits    := math.max(1, dUnits - 1)
+        rdUnits   += 1
+        parWins   := parWins + 1 >= parN ? 0 : parWins + 1
+        if array.size(labSeq) > 0
+            array.shift(labSeq)
+        if array.size(labSeq) > 0
+            array.pop(labSeq)
+        if array.size(labSeq) == 0
+            labSeq := array.from(1.0, 2.0, 3.0)
+    else
+        recPool   += -exPnl
+        recLosses += 1
+        dUnits    += 1
+        rdUnits   := math.max(1, rdUnits - 1)
+        parWins   := 0
+        float used = array.size(labSeq) > 1 ? array.first(labSeq) + array.last(labSeq) : array.first(labSeq)
+        array.push(labSeq, used)
+    oscP += exPnl
+    if oscP >= baseRisk
+        oscU := 1
+        oscP := 0.0
+    else if win
+        oscU += 1
+    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A: also when a recovery trade wins)
+    crkL := math.max(0.0, crkL - exPnl)
+    if crkL < 0.01 or (recMode == L_CRA and win and crkRec)
+        crkL := 0.0
+        crkN := 0
+    else
+        crkN += 1
+    crkRec := false
+    exT1     := false
+    exT1Half := false
+    exState := 0
+    exPnl   := 0.0
+    exArm   := na
+    strategy.cancel_all()
+
+// ── 3. follow the engine (only the setup the strategy took) ──
+bool exMine = not na(exArm) and armBar == exArm
+if exNewPos and not evFill
+    // the emulator filled but the engine did not (should not happen): close it, the engine wins
+    strategy.close_all(comment = "Engine: no fill")
+    missN += 1
+if exState == 1 and evCancel != ""
+    strategy.cancel_all()
+    exState := 0
+    exArm   := na
+if evFill and exState == 1 and pos == 0 and not exClosed
+    // the engine filled but the emulator did not (should not happen): drop the order, the engine wins
+    strategy.cancel_all()
+    exState := 0
+    exArm   := na
+    missN   += 1
+if exState == 2 and exMine and (evFill or evMove)
+    f_setExits(exL, true)
+// the engine exited: never stay in (with earn-back only a target win may run on to the extended target; a Crooks TP1-rule trade runs its rest to TP2)
+if evExit and exState == 2 and exMine and (not earnBack or not evWin) and not (exT1 and (evWin or exT1Half))
+    strategy.close_all(comment = "Engine exit")
+
+// ── 4. force-close time / weekend start / news: close the position, cancel a working entry ──
+if flatNow and pos != 0
+    strategy.close_all(comment = fcNow ? "Force close" : wkndStart ? "Weekend" : "News")
+if exState == 1 and (flatNow or newsBlock)
+    strategy.cancel_all()
+    exState := 0
+    exArm   := na
+
+// ── 5. take the engine's new setup ──
+if evArm
+    sigN += 1
+    bool  isL = evArmL
+    float d   = isL ? 1.0 : -1.0
+    float rp  = trRisk
+    // risk $ for this trade: base + loss recovery, capped
+    float add = recMode == L_ALL ? recPool : recMode == L_SPLIT ? recPool / recN : recMode == L_PART ? recPool * recPct / 100.0 : recMode == L_EXACT ? recPool / exitR : recMode == L_STEP ? recStep * recLosses : 0.0
+    // Fibonacci number for the current losing run: 1, 1, 2, 3, 5 ...
+    float fa = 1.0
+    float fb = 1.0
+    if recLosses > 1
+        for k = 2 to recLosses
+            float fc = fa + fb
+            fa := fb
+            fb := fc
+    // Rule C split: base steps up with total closed profit (step amount / parts)
+    float prof     = strategy.netprofit
+    float stepBase = 0.0
+    if prof >= 1000
+        int kk = int(math.floor((prof - 1000) / 500))
+        stepBase := (1000.0 + 500.0 * kk) / (8 + kk)
+    else if prof >= 500
+        stepBase := 500.0 / 5
+    else if prof >= 200
+        stepBase := 200.0 / 3
+    float baseC = recMode == L_CS ? math.max(baseRisk, capOn ? math.min(stepBase, hardCap) : stepBase) : baseRisk
+    float labU  = array.size(labSeq) > 1 ? array.first(labSeq) + array.last(labSeq) : array.first(labSeq)
+    int   oscNeed = int(math.max(1, math.ceil((baseRisk - oscP) / (baseRisk * exitR))))
+    // Crooks: trades 1 and 2 of a cycle risk the base, then trades 3, 5, 7 ... are recovery trades
+    // TP1 rule (Final Exit At TP1): half of a double position banks the recovery amount at TP1, the rest runs to TP2; the stop sits where
+    // a stop-out loses exactly that amount: TP1 / 2 - 1.5 x costs from the entry, on the tick grid toward the entry
+    float pvf   = syminfo.pointvalue * fx
+    float eP    = f_entryPx(isL)
+    float t1D   = pvf > 0 ? tp1R * rp / 2.0 - 1.5 * costUnit / pvf : 0.0
+    float t1S   = isL ? f_ceilTick(eP - t1D) : f_floorTick(eP + t1D)
+    bool  t1Ok  = crkT1On and exitK == 1 and f_crkRecNext() and t1D > 0 and (isL ? eP - t1S : t1S - eP) >= syminfo.mintick * 0.5
+    float crkX  = crkL / (recMode == L_CRB ? cSplit : 1)
+    float crkR  = f_crkRecNext() ? (t1Ok ? math.max(baseRisk, crkX) : math.max(baseRisk, crkX / exitR)) : baseRisk
+    float rUsd = recMode == L_LAB ? baseRisk * labU : recMode == L_GMART ? baseRisk * math.pow(recMult, recLosses) + baseRisk * recLosses : recMode == L_PAR ? baseRisk * math.pow(2, parWins) : recMode == L_RDALE ? baseRisk * rdUnits : recMode == L_DELAY ? (recLosses >= delayN ? baseRisk + recPool / recN : baseRisk) : recMode == L_EQPCT ? strategy.equity * eqPct / 100.0 : recMode == L_OSC ? baseRisk * math.min(oscU, oscNeed) : recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : recMode == L_FIB ? baseRisk * (recLosses == 0 ? 1.0 : fb) : recMode == L_DALE ? baseRisk * dUnits : recMode == L_C or recMode == L_CS ? math.max(baseC, carried / cSplit) : recMode == L_CRA or recMode == L_CRB ? crkR : baseRisk + add
+    // hard cap
+    if capOn and rUsd > hardCap
+        if capAction == CAP_STOP
+            capStop := true
+        else if capAction == CAP_RESET
+            recPool   := 0.0
+            recLosses := 0
+            dUnits    := 1
+            carried   := 0.0
+            labSeq    := array.from(1.0, 2.0, 3.0)
+            parWins   := 0
+            rdUnits   := 1
+            oscU      := 1
+            oscP      := 0.0
+            crkL      := 0.0
+            crkN      := 0
+            rUsd      := math.min(baseC, hardCap)
+        else
+            rUsd := hardCap
+    t1Ok := t1Ok and f_crkRecNext()       // a cap restart makes it trade 1 of a new cycle
+    // stop-out loss per unit incl. costs, so the $ risk (and the hard cap) covers them
+    float perUnit = (t1Ok ? math.abs(eP - t1S) : rp) * syminfo.pointvalue * fx + costUnit
+    float q       = perUnit > 0 ? rUsd / perUnit : 0.0
+    // leverage: position value may not exceed equity x leverage
+    float unitVal = lim * syminfo.pointvalue * fx
+    if leverage > 0 and unitVal > 0
+        q := math.min(q, strategy.equity * leverage / unitVal)
+    float qRaw = q
+    q := math.floor(q / unitsPer / stepLots + 1e-9) * stepLots * unitsPer
+    if q <= 0 and qRaw > 0
+        if smallMode == SMALL_FRAC
+            q := qRaw
+        else if smallMode == SMALL_MIN
+            float qMin = stepLots * unitsPer
+            q := capOn and qMin * perUnit > hardCap ? 0.0 : qMin
+    skipWhy := exState != 0 or pos != 0 ? "still in a trade" : newsBlock or flatNow ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : q <= 0 ? "size 0" : ""
+    if skipWhy == ""
+        strategy.cancel_all()
+        exL       := isL
+        exQty     := q
+        exRiskUsd := q * perUnit
+        exCostPx  := earnBack and syminfo.pointvalue * fx > 0 ? costUnit / (syminfo.pointvalue * fx) : 0.0
+        exPnl     := 0.0
+        exArm     := bar_index
+        exPartDone := 0.0
+        crkRec    := f_crkRecNext()
+        exT1      := t1Ok
+        exT1Stop  := t1S
+        exT1Half  := false
+        exT1Tp1   := t1
+        exT1Tp2   := t2
+        string eid = isL ? "L" : "S"
+        if entryMode == E_MARKET
+            strategy.entry(eid, isL ? strategy.long : strategy.short, qty = q)
+        else
+            strategy.entry(eid, isL ? strategy.long : strategy.short, qty = q, limit = f_entryPx(isL))
+        // stop only until the engine confirms the fill: the indicator takes no target on the fill bar
+        f_setExits(isL, false)
+        exState := 1
+        takenN  += 1
+    else
+        skipN += 1
+
+// ═══════════════════════════════════════ TABLE ════════════════════════════════════════
+
+f_px(float p) => str.tostring(p, format.mintick)
+f_usd(float v) => (v < 0 ? "-$" : "$") + str.tostring(math.abs(v), "#,##0.00")
+f_pos(string s) =>
+    switch s
+        "Top Left"     => position.top_left
+        "Bottom Right" => position.bottom_right
+        "Bottom Left"  => position.bottom_left
+        => position.top_right
+f_row(table tb, int r, string k, string v, color vc) =>
+    table.cell(tb, 0, r, k, text_color = color.new(#D1D4DC, 0), bgcolor = color.new(#2A2E39, 0), text_size = size.small)
+    table.cell(tb, 1, r, v, text_color = vc, bgcolor = color.new(#1E222D, 0), text_size = size.small)
+
+var int   firstTime = time
+var table mon = na
+// last historical bar + every realtime bar (strategies calculate realtime bars only at their close)
+if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
+    if na(mon)
+        mon := table.new(f_pos(tablePos), 2, 13 + (mvAny ? 1 : 0) + (fltAny ? 1 : 0), border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
+    color  white = color.new(#FFFFFF, 0)
+    color  posC  = color.new(#69F0AE, 0)
+    color  negC  = color.new(#FF80AB, 0)
+    bool   act   = math.abs(st) == 2 and not trGhost
+    bool   armed = math.abs(st) == 1 and not trGhost
+    bool   has   = act or armed
+    string stTxt = st != 0 and trGhost ? "SKIPPED (" + trSkip + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" : capStop ? "HARD CAP: STOPPED" : newsBlock ? "NEWS WINDOW" : paused ? "PAUSED (" + str.tostring(pauseLeft) + "d left)" : dayBlock ? "STREAK STOP TODAY" : not dayOpen ? "DAILY STOP HIT" : not dayOk ? "DAY SWITCHED OFF" : not hourOk ? "OUTSIDE HOURS" : not kzOk ? "OUTSIDE KILL ZONES" : "SCANNING"
+    string exTxt = exState == 2 ? " · in trade" : exState == 1 ? " · order working" : has ? " · not taken" : ""
+    float  lots  = exQty / unitsPer
+    table.cell(mon, 0, 0, "AUCTION RETEST", text_color = white, bgcolor = color.new(#29A3E0, 0), text_size = size.small)
+    table.cell(mon, 1, 0, "STRATEGY", text_color = white, bgcolor = color.new(#3D8FD6, 0), text_size = size.small)
+    f_row(mon, 1, "STATE", stTxt + exTxt, white)
+    f_row(mon, 2, "ENTRY / STOP", has ? f_px(lim) + " / " + f_px(stp) + (trHalf ? " ½" : "") : "—", white)
+    f_row(mon, 3, "TP1 · TP2 · TP3 · TP4 (exit " + exitAt + ")", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC)
+    f_row(mon, 4, "RISK · QTY · LOTS", exState != 0 ? f_usd(exRiskUsd) + " · " + str.tostring(exQty, "#,##0.##") + " · " + str.tostring(lots, "#,##0.##") : "base " + f_usd(baseRisk), white)
+    bool   isC = recMode == L_C or recMode == L_CS
+    bool   isK = recMode == L_CRA or recMode == L_CRB
+    string kTxt = f_usd(crkL) + " · trade " + str.tostring(crkN + 1) + ((exState != 0 ? crkRec : f_crkRecNext()) ? " recovery" : " base") + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "")
+    f_row(mon, 5, isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", recMode == L_OFF ? "off" : isC ? f_usd(carried) + " · split " + str.tostring(cSplit) : isK ? kTxt : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : recMode == L_RDALE ? " · " + str.tostring(rdUnits) + " units" : recMode == L_OSC ? " · " + str.tostring(oscU) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white)
+    f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(exW) + "W/" + str.tostring(exLn) + "L", white)
+    f_row(mon, 7, "DAY P&L · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayPnl >= 0 ? posC : negC)
+    f_row(mon, 8, "SIGNALS · TAKEN · SKIPPED", str.tostring(sigN) + " · " + str.tostring(takenN) + " · " + str.tostring(skipN) + (missN > 0 ? " · missed " + str.tostring(missN) : "") + (diffN > 0 ? " · exit differs " + str.tostring(diffN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN + diffN > 0 ? negC : white)
+    f_row(mon, 9, "SET PROPERTIES COMMISSION", (costUnit > 0 ? str.tostring(costUnit / 2.0, "0.#####") + " per contract" : "0") + " · 1 lot = " + str.tostring(unitsPer, "#,##0") + " units", white)
+    // accuracy of the signals (the indicator's trades, same numbers as its table)
+    f_row(mon, 10, "SIGNAL TRADES · WIN % · R", f_accTxt() + " · last " + lastRes, totR >= 0 ? posC : negC)
+    f_row(mon, 11, "TP HIT", f_tpTxt(), posC)
+    int r = 12
+    if mvAny
+        f_row(mon, r, "BREAKEVEN", f_beTxt(), white)
+        r += 1
+    if fltAny
+        f_row(mon, r, "SKIPPED BY FILTERS", f_fltTxt(), ghR <= 0 ? posC : negC)
+        r += 1
+    string tz = tableTz == "Exchange" ? syminfo.timezone : tableTz
+    f_row(mon, r, "DATA RANGE", str.format_time(firstTime, "dd MMM yy", tz) + " → " + str.format_time(time, "dd MMM HH:mm", tz) + " · " + str.tostring(bar_index + 1) + " bars", white)

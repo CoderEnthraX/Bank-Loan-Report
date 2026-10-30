@@ -1,0 +1,5 @@
+runs 1584, trades compared 2029437, mismatches 0, worst relative difference 4.99e-12; runs where the account blew (compared up to that trade): 26
+
+real	0m23.254s
+user	0m21.165s
+sys	0m1.794s

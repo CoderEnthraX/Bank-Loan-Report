@@ -27,9 +27,10 @@
 //| v3.3: optional minimum distance of the signal from the VWAP.     |
 //| v3.4: Crooks A and Crooks B loss recovery.                       |
 //| v3.5: Crooks at exit TP1: half banks the loss, rest runs to TP2. |
+//| v3.6: Crooks C and D; optional max distance from the VWAP.       |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.50"
+#property version   "3.60"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -46,6 +47,8 @@ enum ENUM_STOP_MODE { STOP_ATR = 0,    // ATR model
 enum ENUM_CAP_ACTION { CAP_CLAMP = 0,  // Clamp risk to the cap
                        CAP_STOP  = 1,  // Stop trading
                        CAP_RESET = 2 };// Start again from the base risk
+enum ENUM_VW_UNIT { VWU_ATR   = 0,  // x ATR
+                   VWU_PRICE = 1 };// Price
 enum ENUM_REC {
    REC_OFF   = 0,  // Off
    REC_ALL   = 1,  // Recover all losses on the next trade
@@ -66,7 +69,9 @@ enum ENUM_REC {
    REC_EQPCT = 16, // % of equity
    REC_OSC   = 17, // Oscar's Grind
    REC_CRA   = 18, // Crooks A (base, base, then recovery every 2nd trade)
-   REC_CRB   = 19  // Crooks B (Crooks A with the loss split over N trades)
+   REC_CRB   = 19, // Crooks B (Crooks A with the loss split over N trades)
+   REC_CRC   = 20, // Crooks C (base until a win, then one recovery trade)
+   REC_CRD   = 21  // Crooks D (base, base, recovery: every 3rd trade)
 };
 
 //--- ENGINE inputs: same names, order and defaults as the shared Pine inputs
@@ -143,6 +148,9 @@ input bool   InpEmaOn      = false; // Skip when the 1h EMA20 moved too fast (na
 input double InpEmaMax     = 1.65;  //   max 1h EMA20 move in 3 hours (x ATR)
 input bool   InpMinVwOn    = false; // Skip signals too close to VWAP (min distance)
 input double InpMinVwAtr   = 1.0;   //   min distance of the signal close from VWAP (x ATR)
+input bool   InpMaxVwOn    = false; // Skip signals too far from VWAP (max distance)
+input double InpMaxVwDist  = 5.0;   //   max distance of the signal close from VWAP, above or below
+input ENUM_VW_UNIT InpMaxVwUnit = VWU_ATR; //   ...measured in ATR or in price
 
 input group "DAYS AND HOURS (YOUR time zone)"
 enum ENUM_SRV_TZ { SRV_NYCLOSE = 0,   // Auto: GMT+2 winter / GMT+3 US summer time (most FX brokers)
@@ -279,7 +287,7 @@ int      lastDir = 0;
 double   lim = 0, stp = 0, stp0 = 0, trRisk = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, tF = 0;
 int      tpHit = 0;
 bool     trHalf = false, trGhost = false;
-int      trSkip = 0;               // why the setup is a ghost: 1 too far from VWAP, 2 choppy VWAP session, 3 1h EMA20 too fast, 4 too close to VWAP
+int      trSkip = 0;               // why the setup is a ghost: 1 too far from VWAP, 2 choppy VWAP session, 3 1h EMA20 too fast, 4 too close to VWAP, 5 beyond max VWAP distance
 int      totW = 0, totL = 0; double totR = 0;
 string   lastRes = "-";
 double   bestPx = 0;               // best price after the fill (the fill bar and stop bars add nothing)
@@ -323,6 +331,7 @@ double   dayPnl = 0; int lossRow = 0, winRow = 0; bool dayBlock = false; int pau
 double   recPool = 0; int recLosses = 0; int dUnits = 1; double carried = 0; bool capStop = false;
 double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP = 0;
 double   crkL = 0; int crkN = 0; bool crkRec = false;   // Crooks: $ loss to win back, closed trades in the cycle, the open trade is a recovery trade
+bool     crkW = false;                                   // Crooks C: the last closed trade was a win
 bool     exT1 = false, exT1Half = false, exT1Be = false;   // Crooks TP1 rule: this trade, its TP1 half is booked, the rest's stop is at the entry
 double   exT1Stop = 0, exT1Tp1 = 0, exT1Tp2 = 0;              // its stop and its own TP1 / TP2 (the engine's levels change with its next setup)
 double   exKeepSl = 0;             // restart: the adopted position's stop when it was tighter than the engine's; never widened
@@ -661,10 +670,11 @@ void ProcessBar(int s)
          bool emaNo = InpEmaOn && haveSpd && emaSpd > InpEmaMax;
          // signal close still hugging the VWAP (less than the minimum distance in ATR on the trade's side)
          bool nearNo = InpMinVwOn && d * (c - vwap) < InpMinVwAtr * atr;
-         bool ghost = zNo || chopNo || emaNo || nearNo;
+         bool farNo = InpMaxVwOn && MathAbs(c - vwap) > (InpMaxVwUnit == VWU_PRICE ? InpMaxVwDist : InpMaxVwDist * atr);   // above or below
+         bool ghost = zNo || chopNo || emaNo || nearNo || farNo;
          if(MathAbs(st) == 1 && !trGhost) evCancel = 2;
          st = isL ? 1 : -1; armBar = bi; lim = entry; stp = stop; stp0 = stop; trRisk = risk; trHalf = half; trGhost = ghost;
-         trSkip = zNo ? 1 : (chopNo ? 2 : (emaNo ? 3 : (nearNo ? 4 : 0)));
+         trSkip = zNo ? 1 : (chopNo ? 2 : (emaNo ? 3 : (nearNo ? 4 : (farNo ? 5 : 0))));
          t1 = lim + d * InpTp1R * risk; t2 = lim + d * InpTp2R * risk; t3 = lim + d * InpTp3R * risk; t4 = lim + d * InpTp4R * risk;
          tF = InpExitAt == EXIT_TP1 ? t1 : InpExitAt == EXIT_TP2 ? t2 : InpExitAt == EXIT_TP3 ? t3 : t4;
          if(!ghost) { evArm = true; evArmL = isL; }
@@ -688,8 +698,14 @@ void ProcessBar(int s)
    DrawBar(t);
 }
 
-//--- Crooks: the next trade is a recovery trade (trades 3, 5, 7 ... of the cycle)
-bool CrkRecNext() { return (InpRec == REC_CRA || InpRec == REC_CRB) && crkN >= 2 && crkN % 2 == 0; }
+//--- Crooks: the next trade is a recovery trade. A / B: trades 3, 5, 7 ... of the cycle; C: the trade after a win while a loss is owed; D: trades 3, 6, 9 ...
+bool CrkRecNext()
+{
+   if(InpRec == REC_CRA || InpRec == REC_CRB) return crkN >= 2 && crkN % 2 == 0;
+   if(InpRec == REC_CRC) return crkW && crkL > 0;
+   if(InpRec == REC_CRD) return crkN >= 2 && (crkN - 2) % 3 == 0;
+   return false;
+}
 //--- Crooks TP1 rule (exit at TP1, recovery trades): half of a double position banks the recovery amount at TP1, the rest runs to TP2.
 //--- Stop distance (bid chart) where a stop-out loses exactly that amount: TP1 / 2 - 1.5 x costs, on the tick grid toward the entry; 0 = not possible
 double CrkT1Dist()
@@ -703,7 +719,7 @@ double CrkT1Dist()
 }
 
 //--- risk $ for the next trade (loss recovery + hard cap) -------------------
-double NextRisk(double exitR)
+double NextRisk(double exitR, bool canTake = true)
 {
    double base = InpBaseRisk, r = base;
    double stepBase = 0;
@@ -735,6 +751,8 @@ double NextRisk(double exitR)
       case REC_OSC:   r = base * MathMin(oscU, oscNeed); break;
       case REC_CRA:
       case REC_CRB:
+      case REC_CRC:
+      case REC_CRD:
       {
          double x = crkL / (InpRec == REC_CRB ? InpCSplit : 1);
          r = !CrkRecNext() ? base : CrkT1Dist() > 0 ? MathMax(base, x) : exitR > 0 ? MathMax(base, x / exitR) : base;   // TP1 rule: a stop-out loses x
@@ -742,12 +760,12 @@ double NextRisk(double exitR)
       }
       default:        r = base;
    }
-   if(InpCapOn && r > InpHardCap)
+   if(InpCapOn && r > InpHardCap && canTake)   // a signal that is skipped anyway never restarts the cycle or stops trading
    {
       if(InpCapAction == CAP_STOP) capStop = true;
       else if(InpCapAction == CAP_RESET)
       {
-         recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; crkL = 0; crkN = 0;
+         recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; crkL = 0; crkN = 0; crkW = false;
          r = MathMin(baseC, InpHardCap);
       }
       else r = InpHardCap;
@@ -955,7 +973,7 @@ void DrawBar(datetime bt)
 //--- on-chart table (rebuilt on every new bar so it stays on top of the markings) ----
 string StateText(bool newsBlk)
 {
-   string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : (trSkip == 3 ? "1H EMA20 TOO FAST" : "TOO CLOSE TO VWAP"));
+   string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : (trSkip == 3 ? "1H EMA20 TOO FAST" : (trSkip == 4 ? "TOO CLOSE TO VWAP" : "BEYOND MAX VWAP DISTANCE")));
    string s = st != 0 && trGhost ? "SKIPPED (" + why + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
               capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : dayBlock ? "STREAK STOP TODAY" :
               !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : "SCANNING";
@@ -1003,11 +1021,12 @@ void UpdateTable()
    bool   act = MathAbs(st) == 2 && !trGhost, armed = MathAbs(st) == 1 && !trGhost, has = act || armed;
    int    xk = (int)InpExitAt;
    string tps = has ? DoubleToString(t1, _Digits) + " | " + DoubleToString(t2, _Digits) + " | " + DoubleToString(t3, _Digits) + " | " + DoubleToString(t4, _Digits) : "-";
-   bool   isC = InpRec == REC_C || InpRec == REC_CS, isK = InpRec == REC_CRA || InpRec == REC_CRB;
-   string kTxt = DoubleToString(crkL, 2) + " | trade " + IntegerToString(crkN + 1) + ((exState != 0 ? crkRec : CrkRecNext()) ? " recovery" : " base") + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
+   bool   isC = InpRec == REC_C || InpRec == REC_CS, isK = InpRec == REC_CRA || InpRec == REC_CRB || InpRec == REC_CRC || InpRec == REC_CRD;
+   bool   kRec = exState != 0 ? crkRec : CrkRecNext();
+   string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRC ? (kRec ? " | recovery trade" : (crkL > 0 ? " | base, waiting for a win" : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.5", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v3.6", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -1019,7 +1038,7 @@ void UpdateTable()
    TblAdd("SIGNAL TRADES | WIN % | R", AccTxt() + " | last " + lastRes, totR >= 0 ? posC : negC, cell);
    TblAdd("TP HIT", TpTxt(), posC, cell);
    if(InpMv1On || InpMv2On || InpMv3On) TblAdd("BREAKEVEN", BeTxt(), white, cell);
-   if(InpNoChase || InpChopOn || InpEmaOn || InpMinVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
+   if(InpNoChase || InpChopOn || InpEmaOn || InpMinVwOn || InpMaxVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
    TblAdd("DATA RANGE", gFirstT > 0 ? DateTxt(UserTime(gFirstT), true) + " -> " + DateTxt(UserTime(gLastDone), false) + " | " + IntegerToString(bi + 1) + " bars" : "-", white, cell);
    // column widths from the longest text in each column
    int  fs = (int)MathMax(6, InpTableFont), n = ArraySize(tblKey), kw = 0, vw = 0, th = 0;
@@ -1049,11 +1068,12 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
 {
    sigN++;
    ulong pTk; double pVol, pOpen;
-   double rAmt = NextRisk(ExitR());
+   bool posNow = HasPosition(pTk, pVol, pOpen);
+   bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock);   // the hard cap acts only on a signal that can be taken
+   double rAmt = NextRisk(ExitR(), canTake);
    double t1d = CrkT1Dist();                         // after a cap restart this is 0: trade 1 of a new cycle
    double sd = t1d > 0 ? t1d : trRisk;               // stop distance used for the size
    double v = capStop ? 0 : LotsFor(rAmt, sd, lim, isL);
-   bool posNow = HasPosition(pTk, pVol, pOpen);
    skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : v <= 0 ? "size 0" : "";
    if(skipWhy != "") { skipN++; return; }
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
@@ -1130,9 +1150,10 @@ void BookClosed()
    }
    oscP += exPnl;
    if(oscP >= InpBaseRisk) { oscU = 1; oscP = 0; } else if(win) oscU++;
-   // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A: also when a recovery trade wins)
+   // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, C, D: also when a recovery trade wins)
    crkL = MathMax(0.0, crkL - exPnl);
-   if(crkL < 0.01 || (InpRec == REC_CRA && win && crkRec)) { crkL = 0; crkN = 0; } else crkN++;
+   if(crkL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRC || InpRec == REC_CRD) && win && crkRec)) { crkL = 0; crkN = 0; } else crkN++;
+   crkW = win;
    crkRec = false; exT1 = false; exT1Half = false; exT1Be = false; exKeepSl = 0;
    exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false;
    CancelPending();
@@ -1273,6 +1294,7 @@ int OnInit()
    gCanDraw = MQLInfoInteger(MQL_OPTIMIZATION) == 0 && (MQLInfoInteger(MQL_TESTER) == 0 || MQLInfoInteger(MQL_VISUAL_MODE) != 0);
    ObjectsDeleteAll(0, "ARM_");
    if(InpTp1R > InpTp2R || InpTp2R > InpTp3R || InpTp3R > InpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpMaxVwOn && InpMaxVwDist <= 0) { Print("Max distance from VWAP must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    // warm up the engine on history (no orders): it ends in the same state as the TradingView engine would
    int bars = Bars(_Symbol, _Period);
    int look = (int)MathMax(MathMax(InpStructLen, InpBrkLen + 1), MathMax(InpMomLen + 1, InpStopLen)) + 2;

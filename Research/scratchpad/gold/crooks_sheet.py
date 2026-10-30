@@ -1,4 +1,4 @@
-"""Workbook sheet 'Crooks A and B test' from crooks.pkl (backtest, halves, stress, cap sizes) and crooks_mc.pkl (500 random orders).
+"""Workbook sheet 'Crooks A-D test' from crooks.pkl (backtest, halves, stress, cap sizes) and crooks_mc.pkl (500 random orders).
 The findings text is built from those results. Called from build_final.py."""
 import os, sys, pickle
 from openpyxl.styles import Alignment
@@ -29,8 +29,8 @@ def crooks_sheet(wb):
     order = sorted(D, key=lambda k: (TFS.index(k[0]), k[1]))
     find = lambda tf, name: next((k for k in order if k[0] == tf and D[k]['name'] == name), None)
     row = lambda k, m, s, c, a: next(x for x in D[k]['rows'] if (x['mode'], x['split'], x['cap'], x['act']) == (m, s, c, a))
-    ws = wb.create_sheet('Crooks A and B test')
-    title(ws, 'Crooks A and Crooks B loss recovery (FxPro MT5 gold, 2021-2026, after spread)')
+    ws = wb.create_sheet('Crooks A-D test')
+    title(ws, 'Crooks A, B, C and D loss recovery (FxPro MT5 gold, 2021-2026, after spread)')
     r = note_rows(ws, 2, [
         'HOW THE RULES WORK',
         'Crooks A: trades 1 and 2 of a cycle risk the base ($50). From trade 3, every other trade (3, 5, 7 ...) is a RECOVERY trade and the trades between risk the base. '
@@ -38,16 +38,21 @@ def crooks_sheet(wb):
         'Losses add to the loss to win back, wins reduce it (never below 0). A winning recovery trade starts a new cycle (base, base, recovery ...), even if not everything is back; so does winning everything back.',
         'Crooks B: the same alternation, but recovery risk = max(base, loss to win back / split / final target R), with split = the Rule C split setting, and a new cycle starts only when the '
         'whole loss is won back (a recovery win that leaves some of the loss keeps alternating). Split 1 = Crooks A sizing with the Crooks B reset.',
+        'Crooks C: every trade risks the base until a trade wins; the trade right after a win is a recovery trade (sized like Crooks A) while a loss is still owed. A losing recovery trade -> base '
+        'trades again until the next win. Example, TP2: 4 losses ($200 owed), trade 5 wins +$50 ($150 owed), trade 6 risks $150; if it loses ($300 owed), trade 7 is $50 and so on.',
+        'Crooks D: like Crooks A, but two base trades between recovery trades: base, base, recovery, base, base, recovery (trades 3, 6, 9 ...). Crooks C and D start a new cycle like Crooks A '
+        '(a winning recovery trade, or winning everything back).',
         'Example, 5 losses in a row, base $50, final target TP2 (1R), Crooks A: risks $50, $50, $100, $50, $250. Same with TP4 (2R): $50, $50, $50, $50, $100. '
         'Hard cap: only when it is switched on; "Start again" = forget the loss to win back and trade 1 of a new cycle at the base risk.',
         'Test: $10,000 start, $50 base, every trade sized like the strategy and the EA (a stop-out loses the computed risk incl. spread), no leverage limit. '
-        'The EA\'s own sizing code was run on these trades and gave the same risk on every trade (1.9 million trades compared, every rule except % of equity).'], h=40)
+        'The EA\'s own sizing code was run on these trades and gave the same risk on every trade (2.0 million trades compared, every rule except % of equity).'], h=40)
     r = note_rows(ws, r, [
         'HOW TO SET IT',
-        'TradingView strategy, group LOSS RECOVERY (strategy only): Loss Recovery = "Crooks A (base, base, then recovery every 2nd trade)" or "Crooks B (Crooks A with the loss split over N trades)"; '
+        'TradingView strategy, group LOSS RECOVERY (strategy only): Loss Recovery = "Crooks A (base, base, then recovery every 2nd trade)", "Crooks B (Crooks A with the loss split over N trades)", '
+        '"Crooks C (base until a win, then one recovery trade)" or "Crooks D (base, base, recovery: every 3rd trade)"; '
         'for Crooks B also "Split The Loss Over This Many Trades (Rule C, Crooks B)" = 2-5. Group RISK: tick "Hard Cap: Max Loss Per Trade ($)", 500, and '
         '"If The Risk Would Exceed The Cap" = "Start again from the base risk". The final target is "Exit At" (TP1-TP4).',
-        'MT5 EA, group LOSS RECOVERY: Loss recovery (InpRec) = Crooks A / Crooks B; InpCSplit = the split (Crooks B). RISK: InpCapOn = true, InpHardCap = 500, '
+        'MT5 EA, group LOSS RECOVERY: Loss recovery (InpRec) = Crooks A / B / C / D; InpCSplit = the split (Crooks B). RISK: InpCapOn = true, InpHardCap = 500, '
         'InpCapAction = Start again from the base risk. The EA keeps the cycle in memory: after an EA restart it starts at trade 1 of a new cycle.',
         'Chart table row "CROOKS: LOSS TO WIN BACK": the $ still to win back, the number of the next (or open) trade in the cycle and whether it is a base or a recovery trade.',
         'TP1 rule (switch "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", EA InpCrkT1; on by default): only with Final Exit At = TP1, on the recovery trades. The position is doubled, '
@@ -59,13 +64,22 @@ def crooks_sheet(wb):
     ed = [k for k in order if k in M]
     nocap_blow = {tf: max([100 * mc(k, 'Crooks A', 3, 0.0, 'clamp')['ruin'] for k in ed if k[0] == tf] + [0]) for tf in TFS}
     nocap_blow1 = {tf: max([100 * mc(k, 'Crooks B', 1, 0.0, 'clamp')['ruin'] for k in ed if k[0] == tf] + [0]) for tf in TFS}
-    CRK = (('Crooks A', 3), ('Crooks B', 1), ('Crooks B', 2), ('Crooks B', 3), ('Crooks B', 4), ('Crooks B', 5))
+    CRK = (('Crooks A', 3), ('Crooks B', 1), ('Crooks B', 2), ('Crooks B', 3), ('Crooks B', 4), ('Crooks B', 5), ('Crooks C', 3), ('Crooks D', 3))
+    nocap_cd = {m: max([100 * mc(k, m, 3, 0.0, 'clamp')['ruin'] for k in ed] + [0]) for m in ('Crooks C', 'Crooks D')}
     sa_blow = {tf: max([mc(k, m, s, 500.0, 'reset')['ruin'] for k in ed if k[0] == tf for m, s in CRK] + [0.0]) for tf in TFS}
     sa_txt = ', '.join('%s %s' % (tf, ('%.1f%%' % (100 * v)) if v else 'none') for tf, v in sa_blow.items())
     def ratio(x): return x['net'] / x['maxDD'] if x['maxDD'] > 0 else 0.0
     beatA = sum(1 for k in ed if ratio(row(k, 'Crooks A', 3, 500.0, 'reset')['all']) > ratio(row(k, 'Off', 3, 0.0, 'clamp')['all']))
     beatB = sum(1 for k in ed if ratio(row(k, 'Crooks B', 3, 500.0, 'reset')['all']) > ratio(row(k, 'Off', 3, 0.0, 'clamp')['all']))
     medA = sum(1 for k in ed if mc(k, 'Crooks A', 3, 500.0, 'reset')['med'] > mc(k, 'Off', 3, 0.0, 'clamp')['med'])
+    beatC = sum(1 for k in ed if ratio(row(k, 'Crooks C', 3, 500.0, 'reset')['all']) > ratio(row(k, 'Off', 3, 0.0, 'clamp')['all']))
+    beatD = sum(1 for k in ed if ratio(row(k, 'Crooks D', 3, 500.0, 'reset')['all']) > ratio(row(k, 'Off', 3, 0.0, 'clamp')['all']))
+    def line_cd(tf):
+        k = best[tf]; o = row(k, 'Off', 3, 0.0, 'clamp')['all']; out = []
+        for m in ('Crooks C', 'Crooks D'):
+            x = row(k, m, 3, 500.0, 'reset')['all']; q = mc(k, m, 3, 500.0, 'reset')
+            out.append('%s %s, fall %s (random orders: median %s, 95%% fall < %s)' % (m, usd(x['net']), pct(x['maxDDpct']), usd(q['med']), pct(q['dd95'])))
+        return '%s best settings: Off %s, fall %s | %s.' % (tf, usd(o['net']), pct(o['maxDDpct']), ' | '.join(out))
     dflt = [k for k in order if k[1] == 0]
     dblow = sum(1 for k in dflt for x in D[k]['rows'] if x['mode'].startswith('Crooks') and not x['cap'] and x['all']['ruined'])
     dall = sum(1 for k in dflt for x in D[k]['rows'] if x['mode'].startswith('Crooks') and not x['cap'])
@@ -82,27 +96,29 @@ def crooks_sheet(wb):
         'WHAT IT SHOWS',
         '1. Gold trades do not win more often after losses (M15 best settings: %.1f%% of all trades profitable, %.1f%% right after two losses). So Crooks cannot make the signals better: '
         'it makes more money only because the recovery trades risk more than $50, and the account also falls deeper.' % tuple(100 * v for v in _after_losses(*k15)),
-        '2. Always use the hard cap. Without it, Crooks A blew the $10,000 account in up to %s of the random orders (worst strategy per timeframe: M1 %s, M5 %s, M15 %s, H1 %s) '
-        'and Crooks B split 1 in up to %s; with the default settings %d of %d uncapped Crooks runs blew the account. With the $500 cap and "Start again", the worst share of '
+        '2. Always use the hard cap. Without it, Crooks A blew the $10,000 account in up to %s of the random orders (worst strategy per timeframe: M1 %s, M5 %s, M15 %s, H1 %s), '
+        'Crooks B split 1 in up to %s, Crooks C in up to %s and Crooks D in up to %s; with the default settings %d of %d uncapped Crooks runs blew the account. With the $500 cap and "Start again", the worst share of '
         'random orders that blew the account (any Crooks rule and split, worst strategy) was: %s.' % (
             pct(max(nocap_blow.values()) / 100), pct(nocap_blow['M1'] / 100), pct(nocap_blow['M5'] / 100), pct(nocap_blow['M15'] / 100), pct(nocap_blow['H1'] / 100),
-            pct(max(nocap_blow1.values()) / 100), dblow, dall, sa_txt),
+            pct(max(nocap_blow1.values()) / 100), pct(nocap_cd['Crooks C'] / 100), pct(nocap_cd['Crooks D'] / 100), dblow, dall, sa_txt),
         '3. ' + line('H1'), '4. ' + line('M15'), '5. ' + line('M5'), '6. ' + line('M1'),
         '7. Luck of the order: when the real order "beats" 90%%+ of the random orders, the backtest is luckier than average - use the random-order median as the fair expectation (part 3). '
         'Example: M1 best settings, Crooks A with the cap made %s in the backtest, but the median of 500 random orders is %s.' % (
             usd(row(best['M1'], 'Crooks A', 3, 500.0, 'reset')['all']['net']), usd(mc(best['M1'], 'Crooks A', 3, 500.0, 'reset')['med'])),
         '8. Per $ of drawdown, fixed risk (Off) stays as good or better on most settings: Crooks A ($500 cap, Start again) had a better profit / drawdown than Off on %d of %d profitable strategies, '
-        'Crooks B split 3 on %d of %d. More profit for the same fall is also possible by raising the fixed risk. Crooks A beat Off on the random-order median net on %d of %d.' % (
-            beatA, len(ed), beatB, len(ed), medA, len(ed)),
+        'Crooks B split 3 on %d of %d, Crooks C on %d of %d, Crooks D on %d of %d. More profit for the same fall is also possible by raising the fixed risk. Crooks A beat Off on the random-order median net on %d of %d.' % (
+            beatA, len(ed), beatB, len(ed), beatC, len(ed), beatD, len(ed), medA, len(ed)),
         '9. A bigger split in Crooks B is the gentle version (less extra profit, less extra fall). On H1, Crooks B split 4-5 never risked more than the base on %d of %d strategies: '
         'the losses there never grow large enough, so it trades like Off.' % (h1base, len(h1)),
         '10. Partial close at TP1 (low-streak strategies marked "strategy and EA only"): the recovery size still divides by the final target R, so a recovery win pays back less than the loss.',
-        _vs_all(), _tp1_finding()], h=30)
+        _vs_all(), _tp1_finding(),
+        '13. Crooks C and D, $500 cap and Start again (rows in parts 1-5): ' + ' '.join(line_cd(tf) for tf in ('H1', 'M15', 'M5', 'M1'))], h=30)
     # ---- PART 1: quick answer
     r = section(ws, r, 'PART 1 - quick answer: the best settings per timeframe with the main Crooks choices ($500 cap, Start again) vs Off', 15)
     hdr(ws, r, ['Timeframe', 'Strategy', 'Final target R', 'Rule', 'Split', 'Hard cap', 'Backtest net ($)', 'Backtest deepest fall %', 'Average risk ($)', 'Largest risk ($)',
                 'Random orders: median net ($)', 'Random orders: worst 5% net ($)', 'Random orders: 95% fall less than', 'Random orders: account blown', 'Random orders: fall > 40%'], height=54); r += 1
-    QUICK = [('Off', 3, 0.0, 'clamp'), ('Crooks A', 3, 500.0, 'reset'), ('Crooks B', 2, 500.0, 'reset'), ('Crooks B', 3, 500.0, 'reset'), ('Crooks B', 5, 500.0, 'reset')]
+    QUICK = [('Off', 3, 0.0, 'clamp'), ('Crooks A', 3, 500.0, 'reset'), ('Crooks B', 2, 500.0, 'reset'), ('Crooks B', 3, 500.0, 'reset'), ('Crooks B', 5, 500.0, 'reset'),
+             ('Crooks C', 3, 500.0, 'reset'), ('Crooks D', 3, 500.0, 'reset')]
     for tf in TFS:
         for name in ('Most profit', 'Shortest losing streak - indicator only'):
             k = next((q for q in order if q[0] == tf and name in D[q]['scen']), None)
@@ -161,7 +177,8 @@ def crooks_sheet(wb):
     hdr(ws, r, ['Timeframe', 'Strategy', 'Final target R', 'Rule', 'Split', 'Hard cap', 'Net ($), as tested', 'Max DD %, as tested', 'Net ($), +0.05 R cost', 'Max DD %, +0.05 R', 'Net ($), +0.10 R cost',
                 'Max DD %, +0.10 R'], height=42); r += 1
     SKEYS = [('Off', 3, 0.0, 'clamp'), ('Rule C split', 3, 500.0, 'reset'), ('Crooks A', 3, 0.0, 'clamp'), ('Crooks A', 3, 500.0, 'clamp'), ('Crooks A', 3, 500.0, 'reset')] + \
-            [('Crooks B', s, c, a) for s in (1, 2, 3, 5) for c, a in ((0.0, 'clamp'), (500.0, 'reset'))]
+            [('Crooks B', s, c, a) for s in (1, 2, 3, 5) for c, a in ((0.0, 'clamp'), (500.0, 'reset'))] + \
+            [(m, 3, c, a) for m in ('Crooks C', 'Crooks D') for c, a in ((0.0, 'clamp'), (500.0, 'reset'))]
     for k in order:
         if k[1] == 0: continue
         d = D[k]
@@ -180,7 +197,7 @@ def crooks_sheet(wb):
     for k in order:
         if k[1] == 0: continue
         d = D[k]; rows = []
-        for m, s in [('Crooks A', 3)] + [('Crooks B', s) for s in (1, 2, 3)]:
+        for m, s in [('Crooks A', 3)] + [('Crooks B', s) for s in (1, 2, 3)] + [('Crooks C', 3), ('Crooks D', 3)]:
             for c in (250.0, 500.0, 1000.0):
                 for a in ('clamp', 'reset'): rows.append((m, s, c, a, d['caps'][(m, s, c, a)] if c != 500.0 else row(k, m, s, c, a)['all']))
         for m, s, c, a, q in rows:
@@ -212,9 +229,10 @@ def _vs_all():
     if not full: return '11. No recovery rule stayed within the limits on all %d profitable settings.' % cases
     (m, c), v = full[0]
     others = ', '.join('%s%s (%.2f)' % (mm, ' + $500 cap' if cc else '', sum(q for q, _ in vv) / len(vv)) for (mm, cc), vv in full[1:4])
-    return ('11. Against all 19 rules (sheet Recovery rules, $500 cap = Clamp): on the %d profitable best / low-streak settings, %s%s (split 3) is the best rule after Off that stayed within '
+    import recovery as RC
+    return ('11. Against all %d rules (sheet Recovery rules, $500 cap = Clamp): on the %d profitable best / low-streak settings, %s%s%s is the best rule after Off that stayed within '
             'the limits in every case - %.2f x Off\'s profit per $ of drawdown with %.2f x its profit. Next: %s.' % (
-                cases, m, ' + $500 cap' if c else '', sum(q for q, _ in v) / len(v), sum(g for _, g in v) / len(v), others))
+                len(RC.MODES) - 1, cases, m, ' + $500 cap' if c else '', ' (split 3)' if m in ('Crooks B', 'Rule C split') else '', sum(q for q, _ in v) / len(v), sum(g for _, g in v) / len(v), others))
 def _tp1_load():
     fn = S + '/gold/crooks_tp1.pkl'
     return pickle.load(open(fn, 'rb')) if os.path.exists(fn) else None

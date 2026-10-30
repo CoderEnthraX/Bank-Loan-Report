@@ -21,17 +21,17 @@ ROWS = [('SIGNAL MODEL', 'Structure Lookback (bars)', 'InpStructLen', lambda d: 
         ('SIGNAL MODEL', 'Min Displacement Range (x ATR)', 'InpDispAtr', lambda d: d['dispAtr'], ('dispAtr',)),
         ('SIGNAL MODEL', 'Min Displacement Body (% of range)', 'InpBodyPct', lambda d: d['dispBodyPct'], ('dispBodyPct',)),
         ('SIGNAL MODEL', 'Max Close Distance From Extreme (% of range)', 'InpClosePct', lambda d: d['dispClosePct'], ('dispClosePct',)),
-        ('SIGNAL MODEL', 'Momentum Lookback (bars)', 'InpMomLen', lambda d: d['momLen'], ('momLen',)),
-        ('SIGNAL MODEL', '   Min (x ATR)   [same line as Momentum Lookback]', 'InpMomAtr', lambda d: d['momAtr'], ('momAtr',)),
+        ('SIGNAL MODEL', 'Momentum Lookback (bars) · Min Move (x ATR)   [1st box]', 'InpMomLen', lambda d: d['momLen'], ('momLen',)),
+        ('SIGNAL MODEL', '   ... 2nd box: Min Move (x ATR)   [same line]', 'InpMomAtr', lambda d: d['momAtr'], ('momAtr',)),
         ('SIGNAL MODEL', 'Min CMO (clean move)', 'InpCmoMin', lambda d: d['cmoMin'], ('cmoMin',)),
         ('SIGNAL MODEL', 'Same-Direction Re-arm', 'InpRearm', lambda d: 'Keep first' if d['rearmKeep'] else 'Replace with newer', ('rearmKeep',)),
         ('SIGNAL MODEL', 'Stop Mode', 'InpStopMode', lambda d: 'ATR Model' if d['stopMode'] == 'atr' else 'Swing + Buffer (ATR capped)', ('stopMode',)),
         ('SIGNAL MODEL', 'Stop Distance (x ATR)', 'InpStopAtr', lambda d: d['stopAtr'], ('stopAtr',)),
-        ('SIGNAL MODEL', 'Swing Lookback (bars)', 'InpStopLen', lambda d: d['stopLen'], ('stopLen',)),
-        ('SIGNAL MODEL', '   Buffer (x ATR)   [same line as Swing Lookback]', 'InpStopBufAtr', lambda d: d['stopBufAtr'], ('stopBufAtr',)),
+        ('SIGNAL MODEL', 'Swing Lookback (bars) · Buffer (x ATR)   [1st box]', 'InpStopLen', lambda d: d['stopLen'], ('stopLen',)),
+        ('SIGNAL MODEL', '   ... 2nd box: Buffer (x ATR)   [same line]', 'InpStopBufAtr', lambda d: d['stopBufAtr'], ('stopBufAtr',)),
         ('SIGNAL MODEL', 'Half Stop On First Counter-Bias Impulse', 'InpHalfStop', lambda d: tick(d['halfStopOn']), ('halfStopOn',)),
-        ('SIGNAL MODEL', 'Half Stop (x ATR)', 'InpHalfStopAtr', lambda d: d['halfStopAtr'], ('halfStopAtr',)),
-        ('SIGNAL MODEL', '   Prev Session Net Impulses   [same line as Half Stop]', 'InpBiasNet', lambda d: d['biasNet'], ('biasNet',)),
+        ('SIGNAL MODEL', 'Half Stop (x ATR) · Prev Session Net Impulses   [1st box]', 'InpHalfStopAtr', lambda d: d['halfStopAtr'], ('halfStopAtr',)),
+        ('SIGNAL MODEL', '   ... 2nd box: Prev Session Net Impulses   [same line]', 'InpBiasNet', lambda d: d['biasNet'], ('biasNet',)),
         ('SIGNAL MODEL', 'Impulse Min Body (% of range)', 'InpImpBody', lambda d: d['impBodyPct'], ('impBodyPct',)),
         ('SIGNAL MODEL', 'Half Stop When Session Opens Outside Prev Range', 'InpHalfOpenOut', lambda d: tick(d['halfOpenOut']), ('halfOpenOut',)),
         ('SIGNAL MODEL', 'Strict Bias Check (optional)', 'InpHalfStrict', lambda d: tick(d['halfStrict']), ('halfStrict',)),
@@ -47,18 +47,18 @@ ROWS = [('SIGNAL MODEL', 'Structure Lookback (bars)', 'InpStructLen', lambda d: 
         ('SIGNAL MODEL', 'Slope Looks Across The Session Start', 'InpSlopeCross', lambda d: tick(d['slopeCross']), ('slopeCross',)),
         ('SIGNAL MODEL', 'Skip First Bars After VWAP Reset', 'InpMinOpenBars', lambda d: d['minOpenBars'], ('minOpenBars',)),
         ('SIGNAL MODEL', 'Skip Sunday (UTC) Weekly Open', 'InpSkipSunday', lambda d: tick(d['skipSunday']), ('skipSunday',)),
-        ('SIGNAL MODEL', 'Deep Pullback Signal (optional)', 'InpDeepOn', lambda d: tick(d['deepOn']), ('deepOn',)),
-        ('SIGNAL MODEL', '   Min Depth (x ATR)   [same line as Deep Pullback]', 'InpDeepFar', lambda d: d['deepFar'], ('deepFar',)),
+        ('SIGNAL MODEL', 'Deep Pullback Signal (optional) · Min Depth (x ATR)   [tick box]', 'InpDeepOn', lambda d: tick(d['deepOn']), ('deepOn',)),
+        ('SIGNAL MODEL', '   ... box: Min Depth (x ATR)   [same line]', 'InpDeepFar', lambda d: d['deepFar'], ('deepFar',)),
         ('SIGNAL MODEL', 'Longs', 'InpAllowLong', lambda d: tick(d['allowLong']), ('allowLong',)),
         ('SIGNAL MODEL', 'Shorts', 'InpAllowShort', lambda d: tick(d['allowShort']), ('allowShort',)),
         ('VWAP', 'Anchor', 'InpVwapAnchor', lambda d: d['vwAnchorG'].capitalize(), ('vwAnchorG',)),
         ('VWAP', 'Source', 'InpVwapSrc', lambda d: d['vwSrcG'], ('vwSrcG',)),
         ('ENTRY PRICE', 'Entry Price', 'InpEntryMode', lambda d: ENTRY[d['entryMode']], ('entryMode',)),
         ('ENTRY PRICE', 'Custom % (0 = close, 50 = mid, 100 = low/high)', 'InpEntryPct', lambda d: d['entryPct'], ('entryPct',)),
-        ('TARGETS, EXIT AND STOP MOVES', 'TP1', 'InpTp1R', lambda d: d['tp1R'], ('tp1R',)),
-        ('TARGETS, EXIT AND STOP MOVES', 'TP2', 'InpTp2R', lambda d: d['tp2R'], ('tp2R',)),
-        ('TARGETS, EXIT AND STOP MOVES', 'TP3', 'InpTp3R', lambda d: d['tp3R'], ('tp3R',)),
-        ('TARGETS, EXIT AND STOP MOVES', 'TP4', 'InpTp4R', lambda d: d['tp4R'], ('tp4R',)),
+        ('TARGETS, EXIT AND STOP MOVES', 'Targets TP1 · TP2 · TP3 · TP4 (R): 1st box (TP1)', 'InpTp1R', lambda d: d['tp1R'], ('tp1R',)),
+        ('TARGETS, EXIT AND STOP MOVES', '   ... 2nd box (TP2)   [same line]', 'InpTp2R', lambda d: d['tp2R'], ('tp2R',)),
+        ('TARGETS, EXIT AND STOP MOVES', '   ... 3rd box (TP3)   [same line]', 'InpTp3R', lambda d: d['tp3R'], ('tp3R',)),
+        ('TARGETS, EXIT AND STOP MOVES', '   ... 4th box (TP4)   [same line]', 'InpTp4R', lambda d: d['tp4R'], ('tp4R',)),
         ('TARGETS, EXIT AND STOP MOVES', 'Final Exit At', 'InpExitAt', lambda d: 'TP%d' % d['exitAt'], ('exitAt',)),
         ('TARGETS, EXIT AND STOP MOVES', 'When TP1 Hits, Move Stop To (R)   [tick box]', 'InpMv1On', lambda d: tick(d['mv1On']), ('mv1On',)),
         ('TARGETS, EXIT AND STOP MOVES', '   ... value (R)   [same line]', 'InpMv1R', lambda d: d['mv1R'], ('mv1R',)),
@@ -66,18 +66,18 @@ ROWS = [('SIGNAL MODEL', 'Structure Lookback (bars)', 'InpStructLen', lambda d: 
         ('TARGETS, EXIT AND STOP MOVES', '   ... value (R)   [same line]', 'InpMv2R', lambda d: d['mv2R'], ('mv2R',)),
         ('TARGETS, EXIT AND STOP MOVES', 'When TP3 Hits, Move Stop To (R)   [tick box]', 'InpMv3On', lambda d: tick(d['mv3On']), ('mv3On',)),
         ('TARGETS, EXIT AND STOP MOVES', '   ... value (R)   [same line]', 'InpMv3R', lambda d: d['mv3R'], ('mv3R',)),
-        ('ACCURACY FILTERS', "Don't Chase: Skip Signals Beyond   [tick box]", 'InpNoChase', lambda d: tick(d['noChase']), ('noChase',)),
-        ('ACCURACY FILTERS', '   σ From VWAP   [same line]', 'InpNoChaseSig', lambda d: d['noChaseSig'], ('noChaseSig',)),
+        ('ACCURACY FILTERS', "Don't Chase: Skip Signals Beyond (σ From VWAP)   [tick box]", 'InpNoChase', lambda d: tick(d['noChase']), ('noChase',)),
+        ('ACCURACY FILTERS', '   ... box: σ From VWAP   [same line]', 'InpNoChaseSig', lambda d: d['noChaseSig'], ('noChaseSig',)),
         ('ACCURACY FILTERS', 'After A Loss, No Same-Direction Trade Until A Win', 'InpLossBlock', lambda d: tick(d['lossBlock']), ('lossBlock',)),
-        ('ACCURACY FILTERS', 'Skip Signals Too Close To VWAP: Min Distance   [tick box]', 'InpMinVwOn', lambda d: tick(d['minVwOn']), ('minVwOn',)),
-        ('ACCURACY FILTERS', '   x ATR   [same line]', 'InpMinVwAtr', lambda d: d['minVwAtr'], ('minVwAtr',)),
-        ('ACCURACY FILTERS', 'Skip Choppy Sessions: Max VWAP Crosses   [tick box]', 'InpChopOn', lambda d: tick(d['chopOn']), ('chopOn',)),
-        ('ACCURACY FILTERS', '   Per 100 Bars   [same line]', 'InpChopMax', lambda d: d['chopMax'], ('chopMax',)),
-        ('ACCURACY FILTERS', 'Skip When The 1h EMA20 Moved More Than   [tick box]', 'InpEmaOn', lambda d: tick(d['emaOn']), ('emaOn',)),
-        ('ACCURACY FILTERS', '   ATR In 3 Hours   [same line]', 'InpEmaMax', lambda d: d['emaMax'], ('emaMax',)),
+        ('ACCURACY FILTERS', 'Skip Signals Too Close To VWAP: Min Distance (x ATR)   [tick box]', 'InpMinVwOn', lambda d: tick(d['minVwOn']), ('minVwOn',)),
+        ('ACCURACY FILTERS', '   ... box: x ATR   [same line]', 'InpMinVwAtr', lambda d: d['minVwAtr'], ('minVwAtr',)),
+        ('ACCURACY FILTERS', 'Skip Choppy Sessions: Max VWAP Crosses (Per 100 Bars)   [tick box]', 'InpChopOn', lambda d: tick(d['chopOn']), ('chopOn',)),
+        ('ACCURACY FILTERS', '   ... box: Per 100 Bars   [same line]', 'InpChopMax', lambda d: d['chopMax'], ('chopMax',)),
+        ('ACCURACY FILTERS', 'Skip When The 1h EMA20 Moved More Than (ATR In 3 Hours)   [tick box]', 'InpEmaOn', lambda d: tick(d['emaOn']), ('emaOn',)),
+        ('ACCURACY FILTERS', '   ... box: ATR In 3 Hours   [same line]', 'InpEmaMax', lambda d: d['emaMax'], ('emaMax',)),
         ('DAYS AND HOURS', 'Time Zone', 'InpUserGMT = 5.5', lambda d: 'Asia/Kolkata', ()),
         ('DAYS AND HOURS', 'Trade Only On The Ticked Days', 'InpDayOn', lambda d: tick(d['dayOn']), ('dayOn',)),
-        ('DAYS AND HOURS', '   Mon Tue Wed Thu Fri Sat Sun   [ticks]', 'InpMon ... InpSun',
+        ('DAYS AND HOURS', '   Mon, Tue, Wed, Thu, Fri, Sat, Sun   [one tick box each]', 'InpMon ... InpSun',
          lambda d: 'all ticked' if all(d['days']) else ' '.join(n for n, v in zip(('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'), d['days']) if v), ('days',)),
         ('DAYS AND HOURS', 'Trade Only Between   [tick box]', 'InpHoursOn', lambda d: tick(d['hoursOn']), ('hoursOn',)),
         ('DAYS AND HOURS', '   session, Indian time   [same line]', 'InpStartH:M - InpEndH:M', lambda d: '%04d-%04d' % tuple(d['hoursSess']), ('hoursSess',)),
@@ -181,7 +181,8 @@ def tf_sheet(wb, tf, C):
     row('Rule C split, split 3, $500 hard cap, Clamp: net profit ($)', m('cs3_clamp', lambda x: 'BLOWN' if x['ruined'] else round(x['net'], 2)), '#,##0;(#,##0);-')
     row('   deepest fall from a peak (%)', m('cs3_clamp', lambda x: round(x['maxDDpct'], 4)), '0.0%')
     mc = lambda key, f: [f(s['money']['mc'][key]) if s['money'].get('mc') else '-' for s in st]
-    for key, name, mk in (('crA_reset', 'Crooks A, $500 hard cap, Start again', ('Crooks A', 3, 500.0, 'reset')), ('crB3_reset', 'Crooks B, split 3, $500 hard cap, Start again', ('Crooks B', 3, 500.0, 'reset'))):
+    for key, name, mk in (('crA_reset', 'Crooks A, $500 hard cap, Start again', ('Crooks A', 3, 500.0, 'reset')), ('crB3_reset', 'Crooks B, split 3, $500 hard cap, Start again', ('Crooks B', 3, 500.0, 'reset')),
+                          ('crC_reset', 'Crooks C, $500 hard cap, Start again', ('Crooks C', 3, 500.0, 'reset')), ('crD_reset', 'Crooks D, $500 hard cap, Start again', ('Crooks D', 3, 500.0, 'reset'))):
         row(name + ': net profit ($)', m(key, lambda x: 'BLOWN' if x['ruined'] else round(x['net'], 2)), '#,##0;(#,##0);-')
         row('   deepest fall from a peak (%)', m(key, lambda x: round(x['maxDDpct'], 4)), '0.0%')
         row('   the same trades in 500 random orders: median net ($)', mc(mk, lambda q: round(q['med'], 2)), '#,##0;(#,##0);-')
@@ -191,10 +192,10 @@ def tf_sheet(wb, tf, C):
         if tf in ('M1', 'M5') or e < 0.08:
             q = (s['money'].get('mc') or {}).get(('Crooks A', 3, 500.0, 'reset'))
             return ('Fixed risk (Off). The edge is too thin for Rule C: 0.05 R of extra cost per trade can blow the account.' +
-                    (' Crooks A with the $500 cap (Start again): 1 in 20 random orders of these trades falls more than %.0f%% (Crooks A and B test).' % (100 * q['dd95']) if q else ''))
+                    (' Crooks A with the $500 cap (Start again): 1 in 20 random orders of these trades falls more than %.0f%% (Crooks A-D test).' % (100 * q['dd95']) if q else ''))
         if rs['ruined'] or rs['maxDDpct'] > 0.40: return 'Fixed risk (Off). Rule C split falls too far here.'
         return ('Fixed risk (Off) for the smallest falls; Rule C split (split 3, $500 cap, Start again) for growth, if you accept the deeper falls shown above. '
-                'Crooks A / B ($500 cap, Start again) sit in between: see the Crooks A and B test sheet.')
+                'Crooks A / B / C / D ($500 cap, Start again) sit in between: see the Crooks A-D test sheet.')
     put(ws, r, 2, 'Recommended money management', bold=True)
     for k, s in enumerate(st): put(ws, r, k0 + k, advice(s), wrap=True)
     ws.row_dimensions[r].height = 100; r += 1

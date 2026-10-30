@@ -1,0 +1,5 @@
+runs 224, trades compared 381509 (TP1-rule trades 136048), mismatches 0
+
+real	0m3.490s
+user	0m3.306s
+sys	0m0.354s

@@ -68,7 +68,7 @@ def inputs():
 def results():
     dst = OUT + '/results/gold'; os.makedirs(dst, exist_ok=True); out = []
     g = S + '/gold/'
-    names = [f for f in os.listdir(g) if f.startswith(('slim_', 'greedy_pool_', 'anaA_', 'cands_', 'rulec', 'catalog_', 'crooks')) and f.endswith('.pkl')
+    names = [f for f in os.listdir(g) if f.startswith(('slim_', 'greedy_pool_', 'anaA_', 'cands_', 'rulec', 'catalog_', 'crooks', 'vwfilter')) and f.endswith('.pkl')
              and '_before_' not in f and '_v1' not in f]                      # backups made before a change stay local
     names += ['greedy_%s.pkl' % tf for tf in TFS if os.path.exists(g + 'greedy_%s.pkl' % tf)]
     for f in sorted(names):

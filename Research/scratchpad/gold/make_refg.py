@@ -14,8 +14,8 @@ R = [
   "            if not stopHit: bestPx = max(bestPx, H[i]) if isL else min(bestPx, L[i])\n"),
  ("                lastExit = i; st = 0; cur.update(exit=i, res=res)\n",
   "                lastExit = i; st = 0; cur.update(exit=i, res=res, best=bestPx, stpX=stp)\n"),
- ("                cur = dict(dir=d, arm=armBar, fill=i, entry=lim, stop=stp, exit=None, res=None, half=trHalf, ghost=trGhost); trades.append(cur)\n",
-  "                cur = dict(dir=d, arm=armBar, fill=i, entry=lim, stop=stp, exit=None, res=None, half=trHalf, ghost=trGhost); trades.append(cur)\n"
+ ("                cur = dict(dir=d, arm=armBar, fill=i, entry=lim, stop=stp, exit=None, res=None, half=trHalf, ghost=trGhost, vwd=trVwd, vwdA=trVwdA); trades.append(cur)\n",
+  "                cur = dict(dir=d, arm=armBar, fill=i, entry=lim, stop=stp, exit=None, res=None, half=trHalf, ghost=trGhost, vwd=trVwd, vwdA=trVwdA); trades.append(cur)\n"
   "                bestPx = lim\n"),
  ("                    lastExit = i; st = 0; cur.update(exit=i, res=-1.0)\n",
   "                    lastExit = i; st = 0; cur.update(exit=i, res=-1.0, best=lim, stpX=stp)\n"),

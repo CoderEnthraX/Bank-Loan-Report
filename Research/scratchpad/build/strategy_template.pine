@@ -63,36 +63,36 @@ earnBack  = input.bool(false, "Extend Targets To Earn Back Commission + Spread",
 
 GRP_K = "STREAKS AND PAUSES (strategy only)"
 lStopOn   = input.bool(false, "Stop For The Day After N Losses In A Row", inline = "ls", group = GRP_K)
-lStopN    = input.int(2, "N", minval = 1, inline = "ls", group = GRP_K)
+lStopN    = input.int(2, "", minval = 1, inline = "ls", group = GRP_K)
 wStopOn   = input.bool(false, "Stop For The Day After N Wins In A Row", inline = "ws", group = GRP_K)
-wStopN    = input.int(3, "N", minval = 1, inline = "ws", group = GRP_K)
-pauseOn   = input.bool(false, "Pause After N Losses In A Row", inline = "ps", group = GRP_K)
-pauseN    = input.int(3, "N", minval = 1, inline = "ps", group = GRP_K)
-pauseDays = input.int(1, "Days", minval = 1, maxval = 3, inline = "ps", group = GRP_K, tooltip = "Stops trading for the rest of today plus this many full trading days, then the streak count restarts.")
+wStopN    = input.int(3, "", minval = 1, inline = "ws", group = GRP_K)
+pauseOn   = input.bool(false, "Pause After N Losses In A Row · For Days", inline = "ps", group = GRP_K)
+pauseN    = input.int(3, "", minval = 1, inline = "ps", group = GRP_K)
+pauseDays = input.int(1, "", minval = 1, maxval = 3, inline = "ps", group = GRP_K, tooltip = "Stops trading for the rest of today plus this many full trading days, then the streak count restarts.")
 
 GRP_X = "FORCE-CLOSE, WEEKEND AND NEWS (strategy only)"
-fcOn      = input.bool(false, "Force-Close Open Trades At", inline = "fc", group = GRP_X)
+fcOn      = input.bool(false, "Force-Close Open Trades At (hour : minute)", inline = "fc", group = GRP_X)
 fcHour    = input.int(2, "", minval = 0, maxval = 23, inline = "fc", group = GRP_X)
-fcMin     = input.int(0, ":", minval = 0, maxval = 59, inline = "fc", group = GRP_X, tooltip = "Every day at this time (time zone in DAYS AND HOURS) any open trade is closed at market and a working entry is cancelled.")
+fcMin     = input.int(0, "", minval = 0, maxval = 59, inline = "fc", group = GRP_X, tooltip = "Every day at this time (time zone in DAYS AND HOURS) any open trade is closed at market and a working entry is cancelled.")
 weekendOn = input.bool(false, "Close Open Trades When Saturday Starts", group = GRP_X, tooltip = "To stop NEW setups on Saturday/Sunday untick those days in DAYS AND HOURS (they then disappear from the indicator too).")
 newsPre   = input.int(60, "No New Trades Before News (minutes)", minval = 0, group = GRP_X, tooltip = "For every news window that is on: no new trades from this many minutes before it starts until it ends. Any open trade is closed and any working entry cancelled when the window starts.")
 dNewsOn   = input.bool(false, "Daily News Window", inline = "dn", group = GRP_X)
 dNewsSess = input.session("1800-1900", "", inline = "dn", group = GRP_X, tooltip = "Repeats every day in the time zone of DAYS AND HOURS (e.g. US data at 8:30 New York = 18:00 IST).")
-n1On  = input.bool(false, "News 1", inline = "n1", group = GRP_X)
+n1On  = input.bool(false, "News 1 (start · minutes)", inline = "n1", group = GRP_X)
 n1T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n1", group = GRP_X)
-n1Dur = input.int(60, "min", minval = 1, inline = "n1", group = GRP_X)
-n2On  = input.bool(false, "News 2", inline = "n2", group = GRP_X)
+n1Dur = input.int(60, "", minval = 1, inline = "n1", group = GRP_X)
+n2On  = input.bool(false, "News 2 (start · minutes)", inline = "n2", group = GRP_X)
 n2T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n2", group = GRP_X)
-n2Dur = input.int(60, "min", minval = 1, inline = "n2", group = GRP_X)
-n3On  = input.bool(false, "News 3", inline = "n3", group = GRP_X)
+n2Dur = input.int(60, "", minval = 1, inline = "n2", group = GRP_X)
+n3On  = input.bool(false, "News 3 (start · minutes)", inline = "n3", group = GRP_X)
 n3T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n3", group = GRP_X)
-n3Dur = input.int(60, "min", minval = 1, inline = "n3", group = GRP_X)
-n4On  = input.bool(false, "News 4", inline = "n4", group = GRP_X)
+n3Dur = input.int(60, "", minval = 1, inline = "n3", group = GRP_X)
+n4On  = input.bool(false, "News 4 (start · minutes)", inline = "n4", group = GRP_X)
 n4T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n4", group = GRP_X)
-n4Dur = input.int(60, "min", minval = 1, inline = "n4", group = GRP_X)
-n5On  = input.bool(false, "News 5", inline = "n5", group = GRP_X)
+n4Dur = input.int(60, "", minval = 1, inline = "n4", group = GRP_X)
+n5On  = input.bool(false, "News 5 (start · minutes)", inline = "n5", group = GRP_X)
 n5T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n5", group = GRP_X)
-n5Dur = input.int(60, "min", minval = 1, inline = "n5", group = GRP_X, tooltip = "One-off news events: pick the date and start time and the length in minutes.")
+n5Dur = input.int(60, "", minval = 1, inline = "n5", group = GRP_X, tooltip = "One-off news events: pick the date and start time and the length in minutes.")
 
 GRP_L = "LOSS RECOVERY (strategy only)"
 L_OFF   = "Off"
@@ -115,13 +115,15 @@ L_EQPCT = "% of equity"
 L_OSC   = "Oscar's Grind (+1 unit per win until +1 base)"
 L_CRA   = "Crooks A (base, base, then recovery every 2nd trade)"
 L_CRB   = "Crooks B (Crooks A with the loss split over N trades)"
-recMode  = input.string(L_OFF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE, L_C, L_CS, L_LAB, L_GMART, L_PAR, L_RDALE, L_DELAY, L_EQPCT, L_OSC, L_CRA, L_CRB], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nExact at final TP: base + losses / final target R, so a final-target win repays the losses plus a normal win (risks less than 'All').\nStep-up: base + step $ x losses in a row.\nFibonacci: base x 1, 1, 2, 3, 5, 8... by losses in a row.\nD'Alembert: base x units; +1 unit after a loss, -1 after a win (minimum 1).\nRule C: carried = how far closed-trade equity is below its last high (updated once per candle from that candle's closed P&L incl. commission); next risk = max(base, carried / split).\nRule C split: as Rule C, but the base steps up with total profit: 200 -> 200/3, 500 -> 500/5, 1000 -> 1000/8, then every +500 adds one part (1500/9, 2000/10 ...); base = max(base risk, min(step base, hard cap)).\nLabouchere: units list 1-2-3; risk = base x (first + last); a loss adds that sum to the list, a win removes both ends; empty list starts again.\nGrand Martingale: base x mult ^ losses + base x losses.\nParoli: base x 2 ^ wins in a row, back to base after N wins or any loss.\nReverse D'Alembert: +1 unit after a win, -1 after a loss (minimum 1).\nDelayed recovery: base until N losses in a row, then base + losses / N trades.\n% of equity: risk this % of current equity.\nOscar's Grind: units +1 after each win (never more than needed to finish +1 base for the cycle), unchanged after a loss; the cycle ends at +1 base profit.\nCrooks A: trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (3, 5, 7 ...) is a recovery trade risking max(base, loss to win back / final target R), e.g. $250 with TP4 (2R) as the final target -> $125; the trades between risk the base. Losses add to the loss to win back, wins reduce it; a winning recovery trade starts a new cycle.\nCrooks B: as Crooks A, but the recovery trade risks max(base, loss / split / final target R) (split = the Rule C split setting) and a new cycle starts only when the whole loss is won back.\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use the Hard Cap to limit it.")
+L_CRC   = "Crooks C (base until a win, then one recovery trade)"
+L_CRD   = "Crooks D (base, base, recovery: every 3rd trade)"
+recMode  = input.string(L_OFF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE, L_C, L_CS, L_LAB, L_GMART, L_PAR, L_RDALE, L_DELAY, L_EQPCT, L_OSC, L_CRA, L_CRB, L_CRC, L_CRD], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nExact at final TP: base + losses / final target R, so a final-target win repays the losses plus a normal win (risks less than 'All').\nStep-up: base + step $ x losses in a row.\nFibonacci: base x 1, 1, 2, 3, 5, 8... by losses in a row.\nD'Alembert: base x units; +1 unit after a loss, -1 after a win (minimum 1).\nRule C: carried = how far closed-trade equity is below its last high (updated once per candle from that candle's closed P&L incl. commission); next risk = max(base, carried / split).\nRule C split: as Rule C, but the base steps up with total profit: 200 -> 200/3, 500 -> 500/5, 1000 -> 1000/8, then every +500 adds one part (1500/9, 2000/10 ...); base = max(base risk, min(step base, hard cap)).\nLabouchere: units list 1-2-3; risk = base x (first + last); a loss adds that sum to the list, a win removes both ends; empty list starts again.\nGrand Martingale: base x mult ^ losses + base x losses.\nParoli: base x 2 ^ wins in a row, back to base after N wins or any loss.\nReverse D'Alembert: +1 unit after a win, -1 after a loss (minimum 1).\nDelayed recovery: base until N losses in a row, then base + losses / N trades.\n% of equity: risk this % of current equity.\nOscar's Grind: units +1 after each win (never more than needed to finish +1 base for the cycle), unchanged after a loss; the cycle ends at +1 base profit.\nCrooks A: trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (3, 5, 7 ...) is a recovery trade risking max(base, loss to win back / final target R), e.g. $250 with TP4 (2R) as the final target -> $125; the trades between risk the base. Losses add to the loss to win back, wins reduce it; a winning recovery trade starts a new cycle.\nCrooks B: as Crooks A, but the recovery trade risks max(base, loss / split / final target R) (split = the Rule C split setting) and a new cycle starts only when the whole loss is won back.\nCrooks C: every trade risks the base until a trade wins; the trade right after a win is a recovery trade (sized like Crooks A) while a loss is still owed. A losing recovery trade -> base trades again until the next win. A winning recovery trade (or winning everything back) starts over.\nCrooks D: like Crooks A, but two base trades between recovery trades: base, base, recovery, base, base, recovery (trades 3, 6, 9 ...).\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use the Hard Cap to limit it.")
 recN     = input.int(3, "N Trades (Over N)", minval = 1, group = GRP_L)
 recPct   = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.0, step = 5.0, group = GRP_L)
 recMult  = input.float(2.0, "Multiplier (Martingale)", minval = 1.0, step = 0.25, group = GRP_L)
 recStep  = input.float(25.0, "Step $ (Step-up)", minval = 0.0, step = 5.0, group = GRP_L)
 cSplit   = input.int(3, "Split The Loss Over This Many Trades (Rule C, Crooks B)", minval = 1, group = GRP_L, tooltip = "1 = win it all back in one trade.")
-crkT1On  = input.bool(true, "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", group = GRP_L, tooltip = "Only with Crooks A / B, Final Exit At TP1, and only on the recovery trades (3, 5, 7 ...). The position is doubled: half closes at TP1 and banks the whole recovery amount, then the stop of the other half moves to the entry and that half closes at TP2. The stop sits where a stop-out loses exactly the recovery amount: TP1 / 2 minus 1.5 x the costs from the entry (0.3R with TP1 = 0.6R and no costs). Costs above TP1 / 3 -> that trade uses the normal Crooks size. While the rest runs on, new signals are skipped.\nGold 2021-2026: the tight stop is hit on most of these trades; see the workbook before using it.")
+crkT1On  = input.bool(true, "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", group = GRP_L, tooltip = "Only with Crooks A / B / C / D, Final Exit At TP1, and only on the recovery trades (A / B: 3, 5, 7 ...; C: the trade after a win; D: 3, 6, 9 ...). The position is doubled: half closes at TP1 and banks the whole recovery amount, then the stop of the other half moves to the entry and that half closes at TP2. The stop sits where a stop-out loses exactly the recovery amount: TP1 / 2 minus 1.5 x the costs from the entry (0.3R with TP1 = 0.6R and no costs). Costs above TP1 / 3 -> that trade uses the normal Crooks size. While the rest runs on, new signals are skipped.\nGold 2021-2026: the tight stop is hit on most of these trades; see the workbook before using it.")
 parN     = input.int(3, "Wins Before Reset (Paroli)", minval = 1, group = GRP_L)
 delayN   = input.int(2, "Losses Before Recovery Starts (Delayed)", minval = 1, group = GRP_L)
 eqPct    = input.float(1.0, "Risk % Of Equity (% mode)", minval = 0.01, step = 0.1, group = GRP_L)
@@ -195,6 +197,7 @@ var float oscP      = 0.0    // Oscar's Grind cycle profit
 var float crkL      = 0.0    // Crooks: $ loss to win back in this cycle
 var int   crkN      = 0      // Crooks: closed trades in this cycle
 var bool  crkRec    = false  // Crooks: the trade in progress is a recovery trade
+var bool  crkW      = false  // Crooks C: the last closed trade was a win
 var bool  exT1      = false  // Crooks TP1 rule: this trade banks the recovery amount at TP1 with half, the rest runs to TP2
 var float exT1Stop  = na     // its stop: a stop-out loses exactly the recovery amount
 var bool  exT1Half  = false  // the TP1 half is booked: the rest's stop is at the entry
@@ -202,8 +205,8 @@ var float exT1Tp1   = na     // its own TP1 and TP2 (the engine's levels change 
 var float exT1Tp2   = na
 var int   exW       = 0
 var int   exLn      = 0
-// Crooks: the next trade is a recovery trade (trades 3, 5, 7 ... of the cycle)
-f_crkRecNext() => (recMode == L_CRA or recMode == L_CRB) and crkN >= 2 and crkN % 2 == 0
+// Crooks: the next trade is a recovery trade. A / B: trades 3, 5, 7 ... of the cycle; C: the trade after a win while a loss is owed; D: trades 3, 6, 9 ...
+f_crkRecNext() => ((recMode == L_CRA or recMode == L_CRB) and crkN >= 2 and crkN % 2 == 0) or (recMode == L_CRC and crkW and crkL > 0) or (recMode == L_CRD and crkN >= 2 and (crkN - 2) % 3 == 0)
 
 if newDay
     dayPnl   := 0.0
@@ -347,13 +350,14 @@ if exClosed
         oscP := 0.0
     else if win
         oscU += 1
-    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A: also when a recovery trade wins)
+    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, C, D: also when a recovery trade wins)
     crkL := math.max(0.0, crkL - exPnl)
-    if crkL < 0.01 or (recMode == L_CRA and win and crkRec)
+    if crkL < 0.01 or ((recMode == L_CRA or recMode == L_CRC or recMode == L_CRD) and win and crkRec)
         crkL := 0.0
         crkN := 0
     else
         crkN += 1
+    crkW   := win
     crkRec := false
     exT1     := false
     exT1Half := false
@@ -421,7 +425,7 @@ if evArm
     float baseC = recMode == L_CS ? math.max(baseRisk, capOn ? math.min(stepBase, hardCap) : stepBase) : baseRisk
     float labU  = array.size(labSeq) > 1 ? array.first(labSeq) + array.last(labSeq) : array.first(labSeq)
     int   oscNeed = int(math.max(1, math.ceil((baseRisk - oscP) / (baseRisk * exitR))))
-    // Crooks: trades 1 and 2 of a cycle risk the base, then trades 3, 5, 7 ... are recovery trades
+    // Crooks: trades 1 and 2 of a cycle risk the base, then trades 3, 5, 7 ... are recovery trades (C: the trade after a win; D: 3, 6, 9 ...)
     // TP1 rule (Final Exit At TP1): half of a double position banks the recovery amount at TP1, the rest runs to TP2; the stop sits where
     // a stop-out loses exactly that amount: TP1 / 2 - 1.5 x costs from the entry, on the tick grid toward the entry
     float pvf   = syminfo.pointvalue * fx
@@ -431,9 +435,10 @@ if evArm
     bool  t1Ok  = crkT1On and exitK == 1 and f_crkRecNext() and t1D > 0 and (isL ? eP - t1S : t1S - eP) >= syminfo.mintick * 0.5
     float crkX  = crkL / (recMode == L_CRB ? cSplit : 1)
     float crkR  = f_crkRecNext() ? (t1Ok ? math.max(baseRisk, crkX) : math.max(baseRisk, crkX / exitR)) : baseRisk
-    float rUsd = recMode == L_LAB ? baseRisk * labU : recMode == L_GMART ? baseRisk * math.pow(recMult, recLosses) + baseRisk * recLosses : recMode == L_PAR ? baseRisk * math.pow(2, parWins) : recMode == L_RDALE ? baseRisk * rdUnits : recMode == L_DELAY ? (recLosses >= delayN ? baseRisk + recPool / recN : baseRisk) : recMode == L_EQPCT ? strategy.equity * eqPct / 100.0 : recMode == L_OSC ? baseRisk * math.min(oscU, oscNeed) : recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : recMode == L_FIB ? baseRisk * (recLosses == 0 ? 1.0 : fb) : recMode == L_DALE ? baseRisk * dUnits : recMode == L_C or recMode == L_CS ? math.max(baseC, carried / cSplit) : recMode == L_CRA or recMode == L_CRB ? crkR : baseRisk + add
-    // hard cap
-    if capOn and rUsd > hardCap
+    float rUsd = recMode == L_LAB ? baseRisk * labU : recMode == L_GMART ? baseRisk * math.pow(recMult, recLosses) + baseRisk * recLosses : recMode == L_PAR ? baseRisk * math.pow(2, parWins) : recMode == L_RDALE ? baseRisk * rdUnits : recMode == L_DELAY ? (recLosses >= delayN ? baseRisk + recPool / recN : baseRisk) : recMode == L_EQPCT ? strategy.equity * eqPct / 100.0 : recMode == L_OSC ? baseRisk * math.min(oscU, oscNeed) : recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : recMode == L_FIB ? baseRisk * (recLosses == 0 ? 1.0 : fb) : recMode == L_DALE ? baseRisk * dUnits : recMode == L_C or recMode == L_CS ? math.max(baseC, carried / cSplit) : recMode == L_CRA or recMode == L_CRB or recMode == L_CRC or recMode == L_CRD ? crkR : baseRisk + add
+    // hard cap, only for a signal that can be taken (with a trade still open its result is not booked yet: no restart or stop on that)
+    bool preSkip = exState != 0 or pos != 0 or newsBlock or flatNow or capStop or paused or dayBlock
+    if capOn and rUsd > hardCap and not preSkip
         if capAction == CAP_STOP
             capStop := true
         else if capAction == CAP_RESET
@@ -448,6 +453,7 @@ if evArm
             oscP      := 0.0
             crkL      := 0.0
             crkN      := 0
+            crkW      := false
             rUsd      := math.min(baseC, hardCap)
         else
             rUsd := hardCap
@@ -531,8 +537,9 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     f_row(mon, 3, "TP1 · TP2 · TP3 · TP4 (exit " + exitAt + ")", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC)
     f_row(mon, 4, "RISK · QTY · LOTS", exState != 0 ? f_usd(exRiskUsd) + " · " + str.tostring(exQty, "#,##0.##") + " · " + str.tostring(lots, "#,##0.##") : "base " + f_usd(baseRisk), white)
     bool   isC = recMode == L_C or recMode == L_CS
-    bool   isK = recMode == L_CRA or recMode == L_CRB
-    string kTxt = f_usd(crkL) + " · trade " + str.tostring(crkN + 1) + ((exState != 0 ? crkRec : f_crkRecNext()) ? " recovery" : " base") + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "")
+    bool   isK = recMode == L_CRA or recMode == L_CRB or recMode == L_CRC or recMode == L_CRD
+    bool   kRec = exState != 0 ? crkRec : f_crkRecNext()
+    string kTxt = f_usd(crkL) + (recMode == L_CRC ? (kRec ? " · recovery trade" : crkL > 0 ? " · base, waiting for a win" : " · base") : " · trade " + str.tostring(crkN + 1) + (kRec ? " recovery" : " base")) + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "")
     f_row(mon, 5, isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", recMode == L_OFF ? "off" : isC ? f_usd(carried) + " · split " + str.tostring(cSplit) : isK ? kTxt : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : recMode == L_RDALE ? " · " + str.tostring(rdUnits) + " units" : recMode == L_OSC ? " · " + str.tostring(oscU) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white)
     f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(exW) + "W/" + str.tostring(exLn) + "L", white)
     f_row(mon, 7, "DAY P&L · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayPnl >= 0 ? posC : negC)

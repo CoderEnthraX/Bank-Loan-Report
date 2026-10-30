@@ -8,7 +8,8 @@ import recovery as RC, crooks
 NSH = 500
 RULES = [('Off', 3, 0.0, 'clamp'), ('Rule C split', 3, 500.0, 'reset'),
          ('Crooks A', 3, 0.0, 'clamp'), ('Crooks A', 3, 500.0, 'clamp'), ('Crooks A', 3, 500.0, 'reset')] + \
-        [('Crooks B', s, c, a) for s in (1, 2, 3, 4, 5) for c, a in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'))]
+        [('Crooks B', s, c, a) for s in (1, 2, 3, 4, 5) for c, a in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'))] + \
+        [(m, 3, c, a) for m in ('Crooks C', 'Crooks D') for c, a in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'))]
 def q(v, f): v = sorted(v); return v[min(len(v) - 1, int(f * len(v)))]
 def job(arg):
     tf, i = arg

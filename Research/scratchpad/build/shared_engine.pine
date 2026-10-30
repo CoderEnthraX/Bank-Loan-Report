@@ -363,7 +363,9 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         bool  emaNo  = emaOn and not na(emaSpd) and emaSpd > emaMax
         // signal close still hugging the VWAP (less than the minimum distance in ATR on the trade's side)
         bool  nearNo = minVwOn and d * (close - vwap) < minVwAtr * atr
-        bool  ghost  = zNo or chopNo or emaNo or nearNo
+        // signal close too far from the VWAP, above or below (max distance in ATR or in price)
+        bool  farNo  = maxVwOn and math.abs(close - vwap) > (maxVwUnit == VWD_PX ? maxVwDist : maxVwDist * atr)
+        bool  ghost  = zNo or chopNo or emaNo or nearNo or farNo
         if math.abs(st) == 1 and not trGhost
             evCancel := "REPLACED"
         // levels stay unrounded: the reference fills and stops on the exact values
@@ -375,7 +377,7 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         trRisk  := risk
         trHalf  := half
         trGhost := ghost
-        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : nearNo ? "TOO CLOSE TO VWAP" : ""
+        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : nearNo ? "TOO CLOSE TO VWAP" : farNo ? "BEYOND MAX VWAP DISTANCE" : ""
         t1      := lim + d * tp1R * risk
         t2      := lim + d * tp2R * risk
         t3      := lim + d * tp3R * risk
@@ -405,7 +407,7 @@ if evExit
         else if evRes > 0.0
             lkN += 1
 bool mvAny  = mv1On or mv2On or mv3On
-bool fltAny = noChase or chopOn or emaOn or minVwOn
+bool fltAny = noChase or chopOn or emaOn or minVwOn or maxVwOn
 f_sgnR(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
 f_share(int n, int total) => total > 0 ? str.tostring(math.round(100.0 * n / total)) + "%" : "—"
 // "77 trades · 52% (40W/37L) · +12.00R"

@@ -25,6 +25,14 @@ M1 | Default settings (Default settings) | exit R 2.00 | 7425 trades | Off: net 
    Crooks B split 5 cap $500 clamp      | net    -10212  DD $  10361 (102%)  max risk $    500  avg $  146  worst run $   1730  BLOWN | ratio -0.99 | 21-23   -10212 DD 102% X | 24-26   -10355 DD 103% X | 
    Crooks B split 5 cap $500 start again | net    -10182  DD $  10332 (102%)  max risk $    476  avg $  100  worst run $   2440  BLOWN | ratio -0.99 | 21-23   -10182 DD 102% X | 24-26   -10426 DD 104% X | 
    Crooks B split 5 cap $500 stop       | net     -5014  DD $   5237 ( 52%)  max risk $    476  avg $  105  worst run $   1730  stop  | ratio -0.96 | 21-23    -5014 DD  52%   | 24-26    -5020 DD  52%   | 
+   Crooks C                             | net    -10686  DD $  10836 (107%)  max risk $   1945  avg $  140  worst run $   1826  BLOWN | ratio -0.99 | 21-23   -10686 DD 107% X | 24-26   -11852 DD 117% X | 
+   Crooks C cap $500 clamp              | net    -10241  DD $  10391 (102%)  max risk $    500  avg $   99  worst run $    876  BLOWN | ratio -0.99 | 21-23   -10241 DD 102% X | 24-26   -10007 DD 100% X | 
+   Crooks C cap $500 start again        | net    -10040  DD $  10190 (100%)  max risk $    490  avg $   67  worst run $    876  BLOWN | ratio -0.99 | 21-23   -10040 DD 100% X | 24-26   -10035 DD 100% X | 
+   Crooks C cap $500 stop               | net     -1482  DD $   1687 ( 17%)  max risk $    409  avg $   68  worst run $    859  stop  | ratio -0.88 | 21-23    -1482 DD  17%   | 24-26    -1478 DD  20%   | 
+   Crooks D                             | net    -11701  DD $  11851 (117%)  max risk $   3296  avg $  126  worst run $   5610  BLOWN | ratio -0.99 | 21-23   -11701 DD 117% X | 24-26   -10815 DD 108% X | 
+   Crooks D cap $500 clamp              | net    -10268  DD $  10418 (103%)  max risk $    500  avg $   93  worst run $   2204  BLOWN | ratio -0.99 | 21-23   -10268 DD 103% X | 24-26   -10151 DD 101% X | 
+   Crooks D cap $500 start again        | net    -10047  DD $  10197 (100%)  max risk $    406  avg $   72  worst run $   1419  BLOWN | ratio -0.99 | 21-23   -10047 DD 100% X | 24-26   -10145 DD 101% X | 
+   Crooks D cap $500 stop               | net     -1148  DD $   1298 ( 13%)  max risk $    370  avg $   72  worst run $    833  stop  | ratio -0.88 | 21-23    -1148 DD  13%   | 24-26     -636 DD  11%   | 
 
 M1 | Most profit (Most profit, Longest winning streak, Highest win rate, Smoothest, London close session only) | exit R 2.00 | 1958 trades | Off: net +5442, DD $1481 (13%), ratio 3.67
    Rule C split split 3 cap $500 start again | net    +17859  DD $  10923 ( 46%)  max risk $    499  avg $  188  worst run $   5581  ok    | ratio  1.64 | 21-23    +1584 DD  31%   | 24-26      +83 DD  56%   | 
@@ -52,6 +60,14 @@ M1 | Most profit (Most profit, Longest winning streak, Highest win rate, Smoothe
    Crooks B split 5 cap $500 clamp      | net     +7308  DD $   1949 ( 16%)  max risk $    185  avg $   54  worst run $    838  ok    | ratio  3.75 | 21-23    +3325 DD  16%   | 24-26    +3970 DD  15%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +7308  DD $   1949 ( 16%)  max risk $    185  avg $   54  worst run $    838  ok    | ratio  3.75 | 21-23    +3325 DD  16%   | 24-26    +3970 DD  15%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +7308  DD $   1949 ( 16%)  max risk $    185  avg $   54  worst run $    838  ok    | ratio  3.75 | 21-23    +3325 DD  16%   | 24-26    +3970 DD  15%   | ELIGIBLE
+   Crooks C                             | net    +17535  DD $   8544 ( 68%)  max risk $   4225  avg $   73  worst run $   3015  ok    | ratio  2.05 | 21-23    +7020 DD  68%   | 24-26   +10034 DD  39%   | 
+   Crooks C cap $500 clamp              | net     +9454  DD $   3881 ( 31%)  max risk $    500  avg $   65  worst run $    750  ok    | ratio  2.44 | 21-23    +4219 DD  31%   | 24-26    +5959 DD  25%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +4561  DD $   3039 ( 28%)  max risk $    453  avg $   60  worst run $    749  ok    | ratio  1.50 | 21-23     +983 DD  28%   | 24-26    +4270 DD  19%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -179  DD $   1129 ( 10%)  max risk $    401  avg $   60  worst run $    571  stop  | ratio -0.16 | 21-23     -179 DD  10%   | 24-26       +5 DD  13%   | 
+   Crooks D                             | net    -14679  DD $  23627 (125%)  max risk $   7876  avg $   91  worst run $   7876  BLOWN | ratio -0.62 | 21-23    +7447 DD  50%   | 24-26   -14297 DD 137% X | 
+   Crooks D cap $500 clamp              | net     +7648  DD $   5877 ( 37%)  max risk $    500  avg $   69  worst run $   1750  ok    | ratio  1.30 | 21-23    +4248 DD  27%   | 24-26    +3400 DD  51%   | 
+   Crooks D cap $500 start again        | net     +8603  DD $   2663 ( 22%)  max risk $    493  avg $   64  worst run $   1319  ok    | ratio  3.23 | 21-23    +4730 DD  22%   | 24-26    +3873 DD  23%   | ELIGIBLE
+   Crooks D cap $500 stop               | net       -89  DD $   1104 ( 10%)  max risk $    482  avg $   61  worst run $    762  stop  | ratio -0.08 | 21-23      -89 DD  10%   | 24-26     +141 DD  12%   | 
 
 M1 | Shortest losing streak (Shortest losing streak, Shortest losing streak - indicator only) | exit R 2.00 | 1802 trades | Off: net +4561, DD $1467 (14%), ratio 3.11
    Rule C split split 3 cap $500 start again | net    +29940  DD $  10387 ( 41%)  max risk $    492  avg $  243  worst run $   5282  ok    | ratio  2.88 | 21-23    +3500 DD  33%   | 24-26   +15574 DD  37%   | 
@@ -79,6 +95,14 @@ M1 | Shortest losing streak (Shortest losing streak, Shortest losing streak - in
    Crooks B split 5 cap $500 clamp      | net     +6515  DD $   1932 ( 15%)  max risk $    187  avg $   54  worst run $    749  ok    | ratio  3.37 | 21-23    +2370 DD  11%   | 24-26    +4145 DD  18%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +6515  DD $   1932 ( 15%)  max risk $    187  avg $   54  worst run $    749  ok    | ratio  3.37 | 21-23    +2370 DD  11%   | 24-26    +4145 DD  18%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +6515  DD $   1932 ( 15%)  max risk $    187  avg $   54  worst run $    749  ok    | ratio  3.37 | 21-23    +2370 DD  11%   | 24-26    +4145 DD  18%   | ELIGIBLE
+   Crooks C                             | net    +15313  DD $  14801 ( 84%)  max risk $   7352  avg $   83  worst run $   5067  ok    | ratio  1.03 | 21-23    +5930 DD  47%   | 24-26   -13181 DD 128% X | 
+   Crooks C cap $500 clamp              | net     +5732  DD $   4383 ( 31%)  max risk $    500  avg $   67  worst run $    750  ok    | ratio  1.31 | 21-23    +2800 DD  29%   | 24-26    +2930 DD  38%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +6244  DD $   2514 ( 25%)  max risk $    470  avg $   60  worst run $    600  ok    | ratio  2.48 | 21-23    +2556 DD  25%   | 24-26    +4555 DD  16%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -960  DD $   1291 ( 13%)  max risk $    430  avg $   67  worst run $    430  stop  | ratio -0.74 | 21-23     -960 DD  13%   | 24-26     +103 DD  12%   | 
+   Crooks D                             | net    -15123  DD $  24037 (127%)  max risk $   8010  avg $   87  worst run $  13467  BLOWN | ratio -0.63 | 21-23    +7080 DD  14%   | 24-26   -14744 DD 142% X | 
+   Crooks D cap $500 clamp              | net     +6887  DD $   7377 ( 41%)  max risk $    500  avg $   71  worst run $   2244  ok    | ratio  0.93 | 21-23    +6149 DD  14%   | 24-26     +130 DD  66%   | 
+   Crooks D cap $500 start again        | net     +6261  DD $   3005 ( 19%)  max risk $    494  avg $   65  worst run $   1157  ok    | ratio  2.08 | 21-23    +3343 DD  18%   | 24-26    +3177 DD  24%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     -1177  DD $   1439 ( 14%)  max risk $    437  avg $   70  worst run $    487  stop  | ratio -0.82 | 21-23    -1177 DD  14%   | 24-26     -204 DD  12%   | 
 
 M1 | Most trades a day (Most trades a day) | exit R 2.00 | 2111 trades | Off: net +4470, DD $1644 (16%), ratio 2.72
    Rule C split split 3 cap $500 start again | net    +25623  DD $  13824 ( 39%)  max risk $    486  avg $  287  worst run $   5244  ok    | ratio  1.85 | 21-23   +16051 DD  23%   | 24-26     -667 DD  42%   | 
@@ -106,6 +130,14 @@ M1 | Most trades a day (Most trades a day) | exit R 2.00 | 2111 trades | Off: ne
    Crooks B split 5 cap $500 clamp      | net     +6386  DD $   3142 ( 24%)  max risk $    314  avg $   58  worst run $   1198  ok    | ratio  2.03 | 21-23    +4356 DD  24%   | 24-26    +2009 DD  27%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +6386  DD $   3142 ( 24%)  max risk $    314  avg $   58  worst run $   1198  ok    | ratio  2.03 | 21-23    +4356 DD  24%   | 24-26    +2009 DD  27%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +6386  DD $   3142 ( 24%)  max risk $    314  avg $   58  worst run $   1198  ok    | ratio  2.03 | 21-23    +4356 DD  24%   | 24-26    +2009 DD  27%   | ELIGIBLE
+   Crooks C                             | net    +18804  DD $   8908 ( 37%)  max risk $   4372  avg $   75  worst run $   2980  ok    | ratio  2.11 | 21-23    +9220 DD  17%   | 24-26    +9584 DD  60%   | 
+   Crooks C cap $500 clamp              | net     +9130  DD $   5069 ( 26%)  max risk $    500  avg $   65  worst run $    900  ok    | ratio  1.80 | 21-23    +7688 DD  17%   | 24-26    +1443 DD  42%   | 
+   Crooks C cap $500 start again        | net     +6197  DD $   3429 ( 21%)  max risk $    491  avg $   60  worst run $    753  ok    | ratio  1.81 | 21-23    +4865 DD  16%   | 24-26    +1333 DD  30%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -674  DD $   1131 ( 11%)  max risk $    320  avg $   61  worst run $    470  stop  | ratio -0.60 | 21-23     -674 DD  11%   | 24-26     +279 DD  11%   | 
+   Crooks D                             | net    -11610  DD $  11975 (116%)  max risk $   3987  avg $  222  worst run $   4037  BLOWN | ratio -0.97 | 21-23   -11610 DD 116% X | 24-26   +10819 DD  78%   | 
+   Crooks D cap $500 clamp              | net     +6648  DD $   5632 ( 54%)  max risk $    500  avg $   71  worst run $   1821  ok    | ratio  1.18 | 21-23    +4089 DD  54%   | 24-26    +2559 DD  36%   | 
+   Crooks D cap $500 start again        | net     +6959  DD $   3613 ( 34%)  max risk $    493  avg $   64  worst run $   1371  ok    | ratio  1.93 | 21-23    +4250 DD  34%   | 24-26    +2709 DD  28%   | ELIGIBLE
+   Crooks D cap $500 stop               | net      -666  DD $   1122 ( 11%)  max risk $    353  avg $   71  worst run $    679  stop  | ratio -0.59 | 21-23     -666 DD  11%   | 24-26     +456 DD   9%   | 
 
 M1 | Simplest (Simplest) | exit R 2.00 | 2006 trades | Off: net +4040, DD $1822 (18%), ratio 2.22
    Rule C split split 3 cap $500 start again | net    +25252  DD $  12473 ( 44%)  max risk $    499  avg $  270  worst run $   6051  ok    | ratio  2.02 | 21-23   +12467 DD  33%   | 24-26     +296 DD  38%   | 
@@ -133,6 +165,14 @@ M1 | Simplest (Simplest) | exit R 2.00 | 2006 trades | Off: net +4040, DD $1822 
    Crooks B split 5 cap $500 clamp      | net     +6032  DD $   2365 ( 23%)  max risk $    236  avg $   59  worst run $   1074  ok    | ratio  2.55 | 21-23    +3103 DD  23%   | 24-26    +2902 DD  16%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +6032  DD $   2365 ( 23%)  max risk $    236  avg $   59  worst run $   1074  ok    | ratio  2.55 | 21-23    +3103 DD  23%   | 24-26    +2902 DD  16%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +6032  DD $   2365 ( 23%)  max risk $    236  avg $   59  worst run $   1074  ok    | ratio  2.55 | 21-23    +3103 DD  23%   | 24-26    +2902 DD  16%   | ELIGIBLE
+   Crooks C                             | net    +16784  DD $  11428 ( 95%)  max risk $   5667  avg $   77  worst run $   3976  ok    | ratio  1.47 | 21-23    +6795 DD  95%   | 24-26    +9508 DD  52%   | 
+   Crooks C cap $500 clamp              | net     +7085  DD $   4380 ( 37%)  max risk $    500  avg $   67  worst run $    850  ok    | ratio  1.62 | 21-23    +3105 DD  37%   | 24-26    +4751 DD  28%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +2078  DD $   4949 ( 46%)  max risk $    493  avg $   61  worst run $    799  ok    | ratio  0.42 | 21-23     -894 DD  46%   | 24-26    +3703 DD  22%   | 
+   Crooks C cap $500 stop               | net      -279  DD $   1129 ( 10%)  max risk $    426  avg $   61  worst run $    571  stop  | ratio -0.25 | 21-23     -279 DD  10%   | 24-26     +323 DD  10%   | 
+   Crooks D                             | net    +18449  DD $   6969 ( 50%)  max risk $   3485  avg $   76  worst run $   4228  ok    | ratio  2.65 | 21-23    +7869 DD  50%   | 24-26   +10579 DD  37%   | 
+   Crooks D cap $500 clamp              | net    +11066  DD $   3645 ( 27%)  max risk $    500  avg $   69  worst run $   2561  ok    | ratio  3.04 | 21-23    +6228 DD  27%   | 24-26    +4838 DD  24%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +6437  DD $   4253 ( 23%)  max risk $    493  avg $   64  worst run $   1330  ok    | ratio  1.51 | 21-23    +5405 DD  20%   | 24-26    +1032 DD  33%   | ELIGIBLE
+   Crooks D cap $500 stop               | net       -45  DD $   1104 ( 10%)  max risk $    482  avg $   65  worst run $    762  stop  | ratio -0.04 | 21-23      -45 DD  10%   | 24-26     +178 DD  11%   | 
 
 M5 | Default settings (Default settings) | exit R 2.00 | 6958 trades | Off: net -10000, DD $10121 (100%), ratio -0.99
    Rule C split split 3 cap $500 start again | net    -10303  DD $  10423 (103%)  max risk $    499  avg $  102  worst run $   1727  BLOWN | ratio -0.99 | 21-23   -10303 DD 103% X | 24-26     -727 DD  73%   | 
@@ -160,6 +200,14 @@ M5 | Default settings (Default settings) | exit R 2.00 | 6958 trades | Off: net 
    Crooks B split 5 cap $500 clamp      | net    -10109  DD $  10230 (101%)  max risk $    500  avg $  145  worst run $   2700  BLOWN | ratio -0.99 | 21-23   -10109 DD 101% X | 24-26   -10488 DD 105% X | 
    Crooks B split 5 cap $500 start again | net    -10181  DD $  10301 (102%)  max risk $    487  avg $  105  worst run $   1961  BLOWN | ratio -0.99 | 21-23   -10181 DD 102% X | 24-26    -5294 DD  78%   | 
    Crooks B split 5 cap $500 stop       | net     -5146  DD $   5266 ( 52%)  max risk $    474  avg $  102  worst run $   1659  stop  | ratio -0.98 | 21-23    -5146 DD  52%   | 24-26    -4761 DD  51%   | 
+   Crooks C                             | net    -14197  DD $  14685 (140%)  max risk $   4856  avg $  151  worst run $   4373  BLOWN | ratio -0.97 | 21-23   -14197 DD 140% X | 24-26   -12897 DD 124% X | 
+   Crooks C cap $500 clamp              | net    -10201  DD $  10688 (102%)  max risk $    500  avg $   80  worst run $   1050  BLOWN | ratio -0.95 | 21-23   -10201 DD 102% X | 24-26   -10043 DD 100% X | 
+   Crooks C cap $500 start again        | net    -10003  DD $  10490 (100%)  max risk $    500  avg $   62  worst run $   1000  BLOWN | ratio -0.95 | 21-23   -10003 DD 100% X | 24-26    +1815 DD  46%   | 
+   Crooks C cap $500 stop               | net     -1229  DD $   1789 ( 17%)  max risk $    446  avg $   63  worst run $    896  stop  | ratio -0.69 | 21-23    -1229 DD  17%   | 24-26     +114 DD  11%   | 
+   Crooks D                             | net    -11486  DD $  12070 (114%)  max risk $   3922  avg $  128  worst run $   8441  BLOWN | ratio -0.95 | 21-23   -11486 DD 114% X | 24-26   +23096 DD  90%   | 
+   Crooks D cap $500 clamp              | net    -10011  DD $  10132 (100%)  max risk $    500  avg $   86  worst run $   2350  BLOWN | ratio -0.99 | 21-23   -10011 DD 100% X | 24-26    +6555 DD  58%   | 
+   Crooks D cap $500 start again        | net    -10095  DD $  10216 (101%)  max risk $    499  avg $   68  worst run $   1374  BLOWN | ratio -0.99 | 21-23   -10095 DD 101% X | 24-26    +3550 DD  76%   | 
+   Crooks D cap $500 stop               | net      -907  DD $   1028 ( 10%)  max risk $    304  avg $   72  worst run $    723  stop  | ratio -0.88 | 21-23     -907 DD  10%   | 24-26     -469 DD  12%   | 
 
 M5 | Most profit (Most profit, Smoothest, New York session only) | exit R 2.50 | 1472 trades | Off: net +6136, DD $1831 (17%), ratio 3.35
    Rule C split split 3 cap $500 start again | net    +51480  DD $  16635 ( 36%)  max risk $    499  avg $  335  worst run $   7346  ok    | ratio  3.09 | 21-23   +26016 DD  36%   | 24-26    +9329 DD  47%   | 
@@ -187,6 +235,14 @@ M5 | Most profit (Most profit, Smoothest, New York session only) | exit R 2.50 |
    Crooks B split 5 cap $500 clamp      | net     +7510  DD $   2099 ( 19%)  max risk $    168  avg $   56  worst run $   1116  ok    | ratio  3.58 | 21-23    +3776 DD  19%   | 24-26    +3734 DD  17%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +7510  DD $   2099 ( 19%)  max risk $    168  avg $   56  worst run $   1116  ok    | ratio  3.58 | 21-23    +3776 DD  19%   | 24-26    +3734 DD  17%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +7510  DD $   2099 ( 19%)  max risk $    168  avg $   56  worst run $   1116  ok    | ratio  3.58 | 21-23    +3776 DD  19%   | 24-26    +3734 DD  17%   | ELIGIBLE
+   Crooks C                             | net    +15076  DD $  12553 ( 58%)  max risk $   4972  avg $   71  worst run $   3622  ok    | ratio  1.20 | 21-23    +6370 DD  13%   | 24-26    +8310 DD  84%   | 
+   Crooks C cap $500 clamp              | net     +9740  DD $   5086 ( 25%)  max risk $    500  avg $   62  worst run $   1050  ok    | ratio  1.91 | 21-23    +6281 DD  13%   | 24-26    +3476 DD  36%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +6925  DD $   3367 ( 19%)  max risk $    493  avg $   59  worst run $   1050  ok    | ratio  2.06 | 21-23    +5208 DD  15%   | 24-26    +2827 DD  25%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -260  DD $   1462 ( 13%)  max risk $    485  avg $   62  worst run $   1050  stop  | ratio -0.18 | 21-23     -260 DD  13%   | 24-26     +275 DD  14%   | 
+   Crooks D                             | net    +15637  DD $   9093 ( 40%)  max risk $   3637  avg $   83  worst run $   4626  ok    | ratio  1.72 | 21-23    +7824 DD  30%   | 24-26    +7438 DD  62%   | 
+   Crooks D cap $500 clamp              | net     +6461  DD $   5796 ( 32%)  max risk $    500  avg $   73  worst run $   2680  ok    | ratio  1.11 | 21-23    +6118 DD  26%   | 24-26      -32 DD  51%   | 
+   Crooks D cap $500 start again        | net     +4832  DD $   6042 ( 36%)  max risk $    474  avg $   66  worst run $   1780  ok    | ratio  0.80 | 21-23    +5013 DD  28%   | 24-26     -557 DD  53%   | 
+   Crooks D cap $500 stop               | net      -686  DD $   1548 ( 14%)  max risk $    466  avg $   68  worst run $   1530  stop  | ratio -0.44 | 21-23     -686 DD  14%   | 24-26      -46 DD  14%   | 
 
 M5 | Shortest losing streak (Shortest losing streak, Shortest losing streak - indicator only, Longest winning streak, Highest win rate, Every year positive) | exit R 2.00 | 1692 trades | Off: net +3667, DD $1261 (9%), ratio 2.91
    Rule C split split 3 cap $500 start again | net    +24417  DD $  10784 ( 34%)  max risk $    499  avg $  345  worst run $   3892  ok    | ratio  2.26 | 21-23    +9789 DD  26%   | 24-26    +6330 DD  31%   | ELIGIBLE
@@ -214,6 +270,14 @@ M5 | Shortest losing streak (Shortest losing streak, Shortest losing streak - in
    Crooks B split 5 cap $500 clamp      | net     +4335  DD $   1234 (  9%)  max risk $    123  avg $   52  worst run $    472  ok    | ratio  3.51 | 21-23    +2172 DD   8%   | 24-26    +2150 DD  11%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +4335  DD $   1234 (  9%)  max risk $    123  avg $   52  worst run $    472  ok    | ratio  3.51 | 21-23    +2172 DD   8%   | 24-26    +2150 DD  11%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +4335  DD $   1234 (  9%)  max risk $    123  avg $   52  worst run $    472  ok    | ratio  3.51 | 21-23    +2172 DD   8%   | 24-26    +2150 DD  11%   | ELIGIBLE
+   Crooks C                             | net     -1289  DD $   6480 ( 58%)  max risk $   3212  avg $   68  worst run $   2151  ok    | ratio -0.20 | 21-23     +213 DD  33%   | 24-26    +2245 DD  27%   | 
+   Crooks C cap $500 clamp              | net     -1298  DD $   4711 ( 41%)  max risk $    500  avg $   61  worst run $    550  ok    | ratio -0.28 | 21-23     +571 DD  24%   | 24-26     +119 DD  28%   | 
+   Crooks C cap $500 start again        | net      +878  DD $   2883 ( 23%)  max risk $    485  avg $   57  worst run $    512  ok    | ratio  0.30 | 21-23    +1679 DD  15%   | 24-26     -367 DD  25%   | 
+   Crooks C cap $500 stop               | net       +99  DD $   1137 ( 10%)  max risk $    329  avg $   57  worst run $    479  stop  | ratio  0.09 | 21-23      +99 DD  10%   | 24-26     -197 DD  14%   | 
+   Crooks D                             | net     +5683  DD $   1361 (  9%)  max risk $    440  avg $   55  worst run $    712  ok    | ratio  4.17 | 21-23    +2436 DD   9%   | 24-26    +2570 DD  12%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +5683  DD $   1361 (  9%)  max risk $    440  avg $   55  worst run $    712  ok    | ratio  4.17 | 21-23    +2436 DD   9%   | 24-26    +2570 DD  12%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +5683  DD $   1361 (  9%)  max risk $    440  avg $   55  worst run $    712  ok    | ratio  4.17 | 21-23    +2436 DD   9%   | 24-26    +2570 DD  12%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +5683  DD $   1361 (  9%)  max risk $    440  avg $   55  worst run $    712  ok    | ratio  4.17 | 21-23    +2436 DD   9%   | 24-26    +2570 DD  12%   | ELIGIBLE
 
 M5 | Most trades a day (Most trades a day) | exit R 2.00 | 1805 trades | Off: net +6275, DD $1807 (16%), ratio 3.47
    Rule C split split 3 cap $500 start again | net    +38465  DD $  12414 ( 45%)  max risk $    498  avg $  303  worst run $   6010  ok    | ratio  3.10 | 21-23    +9428 DD  45%   | 24-26    +1013 DD  36%   | 
@@ -241,6 +305,14 @@ M5 | Most trades a day (Most trades a day) | exit R 2.00 | 1805 trades | Off: ne
    Crooks B split 5 cap $500 clamp      | net     +7725  DD $   1733 ( 15%)  max risk $    173  avg $   54  worst run $    846  ok    | ratio  4.46 | 21-23    +3675 DD  15%   | 24-26    +4050 DD  14%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +7725  DD $   1733 ( 15%)  max risk $    173  avg $   54  worst run $    846  ok    | ratio  4.46 | 21-23    +3675 DD  15%   | 24-26    +4050 DD  14%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +7725  DD $   1733 ( 15%)  max risk $    173  avg $   54  worst run $    846  ok    | ratio  4.46 | 21-23    +3675 DD  15%   | 24-26    +4050 DD  14%   | ELIGIBLE
+   Crooks C                             | net    +16208  DD $   4432 ( 26%)  max risk $   2167  avg $   68  worst run $   1544  ok    | ratio  3.66 | 21-23    +6919 DD  26%   | 24-26    +8662 DD  22%   | 
+   Crooks C cap $500 clamp              | net    +10136  DD $   2831 ( 21%)  max risk $    500  avg $   63  worst run $    750  ok    | ratio  3.58 | 21-23    +5161 DD  21%   | 24-26    +5903 DD  21%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +7862  DD $   2368 ( 19%)  max risk $    484  avg $   59  worst run $    679  ok    | ratio  3.32 | 21-23    +4127 DD  19%   | 24-26    +4169 DD  18%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -955  DD $   1222 ( 12%)  max risk $    356  avg $   63  worst run $    506  stop  | ratio -0.78 | 21-23     -955 DD  12%   | 24-26    +1523 DD  11%   | 
+   Crooks D                             | net    -10286  DD $  13494 (102%)  max risk $   4498  avg $  104  worst run $   4498  BLOWN | ratio -0.76 | 21-23   -10286 DD 102% X | 24-26   +11002 DD   9%   | 
+   Crooks D cap $500 clamp              | net    +10906  DD $   8882 ( 75%)  max risk $    500  avg $   67  worst run $   1750  ok    | ratio  1.23 | 21-23     +257 DD  75%   | 24-26   +10649 DD   9%   | 
+   Crooks D cap $500 start again        | net    +15254  DD $   2326 ( 19%)  max risk $    497  avg $   62  worst run $   1272  ok    | ratio  6.56 | 21-23    +6382 DD  19%   | 24-26    +8872 DD  10%   | ELIGIBLE
+   Crooks D cap $500 stop               | net      +880  DD $   1063 (  9%)  max risk $    406  avg $   62  worst run $    812  stop  | ratio  0.83 | 21-23     +880 DD   9%   | 24-26    +2567 DD   9%   | ELIGIBLE
 
 M5 | Simplest (Simplest) | exit R 2.00 | 1488 trades | Off: net +4134, DD $2038 (18%), ratio 2.03
    Rule C split split 3 cap $500 start again | net     +5172  DD $  10193 ( 50%)  max risk $    500  avg $  210  worst run $   7223  ok    | ratio  0.51 | 21-23    +4205 DD  41%   | 24-26    +1346 DD  49%   | 
@@ -268,6 +340,14 @@ M5 | Simplest (Simplest) | exit R 2.00 | 1488 trades | Off: net +4134, DD $2038 
    Crooks B split 5 cap $500 clamp      | net     +5925  DD $   2211 ( 20%)  max risk $    221  avg $   57  worst run $   1111  ok    | ratio  2.68 | 21-23    +3392 DD  20%   | 24-26    +2493 DD  15%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +5925  DD $   2211 ( 20%)  max risk $    221  avg $   57  worst run $   1111  ok    | ratio  2.68 | 21-23    +3392 DD  20%   | 24-26    +2493 DD  15%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +5925  DD $   2211 ( 20%)  max risk $    221  avg $   57  worst run $   1111  ok    | ratio  2.68 | 21-23    +3392 DD  20%   | 24-26    +2493 DD  15%   | ELIGIBLE
+   Crooks C                             | net    +11720  DD $  14515 ( 90%)  max risk $   7210  avg $   89  worst run $   4905  ok    | ratio  0.81 | 21-23    +5259 DD  57%   | 24-26    +6547 DD  19%   | 
+   Crooks C cap $500 clamp              | net     +2137  DD $   4432 ( 35%)  max risk $    500  avg $   69  worst run $   1000  ok    | ratio  0.48 | 21-23    +1596 DD  31%   | 24-26    +3043 DD  24%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +3713  DD $   3068 ( 19%)  max risk $    470  avg $   61  worst run $   1000  ok    | ratio  1.21 | 21-23    +3081 DD  19%   | 24-26    +1034 DD  23%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      +237  DD $   1212 ( 11%)  max risk $    404  avg $   62  worst run $    463  stop  | ratio  0.20 | 21-23     +237 DD  11%   | 24-26     +470 DD  10%   | ELIGIBLE
+   Crooks D                             | net    +14776  DD $   3217 ( 15%)  max risk $   1609  avg $   70  worst run $   3217  ok    | ratio  4.59 | 21-23    +7587 DD  13%   | 24-26    +7052 DD  23%   | 
+   Crooks D cap $500 clamp              | net    +10565  DD $   2519 ( 19%)  max risk $    500  avg $   68  worst run $   2519  ok    | ratio  4.19 | 21-23    +6413 DD  19%   | 24-26    +4015 DD  19%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +3073  DD $   4515 ( 38%)  max risk $    494  avg $   64  worst run $   1694  ok    | ratio  0.68 | 21-23    +3776 DD  38%   | 24-26     -840 DD  36%   | 
+   Crooks D cap $500 stop               | net      +732  DD $   1167 ( 10%)  max risk $    356  avg $   62  worst run $    643  stop  | ratio  0.63 | 21-23     +732 DD  10%   | 24-26     +513 DD   9%   | ELIGIBLE
 
 M15 | Default settings (Default settings) | exit R 2.00 | 3169 trades | Off: net -10001, DD $10574 (100%), ratio -0.95
    Rule C split split 3 cap $500 start again | net    -10005  DD $  11924 (100%)  max risk $    499  avg $   88  worst run $   1998  BLOWN | ratio -0.84 | 21-23   -10005 DD 100% X | 24-26    +1274 DD  47%   | 
@@ -295,6 +375,14 @@ M15 | Default settings (Default settings) | exit R 2.00 | 3169 trades | Off: net
    Crooks B split 5 cap $500 clamp      | net    -10094  DD $  10711 (101%)  max risk $    500  avg $  115  worst run $   2700  BLOWN | ratio -0.94 | 21-23   -10094 DD 101% X | 24-26    +2062 DD  35%   | 
    Crooks B split 5 cap $500 start again | net    -10255  DD $  10872 (102%)  max risk $    494  avg $   94  worst run $   2556  BLOWN | ratio -0.94 | 21-23   -10255 DD 102% X | 24-26    +2062 DD  35%   | 
    Crooks B split 5 cap $500 stop       | net     -4822  DD $   5439 ( 51%)  max risk $    490  avg $   89  worst run $   1527  stop  | ratio -0.89 | 21-23    -4822 DD  51%   | 24-26    +2062 DD  35%   | 
+   Crooks C                             | net    -14048  DD $  19797 (126%)  max risk $   6599  avg $  107  worst run $   6599  BLOWN | ratio -0.71 | 21-23     +709 DD  81%   | 24-26   -14757 DD 132% X | 
+   Crooks C cap $500 clamp              | net    -10167  DD $  10735 (102%)  max risk $    500  avg $   81  worst run $    722  BLOWN | ratio -0.95 | 21-23   -10167 DD 102% X | 24-26    +4087 DD  40%   | 
+   Crooks C cap $500 start again        | net    -10147  DD $  10714 (101%)  max risk $    494  avg $   65  worst run $    722  BLOWN | ratio -0.95 | 21-23   -10147 DD 101% X | 24-26    +2569 DD  28%   | 
+   Crooks C cap $500 stop               | net      -994  DD $   1640 ( 16%)  max risk $    476  avg $   69  worst run $    676  stop  | ratio -0.61 | 21-23     -994 DD  16%   | 24-26     -350 DD  11%   | 
+   Crooks D                             | net    -13702  DD $  17195 (127%)  max risk $   6265  avg $  107  worst run $   9516  BLOWN | ratio -0.80 | 21-23    +2292 DD  94%   | 24-26   -10255 DD 102% X | 
+   Crooks D cap $500 clamp              | net    -10322  DD $  11429 (103%)  max risk $    500  avg $   78  worst run $   1850  BLOWN | ratio -0.90 | 21-23   -10322 DD 103% X | 24-26    -2988 DD  99%   | 
+   Crooks D cap $500 start again        | net    -10049  DD $  11155 (100%)  max risk $    483  avg $   67  worst run $   1219  BLOWN | ratio -0.90 | 21-23   -10049 DD 100% X | 24-26    +2439 DD  44%   | 
+   Crooks D cap $500 stop               | net      -441  DD $   1548 ( 14%)  max risk $    483  avg $   62  worst run $    871  stop  | ratio -0.28 | 21-23     -441 DD  14%   | 24-26    -1024 DD  15%   | 
 
 M15 | Most profit (Most profit) | exit R 2.00 | 1388 trades | Off: net +9077, DD $1110 (9%), ratio 8.18
    Rule C split split 3 cap $500 start again | net    +67853  DD $   7179 ( 36%)  max risk $    500  avg $  359  worst run $   6139  ok    | ratio  9.45 | 21-23   +25017 DD  36%   | 24-26   +28456 DD  21%   | ELIGIBLE
@@ -322,6 +410,14 @@ M15 | Most profit (Most profit) | exit R 2.00 | 1388 trades | Off: net +9077, DD
    Crooks B split 5 cap $500 clamp      | net     +9302  DD $   1421 ( 11%)  max risk $    133  avg $   51  worst run $    935  ok    | ratio  6.55 | 21-23    +4591 DD  11%   | 24-26    +4705 DD   6%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +9302  DD $   1421 ( 11%)  max risk $    133  avg $   51  worst run $    935  ok    | ratio  6.55 | 21-23    +4591 DD  11%   | 24-26    +4705 DD   6%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +9302  DD $   1421 ( 11%)  max risk $    133  avg $   51  worst run $    935  ok    | ratio  6.55 | 21-23    +4591 DD  11%   | 24-26    +4705 DD   6%   | ELIGIBLE
+   Crooks C                             | net    +13356  DD $   4491 ( 42%)  max risk $   2198  avg $   61  worst run $   1597  ok    | ratio  2.97 | 21-23    +6963 DD  42%   | 24-26    +6411 DD   6%   | 
+   Crooks C cap $500 clamp              | net    +11467  DD $   2912 ( 27%)  max risk $    500  avg $   58  worst run $    850  ok    | ratio  3.94 | 21-23    +5075 DD  27%   | 24-26    +6411 DD   6%   | ELIGIBLE
+   Crooks C cap $500 start again        | net    +11698  DD $   1721 ( 16%)  max risk $    451  avg $   56  worst run $    850  ok    | ratio  6.80 | 21-23    +5306 DD  16%   | 24-26    +6411 DD   6%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -488  DD $   1402 ( 13%)  max risk $    451  avg $   67  worst run $    501  stop  | ratio -0.35 | 21-23     -488 DD  13%   | 24-26    +6411 DD   6%   | 
+   Crooks D                             | net    +12310  DD $   2497 ( 23%)  max risk $   1116  avg $   61  worst run $   2078  ok    | ratio  4.93 | 21-23    +4750 DD  23%   | 24-26    +7484 DD   7%   | 
+   Crooks D cap $500 clamp              | net    +11708  DD $   2182 ( 20%)  max risk $    500  avg $   60  worst run $   1919  ok    | ratio  5.37 | 21-23    +4148 DD  20%   | 24-26    +7484 DD   7%   | ELIGIBLE
+   Crooks D cap $500 start again        | net    +12230  DD $   1649 ( 13%)  max risk $    406  avg $   58  worst run $   1469  ok    | ratio  7.42 | 21-23    +4670 DD  13%   | 24-26    +7484 DD   7%   | ELIGIBLE
+   Crooks D cap $500 stop               | net      -365  DD $   1228 ( 11%)  max risk $    350  avg $   66  worst run $    712  stop  | ratio -0.30 | 21-23     -365 DD  11%   | 24-26    +7484 DD   7%   | 
 
 M15 | Shortest losing streak (Shortest losing streak) | exit R 2.00 | 1137 trades | Off: net +3704, DD $1050 (9%), ratio 3.53
    Rule C split split 3 cap $500 start again | net    +15153  DD $   5927 ( 37%)  max risk $    500  avg $  271  worst run $   1956  ok    | ratio  2.56 | 21-23    +2869 DD  37%   | 24-26    +5979 DD  17%   | ELIGIBLE
@@ -349,6 +445,14 @@ M15 | Shortest losing streak (Shortest losing streak) | exit R 2.00 | 1137 trade
    Crooks B split 5 cap $500 clamp      | net     +3820  DD $   1077 (  9%)  max risk $    103  avg $   51  worst run $    250  ok    | ratio  3.55 | 21-23    +1955 DD   9%   | 24-26    +1866 DD   4%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +3820  DD $   1077 (  9%)  max risk $    103  avg $   51  worst run $    250  ok    | ratio  3.55 | 21-23    +1955 DD   9%   | 24-26    +1866 DD   4%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +3820  DD $   1077 (  9%)  max risk $    103  avg $   51  worst run $    250  ok    | ratio  3.55 | 21-23    +1955 DD   9%   | 24-26    +1866 DD   4%   | ELIGIBLE
+   Crooks C                             | net     +1857  DD $   2418 ( 24%)  max risk $   1185  avg $   56  worst run $    806  ok    | ratio  0.77 | 21-23     -235 DD  24%   | 24-26    +2092 DD   6%   | 
+   Crooks C cap $500 clamp              | net     +1872  DD $   2090 ( 20%)  max risk $    500  avg $   55  worst run $    550  ok    | ratio  0.90 | 21-23     -220 DD  20%   | 24-26    +2092 DD   6%   | 
+   Crooks C cap $500 start again        | net     +2744  DD $   1507 ( 14%)  max risk $    371  avg $   53  worst run $    371  ok    | ratio  1.82 | 21-23     +652 DD  14%   | 24-26    +2092 DD   6%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -841  DD $   1078 ( 11%)  max risk $    359  avg $   67  worst run $    359  stop  | ratio -0.78 | 21-23     -841 DD  11%   | 24-26    +2092 DD   6%   | 
+   Crooks D                             | net     +3979  DD $   1063 (  9%)  max risk $    285  avg $   52  worst run $    250  ok    | ratio  3.75 | 21-23    +1763 DD   9%   | 24-26    +2216 DD   6%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +3979  DD $   1063 (  9%)  max risk $    285  avg $   52  worst run $    250  ok    | ratio  3.75 | 21-23    +1763 DD   9%   | 24-26    +2216 DD   6%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +3979  DD $   1063 (  9%)  max risk $    285  avg $   52  worst run $    250  ok    | ratio  3.75 | 21-23    +1763 DD   9%   | 24-26    +2216 DD   6%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +3979  DD $   1063 (  9%)  max risk $    285  avg $   52  worst run $    250  ok    | ratio  3.75 | 21-23    +1763 DD   9%   | 24-26    +2216 DD   6%   | ELIGIBLE
 
 M15 | Shortest losing streak - indicator only (Shortest losing streak - indicator only, Smoothest) | exit R 2.00 | 1129 trades | Off: net +7274, DD $709 (5%), ratio 10.26
    Rule C split split 3 cap $500 start again | net    +47681  DD $   6124 ( 26%)  max risk $    500  avg $  358  worst run $   3389  ok    | ratio  7.79 | 21-23   +15145 DD  26%   | 24-26   +19231 DD  21%   | ELIGIBLE
@@ -376,6 +480,14 @@ M15 | Shortest losing streak - indicator only (Shortest losing streak - indicato
    Crooks B split 5 cap $500 clamp      | net     +7351  DD $    711 (  5%)  max risk $     71  avg $   50  worst run $    403  ok    | ratio 10.34 | 21-23    +3675 DD   5%   | 24-26    +3676 DD   7%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +7351  DD $    711 (  5%)  max risk $     71  avg $   50  worst run $    403  ok    | ratio 10.34 | 21-23    +3675 DD   5%   | 24-26    +3676 DD   7%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +7351  DD $    711 (  5%)  max risk $     71  avg $   50  worst run $    403  ok    | ratio 10.34 | 21-23    +3675 DD   5%   | 24-26    +3676 DD   7%   | ELIGIBLE
+   Crooks C                             | net    +11349  DD $   1562 ( 14%)  max risk $    734  avg $   57  worst run $    587  ok    | ratio  7.26 | 21-23    +5488 DD  14%   | 24-26    +5861 DD   7%   | 
+   Crooks C cap $500 clamp              | net    +10893  DD $   1562 ( 14%)  max risk $    500  avg $   56  worst run $    587  ok    | ratio  6.97 | 21-23    +5031 DD  14%   | 24-26    +5861 DD   7%   | ELIGIBLE
+   Crooks C cap $500 start again        | net    +10013  DD $   1839 ( 17%)  max risk $    487  avg $   56  worst run $    587  ok    | ratio  5.45 | 21-23    +4152 DD  17%   | 24-26    +5861 DD   7%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -404  DD $   1562 ( 14%)  max risk $    487  avg $   68  worst run $    587  stop  | ratio -0.26 | 21-23     -404 DD  14%   | 24-26    +5861 DD   7%   | 
+   Crooks D                             | net    +11081  DD $   2925 ( 19%)  max risk $   1388  avg $   60  worst run $   1149  ok    | ratio  3.79 | 21-23    +5237 DD   6%   | 24-26    +5845 DD  28%   | 
+   Crooks D cap $500 clamp              | net    +10128  DD $   2300 ( 15%)  max risk $    500  avg $   58  worst run $   1000  ok    | ratio  4.40 | 21-23    +5237 DD   6%   | 24-26    +4891 DD  22%   | ELIGIBLE
+   Crooks D cap $500 start again        | net    +10229  DD $   1400 (  9%)  max risk $    400  avg $   57  worst run $    671  ok    | ratio  7.30 | 21-23    +5237 DD   6%   | 24-26    +4992 DD  13%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +4472  DD $   1299 (  8%)  max risk $    400  avg $   58  worst run $    671  stop  | ratio  3.44 | 21-23    +5237 DD   6%   | 24-26     -765 DD  12%   | 
 
 M15 | Longest winning streak (Longest winning streak) | exit R 2.00 | 1207 trades | Off: net +4151, DD $1156 (10%), ratio 3.59
    Rule C split split 3 cap $500 start again | net    +25426  DD $   6392 ( 40%)  max risk $    499  avg $  301  worst run $   2641  ok    | ratio  3.98 | 21-23    +9689 DD  40%   | 24-26    +9940 DD  21%   | ELIGIBLE
@@ -403,6 +515,14 @@ M15 | Longest winning streak (Longest winning streak) | exit R 2.00 | 1207 trade
    Crooks B split 5 cap $500 clamp      | net     +4174  DD $   1501 ( 13%)  max risk $    146  avg $   52  worst run $    300  ok    | ratio  2.78 | 21-23    +2253 DD  13%   | 24-26    +1921 DD   5%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +4174  DD $   1501 ( 13%)  max risk $    146  avg $   52  worst run $    300  ok    | ratio  2.78 | 21-23    +2253 DD  13%   | 24-26    +1921 DD   5%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +4174  DD $   1501 ( 13%)  max risk $    146  avg $   52  worst run $    300  ok    | ratio  2.78 | 21-23    +2253 DD  13%   | 24-26    +1921 DD   5%   | ELIGIBLE
+   Crooks C                             | net     +4604  DD $   1086 (  9%)  max risk $    247  avg $   52  worst run $    300  ok    | ratio  4.24 | 21-23    +2380 DD   9%   | 24-26    +2224 DD   5%   | ELIGIBLE
+   Crooks C cap $500 clamp              | net     +4604  DD $   1086 (  9%)  max risk $    247  avg $   52  worst run $    300  ok    | ratio  4.24 | 21-23    +2380 DD   9%   | 24-26    +2224 DD   5%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +4604  DD $   1086 (  9%)  max risk $    247  avg $   52  worst run $    300  ok    | ratio  4.24 | 21-23    +2380 DD   9%   | 24-26    +2224 DD   5%   | ELIGIBLE
+   Crooks C cap $500 stop               | net     +4604  DD $   1086 (  9%)  max risk $    247  avg $   52  worst run $    300  ok    | ratio  4.24 | 21-23    +2380 DD   9%   | 24-26    +2224 DD   5%   | ELIGIBLE
+   Crooks D                             | net     +4361  DD $   1420 ( 12%)  max risk $    304  avg $   52  worst run $    375  ok    | ratio  3.07 | 21-23    +2321 DD  12%   | 24-26    +2040 DD   5%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +4361  DD $   1420 ( 12%)  max risk $    304  avg $   52  worst run $    375  ok    | ratio  3.07 | 21-23    +2321 DD  12%   | 24-26    +2040 DD   5%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +4361  DD $   1420 ( 12%)  max risk $    304  avg $   52  worst run $    375  ok    | ratio  3.07 | 21-23    +2321 DD  12%   | 24-26    +2040 DD   5%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +4361  DD $   1420 ( 12%)  max risk $    304  avg $   52  worst run $    375  ok    | ratio  3.07 | 21-23    +2321 DD  12%   | 24-26    +2040 DD   5%   | ELIGIBLE
 
 M15 | Highest win rate (Highest win rate) | exit R 2.00 | 1388 trades | Off: net +3772, DD $907 (8%), ratio 4.16
    Rule C split split 3 cap $500 start again | net    +17584  DD $   4897 ( 30%)  max risk $    480  avg $  270  worst run $   2053  ok    | ratio  3.59 | 21-23    +7098 DD  30%   | 24-26    +5851 DD  24%   | ELIGIBLE
@@ -430,6 +550,14 @@ M15 | Highest win rate (Highest win rate) | exit R 2.00 | 1388 trades | Off: net
    Crooks B split 5 cap $500 clamp      | net     +3867  DD $    955 (  8%)  max risk $     95  avg $   51  worst run $    261  ok    | ratio  4.05 | 21-23    +2323 DD   8%   | 24-26    +1545 DD   5%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +3867  DD $    955 (  8%)  max risk $     95  avg $   51  worst run $    261  ok    | ratio  4.05 | 21-23    +2323 DD   8%   | 24-26    +1545 DD   5%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +3867  DD $    955 (  8%)  max risk $     95  avg $   51  worst run $    261  ok    | ratio  4.05 | 21-23    +2323 DD   8%   | 24-26    +1545 DD   5%   | ELIGIBLE
+   Crooks C                             | net     +3958  DD $    818 (  7%)  max risk $    295  avg $   52  worst run $    250  ok    | ratio  4.84 | 21-23    +2423 DD   7%   | 24-26    +1535 DD   7%   | ELIGIBLE
+   Crooks C cap $500 clamp              | net     +3958  DD $    818 (  7%)  max risk $    295  avg $   52  worst run $    250  ok    | ratio  4.84 | 21-23    +2423 DD   7%   | 24-26    +1535 DD   7%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +3958  DD $    818 (  7%)  max risk $    295  avg $   52  worst run $    250  ok    | ratio  4.84 | 21-23    +2423 DD   7%   | 24-26    +1535 DD   7%   | ELIGIBLE
+   Crooks C cap $500 stop               | net     +3958  DD $    818 (  7%)  max risk $    295  avg $   52  worst run $    250  ok    | ratio  4.84 | 21-23    +2423 DD   7%   | 24-26    +1535 DD   7%   | ELIGIBLE
+   Crooks D                             | net     +3679  DD $   1139 ( 10%)  max risk $    377  avg $   52  worst run $    275  ok    | ratio  3.23 | 21-23    +2165 DD  10%   | 24-26    +1514 DD   9%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +3679  DD $   1139 ( 10%)  max risk $    377  avg $   52  worst run $    275  ok    | ratio  3.23 | 21-23    +2165 DD  10%   | 24-26    +1514 DD   9%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +3679  DD $   1139 ( 10%)  max risk $    377  avg $   52  worst run $    275  ok    | ratio  3.23 | 21-23    +2165 DD  10%   | 24-26    +1514 DD   9%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +3679  DD $   1139 ( 10%)  max risk $    377  avg $   52  worst run $    275  ok    | ratio  3.23 | 21-23    +2165 DD  10%   | 24-26    +1514 DD   9%   | ELIGIBLE
 
 M15 | Most trades a day (Most trades a day) | exit R 2.00 | 1776 trades | Off: net +5432, DD $1102 (10%), ratio 4.93
    Rule C split split 3 cap $500 start again | net    +27095  DD $   5552 ( 27%)  max risk $    498  avg $  208  worst run $   3312  ok    | ratio  4.88 | 21-23     +797 DD  27%   | 24-26   +20054 DD  24%   | ELIGIBLE
@@ -457,6 +585,14 @@ M15 | Most trades a day (Most trades a day) | exit R 2.00 | 1776 trades | Off: n
    Crooks B split 5 cap $500 clamp      | net     +6067  DD $   1073 ( 10%)  max risk $    107  avg $   51  worst run $    554  ok    | ratio  5.65 | 21-23    +2370 DD  10%   | 24-26    +3673 DD   5%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +6067  DD $   1073 ( 10%)  max risk $    107  avg $   51  worst run $    554  ok    | ratio  5.65 | 21-23    +2370 DD  10%   | 24-26    +3673 DD   5%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +6067  DD $   1073 ( 10%)  max risk $    107  avg $   51  worst run $    554  ok    | ratio  5.65 | 21-23    +2370 DD  10%   | 24-26    +3673 DD   5%   | ELIGIBLE
+   Crooks C                             | net     +4927  DD $   2520 ( 24%)  max risk $   1202  avg $   57  worst run $    867  ok    | ratio  1.96 | 21-23     +344 DD  24%   | 24-26    +4494 DD   8%   | 
+   Crooks C cap $500 clamp              | net     +4780  DD $   2298 ( 22%)  max risk $    500  avg $   56  worst run $    562  ok    | ratio  2.08 | 21-23     +235 DD  22%   | 24-26    +4456 DD   8%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +4956  DD $   1700 ( 16%)  max risk $    442  avg $   55  worst run $    562  ok    | ratio  2.92 | 21-23     +679 DD  16%   | 24-26    +4189 DD   8%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -421  DD $   1135 ( 11%)  max risk $    372  avg $   58  worst run $    550  stop  | ratio -0.37 | 21-23     -421 DD  11%   | 24-26    +2805 DD   8%   | 
+   Crooks D                             | net     +6844  DD $   2595 ( 22%)  max risk $   1208  avg $   57  worst run $    923  ok    | ratio  2.64 | 21-23    +2064 DD  22%   | 24-26    +4808 DD  11%   | 
+   Crooks D cap $500 clamp              | net     +6190  DD $   2310 ( 20%)  max risk $    500  avg $   56  worst run $    909  ok    | ratio  2.68 | 21-23    +1663 DD  20%   | 24-26    +4555 DD  11%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +6236  DD $   1535 ( 13%)  max risk $    470  avg $   55  worst run $    812  ok    | ratio  4.06 | 21-23    +2155 DD  13%   | 24-26    +4108 DD  11%   | ELIGIBLE
+   Crooks D cap $500 stop               | net      +590  DD $   1206 ( 10%)  max risk $    406  avg $   56  worst run $    812  stop  | ratio  0.49 | 21-23     +590 DD  10%   | 24-26    +2827 DD  11%   | ELIGIBLE
 
 M15 | Every year positive (Every year positive) | exit R 2.00 | 1377 trades | Off: net +9830, DD $1110 (8%), ratio 8.86
    Rule C split split 3 cap $500 start again | net    +71072  DD $   8384 ( 38%)  max risk $    500  avg $  360  worst run $   6374  ok    | ratio  8.48 | 21-23   +23591 DD  38%   | 24-26   +33945 DD  20%   | ELIGIBLE
@@ -484,6 +620,14 @@ M15 | Every year positive (Every year positive) | exit R 2.00 | 1377 trades | Of
    Crooks B split 5 cap $500 clamp      | net     +9988  DD $   1421 ( 11%)  max risk $    133  avg $   51  worst run $    935  ok    | ratio  7.03 | 21-23    +4865 DD  11%   | 24-26    +5097 DD   6%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +9988  DD $   1421 ( 11%)  max risk $    133  avg $   51  worst run $    935  ok    | ratio  7.03 | 21-23    +4865 DD  11%   | 24-26    +5097 DD   6%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +9988  DD $   1421 ( 11%)  max risk $    133  avg $   51  worst run $    935  ok    | ratio  7.03 | 21-23    +4865 DD  11%   | 24-26    +5097 DD   6%   | ELIGIBLE
+   Crooks C                             | net    +13938  DD $   4491 ( 42%)  max risk $   2198  avg $   61  worst run $   1597  ok    | ratio  3.10 | 21-23    +7104 DD  42%   | 24-26    +6852 DD   6%   | 
+   Crooks C cap $500 clamp              | net    +12049  DD $   2912 ( 27%)  max risk $    500  avg $   58  worst run $    850  ok    | ratio  4.14 | 21-23    +5216 DD  27%   | 24-26    +6852 DD   6%   | ELIGIBLE
+   Crooks C cap $500 start again        | net    +12281  DD $   1721 ( 16%)  max risk $    451  avg $   56  worst run $    850  ok    | ratio  7.13 | 21-23    +5447 DD  16%   | 24-26    +6852 DD   6%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -529  DD $   1402 ( 13%)  max risk $    451  avg $   67  worst run $    501  stop  | ratio -0.38 | 21-23     -529 DD  13%   | 24-26    +6852 DD   6%   | 
+   Crooks D                             | net    +14442  DD $   2078 ( 15%)  max risk $   1039  avg $   58  worst run $   2078  ok    | ratio  6.95 | 21-23    +6129 DD  15%   | 24-26    +8237 DD   6%   | 
+   Crooks D cap $500 clamp              | net    +14098  DD $   1919 ( 13%)  max risk $    500  avg $   58  worst run $   1919  ok    | ratio  7.35 | 21-23    +5785 DD  13%   | 24-26    +8237 DD   6%   | ELIGIBLE
+   Crooks D cap $500 start again        | net    +14139  DD $   1649 ( 12%)  max risk $    406  avg $   57  worst run $   1469  ok    | ratio  8.58 | 21-23    +5827 DD  12%   | 24-26    +8237 DD   6%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +2927  DD $   1319 (  9%)  max risk $    406  avg $   58  worst run $   1319  stop  | ratio  2.22 | 21-23    +2927 DD   9%   | 24-26    +8237 DD   6%   | ELIGIBLE
 
 M15 | Simplest (Simplest) | exit R 2.00 | 1179 trades | Off: net +4809, DD $1555 (13%), ratio 3.09
    Rule C split split 3 cap $500 start again | net     +3278  DD $   5161 ( 40%)  max risk $    499  avg $  118  worst run $   3000  ok    | ratio  0.64 | 21-23     +119 DD  40%   | 24-26     +379 DD  29%   | 
@@ -511,6 +655,14 @@ M15 | Simplest (Simplest) | exit R 2.00 | 1179 trades | Off: net +4809, DD $1555
    Crooks B split 5 cap $500 clamp      | net     +5618  DD $   1982 ( 16%)  max risk $    198  avg $   52  worst run $   1144  ok    | ratio  2.83 | 21-23    +2868 DD  16%   | 24-26    +2729 DD  10%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +5618  DD $   1982 ( 16%)  max risk $    198  avg $   52  worst run $   1144  ok    | ratio  2.83 | 21-23    +2868 DD  16%   | 24-26    +2729 DD  10%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +5618  DD $   1982 ( 16%)  max risk $    198  avg $   52  worst run $   1144  ok    | ratio  2.83 | 21-23    +2868 DD  16%   | 24-26    +2729 DD  10%   | ELIGIBLE
+   Crooks C                             | net    +11942  DD $   4230 ( 30%)  max risk $   2067  avg $   66  worst run $   1577  ok    | ratio  2.82 | 21-23    +6125 DD  30%   | 24-26    +5722 DD  18%   | 
+   Crooks C cap $500 clamp              | net     +7376  DD $   3270 ( 24%)  max risk $    500  avg $   62  worst run $   1350  ok    | ratio  2.26 | 21-23    +3212 DD  24%   | 24-26    +4069 DD  17%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +6176  DD $   2878 ( 21%)  max risk $    450  avg $   58  worst run $    900  ok    | ratio  2.15 | 21-23    +2899 DD  21%   | 24-26    +3182 DD  17%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      -270  DD $   1106 ( 10%)  max risk $    369  avg $   65  worst run $    650  stop  | ratio -0.24 | 21-23     -270 DD  10%   | 24-26      -62 DD  12%   | 
+   Crooks D                             | net    -11963  DD $  20106 (111%)  max risk $   6701  avg $  104  worst run $  11236  BLOWN | ratio -0.59 | 21-23    +6602 DD  48%   | 24-26   -12075 DD 118% X | 
+   Crooks D cap $500 clamp              | net     +5825  DD $   4735 ( 35%)  max risk $    500  avg $   69  worst run $   2419  ok    | ratio  1.23 | 21-23    +2109 DD  31%   | 24-26    +2262 DD  47%   | 
+   Crooks D cap $500 start again        | net     +7213  DD $   3182 ( 27%)  max risk $    494  avg $   62  worst run $   1519  ok    | ratio  2.27 | 21-23     +799 DD  27%   | 24-26    +5120 DD  17%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     -1271  DD $   1583 ( 15%)  max risk $    494  avg $   90  worst run $   1255  stop  | ratio -0.80 | 21-23    -1271 DD  15%   | 24-26    -1117 DD  12%   | 
 
 M15 | Asia session only (Asia session only) | exit R 2.00 | 712 trades | Off: net +1747, DD $1147 (10%), ratio 1.52
    Rule C split split 3 cap $500 start again | net      -367  DD $   6366 ( 43%)  max risk $    499  avg $  159  worst run $   3939  ok    | ratio -0.06 | 21-23    +3376 DD  24%   | 24-26     -944 DD  37%   | 
@@ -538,6 +690,14 @@ M15 | Asia session only (Asia session only) | exit R 2.00 | 712 trades | Off: ne
    Crooks B split 5 cap $500 clamp      | net     +1440  DD $   1455 ( 13%)  max risk $    145  avg $   56  worst run $   1287  ok    | ratio  0.99 | 21-23    +1200 DD   6%   | 24-26     +794 DD  12%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +1440  DD $   1455 ( 13%)  max risk $    145  avg $   56  worst run $   1287  ok    | ratio  0.99 | 21-23    +1200 DD   6%   | 24-26     +794 DD  12%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +1440  DD $   1455 ( 13%)  max risk $    145  avg $   56  worst run $   1287  ok    | ratio  0.99 | 21-23    +1200 DD   6%   | 24-26     +794 DD  12%   | ELIGIBLE
+   Crooks C                             | net     +3091  DD $   1466 ( 12%)  max risk $    664  avg $   59  worst run $   1050  ok    | ratio  2.11 | 21-23    +1544 DD  12%   | 24-26    +1440 DD  13%   | 
+   Crooks C cap $500 clamp              | net     +2816  DD $   1466 ( 12%)  max risk $    500  avg $   59  worst run $   1050  ok    | ratio  1.92 | 21-23    +1431 DD  12%   | 24-26    +1278 DD  13%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +1970  DD $   1780 ( 15%)  max risk $    490  avg $   58  worst run $   1050  ok    | ratio  1.11 | 21-23    +1030 DD  13%   | 24-26     +833 DD  13%   | ELIGIBLE
+   Crooks C cap $500 stop               | net      +739  DD $   1466 ( 12%)  max risk $    490  avg $   59  worst run $    572  stop  | ratio  0.50 | 21-23     +739 DD  12%   | 24-26     -287 DD  13%   | 
+   Crooks D                             | net     +4891  DD $   4826 ( 35%)  max risk $   2388  avg $   65  worst run $   4826  ok    | ratio  1.01 | 21-23    +2413 DD   6%   | 24-26    +2429 DD  42%   | 
+   Crooks D cap $500 clamp              | net     +2952  DD $   3019 ( 22%)  max risk $    500  avg $   59  worst run $   3019  ok    | ratio  0.98 | 21-23    +2413 DD   6%   | 24-26     +490 DD  27%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +2290  DD $   2597 ( 19%)  max risk $    408  avg $   58  worst run $   1744  ok    | ratio  0.88 | 21-23    +2413 DD   6%   | 24-26     -172 DD  23%   | 
+   Crooks D cap $500 stop               | net     +2518  DD $   1319 ( 10%)  max risk $    406  avg $   58  worst run $   1319  stop  | ratio  1.91 | 21-23    +2413 DD   6%   | 24-26      +55 DD  12%   | ELIGIBLE
 
 H1 | Default settings (Default settings) | exit R 2.00 | 884 trades | Off: net -1871, DD $3678 (36%), ratio -0.51
    Rule C split split 3 cap $500 start again | net     -6361  DD $  10439 ( 99%)  max risk $    499  avg $   75  worst run $   1969  ok    | ratio -0.61 | 21-23    -6917 DD  81%   | 24-26     -519 DD  32%   | 
@@ -565,6 +725,14 @@ H1 | Default settings (Default settings) | exit R 2.00 | 884 trades | Off: net -
    Crooks B split 5 cap $500 clamp      | net    -10331  DD $  10570 (103%)  max risk $    500  avg $  169  worst run $   2307  BLOWN | ratio -0.98 | 21-23   -10331 DD 103% X | 24-26     +926 DD  12%   | 
    Crooks B split 5 cap $500 start again | net     -3616  DD $   7414 ( 72%)  max risk $    465  avg $   93  worst run $   1683  ok    | ratio -0.49 | 21-23    -4832 DD  50%   | 24-26     +926 DD  12%   | 
    Crooks B split 5 cap $500 stop       | net     -4848  DD $   5087 ( 50%)  max risk $    465  avg $  127  worst run $   1683  stop  | ratio -0.95 | 21-23    -4848 DD  50%   | 24-26     +926 DD  12%   | 
+   Crooks C                             | net    -11752  DD $  14296 (114%)  max risk $   4765  avg $  104  worst run $   4765  BLOWN | ratio -0.82 | 21-23   -11752 DD 114% X | 24-26    +3676 DD  15%   | 
+   Crooks C cap $500 clamp              | net     -1257  DD $   5874 ( 55%)  max risk $    500  avg $   70  worst run $    800  ok    | ratio -0.21 | 21-23    -4974 DD  53%   | 24-26    +2835 DD  15%   | 
+   Crooks C cap $500 start again        | net      -600  DD $   4578 ( 39%)  max risk $    498  avg $   62  worst run $    753  ok    | ratio -0.13 | 21-23     -782 DD  21%   | 24-26     +181 DD  23%   | 
+   Crooks C cap $500 stop               | net      -667  DD $   1283 ( 12%)  max risk $    433  avg $   65  worst run $    753  stop  | ratio -0.52 | 21-23     -667 DD  12%   | 24-26     -957 DD  12%   | 
+   Crooks D                             | net     +6470  DD $   5452 ( 52%)  max risk $   2712  avg $   84  worst run $   3454  ok    | ratio  1.19 | 21-23    +2260 DD  52%   | 24-26    +4191 DD  42%   | 
+   Crooks D cap $500 clamp              | net      +858  DD $   4057 ( 39%)  max risk $    500  avg $   74  worst run $   2412  ok    | ratio  0.21 | 21-23    -1520 DD  39%   | 24-26    +2358 DD  27%   | 
+   Crooks D cap $500 start again        | net     -1536  DD $   5697 ( 55%)  max risk $    498  avg $   67  worst run $   1512  ok    | ratio -0.27 | 21-23    -4377 DD  50%   | 24-26    +2821 DD  16%   | 
+   Crooks D cap $500 stop               | net      -964  DD $   1361 ( 13%)  max risk $    406  avg $   68  worst run $   1319  stop  | ratio -0.71 | 21-23     -964 DD  13%   | 24-26     -451 DD  12%   | 
 
 H1 | Most profit (Most profit, Every year positive) | exit R 2.00 | 186 trades | Off: net +3087, DD $400 (3%), ratio 7.72
    Rule C split split 3 cap $500 start again | net    +15920  DD $   2789 ( 16%)  max risk $    499  avg $  273  worst run $   2584  ok    | ratio  5.71 | 21-23    +5888 DD   8%   | 24-26    +4097 DD   8%   | ELIGIBLE
@@ -592,6 +760,14 @@ H1 | Most profit (Most profit, Every year positive) | exit R 2.00 | 186 trades |
    Crooks B split 5 cap $500 clamp      | net     +3087  DD $    400 (  3%)  max risk $     50  avg $   50  worst run $    400  ok    | ratio  7.72 | 21-23    +1683 DD   3%   | 24-26    +1405 DD   4%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +3087  DD $    400 (  3%)  max risk $     50  avg $   50  worst run $    400  ok    | ratio  7.72 | 21-23    +1683 DD   3%   | 24-26    +1405 DD   4%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +3087  DD $    400 (  3%)  max risk $     50  avg $   50  worst run $    400  ok    | ratio  7.72 | 21-23    +1683 DD   3%   | 24-26    +1405 DD   4%   | ELIGIBLE
+   Crooks C                             | net     +3649  DD $    417 (  3%)  max risk $    159  avg $   53  worst run $    400  ok    | ratio  8.75 | 21-23    +1895 DD   3%   | 24-26    +1704 DD   4%   | ELIGIBLE
+   Crooks C cap $500 clamp              | net     +3649  DD $    417 (  3%)  max risk $    159  avg $   53  worst run $    400  ok    | ratio  8.75 | 21-23    +1895 DD   3%   | 24-26    +1704 DD   4%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +3649  DD $    417 (  3%)  max risk $    159  avg $   53  worst run $    400  ok    | ratio  8.75 | 21-23    +1895 DD   3%   | 24-26    +1704 DD   4%   | ELIGIBLE
+   Crooks C cap $500 stop               | net     +3649  DD $    417 (  3%)  max risk $    159  avg $   53  worst run $    400  ok    | ratio  8.75 | 21-23    +1895 DD   3%   | 24-26    +1704 DD   4%   | ELIGIBLE
+   Crooks D                             | net     +3832  DD $    475 (  4%)  max risk $    238  avg $   54  worst run $    475  ok    | ratio  8.07 | 21-23    +1983 DD   4%   | 24-26    +1709 DD   4%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +3832  DD $    475 (  4%)  max risk $    238  avg $   54  worst run $    475  ok    | ratio  8.07 | 21-23    +1983 DD   4%   | 24-26    +1709 DD   4%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +3832  DD $    475 (  4%)  max risk $    238  avg $   54  worst run $    475  ok    | ratio  8.07 | 21-23    +1983 DD   4%   | 24-26    +1709 DD   4%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +3832  DD $    475 (  4%)  max risk $    238  avg $   54  worst run $    475  ok    | ratio  8.07 | 21-23    +1983 DD   4%   | 24-26    +1709 DD   4%   | ELIGIBLE
 
 H1 | Shortest losing streak (Shortest losing streak) | exit R 2.00 | 195 trades | Off: net +1683, DD $289 (2%), ratio 5.83
    Rule C split split 3 cap $500 start again | net     +4872  DD $   2042 ( 12%)  max risk $    479  avg $  175  worst run $   1016  ok    | ratio  2.39 | 21-23    +1825 DD   7%   | 24-26     +874 DD   9%   | ELIGIBLE
@@ -619,6 +795,14 @@ H1 | Shortest losing streak (Shortest losing streak) | exit R 2.00 | 195 trades 
    Crooks B split 5 cap $500 clamp      | net     +1683  DD $    289 (  2%)  max risk $     50  avg $   50  worst run $    150  ok    | ratio  5.83 | 21-23    +1012 DD   2%   | 24-26     +670 DD   3%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +1683  DD $    289 (  2%)  max risk $     50  avg $   50  worst run $    150  ok    | ratio  5.83 | 21-23    +1012 DD   2%   | 24-26     +670 DD   3%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +1683  DD $    289 (  2%)  max risk $     50  avg $   50  worst run $    150  ok    | ratio  5.83 | 21-23    +1012 DD   2%   | 24-26     +670 DD   3%   | ELIGIBLE
+   Crooks C                             | net     +1664  DD $    311 (  3%)  max risk $     73  avg $   50  worst run $    150  ok    | ratio  5.36 | 21-23    +1015 DD   2%   | 24-26     +650 DD   3%   | ELIGIBLE
+   Crooks C cap $500 clamp              | net     +1664  DD $    311 (  3%)  max risk $     73  avg $   50  worst run $    150  ok    | ratio  5.36 | 21-23    +1015 DD   2%   | 24-26     +650 DD   3%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +1664  DD $    311 (  3%)  max risk $     73  avg $   50  worst run $    150  ok    | ratio  5.36 | 21-23    +1015 DD   2%   | 24-26     +650 DD   3%   | ELIGIBLE
+   Crooks C cap $500 stop               | net     +1664  DD $    311 (  3%)  max risk $     73  avg $   50  worst run $    150  ok    | ratio  5.36 | 21-23    +1015 DD   2%   | 24-26     +650 DD   3%   | ELIGIBLE
+   Crooks D                             | net     +1687  DD $    336 (  3%)  max risk $    102  avg $   51  worst run $    150  ok    | ratio  5.02 | 21-23    +1062 DD   2%   | 24-26     +626 DD   3%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +1687  DD $    336 (  3%)  max risk $    102  avg $   51  worst run $    150  ok    | ratio  5.02 | 21-23    +1062 DD   2%   | 24-26     +626 DD   3%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +1687  DD $    336 (  3%)  max risk $    102  avg $   51  worst run $    150  ok    | ratio  5.02 | 21-23    +1062 DD   2%   | 24-26     +626 DD   3%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +1687  DD $    336 (  3%)  max risk $    102  avg $   51  worst run $    150  ok    | ratio  5.02 | 21-23    +1062 DD   2%   | 24-26     +626 DD   3%   | ELIGIBLE
 
 H1 | Shortest losing streak - indicator only (Shortest losing streak - indicator only) | exit R 2.00 | 228 trades | Off: net +2620, DD $373 (4%), ratio 7.02
    Rule C split split 3 cap $500 start again | net    +14990  DD $   2542 ( 10%)  max risk $    493  avg $  198  worst run $   1970  ok    | ratio  5.90 | 21-23    +1880 DD   4%   | 24-26    +7604 DD  10%   | ELIGIBLE
@@ -646,6 +830,14 @@ H1 | Shortest losing streak - indicator only (Shortest losing streak - indicator
    Crooks B split 5 cap $500 clamp      | net     +2620  DD $    373 (  4%)  max risk $     50  avg $   50  worst run $    300  ok    | ratio  7.02 | 21-23     +725 DD   4%   | 24-26    +1895 DD   3%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +2620  DD $    373 (  4%)  max risk $     50  avg $   50  worst run $    300  ok    | ratio  7.02 | 21-23     +725 DD   4%   | 24-26    +1895 DD   3%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +2620  DD $    373 (  4%)  max risk $     50  avg $   50  worst run $    300  ok    | ratio  7.02 | 21-23     +725 DD   4%   | 24-26    +1895 DD   3%   | ELIGIBLE
+   Crooks C                             | net     +2942  DD $    331 (  3%)  max risk $    118  avg $   52  worst run $    300  ok    | ratio  8.88 | 21-23    +1078 DD   3%   | 24-26    +1863 DD   3%   | ELIGIBLE
+   Crooks C cap $500 clamp              | net     +2942  DD $    331 (  3%)  max risk $    118  avg $   52  worst run $    300  ok    | ratio  8.88 | 21-23    +1078 DD   3%   | 24-26    +1863 DD   3%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +2942  DD $    331 (  3%)  max risk $    118  avg $   52  worst run $    300  ok    | ratio  8.88 | 21-23    +1078 DD   3%   | 24-26    +1863 DD   3%   | ELIGIBLE
+   Crooks C cap $500 stop               | net     +2942  DD $    331 (  3%)  max risk $    118  avg $   52  worst run $    300  ok    | ratio  8.88 | 21-23    +1078 DD   3%   | 24-26    +1863 DD   3%   | ELIGIBLE
+   Crooks D                             | net     +3170  DD $    385 (  4%)  max risk $    127  avg $   53  worst run $    375  ok    | ratio  8.24 | 21-23    +1046 DD   4%   | 24-26    +2124 DD   3%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +3170  DD $    385 (  4%)  max risk $    127  avg $   53  worst run $    375  ok    | ratio  8.24 | 21-23    +1046 DD   4%   | 24-26    +2124 DD   3%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +3170  DD $    385 (  4%)  max risk $    127  avg $   53  worst run $    375  ok    | ratio  8.24 | 21-23    +1046 DD   4%   | 24-26    +2124 DD   3%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +3170  DD $    385 (  4%)  max risk $    127  avg $   53  worst run $    375  ok    | ratio  8.24 | 21-23    +1046 DD   4%   | 24-26    +2124 DD   3%   | ELIGIBLE
 
 H1 | Longest winning streak (Longest winning streak) | exit R 2.00 | 261 trades | Off: net +1385, DD $390 (4%), ratio 3.55
    Rule C split split 3 cap $500 start again | net     +4897  DD $   1268 ( 12%)  max risk $    433  avg $  132  worst run $    752  ok    | ratio  3.86 | 21-23     +968 DD   6%   | 24-26    +1526 DD   6%   | ELIGIBLE
@@ -673,6 +865,14 @@ H1 | Longest winning streak (Longest winning streak) | exit R 2.00 | 261 trades 
    Crooks B split 5 cap $500 clamp      | net     +1385  DD $    390 (  4%)  max risk $     50  avg $   50  worst run $    300  ok    | ratio  3.55 | 21-23     +614 DD   3%   | 24-26     +771 DD   4%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +1385  DD $    390 (  4%)  max risk $     50  avg $   50  worst run $    300  ok    | ratio  3.55 | 21-23     +614 DD   3%   | 24-26     +771 DD   4%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +1385  DD $    390 (  4%)  max risk $     50  avg $   50  worst run $    300  ok    | ratio  3.55 | 21-23     +614 DD   3%   | 24-26     +771 DD   4%   | ELIGIBLE
+   Crooks C                             | net     +1448  DD $    380 (  4%)  max risk $    147  avg $   51  worst run $    300  ok    | ratio  3.81 | 21-23     +662 DD   3%   | 24-26     +786 DD   4%   | ELIGIBLE
+   Crooks C cap $500 clamp              | net     +1448  DD $    380 (  4%)  max risk $    147  avg $   51  worst run $    300  ok    | ratio  3.81 | 21-23     +662 DD   3%   | 24-26     +786 DD   4%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +1448  DD $    380 (  4%)  max risk $    147  avg $   51  worst run $    300  ok    | ratio  3.81 | 21-23     +662 DD   3%   | 24-26     +786 DD   4%   | ELIGIBLE
+   Crooks C cap $500 stop               | net     +1448  DD $    380 (  4%)  max risk $    147  avg $   51  worst run $    300  ok    | ratio  3.81 | 21-23     +662 DD   3%   | 24-26     +786 DD   4%   | ELIGIBLE
+   Crooks D                             | net     +1433  DD $    597 (  6%)  max risk $    274  avg $   52  worst run $    375  ok    | ratio  2.40 | 21-23     +645 DD   3%   | 24-26     +788 DD   6%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +1433  DD $    597 (  6%)  max risk $    274  avg $   52  worst run $    375  ok    | ratio  2.40 | 21-23     +645 DD   3%   | 24-26     +788 DD   6%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +1433  DD $    597 (  6%)  max risk $    274  avg $   52  worst run $    375  ok    | ratio  2.40 | 21-23     +645 DD   3%   | 24-26     +788 DD   6%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +1433  DD $    597 (  6%)  max risk $    274  avg $   52  worst run $    375  ok    | ratio  2.40 | 21-23     +645 DD   3%   | 24-26     +788 DD   6%   | ELIGIBLE
 
 H1 | Highest win rate (Highest win rate) | exit R 2.00 | 200 trades | Off: net +1707, DD $301 (3%), ratio 5.66
    Rule C split split 3 cap $500 start again | net     +5350  DD $   2096 ( 12%)  max risk $    491  avg $  191  worst run $   1044  ok    | ratio  2.55 | 21-23    +2151 DD  10%   | 24-26     +888 DD   8%   | ELIGIBLE
@@ -700,6 +900,14 @@ H1 | Highest win rate (Highest win rate) | exit R 2.00 | 200 trades | Off: net +
    Crooks B split 5 cap $500 clamp      | net     +1707  DD $    301 (  3%)  max risk $     50  avg $   50  worst run $    200  ok    | ratio  5.66 | 21-23    +1081 DD   3%   | 24-26     +626 DD   3%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +1707  DD $    301 (  3%)  max risk $     50  avg $   50  worst run $    200  ok    | ratio  5.66 | 21-23    +1081 DD   3%   | 24-26     +626 DD   3%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +1707  DD $    301 (  3%)  max risk $     50  avg $   50  worst run $    200  ok    | ratio  5.66 | 21-23    +1081 DD   3%   | 24-26     +626 DD   3%   | ELIGIBLE
+   Crooks C                             | net     +1710  DD $    311 (  3%)  max risk $     76  avg $   50  worst run $    200  ok    | ratio  5.50 | 21-23    +1105 DD   3%   | 24-26     +605 DD   3%   | ELIGIBLE
+   Crooks C cap $500 clamp              | net     +1710  DD $    311 (  3%)  max risk $     76  avg $   50  worst run $    200  ok    | ratio  5.50 | 21-23    +1105 DD   3%   | 24-26     +605 DD   3%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +1710  DD $    311 (  3%)  max risk $     76  avg $   50  worst run $    200  ok    | ratio  5.50 | 21-23    +1105 DD   3%   | 24-26     +605 DD   3%   | ELIGIBLE
+   Crooks C cap $500 stop               | net     +1710  DD $    311 (  3%)  max risk $     76  avg $   50  worst run $    200  ok    | ratio  5.50 | 21-23    +1105 DD   3%   | 24-26     +605 DD   3%   | ELIGIBLE
+   Crooks D                             | net     +1617  DD $    373 (  3%)  max risk $    117  avg $   51  worst run $    252  ok    | ratio  4.34 | 21-23    +1036 DD   3%   | 24-26     +581 DD   3%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +1617  DD $    373 (  3%)  max risk $    117  avg $   51  worst run $    252  ok    | ratio  4.34 | 21-23    +1036 DD   3%   | 24-26     +581 DD   3%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +1617  DD $    373 (  3%)  max risk $    117  avg $   51  worst run $    252  ok    | ratio  4.34 | 21-23    +1036 DD   3%   | 24-26     +581 DD   3%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +1617  DD $    373 (  3%)  max risk $    117  avg $   51  worst run $    252  ok    | ratio  4.34 | 21-23    +1036 DD   3%   | 24-26     +581 DD   3%   | ELIGIBLE
 
 H1 | Most trades a day (Most trades a day) | exit R 3.00 | 542 trades | Off: net +3143, DD $952 (7%), ratio 3.30
    Rule C split split 3 cap $500 start again | net     +5875  DD $   5979 ( 33%)  max risk $    500  avg $  165  worst run $   5979  ok    | ratio  0.98 | 21-23     +852 DD  28%   | 24-26    +6131 DD  34%   | ELIGIBLE
@@ -727,6 +935,14 @@ H1 | Most trades a day (Most trades a day) | exit R 3.00 | 542 trades | Off: net
    Crooks B split 5 cap $500 clamp      | net     +3210  DD $    970 (  8%)  max risk $     62  avg $   50  worst run $    800  ok    | ratio  3.31 | 21-23    +1950 DD   6%   | 24-26    +1234 DD   8%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +3210  DD $    970 (  8%)  max risk $     62  avg $   50  worst run $    800  ok    | ratio  3.31 | 21-23    +1950 DD   6%   | 24-26    +1234 DD   8%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +3210  DD $    970 (  8%)  max risk $     62  avg $   50  worst run $    800  ok    | ratio  3.31 | 21-23    +1950 DD   6%   | 24-26    +1234 DD   8%   | ELIGIBLE
+   Crooks C                             | net     +6143  DD $   1520 ( 12%)  max risk $    459  avg $   57  worst run $    800  ok    | ratio  4.04 | 21-23    +2965 DD  12%   | 24-26    +2951 DD   9%   | ELIGIBLE
+   Crooks C cap $500 clamp              | net     +6143  DD $   1520 ( 12%)  max risk $    459  avg $   57  worst run $    800  ok    | ratio  4.04 | 21-23    +2965 DD  12%   | 24-26    +2951 DD   9%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +6143  DD $   1520 ( 12%)  max risk $    459  avg $   57  worst run $    800  ok    | ratio  4.04 | 21-23    +2965 DD  12%   | 24-26    +2951 DD   9%   | ELIGIBLE
+   Crooks C cap $500 stop               | net     +6143  DD $   1520 ( 12%)  max risk $    459  avg $   57  worst run $    800  ok    | ratio  4.04 | 21-23    +2965 DD  12%   | 24-26    +2951 DD   9%   | ELIGIBLE
+   Crooks D                             | net     +7328  DD $   5429 ( 33%)  max risk $   1760  avg $   71  worst run $   2478  ok    | ratio  1.35 | 21-23    +3961 DD   9%   | 24-26    +3272 DD  43%   | 
+   Crooks D cap $500 clamp              | net     +5362  DD $   3705 ( 22%)  max risk $    500  avg $   66  worst run $   1667  ok    | ratio  1.45 | 21-23    +3961 DD   9%   | 24-26    +1306 DD  29%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +5943  DD $   2012 ( 12%)  max risk $    463  avg $   61  worst run $   1667  ok    | ratio  2.95 | 21-23    +3961 DD   9%   | 24-26    +1887 DD  16%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +4868  DD $   1851 ( 11%)  max risk $    463  avg $   61  worst run $   1667  stop  | ratio  2.63 | 21-23    +3961 DD   9%   | 24-26     +811 DD  15%   | ELIGIBLE
 
 H1 | Smoothest (Smoothest) | exit R 2.00 | 208 trades | Off: net +3133, DD $402 (3%), ratio 7.79
    Rule C split split 3 cap $500 start again | net    +14582  DD $   3375 ( 15%)  max risk $    467  avg $  299  worst run $   2936  ok    | ratio  4.32 | 21-23    +6614 DD  15%   | 24-26    +2993 DD  16%   | ELIGIBLE
@@ -754,6 +970,14 @@ H1 | Smoothest (Smoothest) | exit R 2.00 | 208 trades | Off: net +3133, DD $402 
    Crooks B split 5 cap $500 clamp      | net     +3133  DD $    402 (  3%)  max risk $     50  avg $   50  worst run $    350  ok    | ratio  7.79 | 21-23    +2033 DD   3%   | 24-26    +1099 DD   4%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +3133  DD $    402 (  3%)  max risk $     50  avg $   50  worst run $    350  ok    | ratio  7.79 | 21-23    +2033 DD   3%   | 24-26    +1099 DD   4%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +3133  DD $    402 (  3%)  max risk $     50  avg $   50  worst run $    350  ok    | ratio  7.79 | 21-23    +2033 DD   3%   | 24-26    +1099 DD   4%   | ELIGIBLE
+   Crooks C                             | net     +3412  DD $    402 (  3%)  max risk $    146  avg $   52  worst run $    350  ok    | ratio  8.49 | 21-23    +2149 DD   3%   | 24-26    +1213 DD   3%   | ELIGIBLE
+   Crooks C cap $500 clamp              | net     +3412  DD $    402 (  3%)  max risk $    146  avg $   52  worst run $    350  ok    | ratio  8.49 | 21-23    +2149 DD   3%   | 24-26    +1213 DD   3%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +3412  DD $    402 (  3%)  max risk $    146  avg $   52  worst run $    350  ok    | ratio  8.49 | 21-23    +2149 DD   3%   | 24-26    +1213 DD   3%   | ELIGIBLE
+   Crooks C cap $500 stop               | net     +3412  DD $    402 (  3%)  max risk $    146  avg $   52  worst run $    350  ok    | ratio  8.49 | 21-23    +2149 DD   3%   | 24-26    +1213 DD   3%   | ELIGIBLE
+   Crooks D                             | net     +3898  DD $    495 (  4%)  max risk $    239  avg $   54  worst run $    427  ok    | ratio  7.88 | 21-23    +2050 DD   4%   | 24-26    +1707 DD   4%   | ELIGIBLE
+   Crooks D cap $500 clamp              | net     +3898  DD $    495 (  4%)  max risk $    239  avg $   54  worst run $    427  ok    | ratio  7.88 | 21-23    +2050 DD   4%   | 24-26    +1707 DD   4%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +3898  DD $    495 (  4%)  max risk $    239  avg $   54  worst run $    427  ok    | ratio  7.88 | 21-23    +2050 DD   4%   | 24-26    +1707 DD   4%   | ELIGIBLE
+   Crooks D cap $500 stop               | net     +3898  DD $    495 (  4%)  max risk $    239  avg $   54  worst run $    427  ok    | ratio  7.88 | 21-23    +2050 DD   4%   | 24-26    +1707 DD   4%   | ELIGIBLE
 
 H1 | Simplest (Simplest) | exit R 2.00 | 498 trades | Off: net +2557, DD $1158 (11%), ratio 2.21
    Rule C split split 3 cap $500 start again | net     +1289  DD $   3279 ( 29%)  max risk $    494  avg $   98  worst run $   2106  ok    | ratio  0.39 | 21-23     -526 DD  29%   | 24-26    +4729 DD  29%   | 
@@ -781,3 +1005,11 @@ H1 | Simplest (Simplest) | exit R 2.00 | 498 trades | Off: net +2557, DD $1158 (
    Crooks B split 5 cap $500 clamp      | net     +2508  DD $   1491 ( 14%)  max risk $    140  avg $   52  worst run $    622  ok    | ratio  1.68 | 21-23    +1048 DD  14%   | 24-26    +1421 DD   6%   | ELIGIBLE
    Crooks B split 5 cap $500 start again | net     +2508  DD $   1491 ( 14%)  max risk $    140  avg $   52  worst run $    622  ok    | ratio  1.68 | 21-23    +1048 DD  14%   | 24-26    +1421 DD   6%   | ELIGIBLE
    Crooks B split 5 cap $500 stop       | net     +2508  DD $   1491 ( 14%)  max risk $    140  avg $   52  worst run $    622  ok    | ratio  1.68 | 21-23    +1048 DD  14%   | 24-26    +1421 DD   6%   | ELIGIBLE
+   Crooks C                             | net     +5112  DD $   2571 ( 20%)  max risk $   1218  avg $   67  worst run $   1077  ok    | ratio  1.99 | 21-23    +2304 DD  12%   | 24-26    +2207 DD   7%   | 
+   Crooks C cap $500 clamp              | net     +3507  DD $   2343 ( 19%)  max risk $    500  avg $   65  worst run $    850  ok    | ratio  1.50 | 21-23    +1861 DD  12%   | 24-26    +2207 DD   7%   | ELIGIBLE
+   Crooks C cap $500 start again        | net     +2026  DD $   1991 ( 17%)  max risk $    440  avg $   61  worst run $    600  ok    | ratio  1.02 | 21-23     +152 DD  13%   | 24-26    +2207 DD   7%   | ELIGIBLE
+   Crooks C cap $500 stop               | net       -72  DD $   1183 ( 11%)  max risk $    294  avg $   61  worst run $    594  stop  | ratio -0.06 | 21-23      -72 DD  11%   | 24-26    +2207 DD   7%   | 
+   Crooks D                             | net     +5959  DD $   2830 ( 22%)  max risk $   1415  avg $   71  worst run $   1529  ok    | ratio  2.11 | 21-23    +3423 DD  22%   | 24-26    +2535 DD  15%   | 
+   Crooks D cap $500 clamp              | net     +3991  DD $   2298 ( 18%)  max risk $    500  avg $   68  worst run $   1494  ok    | ratio  1.74 | 21-23    +2122 DD  18%   | 24-26    +1869 DD  14%   | ELIGIBLE
+   Crooks D cap $500 start again        | net     +2746  DD $   1458 ( 13%)  max risk $    430  avg $   62  worst run $   1044  ok    | ratio  1.88 | 21-23    +1322 DD  13%   | 24-26    +1425 DD  10%   | ELIGIBLE
+   Crooks D cap $500 stop               | net        -9  DD $   1102 ( 10%)  max risk $    334  avg $   68  worst run $    712  stop  | ratio -0.01 | 21-23       -9 DD  10%   | 24-26     +595 DD   9%   | 

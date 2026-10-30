@@ -42,6 +42,12 @@ CONFIGS = [
     ('dayStopR2', dict(dayStopR=2.0), dict(InpDayStopR=2)),
     ('maxFills2', dict(maxFills=2), dict(InpMaxFills=2)),
     ('chop+ema+halfCap', dict(chopOn=True, emaOn=True, halfCap=True), dict(InpChopOn=1, InpEmaOn=1, InpHalfCap=1)),
+    ('max 3 ATR from VWAP', dict(maxVwOn=True, maxVwDist=3.0), dict(InpMaxVwOn=1, InpMaxVwDist=3.0)),
+    ('max distance on, default value (both sides)', dict(maxVwOn=True), dict(InpMaxVwOn=1)),
+    ('max 1.5 ATR + min 0.5 ATR', dict(maxVwOn=True, maxVwDist=1.5, minVwOn=True, minVwAtr=0.5), dict(InpMaxVwOn=1, InpMaxVwDist=1.5, InpMinVwOn=1, InpMinVwAtr=0.5)),
+    ('max price 2.0', dict(maxVwOn=True, maxVwDist=2.0, maxVwUnit='price'), dict(InpMaxVwOn=1, InpMaxVwDist=2.0, InpMaxVwUnit=1)),
+    ('max price 0.0015', dict(maxVwOn=True, maxVwDist=0.0015, maxVwUnit='price'), dict(InpMaxVwOn=1, InpMaxVwDist=0.0015, InpMaxVwUnit=1)),
+    ('max price 40 + noChase', dict(maxVwOn=True, maxVwDist=40.0, maxVwUnit='price', noChase=True), dict(InpMaxVwOn=1, InpMaxVwDist=40.0, InpMaxVwUnit=1, InpNoChase=1)),
 ]
 
 
