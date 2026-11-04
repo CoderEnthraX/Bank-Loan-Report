@@ -28,9 +28,10 @@
 //| v3.4: Crooks A and Crooks B loss recovery.                       |
 //| v3.5: Crooks at exit TP1: half banks the loss, rest runs to TP2. |
 //| v3.6: Crooks C and D; optional max distance from the VWAP.       |
+//| v3.7: TP1-rule stop choices, Crooks C over N wins, lot rounding. |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.60"
+#property version   "3.70"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -349,6 +350,7 @@ double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP =
 double   crkL = 0; int crkN = 0; bool crkRec = false;   // Crooks: $ loss to win back, closed trades in the cycle, the open trade is a recovery trade
 bool     crkW = false;                                   // Crooks C: the last closed trade was a win
 int      crkP = 0;                                       // Crooks C over N wins: parts of the loss still to win back (0 = not set yet)
+bool     exT1MvPend = false;                              // Crooks TP1 rule: a stop move before TP1 still has to reach the broker
 bool     exT1 = false, exT1Half = false, exT1Be = false;   // Crooks TP1 rule: this trade, its TP1 half is booked, the rest's stop is at the entry
 double   exT1Stop = 0, exT1Tp1 = 0, exT1Tp2 = 0;              // its stop and its own TP1 / TP2 (the engine's levels change with its next setup)
 double   exT1Tight = 0, exT1Entry = 0;                    // its tight stop (TP1 / 2) and its entry level (bid chart)
@@ -836,8 +838,9 @@ double LotsFor(double riskAmt, double stopDist, double entry, bool isL, double l
    bool nearOk = InpLotRound == LOTR_NEAR && vNear > vDown + step * 0.5 && !(InpCapOn && vNear * lossPerLot > InpHardCap + 1e-9) && vNear <= vLev + 1e-9;
    v = nearOk ? vNear : vDown;
    // below the broker's minimum lot: trade the minimum (unless it breaks the hard cap or the leverage limit) or skip
-   if(v < vmin - 1e-12 && v0 > 0)
-      v = (InpSmallLot == SMALLL_MIN && !(InpCapOn && vmin * lossPerLot > InpHardCap + 1e-9) && vmin <= vLev + 1e-9) ? vmin : 0;
+   double vMinT = MathCeil(vmin / step - 1e-9) * step;         // the smallest multiple of the lot step the broker accepts
+   if(v < vMinT - 1e-12 && v0 > 0)
+      v = (InpSmallLot == SMALLL_MIN && !(InpCapOn && vMinT * lossPerLot > InpHardCap + 1e-9) && vMinT <= vLev + 1e-9) ? vMinT : 0;
    v = MathMin(v, vmax);
    double margin;
    ENUM_ORDER_TYPE ot = isL ? ORDER_TYPE_BUY : ORDER_TYPE_SELL;
@@ -902,7 +905,7 @@ void SetExits(bool withTarget)
    if(exL) { if(bid - sl < minD) sl = FloorTick(bid - minD); if(tp > 0 && tp - bid < minD) tp = CeilTick(bid + minD); }
    else    { if(sl - ask < minD) sl = CeilTick(ask + minD); if(tp > 0 && ask - tp < minD) tp = FloorTick(ask - minD); }
    bool same = MathAbs(PositionGetDouble(POSITION_SL) - sl) < TickSize() * 0.5 && MathAbs(PositionGetDouble(POSITION_TP) - tp) < TickSize() * 0.5;
-   if(same || trade.PositionModify(tk, sl, tp)) { if(exT1 && exT1Half) exT1Be = true; }
+   if(same || trade.PositionModify(tk, sl, tp)) { if(exT1 && exT1Half) exT1Be = true; if(exT1 && !exT1Half) exT1MvPend = false; }
    else Print("Stop/target update rejected (", trade.ResultRetcodeDescription(), "): SL ", DoubleToString(sl, _Digits), " TP ", DoubleToString(tp, _Digits));
 }
 
@@ -915,8 +918,8 @@ void T1StopMove()
    bool prof = exL ? c1 > exT1Entry : c1 < exT1Entry;
    double tgt = exT1Stop;
    if(InpCrkT1Stop == T1S_FILL || (InpCrkT1Stop == T1S_PT && prof)) tgt = exT1Tight;
-   else if(InpCrkT1Stop == T1S_PBE && prof) tgt = NormalizeDouble(op, _Digits);
-   if(exL ? tgt > exT1Stop : tgt < exT1Stop) { exT1Stop = tgt; SetExits(true); }
+   else if(InpCrkT1Stop == T1S_PBE && prof) tgt = exL ? FloorTick(exT1Entry + TickSize() * 0.001) : CeilTick(exT1Entry - TickSize() * 0.001 + Spr());   // the chart entry, like the strategy
+   if(exL ? tgt > exT1Stop : tgt < exT1Stop) { exT1Stop = tgt; exT1MvPend = true; SetExits(true); }
 }
 
 //--- Crooks TP1 rule: close half at market (rounded UP to the lot step, so at least half banks the recovery amount); the rest's stop then moves to the entry
@@ -1096,7 +1099,7 @@ void UpdateTable()
    string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRC ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") : (crkL > 0 ? " | base, waiting for a win" : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.6", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v3.7", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -1151,7 +1154,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    double sprNow = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
    exCostPx = InpEarnBack && tv > 0 ? InpCommLot / (tv / ts) + sprNow : 0;
    exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot);
-   exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1Stop = exT1 ? T1Stop0Px(isL, t1d) : 0; exT1Tight = exT1 ? T1StopPx(isL, t1d) : 0; exT1Entry = lim;
+   exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = exT1 ? T1Stop0Px(isL, t1d) : 0; exT1Tight = exT1 ? T1StopPx(isL, t1d) : 0; exT1Entry = lim;
    exT1Tp1 = t1; exT1Tp2 = t2; exKeepSl = 0;
    for(int q = 0; q < 3; q++) pDone[q] = false;
    CancelPending();
@@ -1321,6 +1324,7 @@ void ManagePartials()
    {
       // Crooks TP1 rule: half closes at TP1 and banks the whole recovery amount, then the rest's stop moves to the entry (it runs to TP2)
       if(exT1Half) { if(!exT1Be) SetExits(true); return; }          // retry the move to the entry until the broker accepts it
+      if(exT1MvPend) SetExits(true);                                 // retry a stop move before TP1 until the broker accepts it
       if(exL ? px >= exT1Tp1 + exCostPx : px <= exT1Tp1 - exCostPx) T1Half(tk, vol);
       return;
    }
@@ -1347,7 +1351,7 @@ void ResetEngine()
    st = 0; armBar = -1; fillBar = -1; lastExit = -1; lastFill = -1; lastDir = 0;
    lim = 0; stp = 0; stp0 = 0; trRisk = 0; t1 = 0; t2 = 0; t3 = 0; t4 = 0; tF = 0; tpHit = 0; trHalf = false; trGhost = false;
    totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true; gKzOk = true;
-   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false; exT1 = false; exT1Half = false; exT1Be = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0; exKeepSl = 0;
+   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false; exT1 = false; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0; exKeepSl = 0;
    sigN = 0; takenN = 0; skipN = 0; missN = 0; skipWhy = "";
    gVirt = false; gDayPend = false; gPrevT = 0; capStop = false;
    for(int q = 0; q < 3; q++) pDone[q] = false;

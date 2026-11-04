@@ -1113,7 +1113,7 @@ if evArm
             q := qRaw
         else if smallMode == SMALL_MIN
             float qMin = stepLots * unitsPer
-            q := capOn and qMin * perLoss > hardCap ? 0.0 : qMin
+            q := (capOn and qMin * perLoss > hardCap) or (leverage > 0 and unitVal > 0 and qMin > strategy.equity * leverage / unitVal) ? 0.0 : qMin
     skipWhy := exState != 0 or pos != 0 ? "still in a trade" : newsBlock or flatNow ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : q <= 0 ? "size 0" : ""
     if skipWhy == ""
         strategy.cancel_all()
