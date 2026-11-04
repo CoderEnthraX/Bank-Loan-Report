@@ -29,9 +29,10 @@
 //| v3.5: Crooks at exit TP1: half banks the loss, rest runs to TP2. |
 //| v3.6: Crooks C and D; optional max distance from the VWAP.       |
 //| v3.7: TP1-rule stop choices, Crooks C over N wins, lot rounding. |
+//| v3.7.1: server clock option for EU summer time (e.g. FxPro).     |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.70"
+#property version   "3.71"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -166,7 +167,8 @@ input ENUM_VW_UNIT InpMaxVwUnit = VWU_ATR; //   ...measured in ATR or in price
 
 input group "DAYS AND HOURS (YOUR time zone)"
 enum ENUM_SRV_TZ { SRV_NYCLOSE = 0,   // Auto: GMT+2 winter / GMT+3 US summer time (most FX brokers)
-                   SRV_FIXED   = 1 }; // Fixed: the GMT offset below
+                   SRV_FIXED   = 1,   // Fixed: the GMT offset below
+                   SRV_EET     = 2 }; // Auto: GMT+2 winter / GMT+3 EU summer time (EET brokers, e.g. FxPro)
 input ENUM_SRV_TZ InpServerTz = SRV_NYCLOSE; // Broker server clock
 input double InpServerGMT = 2.0;   // Broker server time zone if fixed (GMT +h; check Market Watch time)
 input double InpUserGMT   = 5.5;   // Your time zone (GMT +h; India = 5.5)
@@ -369,10 +371,17 @@ int NthSunday(int y, int mon, int n)
    MqlDateTime f; TimeToStruct(StructToTime(d), f);
    return 1 + (7 - f.day_of_week) % 7 + 7 * (n - 1);
 }
+int LastSunday(int y, int mon) { int d = NthSunday(y, mon, 1); while(d + 7 <= 31) d += 7; return d; }   // March / October (31 days)
 double SrvGMT(datetime server)
 {
    if(InpServerTz == SRV_FIXED) return InpServerGMT;
    MqlDateTime d; TimeToStruct(server, d);
+   if(InpServerTz == SRV_EET)                         // EU summer time: last Sunday of March to last Sunday of October
+   {
+      int es = LastSunday(d.year, 3), ee = LastSunday(d.year, 10);
+      bool sum = (d.mon > 3 && d.mon < 10) || (d.mon == 3 && d.day >= es) || (d.mon == 10 && d.day < ee);
+      return sum ? 3.0 : 2.0;
+   }
    int ds = NthSunday(d.year, 3, 2), de = NthSunday(d.year, 11, 1);
    bool dst = (d.mon > 3 && d.mon < 11) || (d.mon == 3 && d.day >= ds) || (d.mon == 11 && d.day < de);
    return dst ? 3.0 : 2.0;
@@ -1099,7 +1108,7 @@ void UpdateTable()
    string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRC ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") : (crkL > 0 ? " | base, waiting for a win" : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.7", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v3.7.1", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);

@@ -31,6 +31,7 @@
 //| v3.5: Crooks at exit TP1: half banks the loss, rest runs to TP2. |
 //| v3.6: Crooks C and D; optional max distance from the VWAP.       |
 //| v3.7: TP1-rule stop choices, Crooks C over N wins, lot rounding. |
+//| v3.7.1: server clock option for EU summer time (e.g. FxPro).     |
 //+------------------------------------------------------------------+
 
 
@@ -168,7 +169,8 @@ enum ENUM_VW_ANCHOR { VW_SESSION = 0, // Session
 
   
 enum ENUM_SRV_TZ { SRV_NYCLOSE = 0,   // Auto: GMT+2 winter / GMT+3 US summer time (most FX brokers)
-                   SRV_FIXED   = 1 }; // Fixed: the GMT offset below
+                   SRV_FIXED   = 1,   // Fixed: the GMT offset below
+                   SRV_EET     = 2 }; // Auto: GMT+2 winter / GMT+3 EU summer time (EET brokers, e.g. FxPro)
  ENUM_SRV_TZ InpServerTz = SRV_NYCLOSE; // Broker server clock
  double InpServerGMT = 2.0;   // Broker server time zone if fixed (GMT +h; check Market Watch time)
  double InpUserGMT   = 5.5;   // Your time zone (GMT +h; India = 5.5)
@@ -371,10 +373,17 @@ int NthSunday(int y, int mon, int n)
    MqlDateTime f; TimeToStruct(StructToTime(d), f);
    return 1 + (7 - mq_dot(f).day_of_week) % 7 + 7 * (n - 1);
 }
+int LastSunday(int y, int mon) { int d = NthSunday(y, mon, 1); while(d + 7 <= 31) d += 7; return d; }   // March / October (31 days)
 double SrvGMT(datetime server)
 {
    if(InpServerTz == SRV_FIXED) return InpServerGMT;
    MqlDateTime d; TimeToStruct(server, d);
+   if(InpServerTz == SRV_EET)                         // EU summer time: last Sunday of March to last Sunday of October
+   {
+      int es = LastSunday(mq_dot(d).year, 3), ee = LastSunday(mq_dot(d).year, 10);
+      bool sum = (mq_dot(d).mon > 3 && mq_dot(d).mon < 10) || (mq_dot(d).mon == 3 && mq_dot(d).day >= es) || (mq_dot(d).mon == 10 && mq_dot(d).day < ee);
+      return sum ? 3.0 : 2.0;
+   }
    int ds = NthSunday(mq_dot(d).year, 3, 2), de = NthSunday(mq_dot(d).year, 11, 1);
    bool dst = (mq_dot(d).mon > 3 && mq_dot(d).mon < 11) || (mq_dot(d).mon == 3 && mq_dot(d).day >= ds) || (mq_dot(d).mon == 11 && mq_dot(d).day < de);
    return dst ? 3.0 : 2.0;
@@ -1101,7 +1110,7 @@ void UpdateTable()
    string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRC ? (kRec ? " | recovery trade"_mq + (CrkNp() > 1 ? ", part "_mq + IntegerToString(CrkNp() - CrkParts() + 1) + " of "_mq + IntegerToString(CrkNp()) : ""_mq) : (crkL > 0 ? " | base, waiting for a win"_mq : " | base"_mq)) : " | trade "_mq + IntegerToString(crkN + 1) + (kRec ? " recovery"_mq : " base"_mq)) + (InpRec == REC_CRB ? " | split "_mq + IntegerToString(InpCSplit) : ""_mq)
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2"_mq : " | TP1 rule, stop "_mq + DoubleToString(exT1Stop, _Digits)) : ""_mq);
    string rec = InpRec == REC_OFF ? "off"_mq : (isC ? DoubleToString(carried, 2) + " | split "_mq + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | "_mq + IntegerToString(recLosses) + " losses in a row"_mq);
-   TblAdd("AUCTION RETEST"_mq, "EA v3.7"_mq, white, ((color)14061373));
+   TblAdd("AUCTION RETEST"_mq, "EA v3.7.1"_mq, white, ((color)14061373));
    TblAdd("STATE"_mq, gStateTxt, white, act ? (st == 2 ? ((color)5287756) : ((color)4536050)) : (armed ? ((color)39167) : ((color)7037021)));
    TblAdd("ENTRY / STOP"_mq, has ? DoubleToString(lim, _Digits) + " / "_mq + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)"_mq : ""_mq) : "-"_mq, white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP"_mq + IntegerToString(xk) + ")"_mq, tps, posC, cell);
@@ -1454,13 +1463,13 @@ void OnTick()
 }
 //+------------------------------------------------------------------+
 
-#line 1425 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
+#line 1434 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
 typedef void (*mq_t_OnTick)();
 static mq_t_OnTick mq_chk_OnTick = &OnTick;
-#line 1410 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
+#line 1419 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
 typedef void (*mq_t_OnDeinit)(const int);
 static mq_t_OnDeinit mq_chk_OnDeinit = &OnDeinit;
-#line 1417 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
+#line 1426 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
 typedef void (*mq_t_OnChartEvent)(const int, const mql_long&, const double&, const string&);
 static mq_t_OnChartEvent mq_chk_OnChartEvent = &OnChartEvent;
 #line 1 "<rt-wrapper>"

@@ -109,7 +109,7 @@ orders (buy limits and short stops/targets are shifted by the live spread so the
 the same rules on the broker's own data feed and server-midnight session, so expect small differences where the broker's candles differ from
 TradingView's.
 
-EA setup: set **Broker server clock** (default: auto GMT+2 / GMT+3 with US daylight saving, which most FX brokers use; or a fixed offset) and
+EA setup: set **Broker server clock** (default: auto GMT+2 / GMT+3 with US daylight saving, which most FX brokers use; **auto with EU summer time** for brokers on Eastern European time such as FxPro, whose clock changes on the last Sundays of March and October; or a fixed offset; with the wrong choice the days, hours, kill zones, news and force-close times are one hour off for 1-3 weeks a year) and
 **Your time zone** (India = 5.5) so the day filter, trading hours, force-close and news times match your clock. The EA warms the engine up on
 the last 3,000 bars when it starts, re-places a setup that is still armed, adopts its own open trade if the engine is in it, catches up bars
 missed during a disconnect, and closes any broker position the engine is not in. The loss-recovery state (the loss to win back, the
