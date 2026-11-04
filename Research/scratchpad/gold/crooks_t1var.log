@@ -1,0 +1,144 @@
+
+M1 | Default settings | 7425 trades | fixed $50: net -10031
+   plain   per recovery trade: -0.516 T | loss 55.5% (avg -1.33 T, worst -1.67 T) TP1 44.5% TP2  0.0% | C $500 start again: net   -10022 DD 100% 21-23  -10022 24-26  -10001 median  -10045 | C no cap: net   -10659 BLOWN blown 100% of orders
+   tight   per recovery trade: -0.383 T | loss 81.4% (avg -1.00 T, worst -1.16 T) TP1 18.6% TP2 12.7% | C $500 start again: net   -10016 DD 100% 21-23  -10016 24-26  -10017 median  -10042 | C no cap: net   -19331 BLOWN blown 100% of orders
+   k0.45   per recovery trade: -0.335 T | loss 57.7% (avg -2.23 T, worst -3.24 T) TP1 42.5% TP2 28.0% | C $500 start again: net   -10002 DD 100% 21-23  -10002 24-26  -10031 median  -10048 | C no cap: net   -32999 BLOWN blown 100% of orders
+   k0.6    per recovery trade: -0.361 T | loss 51.1% (avg -2.84 T, worst -4.00 T) TP1 49.0% TP2 32.4% | C $500 start again: net   -10044 DD 100% 21-23  -10044 24-26  -10040 median  -10037 | C no cap: net   -14910 BLOWN blown 100% of orders
+   wide    per recovery trade: -0.368 T | loss 38.9% (avg -4.44 T, worst -6.04 T) TP1 61.4% TP2 40.7% | C $500 start again: net   -10047 DD 100% 21-23  -10047 24-26  -10013 median  -10042 | C no cap: net   -10688 BLOWN blown 100% of orders
+   fill    per recovery trade: -0.468 T | loss 71.9% (avg -1.57 T, worst -6.01 T) TP1 28.1% TP2 19.3% | C $500 start again: net   -10161 DD 102% 21-23  -10161 24-26  -10044 median  -10037 | C no cap: net   -13431 BLOWN blown 100% of orders
+   user    per recovery trade: -0.395 T | loss 57.8% (avg -2.33 T, worst -6.04 T) TP1 42.3% TP2 28.1% | C $500 start again: net   -10004 DD 100% 21-23  -10004 24-26  -10027 median  -10039 | C no cap: net   -19331 BLOWN blown 100% of orders
+   userBE  per recovery trade: -0.375 T | loss 65.8% (avg -1.77 T, worst -6.04 T) TP1 34.3% TP2 23.3% | C $500 start again: net   -10046 DD 100% 21-23  -10046 24-26  -10020 median  -10041 | C no cap: net   -10688 BLOWN blown 100% of orders
+
+M1 | Best settings, exit TP1 | 2675 trades | fixed $50: net -6443
+   plain   per recovery trade: -0.080 T | loss 38.0% (avg -1.67 T, worst -1.67 T) TP1 62.0% TP2  0.0% | C $500 start again: net   -10003 DD 100% 21-23   -4395 24-26   -5955 median   -8588 | C no cap: net   -16323 BLOWN blown  75% of orders
+   tight   per recovery trade: -0.175 T | loss 72.6% (avg -1.00 T, worst -1.17 T) TP1 27.4% TP2 16.5% | C $500 start again: net   -10009 DD 100% 21-23  -10009 24-26   -5348 median  -10084 | C no cap: net   -21223 BLOWN blown 100% of orders
+   k0.45   per recovery trade: -0.202 T | loss 58.2% (avg -1.78 T, worst -3.18 T) TP1 41.8% TP2 24.8% | C $500 start again: net   -10189 DD 102% 21-23  -10189 24-26   -7445 median  -10044 | C no cap: net   -26636 BLOWN blown 100% of orders
+   k0.6    per recovery trade: -0.222 T | loss 51.4% (avg -2.32 T, worst -3.92 T) TP1 48.6% TP2 28.9% | C $500 start again: net   -10034 DD 100% 21-23   -5583 24-26   -6753 median  -10049 | C no cap: net   -57608 BLOWN blown  99% of orders
+   wide    per recovery trade: -0.199 T | loss 38.1% (avg -3.76 T, worst -5.89 T) TP1 62.0% TP2 36.7% | C $500 start again: net   -10135 DD 101% 21-23   -7494 24-26   -5326 median  -10021 | C no cap: net  -296483 BLOWN blown  94% of orders
+   fill    per recovery trade: -0.180 T | loss 72.2% (avg -1.03 T, worst -3.92 T) TP1 27.8% TP2 16.9% | C $500 start again: net   -10022 DD 100% 21-23   -8611 24-26   -3473 median  -10020 | C no cap: net   -10558 BLOWN blown 100% of orders
+   user    per recovery trade: -0.165 T | loss 63.7% (avg -1.40 T, worst -5.89 T) TP1 36.3% TP2 21.6% | C $500 start again: net   -10255 DD 102% 21-23   -9131 24-26   -5507 median  -10012 | C no cap: net +1277914 ok blown  99% of orders
+   userBE  per recovery trade: -0.153 T | loss 84.5% (avg -0.55 T, worst -5.89 T) TP1 15.5% TP2  9.1% | C $500 start again: net   -10017 DD 100% 21-23   -6453 24-26   -6744 median  -10016 | C no cap: net   -45522 BLOWN blown 100% of orders
+
+M1 | Low-streak settings, exit TP1 | 2214 trades | fixed $50: net -5942
+   plain   per recovery trade: -0.089 T | loss 38.3% (avg -1.67 T, worst -1.67 T) TP1 61.7% TP2  0.0% | C $500 start again: net   -10039 DD 100% 21-23   -3731 24-26   -7107 median   -7842 | C no cap: net   -11060 BLOWN blown  66% of orders
+   tight   per recovery trade: -0.171 T | loss 72.4% (avg -1.00 T, worst -1.04 T) TP1 27.6% TP2 16.5% | C $500 start again: net   -10132 DD 101% 21-23  -10132 24-26  -10043 median  -10054 | C no cap: net   -12389 BLOWN blown 100% of orders
+   k0.45   per recovery trade: -0.225 T | loss 58.5% (avg -1.79 T, worst -5.18 T) TP1 41.5% TP2 24.3% | C $500 start again: net   -10232 DD 102% 21-23  -10232 24-26  -10023 median  -10062 | C no cap: net   -11461 BLOWN blown  99% of orders
+   k0.6    per recovery trade: -0.245 T | loss 51.7% (avg -2.33 T, worst -5.18 T) TP1 48.3% TP2 28.5% | C $500 start again: net   -10017 DD 100% 21-23   -5078 24-26   -7973 median  -10048 | C no cap: net   -11095 BLOWN blown  99% of orders
+   wide    per recovery trade: -0.223 T | loss 38.5% (avg -3.77 T, worst -5.89 T) TP1 61.6% TP2 36.3% | C $500 start again: net    -9332 DD  98% 21-23   -3313 24-26   -6194 median  -10006 | C no cap: net  -321696 BLOWN blown  94% of orders
+   fill    per recovery trade: -0.184 T | loss 72.0% (avg -1.03 T, worst -3.92 T) TP1 28.0% TP2 16.7% | C $500 start again: net   -10048 DD 100% 21-23   -5472 24-26   -5690 median  -10011 | C no cap: net   -17449 BLOWN blown 100% of orders
+   user    per recovery trade: -0.168 T | loss 63.6% (avg -1.40 T, worst -5.89 T) TP1 36.4% TP2 21.5% | C $500 start again: net    -9106 DD  95% 21-23   -4494 24-26   -4788 median   -9536 | C no cap: net   -62599 BLOWN blown 100% of orders
+   userBE  per recovery trade: -0.154 T | loss 84.4% (avg -0.55 T, worst -5.89 T) TP1 15.5% TP2  9.2% | C $500 start again: net   -10005 DD 100% 21-23   -5893 24-26   -6023 median   -8871 | C no cap: net   -27877 BLOWN blown 100% of orders
+
+M5 | Default settings | 7331 trades | fixed $50: net -10005
+   plain   per recovery trade: -0.186 T | loss 38.9% (avg -1.65 T, worst -1.67 T) TP1 61.1% TP2  0.0% | C $500 start again: net   -10038 DD 100% 21-23  -10038 24-26  -10021 median  -10040 | C no cap: net   -10808 BLOWN blown 100% of orders
+   tight   per recovery trade: -0.319 T | loss 78.5% (avg -1.00 T, worst -1.21 T) TP1 21.5% TP2 13.7% | C $500 start again: net   -10003 DD 100% 21-23  -10003 24-26  -10112 median  -10068 | C no cap: net   -13796 BLOWN blown 100% of orders
+   k0.45   per recovery trade: -0.308 T | loss 58.1% (avg -2.09 T, worst -3.24 T) TP1 42.1% TP2 26.9% | C $500 start again: net   -10247 DD 102% 21-23  -10247 24-26  -10052 median  -10055 | C no cap: net   -22933 BLOWN blown 100% of orders
+   k0.6    per recovery trade: -0.281 T | loss 50.7% (avg -2.67 T, worst -4.00 T) TP1 49.8% TP2 32.1% | C $500 start again: net   -10164 DD 102% 21-23  -10164 24-26  -10048 median  -10049 | C no cap: net  -465455 BLOWN blown 100% of orders
+   wide    per recovery trade: -0.275 T | loss 38.0% (avg -4.22 T, worst -6.02 T) TP1 62.5% TP2 39.7% | C $500 start again: net   -10242 DD 102% 21-23  -10242 24-26  -10092 median  -10051 | C no cap: net   -65052 BLOWN blown 100% of orders
+   fill    per recovery trade: -0.337 T | loss 70.2% (avg -1.41 T, worst -6.02 T) TP1 29.8% TP2 19.1% | C $500 start again: net   -10017 DD 100% 21-23  -10017 24-26  -10010 median  -10030 | C no cap: net   -10315 BLOWN blown 100% of orders
+   user    per recovery trade: -0.321 T | loss 57.4% (avg -2.15 T, worst -6.02 T) TP1 42.6% TP2 26.9% | C $500 start again: net   -10049 DD 100% 21-23  -10049 24-26  -10026 median  -10037 | C no cap: net   -28246 BLOWN blown 100% of orders
+   userBE  per recovery trade: -0.310 T | loss 67.7% (avg -1.50 T, worst -6.02 T) TP1 32.3% TP2 20.6% | C $500 start again: net   -10287 DD 103% 21-23  -10287 24-26  -10006 median  -10039 | C no cap: net   -15254 BLOWN blown 100% of orders
+
+M5 | Best settings, exit TP1 | 2020 trades | fixed $50: net -2055
+   plain   per recovery trade: -0.034 T | loss 36.7% (avg -1.67 T, worst -1.67 T) TP1 63.3% TP2  0.0% | C $500 start again: net    -2100 DD  46% 21-23   -3856 24-26   +1757 median   -2979 | C no cap: net   -15724 BLOWN blown  54% of orders
+   tight   per recovery trade: -0.119 T | loss 72.6% (avg -1.00 T, worst -1.00 T) TP1 27.4% TP2 17.8% | C $500 start again: net    -3280 DD  85% 21-23   -4520 24-26    +806 median  -10024 | C no cap: net   -28371 BLOWN blown 100% of orders
+   k0.45   per recovery trade: -0.059 T | loss 57.3% (avg -1.73 T, worst -4.23 T) TP1 42.7% TP2 27.9% | C $500 start again: net    -1944 DD  70% 21-23   -5062 24-26   +3225 median   -4238 | C no cap: net   -22470 BLOWN blown  94% of orders
+   k0.6    per recovery trade: -0.060 T | loss 50.4% (avg -2.26 T, worst -4.23 T) TP1 49.8% TP2 32.2% | C $500 start again: net    -2164 DD  67% 21-23   -4883 24-26   +2719 median   -3995 | C no cap: net   -36499 BLOWN blown  96% of orders
+   wide    per recovery trade: +0.015 T | loss 36.6% (avg -3.67 T, worst -8.07 T) TP1 63.6% TP2 40.7% | C $500 start again: net    +1772 DD  36% 21-23   -2109 24-26   +4112 median   -1840 | C no cap: net   -12482 BLOWN blown  85% of orders
+   fill    per recovery trade: -0.123 T | loss 68.0% (avg -1.21 T, worst -4.99 T) TP1 32.0% TP2 20.6% | C $500 start again: net    -2732 DD  45% 21-23   -2917 24-26    +185 median   -4973 | C no cap: net   -12460 BLOWN blown 100% of orders
+   user    per recovery trade: -0.074 T | loss 55.7% (avg -1.85 T, worst -5.03 T) TP1 44.5% TP2 28.4% | C $500 start again: net    -3926 DD  59% 21-23   -4346 24-26    +650 median   -3100 | C no cap: net   -84004 BLOWN blown  98% of orders
+   userBE  per recovery trade: -0.039 T | loss 69.5% (avg -1.03 T, worst -5.03 T) TP1 30.6% TP2 19.8% | C $500 start again: net    -1156 DD  63% 21-23   -5492 24-26   +4566 median   -2471 | C no cap: net   -28137 BLOWN blown  85% of orders
+
+M5 | Low-streak settings, exit TP1 | 2020 trades | fixed $50: net -2055
+   plain   per recovery trade: -0.034 T | loss 36.7% (avg -1.67 T, worst -1.67 T) TP1 63.3% TP2  0.0% | C $500 start again: net    -2100 DD  46% 21-23   -3856 24-26   +1757 median   -2979 | C no cap: net   -15724 BLOWN blown  54% of orders
+   tight   per recovery trade: -0.119 T | loss 72.6% (avg -1.00 T, worst -1.00 T) TP1 27.4% TP2 17.8% | C $500 start again: net    -3280 DD  85% 21-23   -4520 24-26    +806 median  -10024 | C no cap: net   -28371 BLOWN blown 100% of orders
+   k0.45   per recovery trade: -0.059 T | loss 57.3% (avg -1.73 T, worst -4.23 T) TP1 42.7% TP2 27.9% | C $500 start again: net    -1944 DD  70% 21-23   -5062 24-26   +3225 median   -4238 | C no cap: net   -22470 BLOWN blown  94% of orders
+   k0.6    per recovery trade: -0.060 T | loss 50.4% (avg -2.26 T, worst -4.23 T) TP1 49.8% TP2 32.2% | C $500 start again: net    -2164 DD  67% 21-23   -4883 24-26   +2719 median   -3995 | C no cap: net   -36499 BLOWN blown  96% of orders
+   wide    per recovery trade: +0.015 T | loss 36.6% (avg -3.67 T, worst -8.07 T) TP1 63.6% TP2 40.7% | C $500 start again: net    +1772 DD  36% 21-23   -2109 24-26   +4112 median   -1840 | C no cap: net   -12482 BLOWN blown  85% of orders
+   fill    per recovery trade: -0.123 T | loss 68.0% (avg -1.21 T, worst -4.99 T) TP1 32.0% TP2 20.6% | C $500 start again: net    -2732 DD  45% 21-23   -2917 24-26    +185 median   -4973 | C no cap: net   -12460 BLOWN blown 100% of orders
+   user    per recovery trade: -0.074 T | loss 55.7% (avg -1.85 T, worst -5.03 T) TP1 44.5% TP2 28.4% | C $500 start again: net    -3926 DD  59% 21-23   -4346 24-26    +650 median   -3100 | C no cap: net   -84004 BLOWN blown  98% of orders
+   userBE  per recovery trade: -0.039 T | loss 69.5% (avg -1.03 T, worst -5.03 T) TP1 30.6% TP2 19.8% | C $500 start again: net    -1156 DD  63% 21-23   -5492 24-26   +4566 median   -2471 | C no cap: net   -28137 BLOWN blown  85% of orders
+
+M15 | Default settings | 4265 trades | fixed $50: net -10007
+   plain   per recovery trade: -0.139 T | loss 39.8% (avg -1.67 T, worst -1.67 T) TP1 60.2% TP2  0.0% | C $500 start again: net   -10257 DD 103% 21-23  -10257 24-26  -10054 median  -10049 | C no cap: net   -20519 BLOWN blown  94% of orders
+   tight   per recovery trade: -0.235 T | loss 75.7% (avg -1.00 T, worst -7.80 T) TP1 24.3% TP2 15.5% | C $500 start again: net   -10251 DD 102% 21-23  -10251 24-26  -10014 median  -10054 | C no cap: net   -31876 BLOWN blown 100% of orders
+   k0.45   per recovery trade: -0.246 T | loss 59.7% (avg -1.85 T, worst -7.80 T) TP1 40.4% TP2 25.5% | C $500 start again: net   -10021 DD 100% 21-23  -10021 24-26  -10033 median  -10049 | C no cap: net  -195083 BLOWN blown 100% of orders
+   k0.6    per recovery trade: -0.253 T | loss 52.9% (avg -2.38 T, worst -7.80 T) TP1 47.8% TP2 29.9% | C $500 start again: net   -10011 DD 100% 21-23  -10011 24-26  -10008 median  -10058 | C no cap: net   -25676 BLOWN blown  98% of orders
+   wide    per recovery trade: -0.270 T | loss 40.3% (avg -3.82 T, worst -9.52 T) TP1 60.5% TP2 38.1% | C $500 start again: net   -10024 DD 100% 21-23  -10024 24-26  -10007 median  -10043 | C no cap: net -1109963 BLOWN blown  99% of orders
+   fill    per recovery trade: -0.265 T | loss 68.9% (avg -1.36 T, worst -7.80 T) TP1 31.1% TP2 19.9% | C $500 start again: net   -10039 DD 100% 21-23  -10039 24-26  -10058 median  -10027 | C no cap: net   -14878 BLOWN blown 100% of orders
+   user    per recovery trade: -0.290 T | loss 56.8% (avg -2.12 T, worst -9.52 T) TP1 43.3% TP2 27.2% | C $500 start again: net   -10043 DD 100% 21-23  -10043 24-26  -10017 median  -10036 | C no cap: net   -45361 BLOWN blown 100% of orders
+   userBE  per recovery trade: -0.283 T | loss 69.7% (avg -1.36 T, worst -9.52 T) TP1 30.4% TP2 19.3% | C $500 start again: net   -10049 DD 100% 21-23  -10049 24-26   -9388 median  -10041 | C no cap: net   -23973 BLOWN blown  99% of orders
+
+M15 | Best settings, exit TP1 | 2552 trades | fixed $50: net -1261
+   plain   per recovery trade: -0.016 T | loss 36.6% (avg -1.67 T, worst -1.67 T) TP1 63.4% TP2  0.0% | C $500 start again: net     -902 DD  39% 21-23   -1459 24-26    +517 median   -1563 | C no cap: net   +16589 ok blown  60% of orders
+   tight   per recovery trade: -0.113 T | loss 70.9% (avg -1.01 T, worst -3.38 T) TP1 29.1% TP2 18.2% | C $500 start again: net   -10040 DD 100% 21-23  -10040 24-26   -4644 median  -10035 | C no cap: net   -16313 BLOWN blown 100% of orders
+   k0.45   per recovery trade: -0.091 T | loss 58.0% (avg -1.66 T, worst -3.38 T) TP1 42.1% TP2 26.4% | C $500 start again: net   -10088 DD 101% 21-23  -10088 24-26   +2450 median   -5975 | C no cap: net   -43479 BLOWN blown  97% of orders
+   k0.6    per recovery trade: -0.072 T | loss 50.4% (avg -2.18 T, worst -3.90 T) TP1 49.8% TP2 31.0% | C $500 start again: net   -10040 DD 100% 21-23  -10040 24-26   +3684 median   -3803 | C no cap: net   -28365 BLOWN blown  98% of orders
+   wide    per recovery trade: +0.020 T | loss 36.5% (avg -3.55 T, worst -5.73 T) TP1 63.7% TP2 40.3% | C $500 start again: net     +630 DD  64% 21-23   -3783 24-26   +4249 median    -335 | C no cap: net  +699869 ok blown  88% of orders
+   fill    per recovery trade: -0.107 T | loss 69.1% (avg -1.08 T, worst -5.53 T) TP1 30.9% TP2 19.3% | C $500 start again: net    -6776 DD  77% 21-23   -4808 24-26   -2121 median   -5215 | C no cap: net   -12993 BLOWN blown 100% of orders
+   user    per recovery trade: -0.101 T | loss 61.0% (avg -1.50 T, worst -5.73 T) TP1 39.0% TP2 24.8% | C $500 start again: net    -7039 DD  79% 21-23   -4641 24-26   -2551 median   -4961 | C no cap: net   -14790 BLOWN blown  98% of orders
+   userBE  per recovery trade: -0.080 T | loss 81.9% (avg -0.57 T, worst -5.73 T) TP1 18.1% TP2 11.9% | C $500 start again: net    -3780 DD  55% 21-23   -2475 24-26   -1211 median   -4158 | C no cap: net   -17628 BLOWN blown  91% of orders
+
+M15 | Low-streak settings, exit TP1 | 2038 trades | fixed $50: net -1661
+   plain   per recovery trade: -0.027 T | loss 37.0% (avg -1.67 T, worst -1.67 T) TP1 63.0% TP2  0.0% | C $500 start again: net    -2963 DD  54% 21-23   -4234 24-26   +1230 median   -2098 | C no cap: net   -11147 BLOWN blown  54% of orders
+   tight   per recovery trade: -0.110 T | loss 70.7% (avg -1.01 T, worst -3.38 T) TP1 29.3% TP2 18.2% | C $500 start again: net   -10181 DD 102% 21-23  -10181 24-26   -5518 median  -10014 | C no cap: net   -21516 BLOWN blown  99% of orders
+   k0.45   per recovery trade: -0.106 T | loss 58.1% (avg -1.67 T, worst -3.38 T) TP1 42.0% TP2 26.1% | C $500 start again: net    -8206 DD  97% 21-23   -6931 24-26   -1438 median   -5980 | C no cap: net   -11898 BLOWN blown  96% of orders
+   k0.6    per recovery trade: -0.085 T | loss 50.5% (avg -2.18 T, worst -3.90 T) TP1 49.7% TP2 30.7% | C $500 start again: net    -2093 DD  67% 21-23   -4558 24-26   +2302 median   -3918 | C no cap: net   -42684 BLOWN blown  92% of orders
+   wide    per recovery trade: -0.011 T | loss 37.0% (avg -3.56 T, worst -5.73 T) TP1 63.2% TP2 40.0% | C $500 start again: net    -3073 DD  44% 21-23   -1748 24-26   -1488 median   -1548 | C no cap: net   -83180 BLOWN blown  86% of orders
+   fill    per recovery trade: -0.098 T | loss 68.8% (avg -1.08 T, worst -5.12 T) TP1 31.2% TP2 19.4% | C $500 start again: net    -5702 DD  70% 21-23   -3856 24-26   -1674 median   -4261 | C no cap: net   -21472 BLOWN blown  97% of orders
+   user    per recovery trade: -0.081 T | loss 60.8% (avg -1.47 T, worst -5.73 T) TP1 39.2% TP2 24.8% | C $500 start again: net    -5570 DD  64% 21-23   -4109 24-26   -1640 median   -3627 | C no cap: net   -39432 BLOWN blown  92% of orders
+   userBE  per recovery trade: -0.058 T | loss 82.4% (avg -0.54 T, worst -5.73 T) TP1 17.6% TP2 12.0% | C $500 start again: net    -4965 DD  57% 21-23   -4601 24-26    -437 median   -2919 | C no cap: net   -41015 BLOWN blown  90% of orders
+
+H1 | Default settings | 1203 trades | fixed $50: net -4964
+   plain   per recovery trade: -0.138 T | loss 41.5% (avg -1.67 T, worst -1.67 T) TP1 58.5% TP2  0.0% | C $500 start again: net    -5213 DD  62% 21-23   -2942 24-26   -2449 median   -6551 | C no cap: net   -17956 BLOWN blown  62% of orders
+   tight   per recovery trade: -0.105 T | loss 72.2% (avg -1.01 T, worst -4.42 T) TP1 27.8% TP2 18.4% | C $500 start again: net    -2988 DD  68% 21-23   -4255 24-26   +1966 median   -9748 | C no cap: net   -12438 BLOWN blown  98% of orders
+   k0.45   per recovery trade: -0.102 T | loss 59.7% (avg -1.65 T, worst -4.51 T) TP1 40.4% TP2 26.1% | C $500 start again: net    -6181 DD  78% 21-23   -2941 24-26   -2880 median   -6372 | C no cap: net   -13742 BLOWN blown  96% of orders
+   k0.6    per recovery trade: -0.131 T | loss 53.7% (avg -2.15 T, worst -4.51 T) TP1 47.0% TP2 30.4% | C $500 start again: net    -6631 DD  79% 21-23   -5252 24-26   -1379 median   -6529 | C no cap: net  -161683 BLOWN blown  90% of orders
+   wide    per recovery trade: -0.181 T | loss 41.5% (avg -3.50 T, worst -4.57 T) TP1 59.3% TP2 37.9% | C $500 start again: net    -6980 DD  80% 21-23   -3904 24-26   -3076 median   -6390 | C no cap: net   -12679 BLOWN blown  84% of orders
+   fill    per recovery trade: -0.114 T | loss 65.6% (avg -1.35 T, worst -4.42 T) TP1 34.4% TP2 22.9% | C $500 start again: net    -6063 DD  69% 21-23   -3628 24-26   -2435 median   -5477 | C no cap: net   -73100 BLOWN blown  96% of orders
+   user    per recovery trade: -0.165 T | loss 56.0% (avg -2.02 T, worst -4.57 T) TP1 44.1% TP2 28.7% | C $500 start again: net    -8533 DD  94% 21-23   -4940 24-26   -3593 median   -6291 | C no cap: net   -11742 BLOWN blown  92% of orders
+   userBE  per recovery trade: -0.167 T | loss 70.6% (avg -1.17 T, worst -4.57 T) TP1 29.6% TP2 18.8% | C $500 start again: net    -4494 DD  52% 21-23   -1804 24-26   -2552 median   -6351 | C no cap: net   -20174 BLOWN blown  92% of orders
+
+H1 | Best settings, exit TP1 | 283 trades | fixed $50: net -211
+   plain   per recovery trade: -0.025 T | loss 37.5% (avg -1.67 T, worst -1.67 T) TP1 62.5% TP2  0.0% | C $500 start again: net    -1038 DD  15% 21-23    +521 24-26   -1559 median    -308 | C no cap: net     +634 ok blown  10% of orders
+   tight   per recovery trade: -0.042 T | loss 68.9% (avg -1.01 T, worst -2.61 T) TP1 31.1% TP2 18.7% | C $500 start again: net     +834 DD  17% 21-23    -163 24-26    +997 median    -503 | C no cap: net   -11873 BLOWN blown  75% of orders
+   k0.45   per recovery trade: -0.169 T | loss 60.4% (avg -1.61 T, worst -2.65 T) TP1 39.9% TP2 23.0% | C $500 start again: net    -2298 DD  31% 21-23   -2063 24-26    -236 median   -1094 | C no cap: net   -10002 BLOWN blown  76% of orders
+   k0.6    per recovery trade: -0.111 T | loss 51.9% (avg -2.13 T, worst -3.90 T) TP1 48.8% TP2 29.0% | C $500 start again: net     -569 DD  14% 21-23    -191 24-26    -379 median    -676 | C no cap: net   -47214 BLOWN blown  63% of orders
+   wide    per recovery trade: -0.011 T | loss 37.5% (avg -3.48 T, worst -5.10 T) TP1 63.3% TP2 38.2% | C $500 start again: net    +1159 DD   8% 21-23   +1392 24-26    -233 median    -158 | C no cap: net   +32643 ok blown  55% of orders
+   fill    per recovery trade: -0.135 T | loss 67.5% (avg -1.21 T, worst -5.10 T) TP1 32.5% TP2 19.4% | C $500 start again: net    -1297 DD  19% 21-23    -628 24-26    -669 median    -695 | C no cap: net   -12284 BLOWN blown  78% of orders
+   user    per recovery trade: -0.144 T | loss 57.6% (avg -1.78 T, worst -5.10 T) TP1 42.4% TP2 25.8% | C $500 start again: net    -1401 DD  18% 21-23    -536 24-26    -865 median    -765 | C no cap: net   -17112 BLOWN blown  64% of orders
+   userBE  per recovery trade: -0.137 T | loss 75.6% (avg -0.87 T, worst -5.10 T) TP1 24.4% TP2 14.8% | C $500 start again: net     -605 DD  14% 21-23     -42 24-26    -563 median    -608 | C no cap: net   -10077 BLOWN blown  60% of orders
+
+H1 | Low-streak settings, exit TP1 | 232 trades | fixed $50: net +971
+   plain   per recovery trade: +0.140 T | loss 31.0% (avg -1.67 T, worst -1.67 T) TP1 69.0% TP2  0.0% | C $500 start again: net     +589 DD   7% 21-23    +988 24-26    -398 median   +1197 | C no cap: net    +2084 ok blown   2% of orders
+   tight   per recovery trade: -0.100 T | loss 68.1% (avg -1.02 T, worst -3.60 T) TP1 31.9% TP2 16.4% | C $500 start again: net      +44 DD  10% 21-23    -164 24-26    +208 median    -218 | C no cap: net    +9466 ok blown  60% of orders
+   k0.45   per recovery trade: -0.060 T | loss 55.2% (avg -1.63 T, worst -3.60 T) TP1 44.8% TP2 23.3% | C $500 start again: net     +387 DD  16% 21-23    -573 24-26    +960 median    +580 | C no cap: net    +9546 ok blown  51% of orders
+   k0.6    per recovery trade: +0.008 T | loss 47.8% (avg -2.09 T, worst -3.60 T) TP1 53.0% TP2 28.4% | C $500 start again: net     +801 DD  10% 21-23   +1304 24-26    -503 median    +652 | C no cap: net   +10211 ok blown  44% of orders
+   wide    per recovery trade: +0.296 T | loss 30.2% (avg -3.46 T, worst -4.11 T) TP1 70.3% TP2 37.9% | C $500 start again: net    +1760 DD   9% 21-23   +1241 24-26    +519 median   +1408 | C no cap: net   -14352 BLOWN blown  24% of orders
+   fill    per recovery trade: -0.057 T | loss 63.4% (avg -1.19 T, worst -3.60 T) TP1 36.6% TP2 19.4% | C $500 start again: net     -208 DD  12% 21-23    +408 24-26    -616 median    +503 | C no cap: net   +11432 ok blown  52% of orders
+   user    per recovery trade: +0.067 T | loss 51.7% (avg -1.58 T, worst -4.11 T) TP1 48.3% TP2 23.7% | C $500 start again: net     -109 DD  11% 21-23    +197 24-26    -306 median    +938 | C no cap: net    +7499 ok blown  36% of orders
+   userBE  per recovery trade: -0.019 T | loss 75.4% (avg -0.59 T, worst -4.11 T) TP1 24.6% TP2 10.3% | C $500 start again: net     +339 DD   7% 21-23    +408 24-26     -69 median    +661 | C no cap: net    +4222 ok blown  22% of orders
+
+H1 | Best TP1-exit settings found #1 | 253 trades | fixed $50: net +794
+   plain   per recovery trade: +0.105 T | loss 32.4% (avg -1.67 T, worst -1.67 T) TP1 67.6% TP2  0.0% | C $500 start again: net     +896 DD   9% 21-23    +973 24-26     -77 median   +1071 | C no cap: net    +2140 ok blown   2% of orders
+   tight   per recovery trade: -0.107 T | loss 68.4% (avg -1.02 T, worst -3.60 T) TP1 31.6% TP2 16.2% | C $500 start again: net    -1365 DD  21% 21-23    -481 24-26   -1209 median    -306 | C no cap: net   +28576 ok blown  57% of orders
+   k0.45   per recovery trade: -0.070 T | loss 55.7% (avg -1.63 T, worst -3.60 T) TP1 44.3% TP2 23.3% | C $500 start again: net    -3050 DD  32% 21-23   -1091 24-26   -1538 median    +201 | C no cap: net   -16173 BLOWN blown  51% of orders
+   k0.6    per recovery trade: -0.022 T | loss 48.6% (avg -2.09 T, worst -3.60 T) TP1 52.2% TP2 28.1% | C $500 start again: net     +116 DD  14% 21-23   +1611 24-26   -1495 median    +406 | C no cap: net   -18565 BLOWN blown  45% of orders
+   wide    per recovery trade: +0.195 T | loss 32.0% (avg -3.46 T, worst -4.11 T) TP1 68.4% TP2 36.8% | C $500 start again: net    +2283 DD   7% 21-23   +1302 24-26    +981 median   +1187 | C no cap: net   -66231 BLOWN blown  28% of orders
+   fill    per recovery trade: -0.080 T | loss 64.0% (avg -1.20 T, worst -3.60 T) TP1 36.0% TP2 19.0% | C $500 start again: net     +600 DD   8% 21-23    +698 24-26    -254 median    +371 | C no cap: net   +44866 ok blown  52% of orders
+   user    per recovery trade: +0.012 T | loss 52.6% (avg -1.63 T, worst -4.11 T) TP1 47.4% TP2 23.3% | C $500 start again: net     +399 DD   8% 21-23    +418 24-26    -472 median    +725 | C no cap: net   +42175 ok blown  38% of orders
+   userBE  per recovery trade: -0.037 T | loss 74.7% (avg -0.66 T, worst -4.11 T) TP1 25.3% TP2 11.5% | C $500 start again: net     +256 DD  10% 21-23    +589 24-26    -333 median    +560 | C no cap: net    +4901 ok blown  26% of orders
+
+H1 | Best TP1-exit settings found #2 | 265 trades | fixed $50: net +740
+   plain   per recovery trade: +0.093 T | loss 32.8% (avg -1.67 T, worst -1.67 T) TP1 67.2% TP2  0.0% | C $500 start again: net     +921 DD   9% 21-23   +1000 24-26     -79 median    +881 | C no cap: net    +2166 ok blown   4% of orders
+   tight   per recovery trade: -0.111 T | loss 68.3% (avg -1.02 T, worst -3.60 T) TP1 31.7% TP2 15.8% | C $500 start again: net    -1204 DD  19% 21-23    -626 24-26    -903 median    -582 | C no cap: net   -16254 BLOWN blown  62% of orders
+   k0.45   per recovery trade: -0.099 T | loss 56.2% (avg -1.63 T, worst -3.60 T) TP1 43.8% TP2 22.6% | C $500 start again: net    -3410 DD  36% 21-23   -1350 24-26   -1640 median      +9 | C no cap: net   -15837 BLOWN blown  64% of orders
+   k0.6    per recovery trade: -0.033 T | loss 48.3% (avg -2.10 T, worst -3.60 T) TP1 52.5% TP2 27.2% | C $500 start again: net     -808 DD  20% 21-23    +961 24-26   -1769 median    +410 | C no cap: net   -17913 BLOWN blown  48% of orders
+   wide    per recovery trade: +0.148 T | loss 32.5% (avg -3.48 T, worst -4.11 T) TP1 67.9% TP2 35.5% | C $500 start again: net    +2053 DD   8% 21-23   +1440 24-26    +612 median   +1009 | C no cap: net   -66208 BLOWN blown  36% of orders
+   fill    per recovery trade: -0.098 T | loss 64.2% (avg -1.21 T, worst -3.60 T) TP1 35.8% TP2 18.5% | C $500 start again: net     +845 DD   8% 21-23    +366 24-26    +324 median    +102 | C no cap: net   +25328 ok blown  64% of orders
+   user    per recovery trade: -0.031 T | loss 53.2% (avg -1.66 T, worst -4.11 T) TP1 46.8% TP2 22.6% | C $500 start again: net    +1551 DD   8% 21-23    +992 24-26    +106 median    +455 | C no cap: net   +41491 ok blown  52% of orders
+   userBE  per recovery trade: -0.069 T | loss 75.1% (avg -0.69 T, worst -4.11 T) TP1 24.9% TP2 11.3% | C $500 start again: net     +619 DD  10% 21-23    +900 24-26    -281 median    +355 | C no cap: net    +5545 ok blown  32% of orders
+
+real	0m51.226s
+user	2m51.312s
+sys	0m14.853s

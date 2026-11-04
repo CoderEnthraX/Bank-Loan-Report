@@ -197,6 +197,15 @@ Other gold findings:
     with $500 + Start again -$7.3k vs -$7.4k; fixed $50 -$3.8k. The list's stop-outs fill $0.10 past the stop (Properties slippage) and pay $0.07/oz,
     neither in the strategy's cost inputs.
 
+12. **TP1-rule stop variants** (asked 2026-11-04; `gold/crooks_t1var.py`, research only, nothing changed in the strategy or EA yet). Every variant keeps the
+    TP1-rule size (the half at TP1 banks the owed amount T, the rest runs to TP2 with its stop at the entry); only the stop before TP1 differs: tight 0.3R
+    (current), 0.45R, 0.6R, the normal stop (wide), normal stop on the fill bar then tight, normal stop until a bar closes in profit then tight (the user's
+    idea) or then breakeven, and plain (checkbox off). The hard cap limits the real stop-out loss (T x loss multiple). 14 exit-TP1 gold settings.
+    Per recovery trade: wide -0.061 T (better than plain on 9 of 14), plain -0.068, user's idea -0.138, tight -0.158. On the 3 settings profitable at
+    exit TP1 (all H1), Crooks C $500 + Start again: wide +$1,760 / +$2,283 / +$2,053 (falls 7-9%, both halves positive, random medians +$1.0k to +$1.4k)
+    vs plain +$589 / +$896 / +$921; user's idea -$109 / +$399 / +$1,551; tight +$44 / -$1,365 / -$1,204. No variant rescues the 11 losing settings.
+    The wide variant's stop-out loses about 3.5 T, so with a $500 cap T is at most about $145.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
