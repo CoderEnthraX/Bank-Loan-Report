@@ -42,7 +42,7 @@ To refresh this checkpoint after new work, run `python3 -I $S/tools/make_checkpo
 |---|---|
 | `TradingView/Auction_Retest_Model.pine` | Indicator, v3.6: clone of *Auction Retest Pro* (session VWAP + displacement + timed retest), with tables and optional filters (v3.6: max distance from the VWAP). |
 | `TradingView/Auction_Retest_Strategy.pine` | The same engine as a strategy: risk sizing, partials, 21 loss-recovery rules (incl. Crooks A, B, C, D and the Crooks TP1 rule), streak pauses, news and force-close. |
-| `MetaTrader5/AuctionRetestEA.mq5` | MT5 EA v3.6: port of the same engine plus the strategy's money management (21 recovery rules incl. Crooks A-D, Crooks TP1 rule), on-chart table and trade markings. |
+| `MetaTrader5/AuctionRetestEA.mq5` | MT5 EA v3.7: port of the same engine plus the strategy's money management (21 recovery rules incl. Crooks A-D, Crooks TP1 rule), on-chart table and trade markings. |
 | `TradingView/README.md` | User documentation of every rule and setting, v3 to v3.6 (Crooks A-D in the Loss recovery row; v3.6 section: max VWAP distance, one title per settings line). |
 | `Research/deliverables/` | `Gold_2021_2026_Auction_Retest.xlsx` (gold study), `VWAP_vs_EMA_results.md`, `VWAP_settings_and_70pct_strategies.md`. |
 | `Research/scratchpad/` | Every code and text file of the working scratchpad, each up to 2 MB. |
@@ -205,6 +205,15 @@ Other gold findings:
     exit TP1 (all H1), Crooks C $500 + Start again: wide +$1,760 / +$2,283 / +$2,053 (falls 7-9%, both halves positive, random medians +$1.0k to +$1.4k)
     vs plain +$589 / +$896 / +$921; user's idea -$109 / +$399 / +$1,551; tight +$44 / -$1,365 / -$1,204. No variant rescues the 11 losing settings.
     The wide variant's stop-out loses about 3.5 T, so with a $500 cap T is at most about $145.
+
+13. **v3.7 settings** (asked 2026-11-04; strategy and EA v3.7). (a) *Crooks TP1 Rule: Stop Before TP1* (`crkT1Stop`, EA `InpCrkT1Stop`): the 7 stop choices of
+    item 12; size unchanged (tight-based), the hard cap limits the real stop-out loss (`t1Mul`, `CrkT1Mult()`), moves at a bar close, toward the entry only, never
+    after the TP1 half. (b) *Crooks C: Win The Loss Back Over N Wins* (`crkCnOn`/`crkCn`, state `crkP`; EA `InpCrkCnOn`/`InpCrkCn`, `CrkParts()`): recovery
+    amount = owed / parts left; a winning recovery trade -1 part, any loss -> N parts. (c) Lot rounding: strategy `lotRound` (default Down), EA `InpLotRound`
+    (default nearest) + `InpSmallLot` (minimum lot or skip); never past the cap or leverage. Python: `recovery.py` and `crooks_tp1.py` take `cN`; `crooks_tp1`
+    caps T x `m`. Checks: `mq5check/rec/parity_rec.py` 1,680 runs / 2.15 M trades and `parity_tp1.py` 2,464 runs / 4.1 M trades (all stop choices x caps,
+    N 1-3), 0 differences; `lots_harness` (built by rec/build.sh, settable lot step / minimum / equity) 11 hand cases. Gold, `gold/crooks_cn.py`: over the 25
+    profitable strategies with $500 + Start again N 1-4 make +$124k to +$128k (fixed $50 +$108k); uncapped blow-ups in random orders 16% -> 9% -> 4% -> 2%.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

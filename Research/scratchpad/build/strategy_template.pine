@@ -50,10 +50,13 @@ LOT_FIX  = "Broker fixed (units below)"
 lotMode    = input.string(LOT_AUTO, "Lot Size", options = [LOT_AUTO, LOT_FIX], inline = "lot", group = GRP_R, tooltip = "Auto: forex 100,000 units · gold 100 oz · silver 5,000 oz · platinum/palladium 100 oz · crypto 1 coin · oil CFDs (USOIL, UKOIL, WTI, BRENT, XTI, XBR) 1,000 bbl · natural gas CFDs (NATGAS, XNG, NGAS) 10,000 MMBtu · any futures contract (CL, NG, GC, MCX CRUDEOIL, ...) 1 contract · indices, stocks, others 1.\nBroker fixed: every symbol uses the units entered here (e.g. 100).\nLots only affect the lot display, the lot step and the per-lot commission; the $ risk sizing is the same either way.")
 unitsLot   = input.float(100.0, "", minval = 0.000001, inline = "lot", group = GRP_R)
 leverage   = input.float(100.0, "Leverage (1:x, 0 = unlimited)", minval = 0.0, step = 10.0, group = GRP_R, tooltip = "Position value (quantity x price) may not exceed equity x leverage. If the risk-based size is larger, it is reduced to fit, as your broker would. 0 = no limit.")
-lotStep    = input.float(0.0, "Lot Step (0 = auto)", minval = 0.0, step = 0.01, group = GRP_R, tooltip = "Position size is rounded DOWN to this many lots. 0 = auto: futures 1 contract, everything else 0.01 lot.")
+lotStep    = input.float(0.0, "Lot Step (0 = auto)", minval = 0.0, step = 0.01, group = GRP_R, tooltip = "Position size is rounded to this many lots (see Lot Rounding). 0 = auto: futures 1 contract, everything else 0.01 lot.")
 SMALL_FRAC = "Fractional size (backtest only)"
 SMALL_MIN  = "Trade minimum size (risks more)"
 SMALL_SKIP = "Skip the trade"
+RND_DOWN   = "Down (never risks more)"
+RND_NEAR   = "To the nearest lot step"
+lotRound   = input.string(RND_DOWN, "Lot Rounding", options = [RND_DOWN, RND_NEAR], group = GRP_R, tooltip = "Down: the size is rounded down to the lot step, so a trade never risks more than planned.\nTo the nearest lot step: like most brokers' lot boxes, e.g. 0.125 lot -> 0.13, 0.124 -> 0.12 (risks a little more or less). It rounds up only while the stop-out loss stays inside the hard cap and the leverage limit. The MT5 EA has the same setting (default: nearest).")
 smallMode  = input.string(SMALL_FRAC, "If Size Is Below 1 Lot Step", options = [SMALL_FRAC, SMALL_MIN, SMALL_SKIP], group = GRP_R, tooltip = "When the risk-based size rounds below one lot step (e.g. $50 risk on COMEX gold futures, where 1 contract with a $7 stop risks $700):\nFractional: trade the exact fractional size so the backtest keeps the $ risk (not possible with a real broker).\nMinimum size: trade 1 lot step and risk more; skipped if that breaks the hard cap.\nSkip: no trade.")
 
 GRP_C = "SPREAD AND COMMISSION (strategy only)"
@@ -123,7 +126,17 @@ recPct   = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.
 recMult  = input.float(2.0, "Multiplier (Martingale)", minval = 1.0, step = 0.25, group = GRP_L)
 recStep  = input.float(25.0, "Step $ (Step-up)", minval = 0.0, step = 5.0, group = GRP_L)
 cSplit   = input.int(3, "Split The Loss Over This Many Trades (Rule C, Crooks B)", minval = 1, group = GRP_L, tooltip = "1 = win it all back in one trade.")
-crkT1On  = input.bool(true, "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", group = GRP_L, tooltip = "Only with Crooks A / B / C / D, Final Exit At TP1, and only on the recovery trades (A / B: 3, 5, 7 ...; C: the trade after a win; D: 3, 6, 9 ...). The position is doubled: half closes at TP1 and banks the whole recovery amount, then the stop of the other half moves to the entry and that half closes at TP2. The stop sits where a stop-out loses exactly the recovery amount: TP1 / 2 minus 1.5 x the costs from the entry (0.3R with TP1 = 0.6R and no costs). Costs above TP1 / 3 -> that trade uses the normal Crooks size. While the rest runs on, new signals are skipped.\nGold 2021-2026: the tight stop is hit on most of these trades; see the workbook before using it.")
+crkT1On  = input.bool(true, "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", group = GRP_L, tooltip = "Only with Crooks A / B / C / D, Final Exit At TP1, and only on the recovery trades (A / B: 3, 5, 7 ...; C: the trade after a win; D: 3, 6, 9 ...). The position is doubled: half closes at TP1 and banks the whole recovery amount, then the stop of the other half moves to the entry and that half closes at TP2. Where the stop sits before TP1 is set by Crooks TP1 Rule: Stop Before TP1 (default Tight: TP1 / 2 minus 1.5 x the costs from the entry, 0.3R with TP1 = 0.6R and no costs, so a stop-out loses exactly the recovery amount). Costs above TP1 / 3 -> that trade uses the normal Crooks size. While the rest runs on, new signals are skipped.\nGold 2021-2026: the tight stop is hit on most of these trades; see the workbook before using it.")
+T1S_TIGHT = "Tight: TP1 / 2 (a stop-out loses the amount)"
+T1S_K45   = "0.45R"
+T1S_K60   = "0.6R"
+T1S_FULL  = "Normal stop"
+T1S_FILL  = "Normal stop on the entry candle, then tight"
+T1S_PT    = "Normal stop, tight after a candle closes in profit"
+T1S_PBE   = "Normal stop, breakeven after a candle closes in profit"
+crkT1Stop = input.string(T1S_TIGHT, "Crooks TP1 Rule: Stop Before TP1", options = [T1S_TIGHT, T1S_K45, T1S_K60, T1S_FULL, T1S_FILL, T1S_PT, T1S_PBE], group = GRP_L, tooltip = "Only for the Crooks At Exit TP1 trades. The size never changes (half at TP1 banks the whole recovery amount); only the stop before TP1 does. After TP1 the rest's stop is always the entry.\nTight: TP1 / 2, a stop-out loses the amount (1x).\n0.45R / 0.6R: about 1.6x / 2.1x the amount at the stop.\nNormal stop: the 1.8 ATR (or half) stop, about 3.5x the amount.\nNormal stop on the entry candle, then tight: tight from the candle after the fill.\nTight / breakeven after a candle closes in profit: the normal stop until a candle closes beyond the entry, then the tight stop / the entry.\nThe moves act from the next candle. The hard cap limits the loss at the first stop, so with a wider stop the amount per trade is smaller.\nGold 2021-2026, 14 exit-TP1 settings, average per recovery trade: Normal stop -0.06x, plain (checkbox off) -0.07x, the others -0.14x to -0.17x (research workbook).")
+crkCnOn   = input.bool(false, "Crooks C: Win The Loss Back Over N Wins", inline = "ccn", group = GRP_L)
+crkCn     = input.int(1, "", minval = 1, inline = "ccn", group = GRP_L, tooltip = "Crooks C only. 1 = the trade after a win wins back the whole loss (the normal Crooks C).\n2 = it wins back half; if it wins, the next trade wins back the rest. 3 = one third, then the next third, then the rest.\nA loss at any point: back to base trades until the next win, then the N parts start again from the new loss.")
 parN     = input.int(3, "Wins Before Reset (Paroli)", minval = 1, group = GRP_L)
 delayN   = input.int(2, "Losses Before Recovery Starts (Delayed)", minval = 1, group = GRP_L)
 eqPct    = input.float(1.0, "Risk % Of Equity (% mode)", minval = 0.01, step = 0.1, group = GRP_L)
@@ -198,8 +211,11 @@ var float crkL      = 0.0    // Crooks: $ loss to win back in this cycle
 var int   crkN      = 0      // Crooks: closed trades in this cycle
 var bool  crkRec    = false  // Crooks: the trade in progress is a recovery trade
 var bool  crkW      = false  // Crooks C: the last closed trade was a win
+int       crkNp     = crkCnOn ? crkCn : 1
+var int   crkP      = crkNp  // Crooks C over N wins: parts of the loss still to win back (a recovery trade wins loss / parts)
 var bool  exT1      = false  // Crooks TP1 rule: this trade banks the recovery amount at TP1 with half, the rest runs to TP2
-var float exT1Stop  = na     // its stop: a stop-out loses exactly the recovery amount
+var float exT1Stop  = na     // its stop before TP1 (Crooks TP1 Rule: Stop Before TP1)
+var float exT1Tight = na     // the tight stop (TP1 / 2): a stop-out loses exactly the recovery amount
 var bool  exT1Half  = false  // the TP1 half is booked: the rest's stop is at the entry
 var float exT1Tp1   = na     // its own TP1 and TP2 (the engine's levels change with its next setup while the rest runs on)
 var float exT1Tp2   = na
@@ -355,8 +371,10 @@ if exClosed
     if crkL < 0.01 or ((recMode == L_CRA or recMode == L_CRD) and win and crkRec)
         crkL := 0.0
         crkN := 0
+        crkP := crkNp
     else
         crkN += 1
+        crkP := not win ? crkNp : crkRec ? math.max(1, crkP - 1) : crkP    // Crooks C over N wins: a loss starts the parts again after the next win
     crkW   := win
     crkRec := false
     exT1     := false
@@ -387,6 +405,15 @@ if exState == 2 and exMine and (evFill or evMove)
 // the engine exited: never stay in (with earn-back only a target win may run on to the extended target; a Crooks TP1-rule trade runs its rest to TP2)
 if evExit and exState == 2 and exMine and (not earnBack or not evWin) and not (exT1 and (evWin or exT1Half))
     strategy.close_all(comment = "Engine exit")
+
+// Crooks TP1 rule: stop choices that move the stop at a candle close (before the TP1 half is booked); the new stop acts from the next bar
+if exState == 2 and exT1 and not exT1Half and pos != 0 and (crkT1Stop == T1S_FILL or crkT1Stop == T1S_PT or crkT1Stop == T1S_PBE)
+    float t1Apx  = strategy.position_avg_price
+    bool  t1Prof = exL ? close > t1Apx : close < t1Apx
+    float t1New  = crkT1Stop == T1S_FILL or (crkT1Stop == T1S_PT and t1Prof) ? exT1Tight : crkT1Stop == T1S_PBE and t1Prof ? (exL ? f_floorTick(t1Apx + syminfo.mintick * 0.001) : f_ceilTick(t1Apx - syminfo.mintick * 0.001)) : exT1Stop
+    if exL ? t1New > exT1Stop : t1New < exT1Stop
+        exT1Stop := t1New
+        f_setExits(exL, true)
 
 // ── 4. force-close time / weekend start / news: close the position, cancel a working entry ──
 if flatNow and pos != 0
@@ -433,12 +460,17 @@ if evArm
     float t1D   = pvf > 0 ? tp1R * rp / 2.0 - 1.5 * costUnit / pvf : 0.0
     float t1S   = isL ? f_ceilTick(eP - t1D) : f_floorTick(eP + t1D)
     bool  t1Ok  = crkT1On and exitK == 1 and f_crkRecNext() and t1D > 0 and (isL ? eP - t1S : t1S - eP) >= syminfo.mintick * 0.5
-    float crkX  = crkL / (recMode == L_CRB ? cSplit : 1)
+    // the stop before TP1 (Crooks TP1 Rule: Stop Before TP1): the size stays the one whose half banks the amount at TP1, the stop-out loss is t1Mul x the amount
+    float t1K   = crkT1Stop == T1S_K45 ? 0.45 : 0.6
+    float t1S0  = crkT1Stop == T1S_TIGHT ? t1S : crkT1Stop == T1S_K45 or crkT1Stop == T1S_K60 ? (isL ? f_ceilTick(eP - t1K * rp) : f_floorTick(eP + t1K * rp)) : f_stopPx(isL)
+    float t1Per = math.abs(eP - t1S) * pvf + costUnit
+    float t1Mul = t1Ok and t1Per > 0 ? (math.abs(eP - t1S0) * pvf + costUnit) / t1Per : 1.0
+    float crkX  = crkL / (recMode == L_CRB ? cSplit : recMode == L_CRC ? crkP : 1)
     float crkR  = f_crkRecNext() ? (t1Ok ? math.max(baseRisk, crkX) : math.max(baseRisk, crkX / exitR)) : baseRisk
     float rUsd = recMode == L_LAB ? baseRisk * labU : recMode == L_GMART ? baseRisk * math.pow(recMult, recLosses) + baseRisk * recLosses : recMode == L_PAR ? baseRisk * math.pow(2, parWins) : recMode == L_RDALE ? baseRisk * rdUnits : recMode == L_DELAY ? (recLosses >= delayN ? baseRisk + recPool / recN : baseRisk) : recMode == L_EQPCT ? strategy.equity * eqPct / 100.0 : recMode == L_OSC ? baseRisk * math.min(oscU, oscNeed) : recMode == L_MART ? baseRisk * math.pow(recMult, recLosses) : recMode == L_FIB ? baseRisk * (recLosses == 0 ? 1.0 : fb) : recMode == L_DALE ? baseRisk * dUnits : recMode == L_C or recMode == L_CS ? math.max(baseC, carried / cSplit) : recMode == L_CRA or recMode == L_CRB or recMode == L_CRC or recMode == L_CRD ? crkR : baseRisk + add
     // hard cap, only for a signal that can be taken (with a trade still open its result is not booked yet: no restart or stop on that)
     bool preSkip = exState != 0 or pos != 0 or newsBlock or flatNow or capStop or paused or dayBlock
-    if capOn and rUsd > hardCap and not preSkip
+    if capOn and rUsd * t1Mul > hardCap and not preSkip
         if capAction == CAP_STOP
             capStop := true
         else if capAction == CAP_RESET
@@ -454,38 +486,45 @@ if evArm
             crkL      := 0.0
             crkN      := 0
             crkW      := false
+            crkP      := crkNp
             rUsd      := math.min(baseC, hardCap)
         else
-            rUsd := hardCap
+            rUsd := hardCap / t1Mul
     t1Ok := t1Ok and f_crkRecNext()       // a cap restart makes it trade 1 of a new cycle
     // stop-out loss per unit incl. costs, so the $ risk (and the hard cap) covers them
     float perUnit = (t1Ok ? math.abs(eP - t1S) : rp) * syminfo.pointvalue * fx + costUnit
+    float perLoss = t1Ok ? math.abs(eP - t1S0) * pvf + costUnit : perUnit     // the real stop-out loss per unit (a wider TP1-rule stop)
     float q       = perUnit > 0 ? rUsd / perUnit : 0.0
     // leverage: position value may not exceed equity x leverage
     float unitVal = lim * syminfo.pointvalue * fx
     if leverage > 0 and unitVal > 0
         q := math.min(q, strategy.equity * leverage / unitVal)
-    float qRaw = q
-    q := math.floor(q / unitsPer / stepLots + 1e-9) * stepLots * unitsPer
+    float qRaw  = q
+    float qDown = math.floor(q / unitsPer / stepLots + 1e-9) * stepLots * unitsPer
+    float qNear = math.round(q / unitsPer / stepLots + 1e-9) * stepLots * unitsPer
+    // to the nearest step only while the stop-out loss stays inside the hard cap and the size inside the leverage limit
+    bool  nearOk = lotRound == RND_NEAR and qNear > qDown and not (capOn and qNear * perLoss > hardCap) and not (leverage > 0 and unitVal > 0 and qNear > strategy.equity * leverage / unitVal)
+    q := nearOk ? qNear : qDown
     if q <= 0 and qRaw > 0
         if smallMode == SMALL_FRAC
             q := qRaw
         else if smallMode == SMALL_MIN
             float qMin = stepLots * unitsPer
-            q := capOn and qMin * perUnit > hardCap ? 0.0 : qMin
+            q := capOn and qMin * perLoss > hardCap ? 0.0 : qMin
     skipWhy := exState != 0 or pos != 0 ? "still in a trade" : newsBlock or flatNow ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : q <= 0 ? "size 0" : ""
     if skipWhy == ""
         strategy.cancel_all()
         exL       := isL
         exQty     := q
-        exRiskUsd := q * perUnit
+        exRiskUsd := q * perLoss
         exCostPx  := earnBack and syminfo.pointvalue * fx > 0 ? costUnit / (syminfo.pointvalue * fx) : 0.0
         exPnl     := 0.0
         exArm     := bar_index
         exPartDone := 0.0
         crkRec    := f_crkRecNext()
         exT1      := t1Ok
-        exT1Stop  := t1S
+        exT1Stop  := t1S0
+        exT1Tight := t1S
         exT1Half  := false
         exT1Tp1   := t1
         exT1Tp2   := t2
@@ -539,7 +578,7 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     bool   isC = recMode == L_C or recMode == L_CS
     bool   isK = recMode == L_CRA or recMode == L_CRB or recMode == L_CRC or recMode == L_CRD
     bool   kRec = exState != 0 ? crkRec : f_crkRecNext()
-    string kTxt = f_usd(crkL) + (recMode == L_CRC ? (kRec ? " · recovery trade" : crkL > 0 ? " · base, waiting for a win" : " · base") : " · trade " + str.tostring(crkN + 1) + (kRec ? " recovery" : " base")) + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "")
+    string kTxt = f_usd(crkL) + (recMode == L_CRC ? (kRec ? " · recovery trade" + (crkNp > 1 ? ", part " + str.tostring(crkNp - crkP + 1) + " of " + str.tostring(crkNp) : "") : crkL > 0 ? " · base, waiting for a win" : " · base") : " · trade " + str.tostring(crkN + 1) + (kRec ? " recovery" : " base")) + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "")
     f_row(mon, 5, isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", recMode == L_OFF ? "off" : isC ? f_usd(carried) + " · split " + str.tostring(cSplit) : isK ? kTxt : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : recMode == L_RDALE ? " · " + str.tostring(rdUnits) + " units" : recMode == L_OSC ? " · " + str.tostring(oscU) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white)
     f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(exW) + "W/" + str.tostring(exLn) + "L", white)
     f_row(mon, 7, "DAY P&L · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayFills) + "/" + str.tostring(maxFills), dayPnl >= 0 ? posC : negC)

@@ -1,0 +1,125 @@
+M1 S1 Most profit                  fixed $50   +5442 (fall  13%)
+   N=1  $500 start again:    +4678 fall  27% max risk $ 487 | 21-23   +1108 24-26   +4262 | median   +6591 | no cap:    +18469 fall  67% blown in  36% of orders
+   N=2  $500 start again:    +6402 fall  30% max risk $ 496 | 21-23   +3583 24-26   +2624 | median   +6964 | no cap:    +12519 fall  36% blown in  31% of orders
+   N=3  $500 start again:    +7350 fall  30% max risk $ 500 | 21-23   +2025 24-26   +5282 | median   +6897 | no cap:     +9163 fall  30% blown in  17% of orders
+   N=4  $500 start again:    +7009 fall  22% max risk $ 316 | 21-23   +3029 24-26   +3958 | median   +7229 | no cap:     +7009 fall  22% blown in   6% of orders
+M1 S2 Shortest losing streak       fixed $50   +4561 (fall  14%)
+   N=1  $500 start again:    +6442 fall  24% max risk $ 470 | 21-23   +2752 24-26   +4557 | median   +5751 | no cap:    +16641 fall  80% blown in  33% of orders
+   N=2  $500 start again:    +5505 fall  24% max risk $ 490 | 21-23   +3202 24-26   +2157 | median   +6575 | no cap:    +11127 fall  47% blown in  17% of orders
+   N=3  $500 start again:    +5990 fall  35% max risk $ 473 | 21-23    +792 24-26   +5139 | median   +5943 | no cap:     +8352 fall  37% blown in  10% of orders
+   N=4  $500 start again:    +7027 fall  25% max risk $ 310 | 21-23   +2858 24-26   +4170 | median   +6308 | no cap:     +7027 fall  25% blown in   3% of orders
+M1 S3 Most trades a day            fixed $50   +4470 (fall  16%)
+   N=1  $500 start again:    +6780 fall  20% max risk $ 491 | 21-23   +5078 24-26   +1702 | median   +5467 | no cap:    +19743 fall  36% blown in  43% of orders
+   N=2  $500 start again:    +5034 fall  35% max risk $ 480 | 21-23   +4366 24-26    +557 | median   +5493 | no cap:    +13053 fall  51% blown in  28% of orders
+   N=3  $500 start again:    +4911 fall  27% max risk $ 500 | 21-23   +4386 24-26    +485 | median   +5898 | no cap:     +9044 fall  27% blown in  16% of orders
+   N=4  $500 start again:    +7273 fall  23% max risk $ 311 | 21-23   +4594 24-26   +2662 | median   +5614 | no cap:     +7273 fall  23% blown in  10% of orders
+M1 S4 Simplest                     fixed $50   +4040 (fall  18%)
+   N=1  $500 start again:    +2283 fall  45% max risk $ 493 | 21-23    -714 24-26   +3727 | median   +5076 | no cap:    +18059 fall  92% blown in  36% of orders
+   N=2  $500 start again:    +4186 fall  37% max risk $ 494 | 21-23   +1659 24-26   +2299 | median   +5419 | no cap:    -11464 fall 114% blown in  29% of orders
+   N=3  $500 start again:    +2534 fall  34% max risk $ 494 | 21-23   +1627 24-26    +813 | median   +5474 | no cap:    -10876 fall 108% blown in  13% of orders
+   N=4  $500 start again:    +2939 fall  46% max risk $ 466 | 21-23     -33 24-26   +2921 | median   +5022 | no cap:     +5958 fall  69% blown in   9% of orders
+M5 S1 Most profit                  fixed $50   +6136 (fall  17%)
+   N=1  $500 start again:    +7003 fall  19% max risk $ 493 | 21-23   +5307 24-26   +2805 | median   +7239 | no cap:    +15305 fall  57% blown in  32% of orders
+   N=2  $500 start again:    +6347 fall  34% max risk $ 466 | 21-23   +2130 24-26   +4229 | median   +7588 | no cap:    +11333 fall  34% blown in  20% of orders
+   N=3  $500 start again:    +9649 fall  34% max risk $ 454 | 21-23   +4036 24-26   +5600 | median   +7199 | no cap:     +9649 fall  34% blown in   4% of orders
+   N=4  $500 start again:    +8887 fall  28% max risk $ 281 | 21-23   +4003 24-26   +4884 | median   +7259 | no cap:     +8887 fall  28% blown in   2% of orders
+M5 S2 Shortest losing streak       fixed $50   +3667 (fall   9%)
+   N=1  $500 start again:    +1685 fall  24% max risk $ 485 | 21-23   +2538 24-26    -418 | median   +4509 | no cap:    +11917 fall  65% blown in  27% of orders
+   N=2  $500 start again:    +4830 fall  22% max risk $ 496 | 21-23   +1951 24-26   +3508 | median   +4584 | no cap:     +9438 fall  34% blown in  27% of orders
+   N=3  $500 start again:    +2901 fall  23% max risk $ 477 | 21-23   +1343 24-26   +1350 | median   +4744 | no cap:     +7251 fall  20% blown in  15% of orders
+   N=4  $500 start again:    +5649 fall  16% max risk $ 499 | 21-23   +2310 24-26   +3172 | median   +4618 | no cap:     +5649 fall  16% blown in   7% of orders
+M5 S3 Most trades a day            fixed $50   +6275 (fall  16%)
+   N=1  $500 start again:    +7589 fall  21% max risk $ 497 | 21-23   +3865 24-26   +4158 | median   +7049 | no cap:    +16749 fall  30% blown in  36% of orders
+   N=2  $500 start again:   +10186 fall  30% max risk $ 495 | 21-23   +3730 24-26   +6295 | median   +7726 | no cap:    -10915 fall 108% blown in  14% of orders
+   N=3  $500 start again:    +6570 fall  38% max risk $ 487 | 21-23   +1523 24-26   +5063 | median   +7471 | no cap:     +9619 fall  53% blown in   6% of orders
+   N=4  $500 start again:    +7924 fall  32% max risk $ 490 | 21-23   +3275 24-26   +4648 | median   +7637 | no cap:     +8475 fall  32% blown in   1% of orders
+M5 S4 Simplest                     fixed $50   +4134 (fall  18%)
+   N=1  $500 start again:    +4030 fall  18% max risk $ 470 | 21-23   +3352 24-26   +1080 | median   +5276 | no cap:    +13684 fall  85% blown in  27% of orders
+   N=2  $500 start again:    +2412 fall  25% max risk $ 480 | 21-23   +3223 24-26    +794 | median   +5464 | no cap:    -12948 fall 115% blown in   9% of orders
+   N=3  $500 start again:    +4893 fall  23% max risk $ 495 | 21-23   +3459 24-26   +1005 | median   +5190 | no cap:     +8494 fall  76% blown in   6% of orders
+   N=4  $500 start again:    +3506 fall  25% max risk $ 473 | 21-23   +3787 24-26    -596 | median   +5416 | no cap:     +7355 fall  31% blown in   3% of orders
+M15 S1 Most profit                  fixed $50   +9077 (fall   9%)
+   N=1  $500 start again:   +13071 fall  16% max risk $ 475 | 21-23   +5517 24-26   +7460 | median  +10717 | no cap:    +15492 fall  42% blown in  11% of orders
+   N=2  $500 start again:   +12332 fall  19% max risk $ 499 | 21-23   +6136 24-26   +6096 | median  +10825 | no cap:    +12332 fall  19% blown in   4% of orders
+   N=3  $500 start again:   +10673 fall  12% max risk $ 384 | 21-23   +5519 24-26   +5057 | median  +10386 | no cap:    +10673 fall  12% blown in   2% of orders
+   N=4  $500 start again:   +10100 fall  11% max risk $ 211 | 21-23   +5252 24-26   +4788 | median   +9840 | no cap:    +10100 fall  11% blown in   1% of orders
+M15 S2 Shortest losing streak       fixed $50   +3704 (fall   9%)
+   N=1  $500 start again:    +3225 fall  16% max risk $ 446 | 21-23   +1092 24-26   +2132 | median   +4597 | no cap:     +5936 fall  23% blown in   3% of orders
+   N=2  $500 start again:    +4380 fall  16% max risk $ 476 | 21-23   +1789 24-26   +2591 | median   +4565 | no cap:     +5631 fall  24% blown in   1% of orders
+   N=3  $500 start again:    +3959 fall  16% max risk $ 457 | 21-23   +1770 24-26   +2189 | median   +4385 | no cap:     +5060 fall  16% blown in   1% of orders
+   N=4  $500 start again:    +4735 fall  10% max risk $ 353 | 21-23   +2632 24-26   +2103 | median   +4279 | no cap:     +4735 fall  10% blown in   0% of orders
+M15 S3 Shortest losing streak - ind fixed $50   +7274 (fall   5%)
+   N=1  $500 start again:   +10555 fall  17% max risk $ 487 | 21-23   +4298 24-26   +6257 | median   +8703 | no cap:    +11894 fall  14% blown in  14% of orders
+   N=2  $500 start again:    +9226 fall   7% max risk $ 220 | 21-23   +4351 24-26   +4874 | median   +8746 | no cap:     +9226 fall   7% blown in   2% of orders
+   N=3  $500 start again:    +8139 fall   6% max risk $ 173 | 21-23   +3982 24-26   +4157 | median   +8380 | no cap:     +8139 fall   6% blown in   0% of orders
+   N=4  $500 start again:    +7496 fall   6% max risk $ 142 | 21-23   +3678 24-26   +3818 | median   +7813 | no cap:     +7496 fall   6% blown in   0% of orders
+M15 S4 Longest winning streak       fixed $50   +4151 (fall  10%)
+   N=1  $500 start again:    +4741 fall  19% max risk $ 416 | 21-23   +1674 24-26   +3068 | median   +5169 | no cap:     +6689 fall  23% blown in   4% of orders
+   N=2  $500 start again:    +4692 fall  18% max risk $ 428 | 21-23   +1856 24-26   +2836 | median   +5019 | no cap:     +6164 fall  44% blown in   4% of orders
+   N=3  $500 start again:    +4553 fall  16% max risk $ 475 | 21-23   +2178 24-26   +2375 | median   +4916 | no cap:     +5660 fall  16% blown in   2% of orders
+   N=4  $500 start again:    +5345 fall  11% max risk $ 366 | 21-23   +3200 24-26   +2145 | median   +4811 | no cap:     +5345 fall  11% blown in   1% of orders
+M15 S5 Highest win rate             fixed $50   +3772 (fall   8%)
+   N=1  $500 start again:    +4049 fall  18% max risk $ 475 | 21-23   +1365 24-26   +2683 | median   +4996 | no cap:     +5957 fall  11% blown in   3% of orders
+   N=2  $500 start again:    +4735 fall  12% max risk $ 378 | 21-23   +2155 24-26   +2579 | median   +4771 | no cap:     +5660 fall  19% blown in   2% of orders
+   N=3  $500 start again:    +4314 fall  14% max risk $ 400 | 21-23   +2081 24-26   +2233 | median   +4641 | no cap:     +5261 fall  14% blown in   1% of orders
+   N=4  $500 start again:    +4881 fall  10% max risk $ 495 | 21-23   +2903 24-26   +1978 | median   +4478 | no cap:     +4881 fall  10% blown in   0% of orders
+M15 S6 Most trades a day            fixed $50   +5432 (fall  10%)
+   N=1  $500 start again:    +6846 fall  17% max risk $ 495 | 21-23   +1173 24-26   +5585 | median   +6896 | no cap:    +12909 fall  24% blown in  24% of orders
+   N=2  $500 start again:    +9211 fall  12% max risk $ 484 | 21-23   +3604 24-26   +5575 | median   +6563 | no cap:    +10180 fall  13% blown in  14% of orders
+   N=3  $500 start again:    +6516 fall  15% max risk $ 494 | 21-23   +1949 24-26   +4565 | median   +6629 | no cap:     +7632 fall  15% blown in   6% of orders
+   N=4  $500 start again:    +6706 fall  20% max risk $ 468 | 21-23   +2620 24-26   +4070 | median   +6726 | no cap:     +6706 fall  20% blown in   2% of orders
+M15 S7 Every year positive          fixed $50   +9830 (fall   8%)
+   N=1  $500 start again:   +12477 fall  16% max risk $ 451 | 21-23   +5663 24-26   +6721 | median  +11813 | no cap:    +15882 fall  42% blown in  10% of orders
+   N=2  $500 start again:   +12607 fall  19% max risk $ 499 | 21-23   +6244 24-26   +6264 | median  +11597 | no cap:    +12607 fall  19% blown in   4% of orders
+   N=3  $500 start again:   +10958 fall  12% max risk $ 384 | 21-23   +5622 24-26   +5284 | median  +10951 | no cap:    +10958 fall  12% blown in   1% of orders
+   N=4  $500 start again:   +10450 fall  11% max risk $ 240 | 21-23   +5239 24-26   +5213 | median  +10465 | no cap:    +10450 fall  11% blown in   0% of orders
+M15 S8 Simplest                     fixed $50   +4809 (fall  13%)
+   N=1  $500 start again:    +6236 fall  21% max risk $ 450 | 21-23   +2912 24-26   +3220 | median   +6008 | no cap:    +12079 fall  30% blown in  26% of orders
+   N=2  $500 start again:    +4546 fall  24% max risk $ 500 | 21-23   +2070 24-26   +2373 | median   +6268 | no cap:     +8704 fall  36% blown in  13% of orders
+   N=3  $500 start again:    +6953 fall  12% max risk $ 277 | 21-23   +3562 24-26   +3340 | median   +6258 | no cap:     +6953 fall  12% blown in   5% of orders
+   N=4  $500 start again:    +6139 fall  12% max risk $ 185 | 21-23   +3363 24-26   +2734 | median   +5861 | no cap:     +6139 fall  12% blown in   3% of orders
+M15 S9 Asia session only            fixed $50   +1747 (fall  10%)
+   N=1  $500 start again:     +660 fall  27% max risk $ 490 | 21-23    +650 24-26     -96 | median   +2331 | no cap:     +4957 fall  52% blown in  14% of orders
+   N=2  $500 start again:     -912 fall  39% max risk $ 481 | 21-23     -59 24-26    -956 | median   +2189 | no cap:     +3407 fall  44% blown in   5% of orders
+   N=3  $500 start again:    +1494 fall  21% max risk $ 495 | 21-23   +1624 24-26    +710 | median   +2574 | no cap:     +2533 fall  60% blown in   4% of orders
+   N=4  $500 start again:    +2033 fall  18% max risk $ 344 | 21-23   +1456 24-26    +526 | median   +2378 | no cap:     +2033 fall  18% blown in   0% of orders
+H1 S1 Most profit                  fixed $50   +3087 (fall   3%)
+   N=1  $500 start again:    +3649 fall   3% max risk $ 159 | 21-23   +1895 24-26   +1704 | median   +3501 | no cap:     +3649 fall   3% blown in   0% of orders
+   N=2  $500 start again:    +3224 fall   3% max risk $  76 | 21-23   +1739 24-26   +1472 | median   +3176 | no cap:     +3224 fall   3% blown in   0% of orders
+   N=3  $500 start again:    +3088 fall   3% max risk $  51 | 21-23   +1683 24-26   +1405 | median   +3093 | no cap:     +3088 fall   3% blown in   0% of orders
+   N=4  $500 start again:    +3087 fall   3% max risk $  50 | 21-23   +1683 24-26   +1405 | median   +3087 | no cap:     +3087 fall   3% blown in   0% of orders
+H1 S2 Shortest losing streak       fixed $50   +1683 (fall   2%)
+   N=1  $500 start again:    +1746 fall   3% max risk $  94 | 21-23   +1074 24-26    +672 | median   +1841 | no cap:     +1746 fall   3% blown in   0% of orders
+   N=2  $500 start again:    +1666 fall   2% max risk $ 111 | 21-23   +1007 24-26    +666 | median   +1782 | no cap:     +1666 fall   2% blown in   0% of orders
+   N=3  $500 start again:    +1675 fall   2% max risk $  60 | 21-23   +1012 24-26    +663 | median   +1730 | no cap:     +1675 fall   2% blown in   0% of orders
+   N=4  $500 start again:    +1675 fall   2% max risk $  58 | 21-23   +1012 24-26    +663 | median   +1698 | no cap:     +1675 fall   2% blown in   0% of orders
+H1 S3 Shortest losing streak - ind fixed $50   +2620 (fall   4%)
+   N=1  $500 start again:    +2951 fall   3% max risk $ 118 | 21-23   +1084 24-26   +1864 | median   +3067 | no cap:     +2951 fall   3% blown in   2% of orders
+   N=2  $500 start again:    +2685 fall   4% max risk $  68 | 21-23    +791 24-26   +1894 | median   +2904 | no cap:     +2685 fall   4% blown in   0% of orders
+   N=3  $500 start again:    +2620 fall   4% max risk $  50 | 21-23    +725 24-26   +1895 | median   +2695 | no cap:     +2620 fall   4% blown in   0% of orders
+   N=4  $500 start again:    +2620 fall   4% max risk $  50 | 21-23    +725 24-26   +1895 | median   +2627 | no cap:     +2620 fall   4% blown in   0% of orders
+H1 S4 Longest winning streak       fixed $50   +1385 (fall   4%)
+   N=1  $500 start again:    +1842 fall   4% max risk $ 210 | 21-23    +816 24-26   +1026 | median   +1752 | no cap:     +1842 fall   4% blown in   0% of orders
+   N=2  $500 start again:    +1740 fall   4% max risk $ 163 | 21-23    +717 24-26   +1023 | median   +1632 | no cap:     +1740 fall   4% blown in   0% of orders
+   N=3  $500 start again:    +1632 fall   4% max risk $ 150 | 21-23    +629 24-26    +999 | median   +1532 | no cap:     +1632 fall   4% blown in   0% of orders
+   N=4  $500 start again:    +1562 fall   4% max risk $ 140 | 21-23    +620 24-26    +942 | median   +1456 | no cap:     +1562 fall   4% blown in   0% of orders
+H1 S5 Highest win rate             fixed $50   +1707 (fall   3%)
+   N=1  $500 start again:    +1798 fall   3% max risk $ 116 | 21-23   +1170 24-26    +628 | median   +1865 | no cap:     +1798 fall   3% blown in   0% of orders
+   N=2  $500 start again:    +1696 fall   3% max risk $ 147 | 21-23   +1103 24-26    +622 | median   +1803 | no cap:     +1696 fall   3% blown in   0% of orders
+   N=3  $500 start again:    +1641 fall   3% max risk $  92 | 21-23   +1084 24-26    +619 | median   +1756 | no cap:     +1641 fall   3% blown in   0% of orders
+   N=4  $500 start again:    +1680 fall   3% max risk $  81 | 21-23   +1085 24-26    +618 | median   +1724 | no cap:     +1680 fall   3% blown in   0% of orders
+H1 S6 Most trades a day            fixed $50   +3143 (fall   7%)
+   N=1  $500 start again:    +6208 fall  12% max risk $ 459 | 21-23   +3030 24-26   +2951 | median   +3620 | no cap:     +6208 fall  12% blown in  12% of orders
+   N=2  $500 start again:    +4038 fall   8% max risk $ 146 | 21-23   +1934 24-26   +1894 | median   +4046 | no cap:     +4038 fall   8% blown in   2% of orders
+   N=3  $500 start again:    +3648 fall   7% max risk $  93 | 21-23   +1991 24-26   +1525 | median   +3598 | no cap:     +3648 fall   7% blown in   0% of orders
+   N=4  $500 start again:    +3290 fall   8% max risk $  68 | 21-23   +1950 24-26   +1276 | median   +3319 | no cap:     +3290 fall   8% blown in   0% of orders
+H1 S7 Smoothest                    fixed $50   +3133 (fall   3%)
+   N=1  $500 start again:    +3417 fall   3% max risk $ 146 | 21-23   +2155 24-26   +1213 | median   +3598 | no cap:     +3417 fall   3% blown in   0% of orders
+   N=2  $500 start again:    +3162 fall   3% max risk $  66 | 21-23   +2051 24-26   +1099 | median   +3280 | no cap:     +3162 fall   3% blown in   0% of orders
+   N=3  $500 start again:    +3133 fall   3% max risk $  50 | 21-23   +2033 24-26   +1099 | median   +3157 | no cap:     +3133 fall   3% blown in   0% of orders
+   N=4  $500 start again:    +3133 fall   3% max risk $  50 | 21-23   +2033 24-26   +1099 | median   +3133 | no cap:     +3133 fall   3% blown in   0% of orders
+H1 S8 Simplest                     fixed $50   +2557 (fall  11%)
+   N=1  $500 start again:    +1619 fall  21% max risk $ 479 | 21-23    -102 24-26   +2201 | median   +3162 | no cap:     +5175 fall  27% blown in  10% of orders
+   N=2  $500 start again:    +4105 fall  15% max risk $ 461 | 21-23   +1830 24-26   +1483 | median   +3543 | no cap:     +4105 fall  15% blown in   2% of orders
+   N=3  $500 start again:    +3828 fall   9% max risk $ 172 | 21-23   +1961 24-26   +1448 | median   +3111 | no cap:     +3828 fall   9% blown in   0% of orders
+   N=4  $500 start again:    +3302 fall  11% max risk $ 152 | 21-23   +1644 24-26   +1388 | median   +2847 | no cap:     +3302 fall  11% blown in   0% of orders

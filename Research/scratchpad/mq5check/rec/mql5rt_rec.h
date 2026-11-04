@@ -825,18 +825,21 @@ int iBarShift(const string&, ENUM_TIMEFRAMES, datetime t, bool exact)
    if(exact && rt_bars[ans].t != t) return -1;
    return rt_n - 1 - ans;
 }
-double rec_tv = 0, rec_ask = 0, rec_bid = 0;
+double rec_tv = 0, rec_ask = 0, rec_bid = 0, rec_vstep = 0.01, rec_vmin = 0.01, rec_vmax = 100.0, rec_eq = 0;
 double SymbolInfoDouble(const string&, ENUM_SYMBOL_INFO_DOUBLE id)
 {
    if(id == SYMBOL_POINT || id == SYMBOL_TRADE_TICK_SIZE) return rt_tick;
    if(id == SYMBOL_TRADE_TICK_VALUE) return rec_tv;
    if(id == SYMBOL_ASK) return rec_ask;
    if(id == SYMBOL_BID) return rec_bid;
+   if(id == SYMBOL_VOLUME_STEP) return rec_vstep;
+   if(id == SYMBOL_VOLUME_MIN) return rec_vmin;
+   if(id == SYMBOL_VOLUME_MAX) return rec_vmax;
    return 0;
 }
 bool SymbolInfoDouble(const string& n, ENUM_SYMBOL_INFO_DOUBLE id, double& v) { v = SymbolInfoDouble(n, id); return true; }
 mql_long SymbolInfoInteger(const string&, ENUM_SYMBOL_INFO_INTEGER id) { return id == SYMBOL_DIGITS ? _Digits : 0; }
-double AccountInfoDouble(ENUM_ACCOUNT_INFO_DOUBLE) { return 0; }
+double AccountInfoDouble(ENUM_ACCOUNT_INFO_DOUBLE id) { return (id == ACCOUNT_EQUITY || id == ACCOUNT_MARGIN_FREE) ? rec_eq : 0; }   // 0 unless a lot test sets it
 mql_long AccountInfoInteger(ENUM_ACCOUNT_INFO_INTEGER) { return 0; }
 int MQLInfoInteger(ENUM_MQL_INFO_INTEGER) { return 0; }
 int TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER) { return 0; }

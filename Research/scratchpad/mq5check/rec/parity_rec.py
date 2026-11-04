@@ -7,9 +7,9 @@ import recovery as RC, crooks
 H = S + '/mq5check/rec/rec_harness'
 EA_REC = {m: i for i, m in enumerate(RC.MODES)}          # MODES order == ENUM_REC order (0..19)
 CAPS = {'clamp': 0, 'stop': 1, 'reset': 2}
-def ea(path, exitR, mode, cap, act, split, n):
+def ea(path, exitR, mode, cap, act, split, n, cn=1):
     args = [H, path, repr(exitR), 'InpRec=%d' % EA_REC[mode], 'InpCapOn=%d' % (1 if cap > 0 else 0), 'InpHardCap=%r' % (cap if cap > 0 else 500.0),
-            'InpCapAction=%d' % CAPS[act], 'InpCSplit=%d' % split, 'InpBaseRisk=50', 'InpRecN=3', 'InpRecPct=50', 'InpRecMult=2', 'InpRecStep=25', 'InpParN=3', 'InpDelayN=2']
+            'InpCapAction=%d' % CAPS[act], 'InpCSplit=%d' % split, 'InpBaseRisk=50', 'InpRecN=3', 'InpRecPct=50', 'InpRecMult=2', 'InpRecStep=25', 'InpParN=3', 'InpDelayN=2', 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn]
     out = subprocess.run(args, capture_output=True, text=True, check=True).stdout.split('\n')
     rs = [float(l.split()[1]) for l in out if l.startswith('R ')]
     return rs, any(l == 'STOP' for l in out)
@@ -30,17 +30,18 @@ def main():
         for mode in RC.MODES:
             if mode == '% of equity': continue
             splits = (1, 2, 3, 4, 5) if mode in ('Crooks B', 'Rule C split', 'Rule C: carry the losses') else (3,)
-            for split in splits:
+            cns = (1, 2, 3) if mode == 'Crooks C' else (1,)                # Crooks C over N wins
+            for split, cn in [(s_, c_) for s_ in splits for c_ in cns]:
                 for cap, act in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'), (500.0, 'stop')):
-                    tr = []; r = RC.simulate(trs, mode, cap=cap, capAction=act, cSplit=split, exitR=xr, start=1e12, trace=tr)   # no ruin stop in the EA harness
-                    e, stop = ea(path, xr, mode, cap, act, split, len(trs)); runs += 1
+                    tr = []; r = RC.simulate(trs, mode, cap=cap, capAction=act, cSplit=split, exitR=xr, start=1e12, trace=tr, cN=cn)   # no ruin stop in the EA harness
+                    e, stop = ea(path, xr, mode, cap, act, split, len(trs), cn); runs += 1
                     n = min(len(tr), len(e)); diff = max([abs(a - b) / max(1.0, abs(a)) for a, b in zip(tr, e)] or [0.0])
                     worst = max(worst, diff); nblown += 1 if len(tr) < len(e) and r['ruined'] else 0; ntr += n
                     short = len(tr) < len(e) and r['ruined']                     # the simulator stops at a blown account, the EA harness has no account
                     if (len(tr) != len(e) and not short) or diff > 1e-9 or stop != r['capStopped']:
                         bad += 1
                         k = next((i for i, (a, b) in enumerate(zip(tr, e)) if abs(a - b) / max(1.0, abs(a)) > 1e-9), n)
-                        print('MISMATCH %s %s | %s split %d cap %d %s | py %d trades, EA %d | first diff at trade %d: py %s EA %s | stop py %s EA %s' % (
-                            tf, d['name'], mode, split, cap, act, len(tr), len(e), k, tr[k] if k < len(tr) else None, e[k] if k < len(e) else None, r['capStopped'], stop))
+                        print('MISMATCH %s %s | %s split %d N %d cap %d %s | py %d trades, EA %d | first diff at trade %d: py %s EA %s | stop py %s EA %s' % (
+                            tf, d['name'], mode, split, cn, cap, act, len(tr), len(e), k, tr[k] if k < len(tr) else None, e[k] if k < len(e) else None, r['capStopped'], stop))
     print('runs %d, trades compared %d, mismatches %d, worst relative difference %.2e; runs where the account blew (compared up to that trade): %d' % (runs, ntr, bad, worst, nblown))
 main()

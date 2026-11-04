@@ -5,7 +5,7 @@ import math
 MODES = ['Off', 'Recover all losses on the next trade', 'Recover losses over N trades', 'Recover a % of losses per trade', 'Martingale (multiply after each loss)',
          'Exact recovery at final TP', 'Step-up (+$ per loss in a row)', 'Fibonacci', "D'Alembert", 'Rule C: carry the losses', 'Rule C split', 'Labouchere',
          'Grand Martingale', 'Paroli', "Reverse D'Alembert", 'Delayed recovery', '% of equity', "Oscar's Grind", 'Crooks A', 'Crooks B', 'Crooks C', 'Crooks D']
-def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0, trace=None):
+def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0, trace=None, cN=1):
     """trades: iterable of (R result, spread cost in R) or (R result, spread cost in R, parts). parts = [(R of the part, share of the position)]
     for a trade with a partial close: Rule C's carried losses are then updated after each part, like the strategy (once per candle)."""
     eq = start; peak = start; maxDD = 0.0; maxDDp = 0.0; net = 0.0
@@ -13,6 +13,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
     capStop = False; n = 0; maxRisk = 0.0; maxRiskPct = 0.0; ruined = False; ruinAt = None; gp = gl = 0.0
     lossRun = 0.0; worstRun = 0.0; sumRisk = 0.0
     crL = 0.0; crN = 0; crW = False      # Crooks: $ loss to win back, closed trades in the cycle, the last trade won (Crooks C)
+    crP = cN                             # Crooks C over N wins: parts of the loss still to win back (each recovery trade wins loss / parts)
     for k, tr in enumerate(trades):
         res, c = tr[0], tr[1]; parts = tr[2] if len(tr) > 2 else None
         if capStop or ruined: break
@@ -34,12 +35,12 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
              MODES[4]: base * mult ** min(recLosses, 200), MODES[7]: base * (1.0 if recLosses == 0 else fb), MODES[8]: base * dUnits,
              MODES[9]: max(baseC, carried / cSplit), MODES[10]: max(baseC, carried / cSplit),
              MODES[18]: max(base, crL / exitR) if crRec else base, MODES[19]: max(base, crL / cSplit / exitR) if crRec else base,
-             MODES[20]: max(base, crL / exitR) if crRec else base, MODES[21]: max(base, crL / exitR) if crRec else base}.get(mode, base + add)
+             MODES[20]: max(base, crL / crP / exitR) if crRec else base, MODES[21]: max(base, crL / exitR) if crRec else base}.get(mode, base + add)
         if cap > 0 and r > cap:
             if capAction == 'stop': capStop = True; break
             elif capAction == 'reset':
                 recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
-                crL = 0.0; crN = 0; crRec = False; crW = False
+                crL = 0.0; crN = 0; crRec = False; crW = False; crP = cN
                 r = min(baseC, cap)
             else: r = cap
         if trace is not None: trace.append(r)
@@ -70,8 +71,10 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         # Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back (A, D: also when a recovery trade wins;
         # C keeps a leftover: a recovery trade that wins without winning everything back is followed by another recovery trade)
         crL = max(0.0, crL - pnl)
-        if crL < 0.01 or (mode in (MODES[18], MODES[21]) and win and crRec): crL = 0.0; crN = 0      # less than a cent left = all won back
-        else: crN += 1
+        if crL < 0.01 or (mode in (MODES[18], MODES[21]) and win and crRec): crL = 0.0; crN = 0; crP = cN      # less than a cent left = all won back
+        else:
+            crN += 1
+            crP = cN if not win else (max(1, crP - 1) if crRec else crP)     # a loss starts the N parts again after the next win
         crW = win
     return dict(mode=mode, trades=n, avgRisk=sumRisk / n if n else 0.0, net=net, end=eq, maxDD=maxDD, maxDDpct=maxDDp, maxRisk=maxRisk, maxRiskPct=maxRiskPct, ruined=ruined, ruinAt=ruinAt,
                 pf=(gp / gl) if gl > 0 else float('inf'), worstRun=-worstRun, capStopped=capStop)

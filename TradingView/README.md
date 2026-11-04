@@ -87,6 +87,14 @@ and EMA trend-agreement or pullback-to-EMA rules removed more winners than loser
 Settings that share one line in the settings window now carry one title for the whole line (e.g. *Targets TP1 · TP2 · TP3 · TP4 (R)*), which removes
 TradingView's 34 "title of an inline input" warnings in the strategy and 24 in the indicator. Values and defaults are unchanged.
 
+### Settings added in v3.7 (strategy and EA only; the signals are unchanged)
+
+| Group | Setting | What it does | Gold 2021–2026 result |
+|---|---|---|---|
+| Loss recovery | **Crooks TP1 Rule: Stop Before TP1** (EA `InpCrkT1Stop`; default Tight) | For the "Crooks At Exit TP1" trades only. The size stays the same (half at TP1 banks the whole recovery amount, the rest runs to TP2 with its stop at the entry); only the stop before TP1 changes: **Tight** (TP1 ÷ 2, a stop-out loses 1× the amount), **0.45R** (about 1.6×), **0.6R** (about 2.1×), **Normal stop** (the 1.8 ATR or half stop, about 3.5×), **Normal stop on the entry candle, then tight**, **Normal stop, tight after a candle closes in profit**, **Normal stop, breakeven after a candle closes in profit**. Stop moves happen at a candle close and act from the next candle. The hard cap limits the real stop-out loss, so a wider stop means a smaller amount per trade (with $500 and the normal stop, about $145) | Average per recovery trade over 14 exit-TP1 settings: Normal stop −0.06×, plain (checkbox off) −0.07×, all others −0.14× to −0.17×. On the 3 settings profitable at exit TP1 (H1), Crooks C + $500 Start again: Normal stop +$1,760 / +$2,283 / +$2,053 against plain +$589 / +$896 / +$921 and Tight +$44 / −$1,365 / −$1,204 |
+| Loss recovery | **Crooks C: Win The Loss Back Over N Wins** (off, N = 1; EA `InpCrkCnOn`, `InpCrkCn`) | 1 = the trade after a win wins back the whole loss (Crooks C as before). 2 = it wins back half; if it wins, the next trade wins back the rest. 3 = a third, then the next third, then the rest. A loss at any point: base trades until the next win, then the parts start again from the new loss. The table shows "recovery trade, part 1 of 2" | 25 profitable strategies, $500 cap + Start again: total +$125.6k (N 1), +$128.0k (N 2), +$123.6k (N 3), +$128.4k (N 4); without a cap the account blew in 16% / 9% / 4% / 2% of random trade orders on average (worst strategy 43% / 31% / 17% / 10%) |
+| Risk | **Lot Rounding**: Down / To the nearest lot step (strategy default Down; EA `InpLotRound`, default nearest) and **size below the minimum lot**: trade the minimum / skip (EA `InpSmallLot`, default the minimum; the strategy's "If Size Is Below 1 Lot Step") | Nearest: 0.125 lot → 0.13, 0.124 → 0.12, 0.009 → 0.01; below the minimum (e.g. 0.004) → 0.01. It never rounds up past the hard cap or the leverage limit, and the minimum lot is skipped when its stop-out loss would break the hard cap | — |
+
 ## Same signals in the indicator, the strategy and the EA
 
 The indicator and the strategy contain a **byte-identical ENGINE block** (between `// >>> ENGINE BEGIN` and `// <<< ENGINE END`, plus the shared
@@ -121,7 +129,7 @@ Signals and trades are the indicator's. Strategy-only settings never change them
 | Group | Settings |
 |---|---|
 | Partial profits | Close % at TP1 / TP2 / TP3 (share of the original position); the trade still ends at the final exit or the stop. |
-| Risk | Base $ risk per trade (default $50); quantity = risk ÷ (stop distance × point value + costs per unit), converted to the account currency and rounded down to the lot step. Units per lot: auto by ticker or a fixed broker size. Hard cap with clamp / stop / restart. Leverage cap (default 1:100). Sizes below one lot step: fractional, minimum or skip. |
+| Risk | Base $ risk per trade (default $50); quantity = risk ÷ (stop distance × point value + costs per unit), converted to the account currency and rounded down to the lot step. Units per lot: auto by ticker or a fixed broker size. Hard cap with clamp / stop / restart. Leverage cap (default 1:100). Lot rounding down or to the nearest step; sizes below one lot step: fractional, minimum or skip. |
 | Costs | Spread (price units) and commission per lot are counted in the sizing; the table shows the Properties commission per contract to enter (it includes the spread). Earn-back pushes the strategy's targets out by the costs (then the strategy can exit later than the indicator). |
 | Streaks | Stop for the day after N losses / N wins in a row; pause 1-3 days after N losses in a row. |
 | Force-close, weekend, news | Daily force-close time; close trades when Saturday starts; a daily news window and 5 one-off news events (no new trades from N minutes before, close at the start). |

@@ -13,7 +13,11 @@ src, dst, cpp = sys.argv[1:4]
 h = open(src).read()
 a = 'double SymbolInfoDouble(const string&, ENUM_SYMBOL_INFO_DOUBLE id)\n{\n   if(id == SYMBOL_POINT || id == SYMBOL_TRADE_TICK_SIZE) return rt_tick;'
 assert h.count(a) == 1
-h = h.replace(a, 'double rec_tv = 0, rec_ask = 0, rec_bid = 0;\n' + a + '\n   if(id == SYMBOL_TRADE_TICK_VALUE) return rec_tv;\n   if(id == SYMBOL_ASK) return rec_ask;\n   if(id == SYMBOL_BID) return rec_bid;')
+h = h.replace(a, 'double rec_tv = 0, rec_ask = 0, rec_bid = 0, rec_vstep = 0.01, rec_vmin = 0.01, rec_vmax = 100.0, rec_eq = 0;\n' + a + '\n   if(id == SYMBOL_TRADE_TICK_VALUE) return rec_tv;\n   if(id == SYMBOL_ASK) return rec_ask;\n   if(id == SYMBOL_BID) return rec_bid;'
+              '\n   if(id == SYMBOL_VOLUME_STEP) return rec_vstep;\n   if(id == SYMBOL_VOLUME_MIN) return rec_vmin;\n   if(id == SYMBOL_VOLUME_MAX) return rec_vmax;')
+b = 'double AccountInfoDouble(ENUM_ACCOUNT_INFO_DOUBLE) { return 0; }'
+assert h.count(b) == 1
+h = h.replace(b, 'double AccountInfoDouble(ENUM_ACCOUNT_INFO_DOUBLE id) { return (id == ACCOUNT_EQUITY || id == ACCOUNT_MARGIN_FREE) ? rec_eq : 0; }   // 0 unless a lot test sets it')
 h += '\nbool OrderCalcMargin(ENUM_ORDER_TYPE, const string&, double, double, double& margin) { margin = 0; return true; }   // harness stub\n'
 open(dst, 'w').write(h)
 c = open(cpp).read(); inc = '#include "%s"' % src
@@ -32,7 +36,12 @@ extern "C" int rec_capstop() { return capStop ? 1 : 0; }
 // TP1 rule: the engine's stop distance and the spread of the next setup, then whether the EA uses the TP1 rule for it
 extern "C" void rec_setup(double risk, double spread) { trRisk = risk; rec_tv = 1.0; rec_bid = 1000.0; rec_ask = 1000.0 + spread; }
 extern "C" int rec_t1() { return CrkT1Dist() > 0 ? 1 : 0; }
+// lot sizing test: the EA's own LotsFor() with a set lot step / minimum / maximum, equity, tick value and spread
+extern "C" double rec_lots(double risk, double sd, double entry, int isL, double ld, double tv, double spread, double vstep, double vmin, double eq)
+{ rec_tv = tv; rec_bid = entry; rec_ask = entry + spread; rec_vstep = vstep; rec_vmin = vmin; rec_vmax = 100.0; rec_eq = eq; return LotsFor(risk, sd, entry, isL != 0, ld); }
 EOW
 clang++ -std=c++17 -O1 -w -c "$HERE/ea_rt.cpp" -o "$HERE/ea_rt.o"
 clang++ -std=c++17 -O1 -c "$HERE/rec_driver.cpp" -o "$HERE/rec_driver.o"
 clang++ -O1 "$HERE/rec_driver.o" "$HERE/ea_rt.o" -o "$HERE/rec_harness"
+clang++ -std=c++17 -O1 -c "$HERE/lots_driver.cpp" -o "$HERE/lots_driver.o"
+clang++ -O1 "$HERE/lots_driver.o" "$HERE/ea_rt.o" -o "$HERE/lots_harness"
