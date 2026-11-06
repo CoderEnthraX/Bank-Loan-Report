@@ -105,6 +105,12 @@ VWD_PX     = "Price"
 maxVwOn    = input.bool(false, "Skip Signals Too Far From VWAP: Max Distance", inline = "mx", group = GRP_F)
 maxVwDist  = input.float(5.0, "", minval = 0.01, step = 0.25, inline = "mx", group = GRP_F)
 maxVwUnit  = input.string(VWD_ATR, "", options = [VWD_ATR, VWD_PX], inline = "mx", group = GRP_F, tooltip = "Skips a signal whose candle closes farther than this from the VWAP, above or below: in ATR, or in price (e.g. 15 = 15.00 price units, $15 on gold). The skipped setup still runs invisibly until it would have finished (like Don't Chase), so the other signals stay the same. With the VWAP anchor Week or Month the signals are much farther away (gold M1 and M5: most more than 5 ATR).\nGold 2021-2026 test: trades far from the VWAP were not worse on average. With the Session anchor every cut-off from 2 to 4.5 ATR lowered the profit per trade (the far trades were the better ones); 5 ATR did the least harm, so it is the default value. No cut-off helped most settings in both 2021-23 and 2024-26 (research workbook, sheet VWAP distance), so the filter is off by default.")
+stopVwOn   = input.bool(false, "Skip When The Stop Is Beyond The VWAP: Buffer (x ATR)", inline = "sv", group = GRP_F)
+stopVwBuf  = input.float(0.0, "", step = 0.25, inline = "sv", group = GRP_F, tooltip = "Skips a long whose stop is below the VWAP (short: above): the VWAP sits inside the trade's risk, a signal still sitting on the VWAP. Buffer 0 = the stop must be on the trade's side of the VWAP; -1 lets the stop be up to 1 ATR past it; +0.5 wants it 0.5 ATR clear. VWAP and ATR of the signal candle; the skipped setup still runs invisibly (like Don't Chase).\nGold 2021-2026, 13 profitable settings with the Session VWAP: buffer 0 raised the profit per trade from +0.088R to +0.138R and was better in both 2021-23 and 2024-26 on 9 of 13 (worse on none), but keeps only about 1 trade in 5. Buffer -1: +0.120R, 36% of trades kept. With the Month VWAP it did not help.")
+touchVwOn  = input.bool(false, "Skip When The VWAP Was Touched In The Last N Candles", inline = "tv", group = GRP_F)
+touchVwN   = input.int(3, "", minval = 1, maxval = 100, inline = "tv", group = GRP_F, tooltip = "Skips a long when the low of the signal candle or of one of the N - 1 candles before it reached the VWAP (short: the high): price has only just left the VWAP. N = 1: only the signal candle. Each candle is compared with its own VWAP; the skipped setup still runs invisibly.\nGold 2021-2026, Session VWAP: N = 3 raised the profit per trade from +0.088R to +0.108R, better in both halves on 7 of 13 settings (worse on none), 57% of trades kept.")
+entVwOn    = input.bool(false, "Skip When The Entry Is Too Close To The VWAP: Min Distance (x ATR)", inline = "ev", group = GRP_F)
+entVwAtr   = input.float(0.75, "", step = 0.25, inline = "ev", group = GRP_F, tooltip = "Skips a long whose entry (the retest level) is less than this many ATR above the VWAP (short: below), or on the other side of it. VWAP and ATR of the signal candle; the skipped setup still runs invisibly.\nGold 2021-2026, Session VWAP: 0.75 ATR raised the profit per trade from +0.088R to +0.094R, better in both halves on 6 of 13 settings (worse on none), 86% of trades kept.")
 chopOn     = input.bool(false, "Skip Choppy Sessions: Max VWAP Crosses (Per 100 Bars)", inline = "ch", group = GRP_F)
 chopMax    = input.float(12.0, "", minval = 0.5, step = 0.5, inline = "ch", group = GRP_F, tooltip = "Counts how often the close has crossed the VWAP so far in this VWAP period (a cross = the close moving from more than 0.2 ATR on one side of the VWAP to more than 0.2 ATR on the other side). When there have been more crosses than this per 100 bars, a new setup is skipped. The skipped setup still runs invisibly until it would have finished (like Don't Chase), so a later, worse signal does not take its place. Research (limit 12): average +0.17R -> +0.21R per trade, October +0.20R -> +0.27R, total +197R -> +207R, 82% of trades kept, 9 of 10 instruments better, natural gas +0.28R -> +0.34R. Not proven yet - forward-test it. Do not combine with Don't Chase: they skip mostly the same trades.")
 emaOn      = input.bool(false, "Skip When The 1h EMA20 Moved More Than (ATR In 3 Hours)", inline = "em", group = GRP_F)
@@ -127,7 +133,8 @@ kzAsia    = input.bool(true, "Asia 05:30-09:30", group = GRP_W)
 kzLon     = input.bool(true, "London 11:30-14:30", group = GRP_W)
 kzNy      = input.bool(true, "New York 16:30-19:30", group = GRP_W)
 kzLc      = input.bool(true, "London Close 19:30-21:30", group = GRP_W)
-kzShift   = input.int(0, "Shift All Kill Zones (hours)", options = [-2, -1, 0, 1, 2], group = GRP_W, tooltip = "Moves every kill zone by this many hours, start and end (e.g. +1: Asia 06:30-10:30). Use it when the sessions move with daylight saving time (around November).")
+kzAuto    = input.bool(true, "Kill Zones Follow London / New York Summer Time", group = GRP_W, tooltip = "On (default): the London and London Close zones move 1 hour later while London is on winter time (last Sunday of October to last Sunday of March: 12:30-15:30 and 20:30-22:30 IST), and the New York zone while New York is on winter time (first Sunday of November to second Sunday of March: 17:30-20:30 IST). Asia never moves (Tokyo has no summer time). The times shown are the summer times in IST.\nOff: fixed Indian times, moved only by the shift below.")
+kzShift   = input.int(0, "Shift All Kill Zones (hours)", options = [-2, -1, 0, 1, 2], group = GRP_W, tooltip = "Moves every kill zone by this many hours, start and end (e.g. +1: Asia 06:30-10:30), on top of the automatic summer / winter time above.")
 string tzUse = tzIn == "Exchange" ? syminfo.timezone : tzIn
 
 GRP_S = "STYLE"
@@ -233,6 +240,11 @@ cumN   += 1
 float vwap  = cumW > 0 ? cumPV / cumW : cumP / cumN
 float vwVar = cumW > 0 ? cumPV2 / cumW - vwap * vwap : cumP2 / cumN - vwap * vwap
 float vwSd  = math.sqrt(math.max(vwVar, 0.0))
+// candles since the candle range last reached the VWAP (long side: the low, short side: the high); the current candle counts as 0
+var int tchL = 1000000
+var int tchS = 1000000
+tchL := low <= vwap ? 0 : math.min(tchL + 1, 1000000)
+tchS := high >= vwap ? 0 : math.min(tchS + 1, 1000000)
 
 // ── market structure and the displacement candle ──
 float atr       = ta.atr(atrLen)
@@ -523,16 +535,21 @@ int  dowUse = dayofweek(time, tzUse)
 bool dayOk  = not dayOn or (dowUse == dayofweek.monday and dMon) or (dowUse == dayofweek.tuesday and dTue) or (dowUse == dayofweek.wednesday and dWed) or (dowUse == dayofweek.thursday and dThu) or (dowUse == dayofweek.friday and dFri) or (dowUse == dayofweek.saturday and dSat) or (dowUse == dayofweek.sunday and dSun)
 bool inHours = not na(time(timeframe.period, hoursSess, tzUse))
 bool hourOk  = not hoursOn or inHours
-// kill zones: fixed Indian times (IST) of the bar's open, all moved by the same number of hours
-int  kzM = hour(time, "Asia/Kolkata") * 60 + minute(time, "Asia/Kolkata")
-f_inKz(int startM, int endM) =>
-    int ks = (startM + kzShift * 60 + 1440) % 1440
-    int ke = (endM + kzShift * 60 + 1440) % 1440
+// kill zones: Indian times (IST) of the bar's open, all moved by the shift; with kzAuto London / London Close move 1 hour later while
+// London is on winter time and New York while New York is (the times given are the summer times; Asia never moves)
+int  kzM   = hour(time, "Asia/Kolkata") * 60 + minute(time, "Asia/Kolkata")
+int  ukOff = (hour(time, "Europe/London") - hour(time, "UTC") + 24) % 24        // 1 = British summer time, 0 = winter
+int  nyOff = (hour(time, "America/New_York") - hour(time, "UTC") + 24) % 24     // 20 = New York summer time (UTC-4), 19 = winter
+int  lonSh = kzAuto and ukOff == 0 ? 60 : 0
+int  nySh  = kzAuto and nyOff == 19 ? 60 : 0
+f_inKz(int startM, int endM, int extra) =>
+    int ks = (startM + kzShift * 60 + extra + 1440) % 1440
+    int ke = (endM + kzShift * 60 + extra + 1440) % 1440
     ks < ke ? (kzM >= ks and kzM < ke) : (kzM >= ks or kzM < ke)
-bool inAsia = f_inKz(330, 570)
-bool inLon  = f_inKz(690, 870)
-bool inNy   = f_inKz(990, 1170)
-bool inLc   = f_inKz(1170, 1290)
+bool inAsia = f_inKz(330, 570, 0)
+bool inLon  = f_inKz(690, 870, lonSh)
+bool inNy   = f_inKz(990, 1170, nySh)
+bool inLc   = f_inKz(1170, 1290, lonSh)
 bool kzOk   = not kzOn or (kzAsia and inAsia) or (kzLon and inLon) or (kzNy and inNy) or (kzLc and inLc)
 bool canArm  = barstate.isconfirmed and warm and dayOk and hourOk and kzOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
 bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
@@ -559,7 +576,11 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         bool  nearNo = minVwOn and d * (close - vwap) < minVwAtr * atr
         // signal close too far from the VWAP, above or below (max distance in ATR or in price)
         bool  farNo  = maxVwOn and math.abs(close - vwap) > (maxVwUnit == VWD_PX ? maxVwDist : maxVwDist * atr)
-        bool  ghost  = zNo or chopNo or emaNo or nearNo or farNo
+        // signal still on the VWAP: the stop on the other side of it, the VWAP touched in the last N candles, the entry too close to it
+        bool  stopNo = stopVwOn and d * (stop - vwap) < stopVwBuf * atr
+        bool  tchNo  = touchVwOn and (isL ? tchL : tchS) < touchVwN
+        bool  entNo  = entVwOn and d * (entry - vwap) < entVwAtr * atr
+        bool  ghost  = zNo or chopNo or emaNo or nearNo or farNo or stopNo or tchNo or entNo
         if math.abs(st) == 1 and not trGhost
             evCancel := "REPLACED"
         // levels stay unrounded: the reference fills and stops on the exact values
@@ -571,7 +592,7 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         trRisk  := risk
         trHalf  := half
         trGhost := ghost
-        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : nearNo ? "TOO CLOSE TO VWAP" : farNo ? "BEYOND MAX VWAP DISTANCE" : ""
+        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : nearNo ? "TOO CLOSE TO VWAP" : farNo ? "BEYOND MAX VWAP DISTANCE" : stopNo ? "STOP BEYOND VWAP" : tchNo ? "VWAP TOUCHED RECENTLY" : entNo ? "ENTRY TOO CLOSE TO VWAP" : ""
         t1      := lim + d * tp1R * risk
         t2      := lim + d * tp2R * risk
         t3      := lim + d * tp3R * risk
@@ -601,7 +622,7 @@ if evExit
         else if evRes > 0.0
             lkN += 1
 bool mvAny  = mv1On or mv2On or mv3On
-bool fltAny = noChase or chopOn or emaOn or minVwOn or maxVwOn
+bool fltAny = noChase or chopOn or emaOn or minVwOn or maxVwOn or stopVwOn or touchVwOn or entVwOn
 f_sgnR(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
 f_share(int n, int total) => total > 0 ? str.tostring(math.round(100.0 * n / total)) + "%" : "—"
 // "77 trades · 52% (40W/37L) · +12.00R"
