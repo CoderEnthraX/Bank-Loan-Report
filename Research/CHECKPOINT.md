@@ -243,6 +243,15 @@ Other gold findings:
     or a failed partial close is booked at the next bar close (`gT1Seen`); texts for % other than 50 (tight = % x TP1; the 0.45R / 0.6R multiples hold for
     half with TP1 0.6R) and the rest's costs at the entry (a small unpaid part: Crooks B / C carry it, A / D drop it). All checks re-run: 0 differences.
 
+15. **Crooks C with single wins** (asked 2026-11-06, research only: the user loses big when wins come one at a time, L L W L W L W ...; suggestions
+    asked before any new setting). `gold/crooks_alt.py` and `crooks_alt2.py`, the 19 gold strategies profitable at fixed $50 without a partial close,
+    $50 base. Wins are not clustered: P(win) 40.3%, after a win 41.6%, after a loss 39.4%, after 2 wins 41.0%, so recovery trades lose about 57% of
+    the time whatever the timing rule. Totals with $500 + Start again (avg fall / worst / biggest single loss): Crooks C +$108k (18.7% / 45% / $406);
+    hard cap $250 +$112k (13.4% / 27% / $220, both halves positive 19 of 19); $150 +$99k (12.1% / 24%); over 2 wins +$109k (20.4% / 39%); forget the
+    loss after 2 losing recovery trades +$100k (13.5% / 26% / $313); recovery for 50% of the loss, the rest forgotten, +$99k (11.9% / 22% / $269);
+    both +$93k (11.3% / 20% / $156); wait for 2 wins in a row +$90k (16.7% / 33%); same day only +$98k (14.5% / 25%); same direction +$110k (18.4% / 33%);
+    Paroli +$137k (20.9% / 41%, max risk $200); fixed $50 +$91k (10.8% / 18%).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -262,6 +271,7 @@ Other gold findings:
 | VWAP distance | `vwfilter.py collect`, `vwfilter.py collect_tp2`, `vwfilter.py scan` | `vwfilter_trades.pkl`, `vwfilter_trades_tp2.pkl`, `vwfilter_scan.pkl`, `vwfilter.txt` | 1.5 min, 1 min, seconds |
 | VWAP skip rules (v3.8) | `vwfilter2.py collect`, `vwfilter2.py check`, `vwfilter2.py scan` | `vwfilter2_trades.pkl`, `vwfilter2_scan.pkl`, `vwfilter2.txt` | about 2 min, 1 min, seconds |
 | TP1 rule % and any final exit (v3.8) | `crooks_t1p.py` | `crooks_t1p.pkl` (30 MB, not kept), `crooks_t1p_money.pkl`, `crooks_t1p.txt` | about 2 min |
+| Crooks C single wins | `crooks_alt.py`, `crooks_alt2.py` | `crooks_alt*.pkl`, `crooks_alt*.txt` | 1 min each |
 | Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py`, `crooks_sheet.py` and `vwfilter_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |
 
