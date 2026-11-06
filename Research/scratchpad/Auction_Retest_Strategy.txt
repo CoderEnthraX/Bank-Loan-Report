@@ -108,6 +108,12 @@ VWD_PX     = "Price"
 maxVwOn    = input.bool(false, "Skip Signals Too Far From VWAP: Max Distance", inline = "mx", group = GRP_F)
 maxVwDist  = input.float(5.0, "", minval = 0.01, step = 0.25, inline = "mx", group = GRP_F)
 maxVwUnit  = input.string(VWD_ATR, "", options = [VWD_ATR, VWD_PX], inline = "mx", group = GRP_F, tooltip = "Skips a signal whose candle closes farther than this from the VWAP, above or below: in ATR, or in price (e.g. 15 = 15.00 price units, $15 on gold). The skipped setup still runs invisibly until it would have finished (like Don't Chase), so the other signals stay the same. With the VWAP anchor Week or Month the signals are much farther away (gold M1 and M5: most more than 5 ATR).\nGold 2021-2026 test: trades far from the VWAP were not worse on average. With the Session anchor every cut-off from 2 to 4.5 ATR lowered the profit per trade (the far trades were the better ones); 5 ATR did the least harm, so it is the default value. No cut-off helped most settings in both 2021-23 and 2024-26 (research workbook, sheet VWAP distance), so the filter is off by default.")
+stopVwOn   = input.bool(false, "Skip When The Stop Is Beyond The VWAP: Buffer (x ATR)", inline = "sv", group = GRP_F)
+stopVwBuf  = input.float(0.0, "", step = 0.25, inline = "sv", group = GRP_F, tooltip = "Skips a long whose stop is below the VWAP (short: above): the VWAP sits inside the trade's risk, a signal still sitting on the VWAP. Buffer 0 = the stop must be on the trade's side of the VWAP; -1 lets the stop be up to 1 ATR past it; +0.5 wants it 0.5 ATR clear. VWAP and ATR of the signal candle; the skipped setup still runs invisibly (like Don't Chase).\nGold 2021-2026, 13 profitable settings with the Session VWAP: buffer 0 raised the profit per trade from +0.088R to +0.138R and was better in both 2021-23 and 2024-26 on 9 of 13 (worse on none), but keeps only about 1 trade in 5. Buffer -1: +0.120R, 36% of trades kept. With the Month VWAP it did not help.")
+touchVwOn  = input.bool(false, "Skip When The VWAP Was Touched In The Last N Candles", inline = "tv", group = GRP_F)
+touchVwN   = input.int(3, "", minval = 1, maxval = 100, inline = "tv", group = GRP_F, tooltip = "Skips a long when the low of the signal candle or of one of the N - 1 candles before it reached the VWAP (short: the high): price has only just left the VWAP. N = 1: only the signal candle. Each candle is compared with its own VWAP; the skipped setup still runs invisibly.\nGold 2021-2026, Session VWAP: N = 3 raised the profit per trade from +0.088R to +0.108R, better in both halves on 7 of 13 settings (worse on none), 57% of trades kept.")
+entVwOn    = input.bool(false, "Skip When The Entry Is Too Close To The VWAP: Min Distance (x ATR)", inline = "ev", group = GRP_F)
+entVwAtr   = input.float(0.75, "", step = 0.25, inline = "ev", group = GRP_F, tooltip = "Skips a long whose entry (the retest level) is less than this many ATR above the VWAP (short: below), or on the other side of it. VWAP and ATR of the signal candle; the skipped setup still runs invisibly.\nGold 2021-2026, Session VWAP: 0.75 ATR raised the profit per trade from +0.088R to +0.094R, better in both halves on 6 of 13 settings (worse on none), 86% of trades kept.")
 chopOn     = input.bool(false, "Skip Choppy Sessions: Max VWAP Crosses (Per 100 Bars)", inline = "ch", group = GRP_F)
 chopMax    = input.float(12.0, "", minval = 0.5, step = 0.5, inline = "ch", group = GRP_F, tooltip = "Counts how often the close has crossed the VWAP so far in this VWAP period (a cross = the close moving from more than 0.2 ATR on one side of the VWAP to more than 0.2 ATR on the other side). When there have been more crosses than this per 100 bars, a new setup is skipped. The skipped setup still runs invisibly until it would have finished (like Don't Chase), so a later, worse signal does not take its place. Research (limit 12): average +0.17R -> +0.21R per trade, October +0.20R -> +0.27R, total +197R -> +207R, 82% of trades kept, 9 of 10 instruments better, natural gas +0.28R -> +0.34R. Not proven yet - forward-test it. Do not combine with Don't Chase: they skip mostly the same trades.")
 emaOn      = input.bool(false, "Skip When The 1h EMA20 Moved More Than (ATR In 3 Hours)", inline = "em", group = GRP_F)
@@ -130,7 +136,8 @@ kzAsia    = input.bool(true, "Asia 05:30-09:30", group = GRP_W)
 kzLon     = input.bool(true, "London 11:30-14:30", group = GRP_W)
 kzNy      = input.bool(true, "New York 16:30-19:30", group = GRP_W)
 kzLc      = input.bool(true, "London Close 19:30-21:30", group = GRP_W)
-kzShift   = input.int(0, "Shift All Kill Zones (hours)", options = [-2, -1, 0, 1, 2], group = GRP_W, tooltip = "Moves every kill zone by this many hours, start and end (e.g. +1: Asia 06:30-10:30). Use it when the sessions move with daylight saving time (around November).")
+kzAuto    = input.bool(true, "Kill Zones Follow London / New York Summer Time", group = GRP_W, tooltip = "On (default): the London and London Close zones move 1 hour later while London is on winter time (last Sunday of October to last Sunday of March: 12:30-15:30 and 20:30-22:30 IST), and the New York zone while New York is on winter time (first Sunday of November to second Sunday of March: 17:30-20:30 IST). Asia never moves (Tokyo has no summer time). The times shown are the summer times in IST.\nOff: fixed Indian times, moved only by the shift below.")
+kzShift   = input.int(0, "Shift All Kill Zones (hours)", options = [-2, -1, 0, 1, 2], group = GRP_W, tooltip = "Moves every kill zone by this many hours, start and end (e.g. +1: Asia 06:30-10:30), on top of the automatic summer / winter time above.")
 string tzUse = tzIn == "Exchange" ? syminfo.timezone : tzIn
 
 GRP_S = "STYLE"
@@ -203,7 +210,8 @@ fcMin     = input.int(0, "", minval = 0, maxval = 59, inline = "fc", group = GRP
 weekendOn = input.bool(false, "Close Open Trades When Saturday Starts", group = GRP_X, tooltip = "To stop NEW setups on Saturday/Sunday untick those days in DAYS AND HOURS (they then disappear from the indicator too).")
 newsPre   = input.int(60, "No New Trades Before News (minutes)", minval = 0, group = GRP_X, tooltip = "For every news window that is on: no new trades from this many minutes before it starts until it ends. Any open trade is closed and any working entry cancelled when the window starts.")
 dNewsOn   = input.bool(false, "Daily News Window", inline = "dn", group = GRP_X)
-dNewsSess = input.session("1800-1900", "", inline = "dn", group = GRP_X, tooltip = "Repeats every day in the time zone of DAYS AND HOURS (e.g. US data at 8:30 New York = 18:00 IST).")
+dNewsSess = input.session("1800-1900", "", inline = "dn", group = GRP_X, tooltip = "Repeats every day in the time zone of DAYS AND HOURS, set as it is in New York summer time (e.g. US data at 8:30 New York = 18:00 IST). The option below keeps it at the same New York time in winter.")
+dnAuto    = input.bool(true, "Daily News Window Follows New York Time", group = GRP_X, tooltip = "On (default): the daily window keeps the same New York time all year. Set it as it is in New York summer time; while New York is on winter time (first Sunday of November to second Sunday of March) it moves 1 hour later in IST (18:00-19:00 -> 19:00-20:00). It works for any time zone in DAYS AND HOURS: the window moves by the change in the gap between that zone and New York (London: only in the weeks when the two switch on different dates).\nOff: the window stays at the same time in your time zone all year.")
 n1On  = input.bool(false, "News 1 (start · minutes)", inline = "n1", group = GRP_X)
 n1T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n1", group = GRP_X)
 n1Dur = input.int(60, "", minval = 1, inline = "n1", group = GRP_X)
@@ -249,7 +257,7 @@ recPct   = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.
 recMult  = input.float(2.0, "Multiplier (Martingale)", minval = 1.0, step = 0.25, group = GRP_L)
 recStep  = input.float(25.0, "Step $ (Step-up)", minval = 0.0, step = 5.0, group = GRP_L)
 cSplit   = input.int(3, "Split The Loss Over This Many Trades (Rule C, Crooks B)", minval = 1, group = GRP_L, tooltip = "1 = win it all back in one trade.")
-crkT1On  = input.bool(true, "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", group = GRP_L, tooltip = "Only with Crooks A / B / C / D, Final Exit At TP1, and only on the recovery trades (A / B: 3, 5, 7 ...; C: the trade after a win; D: 3, 6, 9 ...). The position is doubled: half closes at TP1 and banks the whole recovery amount, then the stop of the other half moves to the entry and that half closes at TP2. Where the stop sits before TP1 is set by Crooks TP1 Rule: Stop Before TP1 (default Tight: TP1 / 2 minus 1.5 x the costs from the entry, 0.3R with TP1 = 0.6R and no costs, so a stop-out loses exactly the recovery amount). Costs above TP1 / 3 -> that trade uses the normal Crooks size. While the rest runs on, new signals are skipped.\nGold 2021-2026: the tight stop is hit on most of these trades; see the workbook before using it.")
+crkT1On  = input.bool(true, "Crooks At Exit TP1: Bank The Loss At TP1, Rest To TP2", group = GRP_L, tooltip = "Only with Crooks A / B / C / D, Final Exit At TP1 (any Final Exit with Crooks TP1 Rule: Works With Any Final Exit), and only on the recovery trades (A / B: 3, 5, 7 ...; C: the trade after a win; D: 3, 6, 9 ...). The position is made bigger: the part set in Crooks TP1 Rule: % Closed At TP1 (default 50, half) closes at TP1 and alone banks the whole recovery amount, then the stop of the rest moves to the entry and the rest closes at TP2. Where the stop sits before TP1 is set by Crooks TP1 Rule: Stop Before TP1 (default Tight: % x TP1 minus the costs from the entry, 0.3R with half and TP1 = 0.6R, so a stop-out loses exactly the recovery amount). Costs too big for that stop (above TP1 / 3 with half) -> that trade uses the normal Crooks size. While the rest runs on, new signals are skipped.\nGold 2021-2026: the tight stop is hit on most of these trades; see the workbook before using it.")
 T1S_TIGHT = "Tight: TP1 / 2 (a stop-out loses the amount)"
 T1S_K45   = "0.45R"
 T1S_K60   = "0.6R"
@@ -257,7 +265,9 @@ T1S_FULL  = "Normal stop"
 T1S_FILL  = "Normal stop on the entry candle, then tight"
 T1S_PT    = "Normal stop, tight after a candle closes in profit"
 T1S_PBE   = "Normal stop, breakeven after a candle closes in profit"
-crkT1Stop = input.string(T1S_TIGHT, "Crooks TP1 Rule: Stop Before TP1", options = [T1S_TIGHT, T1S_K45, T1S_K60, T1S_FULL, T1S_FILL, T1S_PT, T1S_PBE], group = GRP_L, tooltip = "Only for the Crooks At Exit TP1 trades. The size never changes (half at TP1 banks the whole recovery amount); only the stop before TP1 does. After TP1 the rest's stop is always the entry.\nTight: TP1 / 2, a stop-out loses the amount (1x).\n0.45R / 0.6R: about 1.6x / 2.1x the amount at the stop.\nNormal stop: the 1.8 ATR (or half) stop, about 3.5x the amount.\nNormal stop on the entry candle, then tight: tight from the candle after the fill.\nTight / breakeven after a candle closes in profit: the normal stop until a candle closes beyond the entry, then the tight stop / the entry.\nThe moves act from the next candle. The hard cap limits the loss at the first stop, so with a wider stop the amount per trade is smaller.\nGold 2021-2026, 14 exit-TP1 settings, average per recovery trade: Normal stop -0.06x, plain (checkbox off) -0.07x, the others -0.14x to -0.17x (research workbook).")
+crkT1Stop = input.string(T1S_TIGHT, "Crooks TP1 Rule: Stop Before TP1", options = [T1S_TIGHT, T1S_K45, T1S_K60, T1S_FULL, T1S_FILL, T1S_PT, T1S_PBE], group = GRP_L, tooltip = "Only for the Crooks At Exit TP1 trades. The size never changes (the part closed at TP1 banks the whole recovery amount); only the stop before TP1 does. After TP1 the rest's stop is always the entry.\nTight: % Closed At TP1 x TP1 minus the costs from the entry (TP1 / 2 with half), a stop-out loses the amount (1x).\n0.45R / 0.6R: fixed distances; with half and TP1 = 0.6R about 1.6x / 2.1x the amount at the stop (less than 1x when tighter than the tight stop).\nNormal stop: the 1.8 ATR (or half) stop, about 3.5x the amount with half at TP1 (about 1 / (% x TP1) times).\nNormal stop on the entry candle, then tight: tight from the candle after the fill.\nTight / breakeven after a candle closes in profit: the normal stop until a candle closes beyond the entry, then the tight stop / the entry.\nThe moves act from the next candle. The hard cap limits the loss at the first stop, so with a wider stop the amount per trade is smaller.\nGold 2021-2026, 14 exit-TP1 settings, average per recovery trade: Normal stop -0.06x, plain (checkbox off) -0.07x, the others -0.14x to -0.17x (research workbook).")
+crkT1Pct  = input.float(50.0, "Crooks TP1 Rule: % Closed At TP1", minval = 10.0, maxval = 90.0, step = 5.0, group = GRP_L, tooltip = "Only for the Crooks TP1-rule trades. This share of the position closes at TP1 and alone banks the whole recovery amount; the rest's stop moves to the entry and it runs to TP2.\nThe position risks 1 / (% x TP1) times the amount (no costs): 50% with TP1 = 0.6R -> 3.33x (the 'owed / 0.3' size), 30% -> 5.6x, 70% -> 2.4x. With the tight stop a stop-out loses exactly the amount; with the normal stop it loses that many times the amount, and a win at TP2 brings the amount plus (100 - %) / % x TP2 / TP1 times it (50%, TP2 = 1R: +1.67x).\nCosts: the TP1 part banks the amount after its own costs; when the rest then closes at the entry, its costs leave a little of the amount unpaid (with costs of 2% of the stop distance about 3% of it at 50%, about 30% at 10%). Crooks B and C win that back on the next recovery trade, A and D drop it.")
+crkT1Any  = input.bool(false, "Crooks TP1 Rule: Works With Any Final Exit", group = GRP_L, tooltip = "Off (default): the TP1 rule acts only with Final Exit At TP1.\nOn: it acts on the recovery trades whatever the Final Exit is: the part closes at TP1, the rest runs to TP2 with its stop at the entry after TP1 (with Final Exit TP3 / TP4 too, the rest closes at TP2). The other trades keep the normal exits. The stop moves (When TP1 / TP2 / TP3 Hits, Move Stop) and the partial profits do not apply to the TP1-rule trades.\nHalf at TP1 and the rest at TP2 with the normal stop: tick Crooks At Exit TP1, Stop Before TP1 = Normal stop, % Closed At TP1 = 50 and this.")
 crkCnOn   = input.bool(false, "Crooks C: Win The Loss Back Over N Wins", inline = "ccn", group = GRP_L)
 crkCn     = input.int(1, "", minval = 1, inline = "ccn", group = GRP_L, tooltip = "Crooks C only. 1 = the trade after a win wins back the whole loss (the normal Crooks C).\n2 = it wins back half; if it wins, the next trade wins back the rest. 3 = one third, then the next third, then the rest.\nA loss at any point: back to base trades until the next win, then the N parts start again from the new loss.")
 parN     = input.int(3, "Wins Before Reset (Paroli)", minval = 1, group = GRP_L)
@@ -312,6 +322,11 @@ cumN   += 1
 float vwap  = cumW > 0 ? cumPV / cumW : cumP / cumN
 float vwVar = cumW > 0 ? cumPV2 / cumW - vwap * vwap : cumP2 / cumN - vwap * vwap
 float vwSd  = math.sqrt(math.max(vwVar, 0.0))
+// candles since the candle range last reached the VWAP (long side: the low, short side: the high); the current candle counts as 0
+var int tchL = 1000000
+var int tchS = 1000000
+tchL := low <= vwap ? 0 : math.min(tchL + 1, 1000000)
+tchS := high >= vwap ? 0 : math.min(tchS + 1, 1000000)
 
 // ── market structure and the displacement candle ──
 float atr       = ta.atr(atrLen)
@@ -602,16 +617,21 @@ int  dowUse = dayofweek(time, tzUse)
 bool dayOk  = not dayOn or (dowUse == dayofweek.monday and dMon) or (dowUse == dayofweek.tuesday and dTue) or (dowUse == dayofweek.wednesday and dWed) or (dowUse == dayofweek.thursday and dThu) or (dowUse == dayofweek.friday and dFri) or (dowUse == dayofweek.saturday and dSat) or (dowUse == dayofweek.sunday and dSun)
 bool inHours = not na(time(timeframe.period, hoursSess, tzUse))
 bool hourOk  = not hoursOn or inHours
-// kill zones: fixed Indian times (IST) of the bar's open, all moved by the same number of hours
-int  kzM = hour(time, "Asia/Kolkata") * 60 + minute(time, "Asia/Kolkata")
-f_inKz(int startM, int endM) =>
-    int ks = (startM + kzShift * 60 + 1440) % 1440
-    int ke = (endM + kzShift * 60 + 1440) % 1440
+// kill zones: Indian times (IST) of the bar's open, all moved by the shift; with kzAuto London / London Close move 1 hour later while
+// London is on winter time and New York while New York is (the times given are the summer times; Asia never moves)
+int  kzM   = hour(time, "Asia/Kolkata") * 60 + minute(time, "Asia/Kolkata")
+int  ukOff = (hour(time, "Europe/London") - hour(time, "UTC") + 24) % 24        // 1 = British summer time, 0 = winter
+int  nyOff = (hour(time, "America/New_York") - hour(time, "UTC") + 24) % 24     // 20 = New York summer time (UTC-4), 19 = winter
+int  lonSh = kzAuto and ukOff == 0 ? 60 : 0
+int  nySh  = kzAuto and nyOff == 19 ? 60 : 0
+f_inKz(int startM, int endM, int extra) =>
+    int ks = (startM + kzShift * 60 + extra + 1440) % 1440
+    int ke = (endM + kzShift * 60 + extra + 1440) % 1440
     ks < ke ? (kzM >= ks and kzM < ke) : (kzM >= ks or kzM < ke)
-bool inAsia = f_inKz(330, 570)
-bool inLon  = f_inKz(690, 870)
-bool inNy   = f_inKz(990, 1170)
-bool inLc   = f_inKz(1170, 1290)
+bool inAsia = f_inKz(330, 570, 0)
+bool inLon  = f_inKz(690, 870, lonSh)
+bool inNy   = f_inKz(990, 1170, nySh)
+bool inLc   = f_inKz(1170, 1290, lonSh)
 bool kzOk   = not kzOn or (kzAsia and inAsia) or (kzLon and inLon) or (kzNy and inNy) or (kzLc and inLc)
 bool canArm  = barstate.isconfirmed and warm and dayOk and hourOk and kzOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
 bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
@@ -638,7 +658,11 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         bool  nearNo = minVwOn and d * (close - vwap) < minVwAtr * atr
         // signal close too far from the VWAP, above or below (max distance in ATR or in price)
         bool  farNo  = maxVwOn and math.abs(close - vwap) > (maxVwUnit == VWD_PX ? maxVwDist : maxVwDist * atr)
-        bool  ghost  = zNo or chopNo or emaNo or nearNo or farNo
+        // signal still on the VWAP: the stop on the other side of it, the VWAP touched in the last N candles, the entry too close to it
+        bool  stopNo = stopVwOn and d * (stop - vwap) < stopVwBuf * atr
+        bool  tchNo  = touchVwOn and (isL ? tchL : tchS) < touchVwN
+        bool  entNo  = entVwOn and d * (entry - vwap) < entVwAtr * atr
+        bool  ghost  = zNo or chopNo or emaNo or nearNo or farNo or stopNo or tchNo or entNo
         if math.abs(st) == 1 and not trGhost
             evCancel := "REPLACED"
         // levels stay unrounded: the reference fills and stops on the exact values
@@ -650,7 +674,7 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         trRisk  := risk
         trHalf  := half
         trGhost := ghost
-        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : nearNo ? "TOO CLOSE TO VWAP" : farNo ? "BEYOND MAX VWAP DISTANCE" : ""
+        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : nearNo ? "TOO CLOSE TO VWAP" : farNo ? "BEYOND MAX VWAP DISTANCE" : stopNo ? "STOP BEYOND VWAP" : tchNo ? "VWAP TOUCHED RECENTLY" : entNo ? "ENTRY TOO CLOSE TO VWAP" : ""
         t1      := lim + d * tp1R * risk
         t2      := lim + d * tp2R * risk
         t3      := lim + d * tp3R * risk
@@ -680,7 +704,7 @@ if evExit
         else if evRes > 0.0
             lkN += 1
 bool mvAny  = mv1On or mv2On or mv3On
-bool fltAny = noChase or chopOn or emaOn or minVwOn or maxVwOn
+bool fltAny = noChase or chopOn or emaOn or minVwOn or maxVwOn or stopVwOn or touchVwOn or entVwOn
 f_sgnR(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
 f_share(int n, int total) => total > 0 ? str.tostring(math.round(100.0 * n / total)) + "%" : "—"
 // "77 trades · 52% (40W/37L) · +12.00R"
@@ -856,16 +880,16 @@ f_exitsStd(bool isL, bool withTargets) =>
         if pp3 > 0
             strategy.exit("X3", eid, qty = exQty * pp3 / 100.0, stop = sPx)
         strategy.exit("X4", eid, qty_percent = 100, stop = sPx)
-// Crooks TP1 rule: half closes at TP1, the rest at TP2; once TP1 is booked the rest's stop is the entry
+// Crooks TP1 rule: the TP1 part (crkT1Pct) closes at TP1, the rest at TP2; once TP1 is booked the rest's stop is the entry
 f_exitsT1(bool isL, bool withTargets) =>
     string eid = isL ? "L" : "S"
     float  sPx = exT1Half ? (isL ? f_floorTick(strategy.position_avg_price + syminfo.mintick * 0.001) : f_ceilTick(strategy.position_avg_price - syminfo.mintick * 0.001)) : exT1Stop
     if withTargets
         if not exT1Half
-            strategy.exit("X1", eid, qty = exQty * 0.5, limit = f_tgtPx(isL, exT1Tp1), stop = sPx)
+            strategy.exit("X1", eid, qty = exQty * crkT1Pct / 100.0, limit = f_tgtPx(isL, exT1Tp1), stop = sPx)
         strategy.exit("X4", eid, qty_percent = 100, limit = f_tgtPx(isL, exT1Tp2), stop = sPx)
     else
-        strategy.exit("X1", eid, qty = exQty * 0.5, stop = sPx)
+        strategy.exit("X1", eid, qty = exQty * crkT1Pct / 100.0, stop = sPx)
         strategy.exit("X4", eid, qty_percent = 100, stop = sPx)
 f_setExits(bool isL, bool withTargets) =>
     if exT1
@@ -885,17 +909,21 @@ int   preMs  = newsPre * 60000
 int   prevT  = nz(time[1], time)
 f_nBlock(bool on, int t0, int dur) => on and time >= t0 - preMs and time < t0 + dur * 60000
 f_nStart(bool on, int t0) => on and time >= t0 and prevT < t0
-// computed on every bar (outside the and/or chains) so their history is consistent
-bool  inDNews   = not na(time(timeframe.period, dNewsSess, tzUse))
+// daily window (set in New York summer time): with dnAuto it moves by the change in the gap between the time zone of DAYS AND HOURS and
+// New York against 1 July, so it keeps the same New York time all year (IST: 1 hour later while New York is on winter time)
+f_nyGap(int t) => ((hour(t, tzUse) - hour(t, "America/New_York")) * 60 + minute(t, tzUse) - minute(t, "America/New_York") + 2880) % 1440
+int   dnSh  = dnAuto ? (f_nyGap(time) - f_nyGap(timestamp("UTC", year(time, "UTC"), 7, 1, 12, 0)) + 2160) % 1440 - 720 : 0
+int   dnS   = (int(str.tonumber(str.substring(dNewsSess, 0, 2))) * 60 + int(str.tonumber(str.substring(dNewsSess, 2, 4))) + dnSh + 1440) % 1440
+int   dnE   = (int(str.tonumber(str.substring(dNewsSess, 5, 7))) * 60 + int(str.tonumber(str.substring(dNewsSess, 7, 9))) + dnSh + 1440) % 1440
+// computed on every bar (outside the and/or chains) so their history is consistent; a moved window: the bar opens inside it, like the session
+bool  inDSess   = not na(time(timeframe.period, dNewsSess, tzUse))
+bool  inDNews   = dnSh == 0 ? inDSess : dnS < dnE ? curM >= dnS and curM < dnE : curM >= dnS or curM < dnE
 bool  dNewsIn   = dNewsOn and inDNews
 bool  dNewsPrev = dNewsOn and inDNews[1]
 // daily window: block from newsPre minutes before its start until it ends
 bool  dPre = false
 if dNewsOn and newsPre > 0
-    int sH = int(str.tonumber(str.substring(dNewsSess, 0, 2)))
-    int sM = int(str.tonumber(str.substring(dNewsSess, 2, 4)))
-    int dStart = sH * 60 + sM
-    int diff = (dStart - curM + 1440) % 1440
+    int diff = (dnS - curM + 1440) % 1440
     dPre := diff > 0 and diff <= newsPre
 bool  newsBlock = dNewsIn or dPre or f_nBlock(n1On, n1T, n1Dur) or f_nBlock(n2On, n2T, n2Dur) or f_nBlock(n3On, n3T, n3Dur) or f_nBlock(n4On, n4T, n4Dur) or f_nBlock(n5On, n5T, n5Dur)
 bool  newsStart = (dNewsIn and not dNewsPrev) or f_nStart(n1On, n1T) or f_nStart(n2On, n2T) or f_nStart(n3On, n3T) or f_nStart(n4On, n4T) or f_nStart(n5On, n5T)
@@ -1056,14 +1084,15 @@ if evArm
     float labU  = array.size(labSeq) > 1 ? array.first(labSeq) + array.last(labSeq) : array.first(labSeq)
     int   oscNeed = int(math.max(1, math.ceil((baseRisk - oscP) / (baseRisk * exitR))))
     // Crooks: trades 1 and 2 of a cycle risk the base, then trades 3, 5, 7 ... are recovery trades (C: the trade after a win; D: 3, 6, 9 ...)
-    // TP1 rule (Final Exit At TP1): half of a double position banks the recovery amount at TP1, the rest runs to TP2; the stop sits where
-    // a stop-out loses exactly that amount: TP1 / 2 - 1.5 x costs from the entry, on the tick grid toward the entry
+    // TP1 rule (Final Exit At TP1, or any with crkT1Any): the part p closed at TP1 banks the recovery amount, the rest runs to TP2; the size is
+    // the one whose stop-out at t1D loses exactly that amount: p x TP1 - (1 + p) x costs from the entry (half: TP1 / 2 - 1.5 x costs), on the tick grid toward the entry
     float pvf   = syminfo.pointvalue * fx
     float eP    = f_entryPx(isL)
-    float t1D   = pvf > 0 ? tp1R * rp / 2.0 - 1.5 * costUnit / pvf : 0.0
+    float t1P   = crkT1Pct / 100.0
+    float t1D   = pvf > 0 ? t1P * tp1R * rp - (1.0 + t1P) * costUnit / pvf : 0.0
     float t1S   = isL ? f_ceilTick(eP - t1D) : f_floorTick(eP + t1D)
-    bool  t1Ok  = crkT1On and exitK == 1 and f_crkRecNext() and t1D > 0 and (isL ? eP - t1S : t1S - eP) >= syminfo.mintick * 0.5
-    // the stop before TP1 (Crooks TP1 Rule: Stop Before TP1): the size stays the one whose half banks the amount at TP1, the stop-out loss is t1Mul x the amount
+    bool  t1Ok  = crkT1On and (exitK == 1 or crkT1Any) and f_crkRecNext() and t1D > 0 and (isL ? eP - t1S : t1S - eP) >= syminfo.mintick * 0.5
+    // the stop before TP1 (Crooks TP1 Rule: Stop Before TP1): the size stays the one whose TP1 part banks the amount, the stop-out loss is t1Mul x the amount
     float t1K   = crkT1Stop == T1S_K45 ? 0.45 : 0.6
     float t1S0  = crkT1Stop == T1S_TIGHT ? t1S : crkT1Stop == T1S_K45 or crkT1Stop == T1S_K60 ? (isL ? f_ceilTick(eP - t1K * rp) : f_floorTick(eP + t1K * rp)) : f_stopPx(isL)
     float t1Per = math.abs(eP - t1S) * pvf + costUnit

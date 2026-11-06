@@ -56,7 +56,7 @@ enum ENUM_CAP_ACTION { CAP_CLAMP = 0,  // Clamp risk to the cap
                        CAP_RESET = 2 };// Start again from the base risk
 enum ENUM_VW_UNIT { VWU_ATR   = 0,  // x ATR
                    VWU_PRICE = 1 };// Price
-enum ENUM_T1_STOP { T1S_TIGHT = 0,   // Tight: TP1 / 2 (a stop-out loses the amount)
+enum ENUM_T1_STOP { T1S_TIGHT = 0,   // Tight: % x TP1 (TP1 / 2 at 50%; a stop-out loses the amount)
                     T1S_K45   = 1,   // 0.45R
                     T1S_K60   = 2,   // 0.6R
                     T1S_FULL  = 3,   // Normal stop
@@ -203,9 +203,9 @@ enum ENUM_KZ_SHIFT { KZ_M2 = -2,  // -2 hours
                      KZ_P2 = 2 }; // +2 hours
  bool   InpKzOn      = false; // Trade only in kill zones (Indian time, IST)
  bool   InpKzAsia    = true;  //   Asia 05:30-09:30 IST
- bool   InpKzLon     = true;  //   London 11:30-14:30 IST
- bool   InpKzNy      = true;  //   New York 16:30-19:30 IST
- bool   InpKzLc      = true;  //   London close 19:30-21:30 IST
+ bool   InpKzLon     = true;  //   London 11:30-14:30 IST (UK winter time: 1 hour later with the switch below)
+ bool   InpKzNy      = true;  //   New York 16:30-19:30 IST (US winter time: 1 hour later with the switch below)
+ bool   InpKzLc      = true;  //   London close 19:30-21:30 IST (UK winter time: 1 hour later with the switch below)
  bool   InpKzAuto    = true;  //   follow London / New York summer time (winter: those zones 1 hour later)
  ENUM_KZ_SHIFT InpKzShift = KZ_0; //   shift all kill zones (on top of the summer time switch)
 
@@ -341,6 +341,7 @@ datetime gFirstT = 0;              // first bar the engine processed
 // events of the last processed bar (shown setups / trades only)
 bool     evArm, evArmL, evFill, evFillL, evExit, evWin, evMove, evTp; double evRes; int evCancel; // 0 none, 1 expired, 2 replaced
 bool     gNewDay = false, gDayOk = true, gHourOk = true, gKzOk = true;
+bool     gT1Seen = false;          // Crooks TP1 rule: TP1 was reached (on a bar caught up after a disconnect, or the partial close failed) and the TP1 part is still to be booked
 int      lastAnchorKey = -1;
 datetime gLastDone = 0;            // open time of the last bar the engine processed
 
@@ -975,7 +976,7 @@ void T1Half(ulong tk, double vol)
    if(cv >= vmin && vol - cv >= vmin - 1e-9)
    {
       if(mq_dot(trade).PositionClosePartial(tk, NormalizeDouble(cv, 8))) { exT1Half = true; SetExits(true); }
-      else Print("TP1 partial close failed ("_mq, mq_dot(trade).ResultRetcodeDescription(), "), retrying"_mq);
+      else { Print("TP1 partial close failed ("_mq, mq_dot(trade).ResultRetcodeDescription(), "), retrying"_mq); gT1Seen = true; }   // ticks retry while price is past TP1, the next bar close in any case
    }
    else CloseAll();                                   // too small to split: close it all at TP1
 }
@@ -1314,11 +1315,14 @@ void OnNewBar()
       exState = 0; exArm = -1; gVirt = false;
    }
    if(exState == 2 && exMine && MathAbs(st) == 2) exSynced = true;   // the engine is in the EA's setup (filled on this bar or a caught-up bar)
-   if(exState == 2 && exMine && (evFill || evMove)) SetExits(true);
-   // Crooks TP1 rule: TP1 was reached but no tick booked the TP1 part (missed tick, failed close): book it now
-   // (exit TP1: the engine won on the bar that just closed; any exit: that bar, after the fill bar, reached TP1)
+   // Crooks TP1 rule: TP1 was reached but no tick booked the TP1 part (missed tick, failed close, disconnect): book it now, before the
+   // stop / target update below (exit TP1: the engine won on the bar that just closed; any exit: that bar, after the fill bar, reached
+   // TP1; or a bar caught up after a disconnect did)
    bool t1Bar = exT1 && exSynced && lastFill >= 0 && lastFill < bi && (exL ? Hi(1) >= exT1Tp1 + exCostPx : Lo(1) <= exT1Tp1 - exCostPx);
-   if(((evExit && evWin) || t1Bar) && exState == 2 && exMine && exT1 && !exT1Half && pos) T1Half(pTk, pVol);
+   bool t1Due = (((evExit && evWin) || t1Bar) && exMine) || gT1Seen;
+   gT1Seen = false;                                                  // a failed close below sets it again: retried at the next bar close
+   if(t1Due && exState == 2 && exT1 && !exT1Half && pos) { T1Half(pTk, pVol); pos = HasPosition(pTk, pVol, pOpen); }
+   if(exState == 2 && exMine && (evFill || evMove)) SetExits(true);
    if(evExit && exState == 2 && exMine && (!InpEarnBack || !evWin) && !(exT1 && (evWin || exT1Half))) CloseAll();   // engine exited: never stay in (earn-back and the Crooks TP1 rule only outlive a win)
    // Crooks TP1 rule: stop choices that move the stop at a bar close, before the TP1 half is booked
    if(exState == 2 && exT1 && !exT1Half && (InpCrkT1Stop == T1S_FILL || InpCrkT1Stop == T1S_PT || InpCrkT1Stop == T1S_PBE)) T1StopMove();
@@ -1400,7 +1404,7 @@ void ResetEngine()
    totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true; gKzOk = true;
    exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false; exT1 = false; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0; exKeepSl = 0;
    sigN = 0; takenN = 0; skipN = 0; missN = 0; skipWhy = ""_mq;
-   gVirt = false; gDayPend = false; gPrevT = 0; capStop = false;
+   gVirt = false; gDayPend = false; gPrevT = 0; capStop = false; gT1Seen = false;
    for(int q = 0; q < 3; q++) pDone[q] = false;
    trSkip = 0; lastRes = "-"_mq; bestPx = 0; ghW = 0; ghL = 0; ghR = 0;
    vxSide = 0; vxN = 0; tchL = 1000000; tchS = 1000000; hK = -1; hC = 0; hSum = 0; hNum = 0; ArrayInitialize(hE, 0.0);
@@ -1481,7 +1485,13 @@ void OnTick()
       if(sh == 1) { VirtualEntry(); ManagePartials(); return; }
       gPrevT = gLastDone;
       bool caught = false; mql_long biBefore = bi;
-      for(int s = sh - 1; s >= 2; s--) { ProcessBar(s); caught = true; if(gNewDay) gDayPend = true; }   // bars missed while offline: engine only
+      for(int s = sh - 1; s >= 2; s--)                                 // bars missed while offline: engine only
+      {
+         ProcessBar(s); caught = true; if(gNewDay) gDayPend = true;
+         // Crooks TP1 rule: a missed bar after the engine's fill of this setup reached TP1 and the TP1 part is not booked: book it on this bar
+         // (exState may still be 1 when the broker filled during the disconnect; with no position nothing is booked)
+         if(exState != 0 && exT1 && !exT1Half && exArm >= 0 && exArm == armBar && lastFill > exArm && lastFill < bi && (exL ? Hi(s) >= exT1Tp1 + exCostPx : Lo(s) <= exT1Tp1 - exCostPx)) gT1Seen = true;
+      }
       OnNewBar();
       if(caught && exState == 2 && MathAbs(st) == 2 && exArm == armBar) SetExits(true);   // re-sync stop moves of the missed bars
       if(caught && !evArm && MathAbs(st) == 1 && !trGhost && exState == 0 && armBar > biBefore) gRearm = true;   // armed on a caught-up bar: place it now
@@ -1501,13 +1511,13 @@ void OnTick()
 }
 //+------------------------------------------------------------------+
 
-#line 1472 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/run/EA_copy.mq5"
+#line 1476 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/run/EA_copy.mq5"
 typedef void (*mq_t_OnTick)();
 static mq_t_OnTick mq_chk_OnTick = &OnTick;
-#line 1457 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/run/EA_copy.mq5"
+#line 1461 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/run/EA_copy.mq5"
 typedef void (*mq_t_OnDeinit)(const int);
 static mq_t_OnDeinit mq_chk_OnDeinit = &OnDeinit;
-#line 1464 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/run/EA_copy.mq5"
+#line 1468 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/run/EA_copy.mq5"
 typedef void (*mq_t_OnChartEvent)(const int, const mql_long&, const double&, const string&);
 static mq_t_OnChartEvent mq_chk_OnChartEvent = &OnChartEvent;
 #line 1 "<rt-wrapper>"

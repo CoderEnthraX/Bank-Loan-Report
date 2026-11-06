@@ -238,7 +238,10 @@ Other gold findings:
     is better. Checks: engine parity 48 configurations (14 new) 0 differences, also with `PARITY_SHIFT_DAYS` 49 and -189; `mq5check/dst` 0 differences;
     `parity_rec.py` 1,680 runs 0; `parity_tp1.py` 2,464 runs (p 50, exit TP1) + 3,360 runs / 3.87 M trades (p 30 / 50 / 70, exit TP1 and TP2 + any, tight and
     normal stop, Crooks A-D, caps) 0 (it reads `gold/crooks_t1p.pkl`: run `gold/crooks_t1p.py` first, about 2 minutes; the 30 MB file is not kept in
-    `results/`); lot cases; `mq5check.py` 0 errors / 0 warnings; Pine parse OK, inline lint 0.
+    `results/`); lot cases; `mq5check.py` 0 errors / 0 warnings; Pine parse OK, inline lint 0. Independent review (Sonnet, high effort): no high or
+    medium findings; fixed after it: the EA books a due TP1 part before the bar's stop / target update, and a TP1 touch on bars caught up after a disconnect
+    or a failed partial close is booked at the next bar close (`gT1Seen`); texts for % other than 50 (tight = % x TP1; the 0.45R / 0.6R multiples hold for
+    half with TP1 0.6R) and the rest's costs at the entry (a small unpaid part: Crooks B / C carry it, A / D drop it). All checks re-run: 0 differences.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
