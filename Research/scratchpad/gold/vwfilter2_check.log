@@ -1,0 +1,13 @@
+M15 Default settings stop 0.0: engine == scan True (1690 / 1690 trades)
+M15 Default settings touch 3: engine == scan True (1766 / 1766 trades)
+M15 Default settings entry 0.5: engine == scan True (3051 / 3051 trades)
+H1 H1-S1 stop 0.0: engine == scan True (20 / 20 trades)
+H1 H1-S1 touch 3: engine == scan True (60 / 60 trades)
+H1 H1-S1 entry 0.5: engine == scan True (133 / 133 trades)
+M15 M15-S1 stop 0.0: engine == scan True (283 / 283 trades)
+M15 M15-S1 touch 3: engine == scan True (838 / 838 trades)
+M15 M15-S1 entry 0.5: engine == scan True (1338 / 1338 trades)
+
+real	0m3.426s
+user	0m11.343s
+sys	0m0.275s

@@ -1,0 +1,67 @@
+tv_trade,tv_entry_time_IST,ea_entry_time_IST,side,tv_entry,ea_entry,tv_oz,ea_lots,tv_pnl,ea_pnl,status
+1,2026-10-06 06:20,2026-10-06 06:20:00,long,4144.97,4145.18,8.0,0.08,29.02,27.44,same trade
+2,2026-10-06 08:05,2026-10-06 08:08:04,short,4124.613,4124.5,7.0,0.07,-48.27,-47.82,same trade
+3,2026-10-06 12:55,2026-10-06 12:59:40,long,4134.925,4134.87,6.0,0.06,29.38,28.02,same trade
+4,2026-10-06 14:30,2026-10-06 14:30:42,long,4154.38,4154.4,6.0,0.22,28.39,-50.16,"same trade; EA used the Crooks TP1 rule (checkbox on in the EA, off in TradingView)"
+5,2026-10-06 21:05,2026-10-06 21:05:40,long,4165.872,4165.95,5.0,0.05,-42.87,-42.66,same trade
+6,2026-10-07 07:55,2026-10-07 07:58:40,short,4146.125,4146.07,8.0,0.08,27.09,25.68,same trade
+7,2026-10-07 13:55,2026-10-07 13:56:04,short,4128.575,4128.53,7.0,0.22,29.55,121.21,"same trade; EA used the Crooks TP1 rule (checkbox on in the EA, off in TradingView)"
+8,2026-10-08 07:20,2026-10-08 07:20:38,long,4134.95,4134.95,5.0,0.05,28.52,27.64,same trade
+9,2026-10-08 09:20,2026-10-08 09:21:28,long,4138.62,4138.74,6.0,0.06,-44.12,-44.28,same trade
+10,2026-10-08 20:00,,long,4136.39,,5.0,,-50.02,,"TradingView only: different broker price data, or a follow-on of an earlier different trade"
+11,2026-10-13 06:30,2026-10-13 06:30:32,short,4160.225,4160.1,7.0,0.07,-45.44,-45.16,same trade
+12,2026-10-13 07:55,2026-10-13 07:57:29,long,4171.21,4171.3,10.0,0.1,27.7,26.0,same trade
+13,2026-10-13 08:30,2026-10-13 08:32:21,long,4177.005,4177.19,20.0,0.24,111.14,172.08,"same trade; EA used the Crooks TP1 rule (checkbox on in the EA, off in TradingView)"
+14,2026-10-13 19:30,2026-10-13 19:30:40,short,4171.813,4171.69,5.0,0.05,27.19,26.24,same trade
+,,2026-10-14 07:10:30,short,,4147.51,,0.05,,-46.81,"EA only: different broker price data, or a follow-on of an earlier different trade"
+15,2026-10-14 08:35,2026-10-14 08:35:02,long,4163.645,4163.68,11.0,0.11,28.83,26.72,same trade
+16,2026-10-14 16:40,2026-10-14 16:41:29,short,4138.715,4138.96,9.0,0.29,-49.02,-42.06,"same trade; EA used the Crooks TP1 rule (checkbox on in the EA, off in TradingView)"
+17,2026-10-14 18:50,2026-10-14 18:50:27,short,4081.25,4081.17,2.0,0.02,-37.5,-37.16,same trade
+18,2026-10-15 06:15,2026-10-15 06:15:00,long,4144.05,4144.09,5.0,0.05,27.21,25.99,same trade
+19,2026-10-15 08:45,2026-10-15 08:49:42,long,4150.765,4150.85,9.0,0.26,-89.74,-74.62,"same trade; EA used the Crooks TP1 rule (checkbox on in the EA, off in TradingView)"
+20,2026-10-15 11:40,,short,4134.265,,7.0,,-47.77,,"TradingView only: different broker price data, or a follow-on of an earlier different trade"
+21,2026-10-15 20:10,2026-10-15 20:12:38,long,4162.07,4162.18,4.0,0.04,-47.99,-47.72,same trade
+22,2026-10-20 06:35,2026-10-20 06:36:28,short,4127.43,4127.59,7.0,0.07,29.65,28.06,same trade
+23,2026-10-20 06:50,2026-10-20 06:52:39,short,4119.785,4119.7,44.0,0.25,-357.85,-57.76,"same trade; EA used the Crooks TP1 rule (checkbox on in the EA, off in TradingView)"
+24,2026-10-20 07:40,,long,4131.34,,11.0,,28.97,,"TradingView only: different broker price data, or a follow-on of an earlier different trade"
+25,2026-10-20 08:40,,long,4140.415,,114.0,,541.04,,"TradingView only: EA placed the same buy limit at 4140.45; FxPro price never reached it, order cancelled"
+26,2026-10-20 12:25,,long,4134.28,,6.0,,-46.37,,"TradingView only: different broker price data, or a follow-on of an earlier different trade"
+,,2026-10-20 13:05:04,short,,4127.88,,0.06,,26.34,"EA only: different broker price data, or a follow-on of an earlier different trade"
+27,2026-10-20 13:15,,short,4125.788,,6.0,,27.17,,"TradingView only: different broker price data, or a follow-on of an earlier different trade"
+,,2026-10-20 13:28:39,short,,4121.49,,0.24,,-54.24,"EA only: different broker price data, or a follow-on of an earlier different trade"
+28,2026-10-20 20:15,2026-10-20 20:19:42,long,4141.835,4141.96,3.0,0.04,-37.78,-50.32,same trade
+29,2026-10-21 06:40,2026-10-21 06:42:40,short,4111.193,4111.12,7.0,0.08,26.36,28.56,same trade
+30,2026-10-21 11:40,,short,4115.485,,7.0,,31.46,,"TradingView only: different broker price data, or a follow-on of an earlier different trade"
+,,2026-10-21 11:55:40,short,,4114.07,,0.23,,-47.62,"EA only: different broker price data, or a follow-on of an earlier different trade"
+31,2026-10-21 13:00,2026-10-21 13:00:41,long,4123.28,4123.37,7.0,0.07,-45.91,-45.51,same trade
+32,2026-10-22 06:05,2026-10-22 06:13:32,short,4116.76,4116.73,8.0,0.08,28.18,26.8,same trade
+33,2026-10-22 08:50,2026-10-22 08:51:40,short,4109.825,4109.83,5.0,0.21,62.05,258.71,"same trade; EA used the Crooks TP1 rule (checkbox on in the EA, off in TradingView)"
+34,2026-10-22 09:05,2026-10-22 09:05:04,short,4095.855,4095.85,5.0,0.27,29.79,171.77,"same trade; EA used the Crooks TP1 rule (checkbox on in the EA, off in TradingView)"
+35,2026-10-22 13:20,2026-10-22 13:22:29,short,4088.04,4087.99,5.0,0.05,28.08,26.89,same trade
+36,2026-10-22 16:45,2026-10-22 16:47:31,short,4072.605,4072.63,6.0,0.07,25.81,28.9,same trade
+37,2026-10-22 19:15,2026-10-22 19:15:40,short,4060.985,4060.94,3.0,0.03,23.69,23.03,same trade
+38,2026-10-22 21:00,2026-10-22 21:03:39,short,4053.63,4053.59,4.0,0.04,28.54,27.72,same trade
+,,2026-10-27 08:35:17,short,,4007.16,,0.06,,-47.28,"EA only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+,,2026-10-27 09:19:21,long,,4016.74,,0.06,,25.32,"EA only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+,,2026-10-27 09:52:41,long,,4023.5,,0.26,,-52.0,"EA only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+39,2026-10-27 13:55,2026-10-27 14:00:00,short,3996.63,3996.72,7.0,0.07,28.02,28.83,same trade
+,,2026-10-27 17:41:41,long,,4014.38,,0.25,,132.28,"EA only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+40,2026-10-27 19:15,,long,4027.832,,5.0,,27.08,,"TradingView only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+41,2026-10-27 19:40,2026-10-27 19:44:31,long,4037.925,4037.98,4.0,0.04,24.71,24.16,same trade
+42,2026-10-27 20:10,2026-10-27 20:12:35,long,4048.685,4048.87,4.0,0.04,24.95,24.2,same trade
+43,2026-10-28 07:10,2026-10-28 07:11:16,short,4055.805,4055.69,6.0,0.06,26.9,25.98,same trade
+,,2026-10-28 07:31:04,short,,4049.07,,0.06,,27.24,"EA only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+,,2026-10-28 13:51:40,long,,4049.24,,0.08,,28.56,"EA only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+44,2026-10-28 14:25,,long,4053.087,,7.0,,-43.84,,"TradingView only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+45,2026-10-28 20:00,,short,4043.16,,7.0,,28.88,,"TradingView only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+46,2026-10-29 06:05,,short,4039.895,,6.0,,-46.82,,"TradingView only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+47,2026-10-29 07:05,,long,4055.97,,5.0,,27.49,,"TradingView only: EA clock one hour off this week (FxPro switched to winter time on 25 Oct, the EA assumed 1 Nov)"
+48,2026-10-29 08:20,2026-10-29 08:22:41,short,4049.36,4049.42,5.0,0.04,30.79,23.68,same trade
+49,2026-10-29 13:20,2026-10-29 13:20:38,short,4026.625,4026.58,7.0,0.07,26.76,25.4,same trade
+50,2026-11-03 07:40,2026-11-03 07:43:30,short,3946.53,3946.43,5.0,0.05,28.79,27.94,same trade
+51,2026-11-03 13:30,2026-11-03 13:30:40,short,3908.105,3908.11,7.0,0.07,28.99,27.57,same trade
+52,2026-11-03 14:35,2026-11-03 14:35:42,short,3900.14,3900.07,7.0,0.07,-47.54,-48.8,same trade
+,,2026-11-03 18:30:39,long,,3929.83,,0.06,,28.74,"EA only: different broker price data, or a follow-on of an earlier different trade"
+53,2026-11-04 11:50,,long,4010.485,,2.0,,20.52,,TradingView only: not in the EA test (MT5 stops at the start of the end date 2026.11.04)
+54,2026-11-04 13:45,,long,4030.025,,4.0,,28.65,,TradingView only: not in the EA test (MT5 stops at the start of the end date 2026.11.04)
+55,2026-11-04 21:45,,long,4043.157,,4.0,,25.29,,TradingView only: not in the EA test (MT5 stops at the start of the end date 2026.11.04)

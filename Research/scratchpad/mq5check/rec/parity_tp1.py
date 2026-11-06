@@ -45,4 +45,42 @@ for (tf, name), d in D.items():
                     i = diff[0] if diff else n
                     print('MISMATCH %s %s %s split %d N %d stop %d cap %d %s: py %d trades, EA %d; first diff trade %d: py %s EA %s' % (
                         tf, name, mode, split, cn, k, cap, act, len(trace), len(ea), i, (trace[i][1], bool(trace[i][3])) if i < len(trace) else None, ea[i] if i < len(ea) else None))
-print('runs %d, trades compared %d (TP1-rule trades %d), mismatches %d' % (runs, ntr, nt1, bad))
+print('p = 50%%, exit TP1: runs %d, trades compared %d (TP1-rule trades %d), mismatches %d' % (runs, ntr, nt1, bad))
+# v3.8: the part p closed at TP1 (InpCrkT1Pct 30 / 50 / 70) and any final exit (exit TP2 with InpCrkT1Any), tight and normal stop,
+# on gold/crooks_t1p.pkl (the TP1-rule paths replayed for each p); the first 2500 trades of each setting
+P2 = pickle.load(open(S + '/gold/crooks_t1p.pkl', 'rb'))
+def mult_p(x, tp1R, pt, var):
+    """the EA's CrkT1Mult() with InpCrkT1Pct = 100 p (harness tick 0.01, tick value 1, no commission)"""
+    spr = max(0.0, (1000.0 + x['spx']) - 1000.0); R1 = x['R1']
+    d = math.floor((pt * tp1R * R1 - (1.0 + pt) * (spr + 0.0)) / TS + 1e-9) * TS
+    if d < TS: return 1.0
+    s0 = d if var == 'tight' else R1
+    return (s0 + spr) / (d + spr)
+runs2 = bad2 = ntr2 = nt12 = 0
+for (tf, name, ex), d in sorted(P2.items(), key=lambda kv: (kv[0][0], kv[0][1], kv[0][2])):
+    for pt in (0.3, 0.5, 0.7):
+        for var, k in (('tight', 0), ('wide', 3)):
+            trs = [dict(x, sp=x['v'][(pt, var)], m=mult_p(x, d['tp1R'], pt, var)) for x in d['trades'][:2500]]
+            for mode, split, cn in (('Crooks A', 3, 1), ('Crooks B', 3, 1), ('Crooks C', 3, 1), ('Crooks C', 3, 2), ('Crooks D', 3, 1)):
+                for cap, act in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'), (500.0, 'stop')):
+                    trace = []; r = K.simulate(trs, mode, cap=cap, capAction=act, cSplit=split, tp1rule=True, exitR=d['exitR'], start=1e12, trace=trace, cN=cn)
+                    path = os.path.join(tdir.name, 'seq.txt')
+                    with open(path, 'w') as f:
+                        for x, risk, pnl, sp in trace: f.write('%r %r %r\n' % (x['R1'], x['spx'], 0.0 if pnl is None else pnl / risk))
+                    args = [H, path, repr(d['exitR']), 'InpRec=%d' % REC[mode], 'InpExitAt=%d' % ex, 'InpCrkT1Any=%d' % (1 if ex != 1 else 0), 'InpCrkT1Pct=%r' % (100.0 * pt),
+                            'InpTp1R=%r' % d['tp1R'], 'InpTp2R=%r' % d['tp2R'], 'InpCrkT1=1', 'InpCommLot=0', 'InpBaseRisk=50', 'InpCSplit=%d' % split,
+                            'InpCapOn=%d' % (1 if cap else 0), 'InpHardCap=%r' % (cap or 500.0), 'InpCapAction=%d' % ACT[act], 'InpCrkT1Stop=%d' % k,
+                            'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn]
+                    out = subprocess.run(args, capture_output=True, text=True, check=True, env=dict(os.environ, REC_T1='1')).stdout.split('\n')
+                    ea = [(float(l.split()[1]), int(l.split()[2])) for l in out if l.startswith('R ')]
+                    if trace and trace[-1][2] is None: trace = trace[:-1]
+                    runs2 += 1; n = min(len(ea), len(trace)); ntr2 += n; nt12 += sum(1 for _, _, _, sp in trace[:n] if sp)
+                    diff = [i for i in range(n) if abs(ea[i][0] - trace[i][1]) > 1e-9 * max(1.0, trace[i][1]) or ea[i][1] != int(bool(trace[i][3]))]
+                    stopped = any(l == 'STOP' for l in out)
+                    if diff or (len(ea) != len(trace) and not r['ruined']) or stopped != r['capStopped']:
+                        bad2 += 1
+                        if bad2 <= 8:
+                            i = diff[0] if diff else n
+                            print('MISMATCH v3.8 %s %s exit TP%d p %.1f %s %s N %d cap %d %s: py %d trades, EA %d; first diff trade %d: py %s EA %s' % (
+                                tf, name, ex, pt, var, mode, cn, cap, act, len(trace), len(ea), i, (trace[i][1], bool(trace[i][3])) if i < len(trace) else None, ea[i] if i < len(ea) else None))
+print('p = 30 / 50 / 70%%, exit TP1 and TP2 (any final exit), tight and normal stop: runs %d, trades compared %d (TP1-rule trades %d), mismatches %d' % (runs2, ntr2, nt12, bad2))

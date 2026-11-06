@@ -25,4 +25,7 @@ for a, b in R:
     s = s.replace(a, b)
 s = s.replace("    trades = []; cur = None\n", "    trades = []; cur = None; bestPx = None\n", 1)
 s = s[:s.index("if __name__ == '__main__':")]
+# research: kill zones at fixed Indian times like the catalogue runs (the strategy's automatic summer time is off here)
+assert s.count(', kzAuto=True') == 1
+s = s.replace(', kzAuto=True', ', kzAuto=False')
 open(S + '/gold/ref_g.py', 'w').write(s); print('ref_g.py written')

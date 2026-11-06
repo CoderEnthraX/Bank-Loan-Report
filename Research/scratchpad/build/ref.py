@@ -20,10 +20,11 @@ IN = dict(
     tp1R=0.6, tp2R=1.0, tp3R=1.5, tp4R=2.0, exitAt=4, mv1On=False, mv1R=0.0, mv2On=False, mv2R=0.6, mv3On=False, mv3R=1.0,
     # ACCURACY FILTERS
     noChase=False, noChaseSig=2.4, lossBlock=False, chopOn=False, chopMax=12.0, emaOn=False, emaMax=1.65, minVwOn=False, minVwAtr=1.0, maxVwOn=False, maxVwDist=5.0, maxVwUnit='atr',
+    stopVwOn=False, stopVwBuf=0.0, touchVwOn=False, touchVwN=3, entVwOn=False, entVwAtr=0.75,
     # DAYS AND HOURS (IST)
     dayOn=False, days=(True, True, True, True, True, True, True), hoursOn=False, hoursSess=(600, 2300),
     # KILL ZONES (IST minutes; Asia, London, New York, London close) and the shift in hours
-    kzOn=False, kz=(True, True, True, True), kzShift=0)
+    kzOn=False, kz=(True, True, True, True), kzShift=0, kzAuto=True)
 _W = {}
 def weights(sym):
     """per-bar volume weights backed out of the CSV VWAP (TradingView uses the real volume; the CSVs have none)."""
@@ -31,6 +32,19 @@ def weights(sym):
         sys.path.insert(0, S + '/research/orderflow'); import of
         _W[sym] = of.weights(sym)[1]
     return _W[sym]
+
+def _nth_sunday(y, m, n):
+    d = datetime.date(y, m, 1); return 1 + (6 - d.weekday()) % 7 + 7 * (n - 1)
+def _last_sunday(y, m):
+    d = _nth_sunday(y, m, 1)
+    while d + 7 <= 31: d += 7          # March and October have 31 days
+    return d
+def uk_summer(u):
+    """British summer time at UTC instant u: 01:00 UTC on the last Sunday of March to 01:00 UTC on the last Sunday of October"""
+    return datetime.datetime(u.year, 3, _last_sunday(u.year, 3), 1) <= u < datetime.datetime(u.year, 10, _last_sunday(u.year, 10), 1)
+def ny_summer(u):
+    """New York daylight time at UTC instant u: 07:00 UTC on the second Sunday of March to 06:00 UTC on the first Sunday of November"""
+    return datetime.datetime(u.year, 3, _nth_sunday(u.year, 3, 2), 7) <= u < datetime.datetime(u.year, 11, _nth_sunday(u.year, 11, 1), 6)
 
 def run(sym, opts=None):
     p = dict(IN); p.update(opts or {})
@@ -53,6 +67,7 @@ def run(sym, opts=None):
     # optional filters: VWAP crosses this VWAP period; 1-hour (UTC) candles built from the bars and their EMA20 (hE[0..3] = last 4 completed hours)
     vxSide = vxN = 0; hK = hC = None; hNum = 0; hSum = 0.0; hE = [None] * 4; hA = 2.0 / 21.0
     EP = datetime.datetime(1970, 1, 1)
+    tchL = tchS = 10 ** 9    # bars since the candle range last reached the VWAP (long side / short side)
     for i in range(n):
         newAnchor = P['daystart'][i]; newDay = newAnchor
         if newAnchor: vwBars = 0; sw = s1 = s2 = 0.0; nSess = nSess + 1 if i > 0 else 0
@@ -85,6 +100,7 @@ def run(sym, opts=None):
             hE = [e_, hE[0], hE[1], hE[2]]
         hK = hKey; hC = C[i]
         emaSpd = abs(hE[0] - hE[3]) / A_ if (hE[0] is not None and hE[3] is not None and A_ is not None and A_ > 0) else None
+        tchL = 0 if L[i] <= V[i] else tchL + 1; tchS = 0 if H[i] >= V[i] else tchS + 1   # every bar, warm or not
         warm = i >= max(p['structLen'], p['brkLen'], p['entryLen'], p['momLen'], p['slopeBars'], p['stopLen']) + 1 and atr[i] is not None
         A = atr[i] if atr[i] is not None else 0.0
         # ── 1. live trade (bars after the fill): stop first, then the final target, else stop moves ──
@@ -181,10 +197,14 @@ def run(sym, opts=None):
         dayOk = not p['dayOn'] or p['days'][T[i].weekday()]
         hourOk = not p['hoursOn'] or ((a0 <= tod < b0) if a0 < b0 else (tod >= a0 or tod < b0))
         km = T[i].hour * 60 + T[i].minute; sh = p['kzShift'] * 60
-        def inkz(a, b):
-            ks, ke = (a + sh + 1440) % 1440, (b + sh + 1440) % 1440
+        lonSh = nySh = 0
+        if p['kzOn'] and p['kzAuto']:          # London / London Close move 1 hour later in London winter time, New York in New York winter time
+            u = T[i] - datetime.timedelta(minutes=330)
+            lonSh = 0 if uk_summer(u) else 60; nySh = 0 if ny_summer(u) else 60
+        def inkz(a, b, ex):
+            ks, ke = (a + sh + ex + 1440) % 1440, (b + sh + ex + 1440) % 1440
             return (ks <= km < ke) if ks < ke else (km >= ks or km < ke)
-        kzOk = not p['kzOn'] or any(on and inkz(a, b) for on, (a, b) in zip(p['kz'], ((330, 570), (690, 870), (990, 1170), (1170, 1290))))
+        kzOk = not p['kzOn'] or any(on and inkz(a, b, ex) for on, (a, b, ex) in zip(p['kz'], ((330, 570, 0), (690, 870, lonSh), (990, 1170, nySh), (1170, 1290, lonSh))))
         canArm = dayOk and hourOk and kzOk and abs(st) != 2 and cooled and dayFills < p['maxFills'] and dayOpen and A > 0
         keepArm = p['rearmKeep'] and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
         if canArm and (bullDisp or bearDisp) and not keepArm:
@@ -207,7 +227,11 @@ def run(sym, opts=None):
                 # signal close too far from the VWAP (either side), in ATR or in price
                 vwd = abs(C[i] - V[i])
                 farNo = p['maxVwOn'] and vwd > (p['maxVwDist'] if p['maxVwUnit'] == 'price' else p['maxVwDist'] * A)
-                ghost = ghost or chopNo or emaNo or nearNo or farNo
+                # signal still on the VWAP: stop on the other side of it, VWAP touched in the last N candles, entry too close to it
+                stopNo = p['stopVwOn'] and d * (stop - V[i]) < p['stopVwBuf'] * A
+                tchNo = p['touchVwOn'] and (tchL if isL else tchS) < p['touchVwN']
+                entNo = p['entVwOn'] and d * (entry - V[i]) < p['entVwAtr'] * A
+                ghost = ghost or chopNo or emaNo or nearNo or farNo or stopNo or tchNo or entNo
                 st = d; armBar = i; lim = entry; stp = stop; stp0 = stop; trRisk = risk; trHalf = half; trGhost = ghost; trVwd = vwd; trVwdA = vwd / A
                 t = [lim + d * p['tp1R'] * risk, lim + d * p['tp2R'] * risk, lim + d * p['tp3R'] * risk, lim + d * p['tp4R'] * risk]
                 tF = t[p['exitAt'] - 1]

@@ -39,6 +39,11 @@ cumN   += 1
 float vwap  = cumW > 0 ? cumPV / cumW : cumP / cumN
 float vwVar = cumW > 0 ? cumPV2 / cumW - vwap * vwap : cumP2 / cumN - vwap * vwap
 float vwSd  = math.sqrt(math.max(vwVar, 0.0))
+// candles since the candle range last reached the VWAP (long side: the low, short side: the high); the current candle counts as 0
+var int tchL = 1000000
+var int tchS = 1000000
+tchL := low <= vwap ? 0 : math.min(tchL + 1, 1000000)
+tchS := high >= vwap ? 0 : math.min(tchS + 1, 1000000)
 
 // ── market structure and the displacement candle ──
 float atr       = ta.atr(atrLen)
@@ -329,16 +334,21 @@ int  dowUse = dayofweek(time, tzUse)
 bool dayOk  = not dayOn or (dowUse == dayofweek.monday and dMon) or (dowUse == dayofweek.tuesday and dTue) or (dowUse == dayofweek.wednesday and dWed) or (dowUse == dayofweek.thursday and dThu) or (dowUse == dayofweek.friday and dFri) or (dowUse == dayofweek.saturday and dSat) or (dowUse == dayofweek.sunday and dSun)
 bool inHours = not na(time(timeframe.period, hoursSess, tzUse))
 bool hourOk  = not hoursOn or inHours
-// kill zones: fixed Indian times (IST) of the bar's open, all moved by the same number of hours
-int  kzM = hour(time, "Asia/Kolkata") * 60 + minute(time, "Asia/Kolkata")
-f_inKz(int startM, int endM) =>
-    int ks = (startM + kzShift * 60 + 1440) % 1440
-    int ke = (endM + kzShift * 60 + 1440) % 1440
+// kill zones: Indian times (IST) of the bar's open, all moved by the shift; with kzAuto London / London Close move 1 hour later while
+// London is on winter time and New York while New York is (the times given are the summer times; Asia never moves)
+int  kzM   = hour(time, "Asia/Kolkata") * 60 + minute(time, "Asia/Kolkata")
+int  ukOff = (hour(time, "Europe/London") - hour(time, "UTC") + 24) % 24        // 1 = British summer time, 0 = winter
+int  nyOff = (hour(time, "America/New_York") - hour(time, "UTC") + 24) % 24     // 20 = New York summer time (UTC-4), 19 = winter
+int  lonSh = kzAuto and ukOff == 0 ? 60 : 0
+int  nySh  = kzAuto and nyOff == 19 ? 60 : 0
+f_inKz(int startM, int endM, int extra) =>
+    int ks = (startM + kzShift * 60 + extra + 1440) % 1440
+    int ke = (endM + kzShift * 60 + extra + 1440) % 1440
     ks < ke ? (kzM >= ks and kzM < ke) : (kzM >= ks or kzM < ke)
-bool inAsia = f_inKz(330, 570)
-bool inLon  = f_inKz(690, 870)
-bool inNy   = f_inKz(990, 1170)
-bool inLc   = f_inKz(1170, 1290)
+bool inAsia = f_inKz(330, 570, 0)
+bool inLon  = f_inKz(690, 870, lonSh)
+bool inNy   = f_inKz(990, 1170, nySh)
+bool inLc   = f_inKz(1170, 1290, lonSh)
 bool kzOk   = not kzOn or (kzAsia and inAsia) or (kzLon and inLon) or (kzNy and inNy) or (kzLc and inLc)
 bool canArm  = barstate.isconfirmed and warm and dayOk and hourOk and kzOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
 bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
@@ -365,7 +375,11 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         bool  nearNo = minVwOn and d * (close - vwap) < minVwAtr * atr
         // signal close too far from the VWAP, above or below (max distance in ATR or in price)
         bool  farNo  = maxVwOn and math.abs(close - vwap) > (maxVwUnit == VWD_PX ? maxVwDist : maxVwDist * atr)
-        bool  ghost  = zNo or chopNo or emaNo or nearNo or farNo
+        // signal still on the VWAP: the stop on the other side of it, the VWAP touched in the last N candles, the entry too close to it
+        bool  stopNo = stopVwOn and d * (stop - vwap) < stopVwBuf * atr
+        bool  tchNo  = touchVwOn and (isL ? tchL : tchS) < touchVwN
+        bool  entNo  = entVwOn and d * (entry - vwap) < entVwAtr * atr
+        bool  ghost  = zNo or chopNo or emaNo or nearNo or farNo or stopNo or tchNo or entNo
         if math.abs(st) == 1 and not trGhost
             evCancel := "REPLACED"
         // levels stay unrounded: the reference fills and stops on the exact values
@@ -377,7 +391,7 @@ if canArm and (bullDisp or bearDisp) and not keepArm
         trRisk  := risk
         trHalf  := half
         trGhost := ghost
-        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : nearNo ? "TOO CLOSE TO VWAP" : farNo ? "BEYOND MAX VWAP DISTANCE" : ""
+        trSkip  := zNo ? "TOO FAR FROM VWAP" : chopNo ? "CHOPPY VWAP SESSION" : emaNo ? "1H EMA20 TOO FAST" : nearNo ? "TOO CLOSE TO VWAP" : farNo ? "BEYOND MAX VWAP DISTANCE" : stopNo ? "STOP BEYOND VWAP" : tchNo ? "VWAP TOUCHED RECENTLY" : entNo ? "ENTRY TOO CLOSE TO VWAP" : ""
         t1      := lim + d * tp1R * risk
         t2      := lim + d * tp2R * risk
         t3      := lim + d * tp3R * risk
@@ -407,7 +421,7 @@ if evExit
         else if evRes > 0.0
             lkN += 1
 bool mvAny  = mv1On or mv2On or mv3On
-bool fltAny = noChase or chopOn or emaOn or minVwOn or maxVwOn
+bool fltAny = noChase or chopOn or emaOn or minVwOn or maxVwOn or stopVwOn or touchVwOn or entVwOn
 f_sgnR(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
 f_share(int n, int total) => total > 0 ? str.tostring(math.round(100.0 * n / total)) + "%" : "—"
 // "77 trades · 52% (40W/37L) · +12.00R"

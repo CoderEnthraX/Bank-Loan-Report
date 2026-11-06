@@ -30,9 +30,12 @@
 //| v3.6: Crooks C and D; optional max distance from the VWAP.       |
 //| v3.7: TP1-rule stop choices, Crooks C over N wins, lot rounding. |
 //| v3.7.1: server clock option for EU summer time (e.g. FxPro).     |
+//| v3.8: VWAP skip rules (stop beyond / touched / entry too close), |
+//| kill zones and daily news follow summer time, TP1 rule % and     |
+//| any final exit.                                                  |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.71"
+#property version   "3.80"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -164,6 +167,12 @@ input double InpMinVwAtr   = 1.0;   //   min distance of the signal close from V
 input bool   InpMaxVwOn    = false; // Skip signals too far from VWAP (max distance)
 input double InpMaxVwDist  = 5.0;   //   max distance of the signal close from VWAP, above or below
 input ENUM_VW_UNIT InpMaxVwUnit = VWU_ATR; //   ...measured in ATR or in price
+input bool   InpStopVwOn   = false; // Skip when the stop is beyond the VWAP
+input double InpStopVwBuf  = 0.0;   //   buffer (x ATR; 0 = stop on the trade's side, -1 = up to 1 ATR past it)
+input bool   InpTouchVwOn  = false; // Skip when the VWAP was touched in the last N candles
+input int    InpTouchVwN   = 3;     //   N candles (1 = the signal candle only)
+input bool   InpEntVwOn    = false; // Skip when the entry is too close to the VWAP
+input double InpEntVwAtr   = 0.75;  //   min distance of the entry from the VWAP (x ATR)
 
 input group "DAYS AND HOURS (YOUR time zone)"
 enum ENUM_SRV_TZ { SRV_NYCLOSE = 0,   // Auto: GMT+2 winter / GMT+3 US summer time (most FX brokers)
@@ -195,7 +204,8 @@ input bool   InpKzAsia    = true;  //   Asia 05:30-09:30 IST
 input bool   InpKzLon     = true;  //   London 11:30-14:30 IST
 input bool   InpKzNy      = true;  //   New York 16:30-19:30 IST
 input bool   InpKzLc      = true;  //   London close 19:30-21:30 IST
-input ENUM_KZ_SHIFT InpKzShift = KZ_0; //   shift all kill zones (daylight saving)
+input bool   InpKzAuto    = true;  //   follow London / New York summer time (winter: those zones 1 hour later)
+input ENUM_KZ_SHIFT InpKzShift = KZ_0; //   shift all kill zones (on top of the summer time switch)
 
 //--- EXECUTION inputs (EA only)
 input group "PARTIAL PROFITS (EA only)"
@@ -237,6 +247,7 @@ input bool   InpDNewsOn   = false; // Daily news window
 input int    InpDNewsH    = 18;    //   start hour
 input int    InpDNewsM    = 0;     //   start minute
 input int    InpDNewsDur  = 60;    //   length (minutes)
+input bool   InpDNewsAuto = true;  //   keep the same New York time all year (US winter time: 1 hour later)
 input bool     InpN1On = false;        // News 1
 input datetime InpN1T  = D'2026.01.01 18:00'; //   date and time (your time zone)
 input int      InpN1Dur = 60;          //   length (minutes)
@@ -260,8 +271,10 @@ input double InpRecPct   = 50.0;   // % of losses (% mode)
 input double InpRecMult  = 2.0;    // Multiplier (Martingale / Grand)
 input double InpRecStep  = 25.0;   // Step amount (Step-up)
 input int    InpCSplit   = 3;      // Rule C / Crooks B: split the loss over this many trades
-input bool   InpCrkT1    = true;   // Crooks at exit TP1: bank the loss at TP1 with half, rest to TP2
+input bool   InpCrkT1    = true;   // Crooks TP1 rule (exit TP1): bank the loss at TP1 with part, rest to TP2
 input ENUM_T1_STOP InpCrkT1Stop = T1S_TIGHT; //   ...stop before TP1 (the size is the same; the hard cap covers the real stop-out loss)
+input double InpCrkT1Pct = 50.0;   //   ...% closed at TP1 (10-90; that part alone banks the whole loss)
+input bool   InpCrkT1Any = false;  //   ...with any final exit (not only TP1; the rest still runs to TP2)
 input bool   InpCrkCnOn  = false;  // Crooks C: win the loss back over N wins
 input int    InpCrkCn    = 1;      //   ...N (1 = all on the trade after a win, 2 = half then the rest, ...)
 input int    InpParN     = 3;      // Paroli: wins before reset
@@ -306,13 +319,15 @@ int      lastDir = 0;
 double   lim = 0, stp = 0, stp0 = 0, trRisk = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, tF = 0;
 int      tpHit = 0;
 bool     trHalf = false, trGhost = false;
-int      trSkip = 0;               // why the setup is a ghost: 1 too far from VWAP, 2 choppy VWAP session, 3 1h EMA20 too fast, 4 too close to VWAP, 5 beyond max VWAP distance
+int      trSkip = 0;               // why the setup is a ghost: 1 too far from VWAP, 2 choppy VWAP session, 3 1h EMA20 too fast, 4 too close to VWAP, 5 beyond max VWAP distance,
+                                   // 6 stop beyond the VWAP, 7 VWAP touched recently, 8 entry too close to the VWAP
 int      totW = 0, totL = 0; double totR = 0;
 string   lastRes = "-";
 double   bestPx = 0;               // best price after the fill (the fill bar and stop bars add nothing)
 int      ghW = 0, ghL = 0; double ghR = 0;   // results the skipped (invisible) trades would have had
 // optional filters: VWAP crosses of this VWAP period; 1-hour (UTC) candles built from the bars and their EMA20
 int      vxSide = 0, vxN = 0;
+int      tchL = 1000000, tchS = 1000000;   // candles since the candle range last reached the VWAP (long side: the low, short side: the high); 0 = this candle
 long     hK = -1;                  // hour of the last bar (-1 = none yet)
 double   hC = 0, hSum = 0;         // close of the forming hour, sum of the first 20 hourly closes
 int      hNum = 0;                 // completed hours
@@ -372,6 +387,11 @@ int NthSunday(int y, int mon, int n)
    return 1 + (7 - f.day_of_week) % 7 + 7 * (n - 1);
 }
 int LastSunday(int y, int mon) { int d = NthSunday(y, mon, 1); while(d + 7 <= 31) d += 7; return d; }   // March / October (31 days)
+datetime MkTime(int y, int mon, int day, int hr) { MqlDateTime d; ZeroMemory(d); d.year = y; d.mon = mon; d.day = day; d.hour = hr; return StructToTime(d); }
+// British summer time at a UTC time: 01:00 UTC on the last Sunday of March to 01:00 UTC on the last Sunday of October
+bool UkSummer(datetime utc) { MqlDateTime d; TimeToStruct(utc, d); return utc >= MkTime(d.year, 3, LastSunday(d.year, 3), 1) && utc < MkTime(d.year, 10, LastSunday(d.year, 10), 1); }
+// New York daylight time at a UTC time: 07:00 UTC on the second Sunday of March to 06:00 UTC on the first Sunday of November
+bool NySummer(datetime utc) { MqlDateTime d; TimeToStruct(utc, d); return utc >= MkTime(d.year, 3, NthSunday(d.year, 3, 2), 7) && utc < MkTime(d.year, 11, NthSunday(d.year, 11, 1), 6); }
 double SrvGMT(datetime server)
 {
    if(InpServerTz == SRV_FIXED) return InpServerGMT;
@@ -395,10 +415,10 @@ double   Hi(int s) { return iHigh(_Symbol, _Period, s); }
 double   Lo(int s) { return iLow(_Symbol, _Period, s); }
 double   Cl(int s) { return iClose(_Symbol, _Period, s); }
 double   Op(int s) { return iOpen(_Symbol, _Period, s); }
-// kill zone in Indian minutes of the day, moved by the shift input; the end is exclusive
-bool     InKz(int m, int startM, int endM)
+// kill zone in Indian minutes of the day, moved by the shift input and by extra minutes (winter time); the end is exclusive
+bool     InKz(int m, int startM, int endM, int extra)
 {
-   int sh = (int)InpKzShift * 60;
+   int sh = (int)InpKzShift * 60 + extra;
    int ks = (startM + sh + 1440) % 1440, ke = (endM + sh + 1440) % 1440;
    return ks < ke ? (m >= ks && m < ke) : (m >= ks || m < ke);
 }
@@ -489,6 +509,8 @@ void ProcessBar(int s)
    else vwBars++;
    cumPV += src * w; cumPV2 += src * src * w; cumW += w; cumP += src; cumP2 += src * src; cumN++;
    double vwap = cumW > 0 ? cumPV / cumW : cumP / cumN;
+   tchL = l <= vwap ? 0 : (tchL < 1000000 ? tchL + 1 : 1000000);   // candles since the range last reached the VWAP (every bar, warm or not)
+   tchS = h >= vwap ? 0 : (tchS < 1000000 ? tchS + 1 : 1000000);
    double vwVar = cumW > 0 ? cumPV2 / cumW - vwap * vwap : cumP2 / cumN - vwap * vwap;
    double vwSd = MathSqrt(MathMax(vwVar, 0.0));
    int hn = ArraySize(vwHist);
@@ -675,8 +697,11 @@ void ProcessBar(int s)
    gDayOk = !InpDayOn || (dw == 1 && InpMon) || (dw == 2 && InpTue) || (dw == 3 && InpWed) || (dw == 4 && InpThu) || (dw == 5 && InpFri) || (dw == 6 && InpSat) || (dw == 0 && InpSun);
    int cur = MinOfDay(ut), a0 = InpStartH * 60 + InpStartM, b0 = InpEndH * 60 + InpEndM;
    gHourOk = !InpHoursOn || (a0 < b0 ? (cur >= a0 && cur < b0) : (cur >= a0 || cur < b0));
-   int kzM = MinOfDay(UtcTime(t) + 19800);   // Indian Standard Time = UTC + 5:30
-   gKzOk = !InpKzOn || (InpKzAsia && InKz(kzM, 330, 570)) || (InpKzLon && InKz(kzM, 690, 870)) || (InpKzNy && InKz(kzM, 990, 1170)) || (InpKzLc && InKz(kzM, 1170, 1290));
+   datetime utcT = UtcTime(t);
+   int kzM = MinOfDay(utcT + 19800);   // Indian Standard Time = UTC + 5:30
+   // the times are the summer times: London / London close move 1 hour later in London winter time, New York in New York winter time
+   int lonSh = InpKzAuto && !UkSummer(utcT) ? 60 : 0, nySh = InpKzAuto && !NySummer(utcT) ? 60 : 0;
+   gKzOk = !InpKzOn || (InpKzAsia && InKz(kzM, 330, 570, 0)) || (InpKzLon && InKz(kzM, 690, 870, lonSh)) || (InpKzNy && InKz(kzM, 990, 1170, nySh)) || (InpKzLc && InKz(kzM, 1170, 1290, lonSh));
    bool canArm = gDayOk && gHourOk && gKzOk && MathAbs(st) != 2 && cooled && dayFills < InpMaxFills && dayOpen && atr > 0;
    bool keepArm = InpRearm == REARM_KEEP && ((st == 1 && bullDisp) || (st == -1 && bearDisp));
    if(canArm && (bullDisp || bearDisp) && !keepArm)
@@ -700,10 +725,14 @@ void ProcessBar(int s)
          // signal close still hugging the VWAP (less than the minimum distance in ATR on the trade's side)
          bool nearNo = InpMinVwOn && d * (c - vwap) < InpMinVwAtr * atr;
          bool farNo = InpMaxVwOn && MathAbs(c - vwap) > (InpMaxVwUnit == VWU_PRICE ? InpMaxVwDist : InpMaxVwDist * atr);   // above or below
-         bool ghost = zNo || chopNo || emaNo || nearNo || farNo;
+         // signal still on the VWAP: the stop on the other side of it, the VWAP touched in the last N candles, the entry too close to it
+         bool stopNo = InpStopVwOn && d * (stop - vwap) < InpStopVwBuf * atr;
+         bool tchNo = InpTouchVwOn && (isL ? tchL : tchS) < InpTouchVwN;
+         bool entNo = InpEntVwOn && d * (entry - vwap) < InpEntVwAtr * atr;
+         bool ghost = zNo || chopNo || emaNo || nearNo || farNo || stopNo || tchNo || entNo;
          if(MathAbs(st) == 1 && !trGhost) evCancel = 2;
          st = isL ? 1 : -1; armBar = bi; lim = entry; stp = stop; stp0 = stop; trRisk = risk; trHalf = half; trGhost = ghost;
-         trSkip = zNo ? 1 : (chopNo ? 2 : (emaNo ? 3 : (nearNo ? 4 : (farNo ? 5 : 0))));
+         trSkip = zNo ? 1 : (chopNo ? 2 : (emaNo ? 3 : (nearNo ? 4 : (farNo ? 5 : (stopNo ? 6 : (tchNo ? 7 : (entNo ? 8 : 0)))))));
          t1 = lim + d * InpTp1R * risk; t2 = lim + d * InpTp2R * risk; t3 = lim + d * InpTp3R * risk; t4 = lim + d * InpTp4R * risk;
          tF = InpExitAt == EXIT_TP1 ? t1 : InpExitAt == EXIT_TP2 ? t2 : InpExitAt == EXIT_TP3 ? t3 : t4;
          if(!ghost) { evArm = true; evArmL = isL; }
@@ -735,15 +764,17 @@ bool CrkRecNext()
    if(InpRec == REC_CRD) return crkN >= 2 && (crkN - 2) % 3 == 0;
    return false;
 }
-//--- Crooks TP1 rule (exit at TP1, recovery trades): half of a double position banks the recovery amount at TP1, the rest runs to TP2.
-//--- Stop distance (bid chart) where a stop-out loses exactly that amount: TP1 / 2 - 1.5 x costs, on the tick grid toward the entry; 0 = not possible
+//--- Crooks TP1 rule (exit at TP1, or any exit with InpCrkT1Any; recovery trades): the part p closed at TP1 banks the recovery amount, the rest runs to TP2.
+//--- The size is the one whose stop-out at distance d loses exactly that amount: d = p x TP1 - (1 + p) x costs (p = 0.5: TP1 / 2 - 1.5 x costs),
+//--- on the tick grid toward the entry (bid chart); 0 = not possible
+double CrkT1P() { return MathMax(10.0, MathMin(90.0, InpCrkT1Pct)) / 100.0; }
 double CrkT1Dist()
 {
-   if(!InpCrkT1 || InpExitAt != EXIT_TP1 || !CrkRecNext()) return 0;
+   if(!InpCrkT1 || (InpExitAt != EXIT_TP1 && !InpCrkT1Any) || !CrkRecNext()) return 0;
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    if(tv <= 0 || ts <= 0) return 0;
-   double spr = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
-   double d = MathFloor((InpTp1R * trRisk / 2.0 - 1.5 * (spr + InpCommLot * ts / tv)) / ts + 1e-9) * ts;
+   double spr = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID)), p = CrkT1P();
+   double d = MathFloor((p * InpTp1R * trRisk - (1.0 + p) * (spr + InpCommLot * ts / tv)) / ts + 1e-9) * ts;
    return d >= ts ? d : 0;
 }
 
@@ -876,7 +907,9 @@ bool NewsBlock(datetime ut, bool &startNow, datetime utPrev)
    }
    if(InpDNewsOn)
    {
-      int cur = MinOfDay(ut), prv = MinOfDay(utPrev), s0 = InpDNewsH * 60 + InpDNewsM, e0 = s0 + InpDNewsDur;
+      // the window is set in summer time; with InpDNewsAuto it moves 1 hour later while New York is on winter time (same New York time all year)
+      int sh = InpDNewsAuto && !NySummer(ut - (datetime)(InpUserGMT * 3600)) ? 60 : 0;
+      int cur = MinOfDay(ut), prv = MinOfDay(utPrev), s0 = (InpDNewsH * 60 + InpDNewsM + sh) % 1440, e0 = s0 + InpDNewsDur;
       bool inWin = (cur >= s0 && cur < e0) || (e0 > 1440 && cur < e0 - 1440);
       int diff = (s0 - cur + 1440) % 1440;
       if(inWin || (InpNewsPre > 0 && diff > 0 && diff <= InpNewsPre)) blk = true;
@@ -931,12 +964,12 @@ void T1StopMove()
    if(exL ? tgt > exT1Stop : tgt < exT1Stop) { exT1Stop = tgt; exT1MvPend = true; SetExits(true); }
 }
 
-//--- Crooks TP1 rule: close half at market (rounded UP to the lot step, so at least half banks the recovery amount); the rest's stop then moves to the entry
+//--- Crooks TP1 rule: close the TP1 part at market (rounded UP to the lot step, so it banks at least the recovery amount); the rest's stop then moves to the entry
 void T1Half(ulong tk, double vol)
 {
    double step = InpLotStep > 0 ? InpLotStep : SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
    double vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
-   double cv = MathCeil(exLots * 0.5 / step - 1e-9) * step;
+   double cv = MathCeil(exLots * CrkT1P() / step - 1e-9) * step;
    if(cv >= vmin && vol - cv >= vmin - 1e-9)
    {
       if(trade.PositionClosePartial(tk, NormalizeDouble(cv, 8))) { exT1Half = true; SetExits(true); }
@@ -1055,7 +1088,8 @@ void DrawBar(datetime bt)
 //--- on-chart table (rebuilt on every new bar so it stays on top of the markings) ----
 string StateText(bool newsBlk)
 {
-   string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : (trSkip == 3 ? "1H EMA20 TOO FAST" : (trSkip == 4 ? "TOO CLOSE TO VWAP" : "BEYOND MAX VWAP DISTANCE")));
+   string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : (trSkip == 3 ? "1H EMA20 TOO FAST" : (trSkip == 4 ? "TOO CLOSE TO VWAP" :
+                (trSkip == 5 ? "BEYOND MAX VWAP DISTANCE" : (trSkip == 6 ? "STOP BEYOND VWAP" : (trSkip == 7 ? "VWAP TOUCHED RECENTLY" : "ENTRY TOO CLOSE TO VWAP"))))));
    string s = st != 0 && trGhost ? "SKIPPED (" + why + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
               capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : dayBlock ? "STREAK STOP TODAY" :
               !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : "SCANNING";
@@ -1108,7 +1142,7 @@ void UpdateTable()
    string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRC ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") : (crkL > 0 ? " | base, waiting for a win" : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.7.1", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v3.8", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -1120,7 +1154,7 @@ void UpdateTable()
    TblAdd("SIGNAL TRADES | WIN % | R", AccTxt() + " | last " + lastRes, totR >= 0 ? posC : negC, cell);
    TblAdd("TP HIT", TpTxt(), posC, cell);
    if(InpMv1On || InpMv2On || InpMv3On) TblAdd("BREAKEVEN", BeTxt(), white, cell);
-   if(InpNoChase || InpChopOn || InpEmaOn || InpMinVwOn || InpMaxVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
+   if(InpNoChase || InpChopOn || InpEmaOn || InpMinVwOn || InpMaxVwOn || InpStopVwOn || InpTouchVwOn || InpEntVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
    TblAdd("DATA RANGE", gFirstT > 0 ? DateTxt(UserTime(gFirstT), true) + " -> " + DateTxt(UserTime(gLastDone), false) + " | " + IntegerToString(bi + 1) + " bars" : "-", white, cell);
    // column widths from the longest text in each column
    int  fs = (int)MathMax(6, InpTableFont), n = ArraySize(tblKey), kw = 0, vw = 0, th = 0;
@@ -1279,8 +1313,10 @@ void OnNewBar()
    }
    if(exState == 2 && exMine && MathAbs(st) == 2) exSynced = true;   // the engine is in the EA's setup (filled on this bar or a caught-up bar)
    if(exState == 2 && exMine && (evFill || evMove)) SetExits(true);
-   // Crooks TP1 rule: the engine counted TP1 on the bar that just closed but no tick booked the half (missed tick, failed close): book it now
-   if(evExit && evWin && exState == 2 && exMine && exT1 && !exT1Half && pos) T1Half(pTk, pVol);
+   // Crooks TP1 rule: TP1 was reached but no tick booked the TP1 part (missed tick, failed close): book it now
+   // (exit TP1: the engine won on the bar that just closed; any exit: that bar, after the fill bar, reached TP1)
+   bool t1Bar = exT1 && exSynced && lastFill >= 0 && lastFill < bi && (exL ? Hi(1) >= exT1Tp1 + exCostPx : Lo(1) <= exT1Tp1 - exCostPx);
+   if(((evExit && evWin) || t1Bar) && exState == 2 && exMine && exT1 && !exT1Half && pos) T1Half(pTk, pVol);
    if(evExit && exState == 2 && exMine && (!InpEarnBack || !evWin) && !(exT1 && (evWin || exT1Half))) CloseAll();   // engine exited: never stay in (earn-back and the Crooks TP1 rule only outlive a win)
    // Crooks TP1 rule: stop choices that move the stop at a bar close, before the TP1 half is booked
    if(exState == 2 && exT1 && !exT1Half && (InpCrkT1Stop == T1S_FILL || InpCrkT1Stop == T1S_PT || InpCrkT1Stop == T1S_PBE)) T1StopMove();
@@ -1331,7 +1367,7 @@ void ManagePartials()
    double vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
    if(exT1)
    {
-      // Crooks TP1 rule: half closes at TP1 and banks the whole recovery amount, then the rest's stop moves to the entry (it runs to TP2)
+      // Crooks TP1 rule: the TP1 part closes at TP1 and banks the whole recovery amount, then the rest's stop moves to the entry (it runs to TP2)
       if(exT1Half) { if(!exT1Be) SetExits(true); return; }          // retry the move to the entry until the broker accepts it
       if(exT1MvPend) SetExits(true);                                 // retry a stop move before TP1 until the broker accepts it
       if(exL ? px >= exT1Tp1 + exCostPx : px <= exT1Tp1 - exCostPx) T1Half(tk, vol);
@@ -1365,7 +1401,7 @@ void ResetEngine()
    gVirt = false; gDayPend = false; gPrevT = 0; capStop = false;
    for(int q = 0; q < 3; q++) pDone[q] = false;
    trSkip = 0; lastRes = "-"; bestPx = 0; ghW = 0; ghL = 0; ghR = 0;
-   vxSide = 0; vxN = 0; hK = -1; hC = 0; hSum = 0; hNum = 0; ArrayInitialize(hE, 0.0);
+   vxSide = 0; vxN = 0; tchL = 1000000; tchS = 1000000; hK = -1; hC = 0; hSum = 0; hNum = 0; ArrayInitialize(hE, 0.0);
    ArrayInitialize(tpHitN, 0); beN = 0; lkN = 0; gFirstT = 0;
    gDrawT = 0; ArrayResize(gDrawn, 0); gStateTxt = "SCANNING";
 }
@@ -1383,6 +1419,8 @@ int OnInit()
    ObjectsDeleteAll(0, "ARM_");
    if(InpTp1R > InpTp2R || InpTp2R > InpTp3R || InpTp3R > InpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
    if(InpMaxVwOn && InpMaxVwDist <= 0) { Print("Max distance from VWAP must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpTouchVwOn && InpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpCrkT1 && (InpCrkT1Pct < 10 || InpCrkT1Pct > 90)) { Print("Crooks TP1 rule: % closed at TP1 must be 10 to 90."); return INIT_PARAMETERS_INCORRECT; }
    // warm up the engine on history (no orders): it ends in the same state as the TradingView engine would
    int bars = Bars(_Symbol, _Period);
    int look = (int)MathMax(MathMax(InpStructLen, InpBrkLen + 1), MathMax(InpMomLen + 1, InpStopLen)) + 2;

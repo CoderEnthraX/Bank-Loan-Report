@@ -69,7 +69,7 @@ def results():
     dst = OUT + '/results/gold'; os.makedirs(dst, exist_ok=True); out = []
     g = S + '/gold/'
     names = [f for f in os.listdir(g) if f.startswith(('slim_', 'greedy_pool_', 'anaA_', 'cands_', 'rulec', 'catalog_', 'crooks', 'vwfilter')) and f.endswith('.pkl')
-             and '_before_' not in f and '_v1' not in f]                      # backups made before a change stay local
+             and '_before_' not in f and '_v1' not in f and f != 'crooks_t1p.pkl']   # backups stay local; crooks_t1p.pkl (30 MB) is rebuilt by crooks_t1p.py
     names += ['greedy_%s.pkl' % tf for tf in TFS if os.path.exists(g + 'greedy_%s.pkl' % tf)]
     for f in sorted(names):
         target = f[len('slim_'):] if f.startswith('slim_final_') else f      # slim final_<TF>.pkl is restored under its normal name

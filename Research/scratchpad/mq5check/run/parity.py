@@ -48,7 +48,28 @@ CONFIGS = [
     ('max price 2.0', dict(maxVwOn=True, maxVwDist=2.0, maxVwUnit='price'), dict(InpMaxVwOn=1, InpMaxVwDist=2.0, InpMaxVwUnit=1)),
     ('max price 0.0015', dict(maxVwOn=True, maxVwDist=0.0015, maxVwUnit='price'), dict(InpMaxVwOn=1, InpMaxVwDist=0.0015, InpMaxVwUnit=1)),
     ('max price 40 + noChase', dict(maxVwOn=True, maxVwDist=40.0, maxVwUnit='price', noChase=True), dict(InpMaxVwOn=1, InpMaxVwDist=40.0, InpMaxVwUnit=1, InpNoChase=1)),
+    # v3.8: kill zones follow summer time (auto on is the default of both), the three VWAP skip rules
+    ('killzones all, auto off', dict(kzOn=True, kzAuto=False), dict(InpKzOn=1, InpKzAuto=0)),
+    ('killzones Lon+NY auto, -1', dict(kzOn=True, kz=(False, True, True, False), kzShift=-1), dict(InpKzOn=1, InpKzAsia=0, InpKzLc=0, InpKzShift=-1)),
+    ('killzones LC only auto, +2', dict(kzOn=True, kz=(False, False, False, True), kzShift=2), dict(InpKzOn=1, InpKzAsia=0, InpKzLon=0, InpKzNy=0, InpKzShift=2)),
+    ('stop beyond VWAP, buffer 0', dict(stopVwOn=True), dict(InpStopVwOn=1)),
+    ('stop beyond VWAP, buffer -1', dict(stopVwOn=True, stopVwBuf=-1.0), dict(InpStopVwOn=1, InpStopVwBuf=-1.0)),
+    ('stop beyond VWAP, buffer 0.5', dict(stopVwOn=True, stopVwBuf=0.5), dict(InpStopVwOn=1, InpStopVwBuf=0.5)),
+    ('VWAP touched, N 3', dict(touchVwOn=True), dict(InpTouchVwOn=1)),
+    ('VWAP touched, N 1', dict(touchVwOn=True, touchVwN=1), dict(InpTouchVwOn=1, InpTouchVwN=1)),
+    ('VWAP touched, N 10', dict(touchVwOn=True, touchVwN=10), dict(InpTouchVwOn=1, InpTouchVwN=10)),
+    ('entry near VWAP, 0.75', dict(entVwOn=True), dict(InpEntVwOn=1)),
+    ('entry near VWAP, 1.5', dict(entVwOn=True, entVwAtr=1.5), dict(InpEntVwOn=1, InpEntVwAtr=1.5)),
+    ('entry near VWAP, -0.5', dict(entVwOn=True, entVwAtr=-0.5), dict(InpEntVwOn=1, InpEntVwAtr=-0.5)),
+    ('three rules + chop', dict(stopVwOn=True, stopVwBuf=-0.5, touchVwOn=True, touchVwN=2, entVwOn=True, entVwAtr=0.5, chopOn=True),
+     dict(InpStopVwOn=1, InpStopVwBuf=-0.5, InpTouchVwOn=1, InpTouchVwN=2, InpEntVwOn=1, InpEntVwAtr=0.5, InpChopOn=1)),
+    ('three rules, swing, exit2, kz', dict(stopVwOn=True, touchVwOn=True, entVwOn=True, stopMode='swing', exitAt=2, kzOn=True),
+     dict(InpStopVwOn=1, InpTouchVwOn=1, InpEntVwOn=1, InpStopMode=1, InpExitAt=2, InpKzOn=1)),
 ]
+# PARITY_SHIFT_DAYS=n moves every bar n days (a multiple of 7 keeps the weekdays): +49 crosses the October / November
+# summer time ends (London 25 Oct, New York 1 Nov 2026), -189 the March starts (New York 8 Mar, London 29 Mar 2026)
+SHIFT_DAYS = int(os.environ.get('PARITY_SHIFT_DAYS', '0'))
+assert SHIFT_DAYS % 7 == 0
 
 
 def tick_digits(t):
@@ -58,6 +79,9 @@ def tick_digits(t):
 def prep_sym(sym):
     """Common inputs for both engines: returns (P', csv path, look, n)."""
     P = ORIG_EPREP(sym)
+    if SHIFT_DAYS:
+        mv = datetime.timedelta(days=SHIFT_DAYS)
+        P = dict(P, rows=[dict(r, t=(datetime.datetime.strptime(r['t'], '%Y-%m-%d %H:%M') + mv).strftime('%Y-%m-%d %H:%M')) for r in P['rows']])
     rows = P['rows']; n = len(rows)
     ist = [datetime.datetime.strptime(r['t'], '%Y-%m-%d %H:%M') for r in rows]
     srv = [calendar.timegm(x.timetuple()) - 5 * 3600 - 1800 + 2 * 3600 for x in ist]   # IST -> UTC -> server (GMT+2)
