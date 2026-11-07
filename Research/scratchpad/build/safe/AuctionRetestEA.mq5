@@ -35,9 +35,16 @@
 //| any final exit.                                                  |
 //| v3.9: Crooks C rule after N losing recovery trades in a row:     |
 //| forget the loss, a % of it, wait for M wins, or skip D days.     |
+//| v4.0: defaults = the TradingView strategy's v4.0 defaults (gold, |
+//| FxPro): Tue-Thu 06:00-23:00 IST in the Asia / London / New York  |
+//| kill zones, exit TP1, Crooks C, news 17:45-18:15 IST,            |
+//| force-close 23:55, server clock EU summer time, max 10 fills,    |
+//| half-stop cap.                                                   |
+//| New Spread input: the costs (sizing, earn-back) use 0.16 like    |
+//| TradingView, so lots and target levels match it (0 = live).      |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.90"
+#property version   "4.00"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -120,9 +127,9 @@ input int    InpBiasNet      = 3;     // Prev session net impulses
 input double InpImpBody      = 50.0;  // Impulse min body (% of range)
 input bool   InpHalfOpenOut  = true;  // Half stop when session opens outside prev range
 input bool   InpHalfStrict   = false; // Strict bias check (optional)
-input bool   InpHalfCap      = false; // Half stop never wider than the normal stop (optional)
+input bool   InpHalfCap      = true;  // Half stop never wider than the normal stop (optional)
 input int    InpCooldown     = 1;     // Cooldown after exit (bars)
-input int    InpMaxFills     = 5;     // Max fills per day
+input int    InpMaxFills     = 10;    // Max fills per day
 input double InpDayStopR     = 0.0;   // Daily stop (R lost, 0 = off)
 input bool   InpFillBarStopR = false; // Count fill-bar stops in daily stop
 input bool   InpLegReset     = true;  // Re-anchor breakout after a trade
@@ -146,27 +153,27 @@ input ENUM_APPLIED_PRICE InpVwapSrc    = PRICE_TYPICAL; // Source (typical = hlc
 
 input group "ENTRY PRICE"
 input ENUM_ENTRY_MODE InpEntryMode = ENTRY_MODEL; // Entry price
-input double InpEntryPct     = 50.0;  // Custom % (0 = close, 50 = mid, 100 = low/high)
+input double InpEntryPct     = 25.0;  // Custom % (0 = close, 50 = mid, 100 = low/high)
 
 input group "TARGETS, EXIT AND STOP MOVES"
 input double InpTp1R = 0.6;  // TP1 (R)
 input double InpTp2R = 1.0;  // TP2 (R)
 input double InpTp3R = 1.5;  // TP3 (R)
 input double InpTp4R = 2.0;  // TP4 (R)
-input ENUM_EXIT_AT InpExitAt = EXIT_TP4; // Final exit at
+input ENUM_EXIT_AT InpExitAt = EXIT_TP1; // Final exit at
 input bool   InpMv1On = false; // When TP1 hits, move stop
 input double InpMv1R  = 0.0;   //   ...to (R, 0 = breakeven)
 input bool   InpMv2On = false; // When TP2 hits, move stop (breakeven at +1R: on, 0)
 input double InpMv2R  = 0.6;   //   ...to (R)
 input bool   InpMv3On = false; // When TP3 hits, move stop
-input double InpMv3R  = 1.0;   //   ...to (R)
+input double InpMv3R  = 0.0;   //   ...to (R)
 
 input group "ACCURACY FILTERS (research, off = original)"
 input bool   InpNoChase    = false; // Don't chase: skip signals beyond N sigma from VWAP
-input double InpNoChaseSig = 2.4;   //   sigma from VWAP
+input double InpNoChaseSig = 2.0;   //   sigma from VWAP
 input bool   InpLossBlock  = false; // After a loss, no same-direction trade until a win
 input bool   InpChopOn     = false; // Skip choppy sessions (too many VWAP crosses)
-input double InpChopMax    = 12.0;  //   max VWAP crosses per 100 bars
+input double InpChopMax    = 13.5;  //   max VWAP crosses per 100 bars
 input bool   InpEmaOn      = false; // Skip when the 1h EMA20 moved too fast (natural gas: worse)
 input double InpEmaMax     = 1.65;  //   max 1h EMA20 move in 3 hours (x ATR)
 input bool   InpMinVwOn    = false; // Skip signals too close to VWAP (min distance)
@@ -185,18 +192,18 @@ input group "DAYS AND HOURS (YOUR time zone)"
 enum ENUM_SRV_TZ { SRV_NYCLOSE = 0,   // Auto: GMT+2 winter / GMT+3 US summer time (most FX brokers)
                    SRV_FIXED   = 1,   // Fixed: the GMT offset below
                    SRV_EET     = 2 }; // Auto: GMT+2 winter / GMT+3 EU summer time (EET brokers, e.g. FxPro)
-input ENUM_SRV_TZ InpServerTz = SRV_NYCLOSE; // Broker server clock
+input ENUM_SRV_TZ InpServerTz = SRV_EET;     // Broker server clock
 input double InpServerGMT = 2.0;   // Broker server time zone if fixed (GMT +h; check Market Watch time)
 input double InpUserGMT   = 5.5;   // Your time zone (GMT +h; India = 5.5)
-input bool   InpDayOn     = false; // Trade only on the ticked days
-input bool   InpMon       = true;  //   Monday
+input bool   InpDayOn     = true;  // Trade only on the ticked days
+input bool   InpMon       = false; //   Monday
 input bool   InpTue       = true;  //   Tuesday
 input bool   InpWed       = true;  //   Wednesday
 input bool   InpThu       = true;  //   Thursday
-input bool   InpFri       = true;  //   Friday
-input bool   InpSat       = true;  //   Saturday
-input bool   InpSun       = true;  //   Sunday
-input bool   InpHoursOn   = false; // Trade only between
+input bool   InpFri       = false; //   Friday
+input bool   InpSat       = false; //   Saturday
+input bool   InpSun       = false; //   Sunday
+input bool   InpHoursOn   = true;  // Trade only between
 input int    InpStartH    = 6;     //   start hour
 input int    InpStartM    = 0;     //   start minute
 input int    InpEndH      = 23;    //   end hour
@@ -206,11 +213,11 @@ enum ENUM_KZ_SHIFT { KZ_M2 = -2,  // -2 hours
                      KZ_0  = 0,   // 0 (as listed)
                      KZ_P1 = 1,   // +1 hour
                      KZ_P2 = 2 }; // +2 hours
-input bool   InpKzOn      = false; // Trade only in kill zones (Indian time, IST)
+input bool   InpKzOn      = true;  // Trade only in kill zones (Indian time, IST)
 input bool   InpKzAsia    = true;  //   Asia 05:30-09:30 IST
 input bool   InpKzLon     = true;  //   London 11:30-14:30 IST (UK winter time: 1 hour later with the switch below)
 input bool   InpKzNy      = true;  //   New York 16:30-19:30 IST (US winter time: 1 hour later with the switch below)
-input bool   InpKzLc      = true;  //   London close 19:30-21:30 IST (UK winter time: 1 hour later with the switch below)
+input bool   InpKzLc      = false; //   London close 19:30-21:30 IST (UK winter time: 1 hour later with the switch below)
 input bool   InpKzAuto    = true;  //   follow London / New York summer time (winter: those zones 1 hour later)
 input ENUM_KZ_SHIFT InpKzShift = KZ_0; //   shift all kill zones (on top of the summer time switch)
 
@@ -223,21 +230,22 @@ input double InpP3   = 0.0;  // Close % at TP3
 input group "RISK AND POSITION SIZE"
 input double InpBaseRisk = 50.0;   // Base risk per trade (account currency)
 input bool   InpCapOn    = false;  // Hard cap: max loss per trade
-input double InpHardCap  = 500.0;  // Hard cap amount
-input ENUM_CAP_ACTION InpCapAction = CAP_CLAMP; // If the risk would exceed the cap
+input double InpHardCap  = 250.0;  // Hard cap amount
+input ENUM_CAP_ACTION InpCapAction = CAP_RESET; // If the risk would exceed the cap
 input double InpLeverage = 100.0;  // Leverage cap 1:x (0 = broker margin only)
 input double InpLotStep  = 0.0;    // Lot step (0 = broker's volume step)
-input ENUM_LOT_ROUND InpLotRound = LOTR_NEAR;  // Lot rounding (nearest: 0.125 -> 0.13; never past the hard cap or leverage)
+input ENUM_LOT_ROUND InpLotRound = LOTR_DOWN;  // Lot rounding (nearest: 0.125 -> 0.13; never past the hard cap or leverage)
 input ENUM_SMALL_LOT InpSmallLot = SMALLL_MIN; // Size below the minimum lot (e.g. 0.004 -> 0.01)
 
 input group "COMMISSION AND BID/ASK"
-input double InpCommLot  = 0.0;    // Commission per lot, round trip (sizing / earn-back)
-input bool   InpEarnBack = false;  // Extend targets to earn back commission + spread
+input double InpSpread   = 0.16;   // Spread for sizing and earn-back (price, like TradingView's Spread; 0 = the live spread)
+input double InpCommLot  = 7.0;    // Commission per lot, round trip (sizing / earn-back; FxPro gold: 7)
+input bool   InpEarnBack = true;   // Extend targets to earn back commission + spread
 input bool   InpBidChart = true;   // Match bid-chart levels (shift buy-side orders by the spread)
 
 input group "STREAKS AND PAUSES"
 input bool InpLStopOn = false; // Stop for the day after N losses in a row
-input int  InpLStopN  = 2;     //   N losses
+input int  InpLStopN  = 23;    //   N losses
 input bool InpWStopOn = false; // Stop for the day after N wins in a row
 input int  InpWStopN  = 3;     //   N wins
 input bool InpPauseOn = false; // Pause after N losses in a row
@@ -245,41 +253,41 @@ input int  InpPauseN  = 3;     //   N losses
 input int  InpPauseDays = 1;   //   Days to pause (1-3)
 
 input group "FORCE-CLOSE, WEEKEND AND NEWS (YOUR time zone)"
-input bool   InpFcOn      = false; // Force-close open trades daily at
-input int    InpFcH       = 2;     //   hour
-input int    InpFcM       = 0;     //   minute
-input bool   InpWeekendOn = false; // Close open trades when Saturday starts
+input bool   InpFcOn      = true;  // Force-close open trades daily at
+input int    InpFcH       = 23;    //   hour
+input int    InpFcM       = 55;    //   minute
+input bool   InpWeekendOn = true;  // Close open trades when Saturday starts
 input int    InpNewsPre   = 60;    // No new trades before news (minutes)
-input bool   InpDNewsOn   = false; // Daily news window
-input int    InpDNewsH    = 18;    //   start hour
-input int    InpDNewsM    = 0;     //   start minute
-input int    InpDNewsDur  = 60;    //   length (minutes)
+input bool   InpDNewsOn   = true;  // Daily news window
+input int    InpDNewsH    = 17;    //   start hour
+input int    InpDNewsM    = 45;    //   start minute
+input int    InpDNewsDur  = 30;    //   length (minutes)
 input bool   InpDNewsAuto = true;  //   keep the same New York time all year (US winter time: 1 hour later)
 input bool     InpN1On = false;        // News 1
-input datetime InpN1T  = D'2026.01.01 18:00'; //   date and time (your time zone)
+input datetime InpN1T  = D'2026.01.01 23:30'; //   date and time (your time zone)
 input int      InpN1Dur = 60;          //   length (minutes)
 input bool     InpN2On = false;        // News 2
-input datetime InpN2T  = D'2026.01.01 18:00'; //   date and time
+input datetime InpN2T  = D'2026.01.01 23:30'; //   date and time
 input int      InpN2Dur = 60;          //   length (minutes)
 input bool     InpN3On = false;        // News 3
-input datetime InpN3T  = D'2026.01.01 18:00'; //   date and time
+input datetime InpN3T  = D'2026.01.01 23:30'; //   date and time
 input int      InpN3Dur = 60;          //   length (minutes)
 input bool     InpN4On = false;        // News 4
-input datetime InpN4T  = D'2026.01.01 18:00'; //   date and time
+input datetime InpN4T  = D'2026.01.01 23:30'; //   date and time
 input int      InpN4Dur = 60;          //   length (minutes)
 input bool     InpN5On = false;        // News 5
-input datetime InpN5T  = D'2026.01.01 18:00'; //   date and time
+input datetime InpN5T  = D'2026.01.01 23:30'; //   date and time
 input int      InpN5Dur = 60;          //   length (minutes)
 
 input group "LOSS RECOVERY"
-input ENUM_REC InpRec    = REC_OFF; // Loss recovery
+input ENUM_REC InpRec    = REC_CRC; // Loss recovery
 input int    InpRecN     = 3;      // N trades (Over N / Delayed)
 input double InpRecPct   = 50.0;   // % of losses (% mode)
 input double InpRecMult  = 2.0;    // Multiplier (Martingale / Grand)
 input double InpRecStep  = 25.0;   // Step amount (Step-up)
-input int    InpCSplit   = 3;      // Rule C / Crooks B: split the loss over this many trades
-input bool   InpCrkT1    = true;   // Crooks TP1 rule (exit TP1): bank the loss at TP1 with part, rest to TP2
-input ENUM_T1_STOP InpCrkT1Stop = T1S_TIGHT; //   ...stop before TP1 (the size is the same; the hard cap covers the real stop-out loss)
+input int    InpCSplit   = 2;      // Rule C / Crooks B: split the loss over this many trades
+input bool   InpCrkT1    = false;   // Crooks TP1 rule (exit TP1): bank the loss at TP1 with part, rest to TP2
+input ENUM_T1_STOP InpCrkT1Stop = T1S_FULL; //   ...stop before TP1 (the size is the same; the hard cap covers the real stop-out loss)
 input double InpCrkT1Pct = 50.0;   //   ...% closed at TP1 (10-90; that part alone banks the whole loss)
 input bool   InpCrkT1Any = false;  //   ...with any final exit (not only TP1; the rest still runs to TP2)
 input bool   InpCrkCnOn  = false;  // Crooks C: win the loss back over N wins
@@ -288,7 +296,7 @@ input ENUM_CRK_PR InpCrkPr = CPR_OFF; // Crooks C: after N losing recovery trade
 input int    InpCrkPrN   = 2;      //   ...N losing recovery trades in a row
 input double InpCrkPrPct = 50.0;   //   ...% of the loss each recovery trade goes for (the % rule, 10-100)
 input int    InpCrkPrM   = 2;      //   ...M wins in a row to wait for (the wait rule)
-input int    InpCrkPrD   = 3;      //   ...D trading days to skip (the skip rule; the rest of that day is skipped too)
+input int    InpCrkPrD   = 4;      //   ...D trading days to skip (the skip rule; the rest of that day is skipped too)
 input bool   InpCrkPrForget = false; //   ...forget the loss after the skipped days (the skip rule)
 input bool   InpCrkPrAll = false;  //   ...count every day, not only the trading days (the skip rule)
 input int    InpParN     = 3;      // Paroli: wins before reset
@@ -399,6 +407,8 @@ double Pt()        { return SymbolInfoDouble(_Symbol, SYMBOL_POINT); }
 double TickSize()  { double t = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_SIZE); return t > 0 ? t : Pt(); }
 double FloorTick(double p) { double ts = TickSize(); return NormalizeDouble(MathFloor(p / ts + 1e-6) * ts, _Digits); }
 double CeilTick(double p)  { double ts = TickSize(); return NormalizeDouble(MathCeil(p / ts - 1e-6) * ts, _Digits); }
+// spread counted as a cost (lot size, earn-back, Crooks TP1-rule distance): the Spread input like TradingView, or the live spread when it is 0
+double CostSpr() { return InpSpread > 0 ? InpSpread : MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID)); }
 double RoundTick(double p) { double ts = TickSize(); return NormalizeDouble(MathRound(p / ts) * ts, _Digits); }
 int NthSunday(int y, int mon, int n)
 {
@@ -797,7 +807,7 @@ double CrkT1Dist()
    if(!InpCrkT1 || (InpExitAt != EXIT_TP1 && !InpCrkT1Any) || !CrkRecNext()) return 0;
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    if(tv <= 0 || ts <= 0) return 0;
-   double spr = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID)), p = CrkT1P();
+   double spr = CostSpr(), p = CrkT1P();
    double d = MathFloor((p * InpTp1R * trRisk - (1.0 + p) * (spr + InpCommLot * ts / tv)) / ts + 1e-9) * ts;
    return d >= ts ? d : 0;
 }
@@ -832,7 +842,7 @@ double CrkT1Mult()
    double d = CrkT1Dist();
    if(d <= 0) return 1.0;
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
-   double spr = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
+   double spr = CostSpr();
    double per = (d + spr) / ts * tv + InpCommLot, perL = (CrkT1Stop0Dist(d) + spr) / ts * tv + InpCommLot;
    return per > 0 ? perL / per : 1.0;
 }
@@ -899,7 +909,7 @@ double LotsFor(double riskAmt, double stopDist, double entry, bool isL, double l
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE);
    double ts = TickSize();
    if(tv <= 0 || ts <= 0 || stopDist <= 0) return 0;
-   double spr = SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   double spr = CostSpr();
    double perLot = (stopDist + MathMax(spr, 0)) / ts * tv + InpCommLot;   // stop-out loss per lot incl. spread and commission
    double lossPerLot = ((lossDist > 0 ? lossDist : stopDist) + MathMax(spr, 0)) / ts * tv + InpCommLot;   // the real stop-out loss per lot
    double v = riskAmt / perLot;
@@ -1180,7 +1190,7 @@ void UpdateTable()
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.9", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v4.0", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -1233,7 +1243,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : crkPs ? "Crooks C pause" : v <= 0 ? "size 0" : "";
    if(skipWhy != "") { skipN++; return; }
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
-   double sprNow = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
+   double sprNow = CostSpr();
    exCostPx = InpEarnBack && tv > 0 ? InpCommLot / (tv / ts) + sprNow : 0;
    exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot);
    exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = exT1 ? T1Stop0Px(isL, t1d) : 0; exT1Tight = exT1 ? T1StopPx(isL, t1d) : 0; exT1Entry = lim;
@@ -1479,6 +1489,7 @@ int OnInit()
    // markings and table only where they can be seen (not in non-visual tests or optimisation)
    gCanDraw = MQLInfoInteger(MQL_OPTIMIZATION) == 0 && (MQLInfoInteger(MQL_TESTER) == 0 || MQLInfoInteger(MQL_VISUAL_MODE) != 0);
    ObjectsDeleteAll(0, "ARM_");
+   if(InpSpread < 0 || InpCommLot < 0) { Print("Spread and commission must be 0 or more."); return INIT_PARAMETERS_INCORRECT; }
    if(InpTp1R > InpTp2R || InpTp2R > InpTp3R || InpTp3R > InpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
    if(InpMaxVwOn && InpMaxVwDist <= 0) { Print("Max distance from VWAP must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpTouchVwOn && InpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }

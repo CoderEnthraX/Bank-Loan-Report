@@ -305,8 +305,22 @@ Other gold findings:
     EA news window 17:55 + 75 min (TV 17:45-18:15), `InpServerTz` US rule (FxPro is EET: set 2), London Close on, kill zones not following summer time,
     max fills 5 (TV 10), `InpBidChart` off (EA buy orders on the ask: 2 missed long fills, 1 win turned loss), lot rounding nearest (TV down),
     `InpCommLot` 0.16 (FxPro charges $7 per lot round trip; TV commission input 0, Properties $0.07 per oz), half-stop cap off (TV on). 12 differences
-    directly from settings, 3 likely; the rest knock-on, OANDA vs FxPro prices / volume, and the EU-US clock-change week (FxPro's day, and so the EA's
-    VWAP, starts at 18:00 New York from 25 Oct to 1 Nov; TradingView's at 17:00). Offered, not built: an EA option to start the VWAP day at 17:00 New York.
+    directly from settings, 4 likely; the rest knock-on and OANDA vs FxPro prices / volume. CORRECTED the same day: the first answer said FxPro's day (and
+    the EA's VWAP) starts an hour later from 25 Oct to 1 Nov. Wrong: gold is closed 17:00-18:00 New York and the report has 6,348 bars = 23 days x 276
+    (23 h every day, that week too), so the first FxPro candle of each server day is the 18:00 New York reopen, the same candle TradingView's session
+    starts on. No VWAP-anchor option is needed; that week's differences were the server-clock setting and price data (workbook rebuilt).
+
+20. **v4.0: the user's settings as the defaults** (asked 2026-11-07; strategy, indicator and EA). Pine: `build/patch_pine_v40.py` (34 defaults: half-stop
+    cap on, 10 fills, entry % 25, exit TP1, TP3 move 0, Don't Chase 2, Choppy 13.5, Tue-Thu, 06:00-23:00, kill zones on with London Close off, border 1;
+    cap $250 Start again, trade the minimum, spread 0.16, commission 7, earn-back, stop after 23 losses (off), force-close 23:55, weekend close, news
+    17:45-18:15, Crooks C, split 2, TP1 rule off with Normal stop, Crooks C rule D 4; strategy() commission_value 0.115). EA: `build/patch_ea_v40.py`
+    (same defaults; server clock SRV_EET; news 17:45 + 30; news 1-5 23:30 user time = TradingView's 18:00 UTC; new `InpSpread` 0.16 via `CostSpr()` in
+    LotsFor / CrkT1Dist / CrkT1Mult / exCostPx / exRiskAmt, live spread when 0; `Spr()` for the bid-chart order shift stays live; version 4.00).
+    Checks: `v40/user_settings.py` (the screenshot settings) vs the strategy 160/160 and `v40/ea_vs_pine.py` vs the EA 162/162 (v3.9 EA: 41 differ);
+    independent review (Sonnet high) agreed, its 4 stale texts fixed (indicator header, README); assemble identical, lint 0, parse ok, mq5check 0/0,
+    markers 0, ASCII; engine parity 51 configs (old configs pass the v3.9 defaults via `V39_EA`; 3 new v4.0 configs) 0 differences, also with
+    PARITY_SHIFT_DAYS 49 / -189; parity_rec 1,680 runs, parity_tp1 5,824 runs (now pass `InpSpread=0`), parity_crkpr 5,184 runs, 0 differences;
+    `lots_harness` 8 cases = TradingView's sizing formula. Logs `*_v40.log`.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

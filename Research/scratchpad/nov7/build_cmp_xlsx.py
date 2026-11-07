@@ -36,9 +36,9 @@ TV_ONLY = {
     26: ('Price data', NO, "On FxPro candles this short came 15 minutes later (11:55 at 4114.07) and lost (EA-only row)."),
     33: ('Max fills per day', SET, "The EA had already filled 5 trades on 22 Oct and its limit is 5. TradingView's limit is 10, and this was its 6th fill."),
     35: ('Server clock + max fills', SET, "From 25 Oct to 1 Nov the EA's clock is 1 hour behind (its server-clock setting uses the US rule; FxPro uses the EU rule). The EA thought it was 18:15, inside its news window. It had also used its 5 fills that day."),
-    37: ('Clock-change week', NO, "From 25 Oct to 1 Nov, FxPro's day (and the EA's VWAP) starts at 18:00 New York time instead of 17:00, so the VWAP and the signals differ all week. The EA took a long at 13:51 instead."),
+    37: ('Knock-on', NO, "On FxPro candles the EA took a long at 13:51 (EA-only row). After a trade, a new signal in the same direction must break the high made since that fill ('Re-anchor breakout after a trade'), which blocked this long in the EA. TradingView was flat and took it."),
     38: ('Server clock', SET, "The EA's clock said 05:05 (1 hour behind that week): before the 06:00 start and before the Asia kill zone."),
-    39: ('Knock-on', NO, "Follows from #38 (re-anchor after a trade) in the clock-change week."),
+    39: ('Knock-on of the server clock', LIKELY, "Follows #38, which the EA could not take because of its clock. From there the two engines differ; with the clock fixed the EA takes #38 and probably this one too."),
     49: ('Price data', NO, "On FxPro candles the EA had no long at 07:40. It then took a long at 08:40, which TradingView could not take because it was still in #49."),
     50: ('Daily news window', SET, "New York winter time: TradingView blocks 17:45-19:15 and the EA blocks 17:55-20:10, so 19:30 is allowed only in TradingView."),
     51: ('Daily news window', SET, "Same as #50: 20:05 is inside the EA's window."),
@@ -51,12 +51,12 @@ EA_ONLY = {
     '10-20 13:05': ('Knock-on', NO, "TradingView was in #23 (a long) until 13:00, so it could not take this short (see #24)."),
     '10-20 13:28': ('Knock-on', NO, "Follows from the 13:05 short. In the EA this was a 0.18-lot Crooks C recovery trade."),
     '10-21 11:55': ('Price data', NO, "TradingView took this short 15 minutes earlier (#26 at 11:40) and won. On FxPro candles it came at 11:55 and lost."),
-    '10-27 08:35': ('Clock-change week', NO, "FxPro's day and VWAP start 1 hour later than OANDA's this week. TradingView had no signal."),
-    '10-27 09:19': ('Clock-change week', NO, "Same as above."),
+    '10-27 08:35': ('Price data', NO, "On OANDA candles TradingView had no short here (both platforms' Asia zone was open)."),
+    '10-27 09:19': ('Price data', NO, "On OANDA candles TradingView had no long here."),
     '10-27 09:54': ('Server clock', SET, "The real time was 09:50, after the Asia zone ends (09:30), but the EA's clock said 08:50."),
     '10-27 17:41': ('Server clock', SET, "The real time was 17:35, inside the news block, but the EA's clock said 16:35. With the right clock, even the EA's own window would block it."),
-    '10-28 07:31': ('Clock-change week', NO, "A second short after #36. On OANDA candles there was no second signal."),
-    '10-28 13:51': ('Clock-change week', NO, "Different VWAP this week. TradingView took a long at 14:25 instead (#37)."),
+    '10-28 07:31': ('Price data', NO, "A second short after #36. On OANDA candles there was no second signal."),
+    '10-28 13:51': ('Price data', NO, "On OANDA candles TradingView had no long here; it took one at 14:25 instead (#37)."),
     '11-04 11:54': ('Kill zones follow summer time', SET, "UK winter time: TradingView moves its London zone to 12:30-15:30, while the EA keeps 11:30-14:30."),
     '11-04 21:47': ('London Close kill zone', SET, "Signal at 21:20, inside London Close (19:30-21:30), which is ON in the EA and OFF in TradingView."),
     '11-05 08:40': ('Knock-on', NO, "TradingView was still in #49 (07:40-09:25), so it could not take this long."),
@@ -103,9 +103,12 @@ txt = [
     'Why: 9 settings differ between the two files (sheet "Settings"). They directly caused %d of the differences, and probably %d more. '
     'Most of the rest follow from those: one different trade changes the next signals (re-anchor after a trade, cooldown, max fills) '
     'and moves the Crooks C recovery trades.' % (fix_yes, fix_lk),
-    'What no setting can fix: (1) different price data. OANDA and FxPro candles differ by a few cents, and their volumes (which weight the VWAP) are completely different. '
-    '(2) The clock-change weeks. From 25 Oct to 1 Nov, FxPro\'s day starts at 18:00 New York time instead of 17:00, so the EA\'s VWAP starts 1 hour later than TradingView\'s. '
-    'This happens every year between the European and the US clock changes (about 1 week in autumn and 2 weeks in March).',
+    'What no setting can fix: different price data. OANDA and FxPro candles differ by a few cents, and their volumes (which weight the VWAP) are completely different.',
+    'Correction (7 Nov 2026): the first version of this file said that from 25 Oct to 1 Nov FxPro\'s day starts an hour later than TradingView\'s. That was wrong. '
+    'Gold is closed 17:00-18:00 New York time, and the EA report has 23 hours of candles on every day of the test (6,348 candles = 23 days x 276), so FxPro\'s day '
+    'starts on the same 18:00 New York candle as TradingView\'s. The differences that week came from the EA\'s server-clock setting and from price data.',
+    'Version 4.0 of the TradingView strategy, the indicator and the EA has all the settings on the "Settings" sheet as its defaults (your TradingView settings, '
+    'commission $7 per lot, the EU server clock for FxPro, bid-chart matching on, and a Spread input of 0.16 in the EA for the lot size and the earn-back, like TradingView).',
     'Times are India time. EA times are converted from FxPro server time (UTC+3 until 25 Oct, then UTC+2). Sizes: TradingView in oz (8 = 0.08 lot), EA in lots.',
     'Checked from the files: FxPro charged $3.50 per lot per side ($7 round trip). TradingView charged $0.07 per oz per trade (also $7 per lot). '
     'FxPro\'s gold spread in this test was 0.15-0.20 (median 0.16), worked out from the EA\'s target prices.',

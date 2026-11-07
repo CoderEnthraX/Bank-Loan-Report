@@ -32,7 +32,7 @@ for (tf, name), d in D.items():
                 for x, risk, pnl, sp in trace: f.write('%r %r %r\n' % (x['R1'], x['spx'], 0.0 if pnl is None else pnl / risk))
             args = [H, path, repr(d['tp1R']), 'InpRec=%d' % REC[mode], 'InpExitAt=1', 'InpTp1R=%r' % d['tp1R'], 'InpCrkT1=1', 'InpCommLot=0', 'InpBaseRisk=50',
                     'InpCSplit=%d' % split, 'InpCapOn=%d' % (1 if cap else 0), 'InpHardCap=%r' % (cap or 500.0), 'InpCapAction=%d' % ACT[act],
-                    'InpCrkT1Stop=%d' % k, 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn]
+                    'InpCrkT1Stop=%d' % k, 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpSpread=0']   # v4.0: the live spread, as the harness sets it
             out = subprocess.run(args, capture_output=True, text=True, check=True, env=dict(os.environ, REC_T1='1')).stdout.split('\n')
             ea = [(float(l.split()[1]), int(l.split()[2])) for l in out if l.startswith('R ')]
             if trace and trace[-1][2] is None: trace = trace[:-1]          # the stopping signal: the EA must print STOP there
@@ -70,7 +70,7 @@ for (tf, name, ex), d in sorted(P2.items(), key=lambda kv: (kv[0][0], kv[0][1], 
                     args = [H, path, repr(d['exitR']), 'InpRec=%d' % REC[mode], 'InpExitAt=%d' % ex, 'InpCrkT1Any=%d' % (1 if ex != 1 else 0), 'InpCrkT1Pct=%r' % (100.0 * pt),
                             'InpTp1R=%r' % d['tp1R'], 'InpTp2R=%r' % d['tp2R'], 'InpCrkT1=1', 'InpCommLot=0', 'InpBaseRisk=50', 'InpCSplit=%d' % split,
                             'InpCapOn=%d' % (1 if cap else 0), 'InpHardCap=%r' % (cap or 500.0), 'InpCapAction=%d' % ACT[act], 'InpCrkT1Stop=%d' % k,
-                            'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn]
+                            'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpSpread=0']
                     out = subprocess.run(args, capture_output=True, text=True, check=True, env=dict(os.environ, REC_T1='1')).stdout.split('\n')
                     ea = [(float(l.split()[1]), int(l.split()[2])) for l in out if l.startswith('R ')]
                     if trace and trace[-1][2] is None: trace = trace[:-1]

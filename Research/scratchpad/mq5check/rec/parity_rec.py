@@ -9,7 +9,7 @@ EA_REC = {m: i for i, m in enumerate(RC.MODES)}          # MODES order == ENUM_R
 CAPS = {'clamp': 0, 'stop': 1, 'reset': 2}
 def ea(path, exitR, mode, cap, act, split, n, cn=1):
     args = [H, path, repr(exitR), 'InpRec=%d' % EA_REC[mode], 'InpCapOn=%d' % (1 if cap > 0 else 0), 'InpHardCap=%r' % (cap if cap > 0 else 500.0),
-            'InpCapAction=%d' % CAPS[act], 'InpCSplit=%d' % split, 'InpBaseRisk=50', 'InpRecN=3', 'InpRecPct=50', 'InpRecMult=2', 'InpRecStep=25', 'InpParN=3', 'InpDelayN=2', 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn]
+            'InpCapAction=%d' % CAPS[act], 'InpCSplit=%d' % split, 'InpBaseRisk=50', 'InpRecN=3', 'InpRecPct=50', 'InpRecMult=2', 'InpRecStep=25', 'InpParN=3', 'InpDelayN=2', 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpCommLot=0', 'InpSpread=0', 'InpCrkT1=0']   # v4.0: the v3.9 cost defaults
     out = subprocess.run(args, capture_output=True, text=True, check=True).stdout.split('\n')
     rs = [float(l.split()[1]) for l in out if l.startswith('R ')]
     return rs, any(l == 'STOP' for l in out)

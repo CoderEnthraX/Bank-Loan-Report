@@ -66,6 +66,18 @@ CONFIGS = [
     ('three rules, swing, exit2, kz', dict(stopVwOn=True, touchVwOn=True, entVwOn=True, stopMode='swing', exitAt=2, kzOn=True),
      dict(InpStopVwOn=1, InpTouchVwOn=1, InpEntVwOn=1, InpStopMode=1, InpExitAt=2, InpKzOn=1)),
 ]
+# v4.0 changed the EA's engine defaults to the user's settings. Every configuration above keeps the v3.9 engine defaults (the
+# reference's ref.IN) by passing them to the EA explicitly; 'v4.0 defaults' runs the EA's compiled v4.0 defaults against the
+# reference with the same settings.
+V39_EA = dict(InpHalfCap=0, InpMaxFills=5, InpEntryPct=50, InpExitAt=4, InpMv3R=1.0, InpNoChaseSig=2.4, InpChopMax=12, InpDayOn=0,
+              InpMon=1, InpTue=1, InpWed=1, InpThu=1, InpFri=1, InpSat=1, InpSun=1, InpHoursOn=0, InpKzOn=0, InpKzLc=1)
+V40_REF = dict(halfCap=True, maxFills=10, entryPct=25.0, exitAt=1, mv3R=0.0, noChaseSig=2.0, chopMax=13.5, dayOn=True,
+               days=(False, True, True, True, False, False, False), hoursOn=True, hoursSess=(600, 2300), kzOn=True, kz=(True, True, True, False))
+CONFIGS = [(n, r, dict(V39_EA, **e)) for n, r, e in CONFIGS] + [
+    ('v4.0 defaults', V40_REF, {}),
+    ('v4.0 defaults, swing', dict(V40_REF, stopMode='swing'), dict(InpStopMode=1)),
+    ('v4.0 + 3 VWAP rules', dict(V40_REF, stopVwOn=True, touchVwOn=True, entVwOn=True), dict(InpStopVwOn=1, InpTouchVwOn=1, InpEntVwOn=1)),
+]
 # PARITY_SHIFT_DAYS=n moves every bar n days (a multiple of 7 keeps the weekdays): +49 crosses the October / November
 # summer time ends (London 25 Oct, New York 1 Nov 2026), -189 the March starts (New York 8 Mar, London 29 Mar 2026)
 SHIFT_DAYS = int(os.environ.get('PARITY_SHIFT_DAYS', '0'))

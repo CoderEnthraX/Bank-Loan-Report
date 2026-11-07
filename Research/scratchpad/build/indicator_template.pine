@@ -13,9 +13,12 @@
 //  4. FILLED: price trades back into the limit -> stop box (1.8 ATR; a half stop of 0.9 ATR or just
 //     beyond the candle for the session's first impulse against a strongly opposite previous
 //     session or after a gap outside its range) and target box with TP1-TP4 (0.6/1/1.5/2 R).
-//  5. The trade ends at TP4 (+2R) or the stop. One trade at a time, no new setup on the exit bar,
-//     5 fills per day. Shortly after a trade, a new signal in its direction must break the extreme
+//  5. The trade ends at the final target (the reference: TP4, +2R; default from v4.0: TP1) or the
+//     stop. One trade at a time, no new setup on the exit bar, at most 10 fills per day (the
+//     reference: 5). Shortly after a trade, a new signal in its direction must break the extreme
 //     made since that trade's fill. Levels stay unrounded, like the reference.
+//  v4.0 defaults (the same in the strategy and the MT5 EA): Tue / Wed / Thu, 06:00-23:00 IST, in
+//  the Asia, London and New York kill zones, half stop never wider than the normal stop.
 //  The engine below is byte-identical in Auction_Retest_Strategy.pine, so both show the same trades.
 // ═══════════════════════════════════════════════════════════════════════════════════════
 indicator("Auction Retest Model [VWAP Displacement + Retest]", shorttitle = "ARM", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)

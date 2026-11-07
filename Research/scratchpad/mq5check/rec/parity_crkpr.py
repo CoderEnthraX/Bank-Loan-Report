@@ -48,7 +48,7 @@ def main():
                         args = [H, path, repr(xr), 'InpRec=20', 'InpCapOn=%d' % (1 if cap > 0 else 0), 'InpHardCap=%r' % (cap if cap > 0 else 500.0), 'InpCapAction=%d' % CAPS[act],
                                 'InpBaseRisk=50', 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpCrkPr=%d' % PR[kw['crkPr']], 'InpCrkPrN=%d' % kw['crkPrN'],
                                 'InpCrkPrPct=%r' % kw.get('crkPrPct', 50.0), 'InpCrkPrM=%d' % kw.get('crkPrM', 2), 'InpCrkPrD=%d' % kw.get('crkPrD', 3),
-                                'InpCrkPrForget=%d' % (1 if kw.get('crkPrForget') else 0), 'InpCrkPrAll=%d' % (1 if al else 0)]
+                                'InpCrkPrForget=%d' % (1 if kw.get('crkPrForget') else 0), 'InpCrkPrAll=%d' % (1 if al else 0), 'InpCommLot=0', 'InpSpread=0', 'InpCrkT1=0']   # v4.0: the v3.9 cost defaults
                         out = subprocess.run(args, capture_output=True, text=True, check=True, env=dict(os.environ, REC_DAYS='1')).stdout.split('\n')
                         ea = [('SKIP' if l == 'SKIP' else float(l.split()[1])) for l in out if l.startswith('R ') or l == 'SKIP']
                         stop = any(l == 'STOP' for l in out); runs += 1

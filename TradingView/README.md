@@ -3,7 +3,7 @@
 | File | What it is |
 |---|---|
 | [`Auction_Retest_Model.pine`](Auction_Retest_Model.pine) | **Auction Retest Model**: session VWAP + displacement + time-limited retest. It reproduces the trade logic seen on the *Auction Retest Pro* reference screenshots. |
-| [`Auction_Retest_Strategy.pine`](Auction_Retest_Strategy.pine) | The same engine as a **strategy** for backtesting (identical signals and trades), with money-management settings (all off by default). |
+| [`Auction_Retest_Strategy.pine`](Auction_Retest_Strategy.pine) | The same engine as a **strategy** for backtesting (identical signals and trades), with money-management settings (from v4.0 the defaults are the gold / FxPro settings, see v4.0 below). |
 | [`../MetaTrader5/AuctionRetestEA.mq5`](../MetaTrader5/AuctionRetestEA.mq5) | MetaTrader 5 Expert Advisor: a port of the same engine plus the strategy's money management. |
 | [`VWAP_Orderflow_Sniper.pine`](VWAP_Orderflow_Sniper.pine) | The earlier VWAP + absorption/aggression orderflow indicator. |
 
@@ -29,8 +29,8 @@ The rules below were fitted to **80 trades of the original indicator** read cand
 | Filled | Price trades back into the limit: ▲ / ▼ marker, trade boxes start on this bar, the stop is also checked on it | — |
 | Stop | Entry ∓ 1.8 × ATR(14) | 1.8 |
 | Half stop | The first impulse of a session in a direction gets entry ∓ 0.9 ATR (or just beyond the signal candle if that is further) when the previous session had >= 3 more impulses the other way, **or** the session opened outside the previous session's range against the trade. An impulse = a candle with range >= 0.8 ATR, body >= 50 %, close within 25 % of its extreme, wick beyond the 10-bar extreme and VWAP sloping its way | 0.9 / 3 |
-| Targets | TP1-TP4 = 0.6 / 1 / 1.5 / 2 R; the trade ends at **TP4 (+2R)** or the stop (stop first when a bar touches both). Levels unrounded | 0.6/1/1.5/2 |
-| Controls | One trade at a time (carried over sessions), no new setup on the exit bar, at most 5 fills per day, **no daily R stop** (the original keeps trading after three losses) | 1 / 5 / off |
+| Targets | TP1-TP4 = 0.6 / 1 / 1.5 / 2 R; the trade ends at the final target (**TP4, +2R**, in the reference; v4.0 default **TP1**) or the stop (stop first when a bar touches both). Levels unrounded | 0.6/1/1.5/2 |
+| Controls | One trade at a time (carried over sessions), no new setup on the exit bar, at most 5 fills per day in the reference (v4.0 default 10), **no daily R stop** (the original keeps trading after three losses) | 1 / 10 / off |
 
 **Accuracy against the original** (all numbers re-run on the final engine):
 
@@ -51,9 +51,9 @@ type (optional setting below), a few logged stops that the logged exit times sho
 |---|---|---|
 | Signal model | Deep pullback signal (a second signal type, 1 supporting trade); Strict bias check for the half stop (3 supporting trades) | Off |
 | Entry price | Model · Custom % of the signal candle · Market (next bar open) | Model |
-| Targets, exit and stop moves | Final exit at TP1-TP4; move the stop when TP1 / TP2 / TP3 hits (breakeven at +1R = TP2 → 0) | TP4 / off |
+| Targets, exit and stop moves | Final exit at TP1-TP4; move the stop when TP1 / TP2 / TP3 hits (breakeven at +1R = TP2 → 0) | TP1 (v4.0; TP4 before) / off |
 | Accuracy filters (research) | **Don't chase**: skip a signal more than 2.4 σ from the session VWAP; the skipped setup still runs invisibly so the next, more stretched candle is not taken instead. **After a loss, no same-direction trade until a win** (rest of the session) | Off |
-| Days and hours | **Trade only on the ticked days** (Mon ... Sun) and trade only between two times, in your time zone (default Asia/Kolkata). They stop new setups only; open trades finish | Off |
+| Days and hours | **Trade only on the ticked days** (Mon ... Sun) and trade only between two times, in your time zone (default Asia/Kolkata). They stop new setups only; open trades finish | On from v4.0: Tue / Wed / Thu, 06:00-23:00 |
 
 ### Settings added in v3.1 (all off by default; identical in the indicator, the strategy and the EA)
 
@@ -91,9 +91,9 @@ TradingView's 34 "title of an inline input" warnings in the strategy and 24 in t
 
 | Group | Setting | What it does | Gold 2021–2026 result |
 |---|---|---|---|
-| Loss recovery | **Crooks TP1 Rule: Stop Before TP1** (EA `InpCrkT1Stop`; default Tight) | For the "Crooks At Exit TP1" trades only. The size stays the same (half at TP1 banks the whole recovery amount, the rest runs to TP2 with its stop at the entry); only the stop before TP1 changes: **Tight** (TP1 ÷ 2, a stop-out loses 1× the amount), **0.45R** (about 1.6×), **0.6R** (about 2.1×), **Normal stop** (the 1.8 ATR or half stop, about 3.5×), **Normal stop on the entry candle, then tight**, **Normal stop, tight after a candle closes in profit**, **Normal stop, breakeven after a candle closes in profit**. Stop moves happen at a candle close and act from the next candle. The hard cap limits the real stop-out loss, so a wider stop means a smaller amount per trade (with $500 and the normal stop, about $145). In the EA a TP1-rule trade too small to split (e.g. 0.01 lot with a 0.01 minimum) closes completely at TP1, with no TP2 half | Average per recovery trade over 14 exit-TP1 settings: Normal stop −0.06×, plain (checkbox off) −0.07×, all others −0.14× to −0.17×. On the 3 settings profitable at exit TP1 (H1), Crooks C + $500 Start again: Normal stop +$1,760 / +$2,283 / +$2,053 against plain +$589 / +$896 / +$921 and Tight +$44 / −$1,365 / −$1,204 |
+| Loss recovery | **Crooks TP1 Rule: Stop Before TP1** (EA `InpCrkT1Stop`; default Normal stop from v4.0, Tight before) | For the "Crooks At Exit TP1" trades only. The size stays the same (half at TP1 banks the whole recovery amount, the rest runs to TP2 with its stop at the entry); only the stop before TP1 changes: **Tight** (TP1 ÷ 2, a stop-out loses 1× the amount), **0.45R** (about 1.6×), **0.6R** (about 2.1×), **Normal stop** (the 1.8 ATR or half stop, about 3.5×), **Normal stop on the entry candle, then tight**, **Normal stop, tight after a candle closes in profit**, **Normal stop, breakeven after a candle closes in profit**. Stop moves happen at a candle close and act from the next candle. The hard cap limits the real stop-out loss, so a wider stop means a smaller amount per trade (with $500 and the normal stop, about $145). In the EA a TP1-rule trade too small to split (e.g. 0.01 lot with a 0.01 minimum) closes completely at TP1, with no TP2 half | Average per recovery trade over 14 exit-TP1 settings: Normal stop −0.06×, plain (checkbox off) −0.07×, all others −0.14× to −0.17×. On the 3 settings profitable at exit TP1 (H1), Crooks C + $500 Start again: Normal stop +$1,760 / +$2,283 / +$2,053 against plain +$589 / +$896 / +$921 and Tight +$44 / −$1,365 / −$1,204 |
 | Loss recovery | **Crooks C: Win The Loss Back Over N Wins** (off, N = 1; EA `InpCrkCnOn`, `InpCrkCn`) | 1 = the trade after a win wins back the whole loss (Crooks C as before). 2 = it wins back half; if it wins, the next trade wins back the rest. 3 = a third, then the next third, then the rest. A loss at any point: base trades until the next win, then the parts start again from the new loss. The table shows "recovery trade, part 1 of 2" | 25 profitable strategies, $500 cap + Start again: total +$125.6k (N 1), +$128.0k (N 2), +$123.6k (N 3), +$128.4k (N 4); without a cap the account blew in 16% / 9% / 4% / 2% of random trade orders on average (worst strategy 43% / 31% / 17% / 10%) |
-| Risk | **Lot Rounding**: Down / To the nearest lot step (strategy default Down; EA `InpLotRound`, default nearest) and **size below the minimum lot**: trade the minimum / skip (EA `InpSmallLot`, default the minimum; the strategy's "If Size Is Below 1 Lot Step") | Nearest: 0.125 lot → 0.13, 0.124 → 0.12, 0.009 → 0.01; below the minimum (e.g. 0.004) → 0.01. It never rounds up past the hard cap or the leverage limit, and the minimum lot is skipped when its stop-out loss would break the hard cap or the leverage limit. Rounding comes first, so with nearest rounding "skip" only applies to sizes that round to 0 (below half a step) | — |
+| Risk | **Lot Rounding**: Down / To the nearest lot step (default Down in both from v4.0; the EA's default was nearest before) and **size below the minimum lot**: trade the minimum / skip (EA `InpSmallLot`, default the minimum; the strategy's "If Size Is Below 1 Lot Step") | Nearest: 0.125 lot → 0.13, 0.124 → 0.12, 0.009 → 0.01; below the minimum (e.g. 0.004) → 0.01. It never rounds up past the hard cap or the leverage limit, and the minimum lot is skipped when its stop-out loss would break the hard cap or the leverage limit. Rounding comes first, so with nearest rounding "skip" only applies to sizes that round to 0 (below half a step) | — |
 
 ### Settings added in v3.8
 
@@ -124,7 +124,7 @@ and Start again:
 | Per recovery trade (multiples of the amount), TP1 / TP2 | −0.07 / −0.02 | −0.25 to −0.12 | −0.06 to −0.05 |
 
 The normal stop was better than the tight stop at every %. At Final Exit TP1 the TP1 rule with the normal stop beat the plain Crooks C; at
-Final Exit TP2 the plain Crooks C (box off) did better on average. The default settings lose with every variant. A smaller % makes the
+Final Exit TP2 the plain Crooks C (box off) did better on average. The settings that were the defaults in v3.8 lose with every variant. A smaller % makes the
 position bigger, so the $500 cap starts a new cycle sooner (30%: whenever the amount is above about $90), which explains part of its result.
 
 ### Settings added in v3.9 (strategy and EA only; the signals are unchanged)
@@ -151,6 +151,44 @@ Rules that keep the whole loss (wait, skip and keep) still blow the account in 1
 (or go for part of it) never did. On gold a win does not make the next trade more likely to win (after a win 41.6%, after a loss 39.4%), which is
 why timing rules help less than limiting what is chased.
 
+### v4.0: your settings are the defaults (indicator, strategy and EA)
+
+The defaults of all three files are now the settings traded on gold with FxPro (the TradingView strategy settings of 7 November 2026), so a fresh
+copy of the strategy and of the EA take the same trades without changing anything. Nothing in the signal logic changed.
+
+| Group | v4.0 default (TradingView = EA) |
+|---|---|
+| Signal model | As before, plus **Half Stop Never Wider Than The Normal Stop** on (`InpHalfCap`) and **Max Fills Per Day** 10 (`InpMaxFills`) |
+| Entry, targets | Model entry (Custom % 25), targets 0.6 / 1 / 1.5 / 2 R, **Final Exit At TP1** (`InpExitAt`), no stop moves |
+| Days and hours | **Tuesday, Wednesday, Thursday**, **06:00-23:00** India time, kill zones **Asia, London, New York** (London Close off), following London / New York summer time |
+| Risk | $50 base risk, hard cap off ($250, Start again), leverage 1:100, lot rounding **Down**, below one lot step: trade the minimum |
+| Costs | Spread **0.16**, commission **$7 per lot** round trip (FxPro gold: $3.50 a side), earn-back on; TradingView **Properties -> Commission 0.115** per contract (the value the strategy's table asks for with these costs) |
+| Force-close, news | Force-close 23:55, close when Saturday starts, no new trades 60 minutes before news, daily news window **17:45-18:15** India time, following New York time |
+| Loss recovery | **Crooks C** (Crooks TP1 rule off, Crooks C rule Off) |
+| EA only | **Broker server clock: auto with EU summer time** (FxPro); **Match bid-chart levels** on; new **Spread** input (`InpSpread`, 0.16): the lot size, the earn-back and the Crooks TP1-rule distance use this spread, like TradingView, instead of the live spread, so lots and target levels are the same as TradingView's (0 = the live spread, as before) |
+
+The values of switched-off settings were copied too (e.g. Don't Chase 2, Choppy 13.5, stop for the day after 23 losses, Crooks C rule D = 4), so both
+files read the same.
+
+**Loading v4.0.** TradingView keeps the input values of a strategy already on the chart: remove the old one and add the new one (or Settings ->
+Defaults -> Reset settings), then check Properties -> Commission. MetaTrader 5 remembers the last inputs in the Strategy Tester: after compiling the
+new EA, reset its inputs to the defaults. With another broker check **Broker server clock**; with another symbol change the spread and the commission.
+
+**Why the 6 Oct - 6 Nov 2026 tests differed** (`Research/deliverables/TradingView_vs_EA_6Oct_6Nov_2026.xlsx`): 35 of TradingView's 52 trades were
+the same in the EA. Nine settings were different (news window 17:55 for 75 minutes, US server clock, London Close on, kill zones not following summer
+time, 5 fills a day, bid-chart matching off, lot rounding to the nearest step, commission 0.16, half-stop cap off); they caused 12 of the differences
+directly and probably 4 more, and most of the rest followed from those (one different trade changes the next signals and the Crooks C recovery
+trades). What no setting changes: OANDA and FxPro are different price feeds (the candles differ by a few cents, and the volume that weights the VWAP
+is different), so expect a few different trades a month. The trading day is not one of the differences: gold is closed 17:00-18:00 New York time and
+FxPro's first candle of every server day is the 18:00 New York reopen, the same candle TradingView starts its session on, all year (its report had
+23 hours of candles on every test day, the late-October week included).
+
+Checks: every default of the strategy, the indicator (160 settings) and the EA (162) compared with the screenshots, 0 differences, confirmed by an
+independent reviewer; EA lot size = TradingView's formula in 8 hand cases; engine parity 51 configurations (3 new with the v4.0 defaults), also with
+the data moved across the October / November and March clock changes, 0 differences; money management `parity_rec.py` 1,680 runs / 2.15 M trades,
+`parity_tp1.py` 5,824 runs / 7.98 M trades, `parity_crkpr.py` 5,184 runs / 7.43 M signals, 0 differences (the older test configurations pass the
+v3.9 defaults explicitly).
+
 ## Same signals in the indicator, the strategy and the EA
 
 The indicator and the strategy contain a **byte-identical ENGINE block** (between `// >>> ENGINE BEGIN` and `// <<< ENGINE END`, plus the shared
@@ -165,7 +203,7 @@ orders (buy limits and short stops/targets are shifted by the live spread so the
 the same rules on the broker's own data feed and server-midnight session, so expect small differences where the broker's candles differ from
 TradingView's.
 
-EA setup: set **Broker server clock** (default: auto GMT+2 / GMT+3 with US daylight saving, which most FX brokers use; **auto with EU summer time** for brokers on Eastern European time such as FxPro, whose clock changes on the last Sundays of March and October; or a fixed offset; with the wrong choice the days, hours, kill zones, news and force-close times are one hour off for 1-3 weeks a year) and
+EA setup: set **Broker server clock** (default from v4.0: **auto with EU summer time**, for brokers on Eastern European time such as FxPro, whose clock changes on the last Sundays of March and October; most other FX brokers use auto GMT+2 / GMT+3 with **US** daylight saving; or a fixed offset; with the wrong choice the days, hours, kill zones, news and force-close times are one hour off for 1-3 weeks a year) and
 **Your time zone** (India = 5.5) so the day filter, trading hours, force-close and news times match your clock. The EA warms the engine up on
 the last 3,000 bars when it starts, re-places a setup that is still armed, adopts its own open trade if the engine is in it, catches up bars
 missed during a disconnect, and closes any broker position the engine is not in. The loss-recovery state (the loss to win back, the
@@ -189,9 +227,9 @@ Signals and trades are the indicator's. Strategy-only settings never change them
 | Costs | Spread (price units) and commission per lot are counted in the sizing; the table shows the Properties commission per contract to enter (it includes the spread). Earn-back pushes the strategy's targets out by the costs (then the strategy can exit later than the indicator). |
 | Streaks | Stop for the day after N losses / N wins in a row; pause 1-3 days after N losses in a row. |
 | Force-close, weekend, news | Daily force-close time; close trades when Saturday starts; a daily news window and 5 one-off news events (no new trades from N minutes before, close at the start). |
-| Loss recovery | 21 modes (all, over N, %, martingale, exact at final TP, step-up, Fibonacci, D'Alembert, Rule C, Rule C split, Labouchère, Grand Martingale, Paroli, Reverse D'Alembert, delayed, % of equity, Oscar's Grind, Crooks A, Crooks B, Crooks C, Crooks D). **Crooks A**: trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (3, 5, 7 ...) is a recovery trade risking max(base, loss to win back ÷ final target R), e.g. $250 with TP4 (2R) as the final target → $125; the trades between risk the base; losses add to the loss to win back, wins reduce it, and a winning recovery trade starts a new cycle. **Crooks B**: the same alternation, recovery risk = max(base, loss ÷ split ÷ final target R) with the Rule C split setting, and a new cycle only when the whole loss is won back. **Crooks C**: every trade risks the base until a trade wins; the trade after a win is a recovery trade (same size as Crooks A), and if it loses the rule waits for the next win again. E.g. four $50 losses = $200 to win back, trade 5 wins $50 → $150, trade 6 is the recovery trade for $150. Crooks C starts a new cycle only when the whole loss is won back: if a recovery trade wins but leaves part of the loss (leverage limit, hard cap Clamp, costs), the next trade is a recovery trade again for the rest. **Crooks D**: two base trades between recovery trades: base, base, recovery (trades 3, 6, 9 ...), same size as Crooks A; a winning recovery trade, or a loss fully won back, starts a new cycle. Keep the hard cap on with them (e.g. $500, Start again). **Crooks C: After N Losing Recovery Trades In A Row** (v3.9) can forget the loss, go for a part of it, wait for M wins in a row or skip D trading days after N losing recovery trades. The table row CROOKS: LOSS TO WIN BACK shows the amount, the trade number in the cycle and whether it is a base or recovery trade (Crooks C: base, waiting for a win). **Crooks At Exit TP1** (on by default; EA `InpCrkT1`): with Final Exit At TP1 (any final exit with *Works With Any Final Exit*), a recovery trade is made bigger: the part set in *% Closed At TP1* (default half) closes at TP1 and banks the whole recovery amount, the stop of the rest moves to the entry and it closes at TP2; the default stop sits where a stop-out loses exactly the recovery amount (% × TP1 − (1 + %) × costs: 0.3R with half, TP1 = 0.6R and no costs; *Stop Before TP1* can widen it, e.g. to the normal stop). While that half runs on, new signals are skipped. On gold 2021–2026 the tight stop was hit on 75% of these trades, so it lost money: see the workbook before using it. **Gold 2021–2026, 25 profitable settings, $500 cap with Start again**: Crooks C made more than fixed $50 on 18 and Crooks D on 21 (Crooks A on 20), but the profit per $ of drawdown was better on only 5 (C) and 6 (D) (A: 10); without a cap Crooks D blew the account on 5 settings (M1, M5, M15). |
+| Loss recovery | 21 modes (all, over N, %, martingale, exact at final TP, step-up, Fibonacci, D'Alembert, Rule C, Rule C split, Labouchère, Grand Martingale, Paroli, Reverse D'Alembert, delayed, % of equity, Oscar's Grind, Crooks A, Crooks B, Crooks C, Crooks D). **Crooks A**: trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (3, 5, 7 ...) is a recovery trade risking max(base, loss to win back ÷ final target R), e.g. $250 with TP4 (2R) as the final target → $125; the trades between risk the base; losses add to the loss to win back, wins reduce it, and a winning recovery trade starts a new cycle. **Crooks B**: the same alternation, recovery risk = max(base, loss ÷ split ÷ final target R) with the Rule C split setting, and a new cycle only when the whole loss is won back. **Crooks C**: every trade risks the base until a trade wins; the trade after a win is a recovery trade (same size as Crooks A), and if it loses the rule waits for the next win again. E.g. four $50 losses = $200 to win back, trade 5 wins $50 → $150, trade 6 is the recovery trade for $150. Crooks C starts a new cycle only when the whole loss is won back: if a recovery trade wins but leaves part of the loss (leverage limit, hard cap Clamp, costs), the next trade is a recovery trade again for the rest. **Crooks D**: two base trades between recovery trades: base, base, recovery (trades 3, 6, 9 ...), same size as Crooks A; a winning recovery trade, or a loss fully won back, starts a new cycle. Keep the hard cap on with them (e.g. $500, Start again). **Crooks C: After N Losing Recovery Trades In A Row** (v3.9) can forget the loss, go for a part of it, wait for M wins in a row or skip D trading days after N losing recovery trades. The table row CROOKS: LOSS TO WIN BACK shows the amount, the trade number in the cycle and whether it is a base or recovery trade (Crooks C: base, waiting for a win). **Crooks At Exit TP1** (off by default from v4.0; EA `InpCrkT1`): with Final Exit At TP1 (any final exit with *Works With Any Final Exit*), a recovery trade is made bigger: the part set in *% Closed At TP1* (default half) closes at TP1 and banks the whole recovery amount, the stop of the rest moves to the entry and it closes at TP2; the default stop sits where a stop-out loses exactly the recovery amount (% × TP1 − (1 + %) × costs: 0.3R with half, TP1 = 0.6R and no costs; *Stop Before TP1* can widen it, e.g. to the normal stop). While that half runs on, new signals are skipped. On gold 2021–2026 the tight stop was hit on 75% of these trades, so it lost money: see the workbook before using it. **Gold 2021–2026, 25 profitable settings, $500 cap with Start again**: Crooks C made more than fixed $50 on 18 and Crooks D on 21 (Crooks A on 20), but the profit per $ of drawdown was better on only 5 (C) and 6 (D) (A: 10); without a cap Crooks D blew the account on 5 settings (M1, M5, M15). |
 
-The table shows SIGNALS · TAKEN · SKIPPED, so any signal that an execution setting blocked is visible. With the defaults every signal is taken.
+The table shows SIGNALS · TAKEN · SKIPPED, so any signal that an execution setting blocked is visible. With every execution setting off every signal is taken; the v4.0 defaults skip the signals in the news window, and earn-back can keep a trade open past the indicator's exit.
 Below it the same accuracy rows as the indicator: SIGNAL TRADES · WIN % · R, TP HIT, BREAKEVEN (when a stop move is on), SKIPPED BY FILTERS
 (when a filter is on) and DATA RANGE (first and last bar, bar count; time zone in DISPLAY).
 **Leverage**: TradingView's own margin check is off (margin 0 in Properties); the leverage input limits the position value instead.
