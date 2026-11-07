@@ -270,6 +270,21 @@ Other gold findings:
     a new dropdown choice starts the rule's state again (`gCrkPrPrev`), state text "d left" like the strategy. Known limit: a trade that closes during a
     disconnect starts the pause when the EA books it (on reconnect). All checks re-run: 0 differences.
 
+17. **Month-by-month workbooks** (asked 2026-11-07). `gold/monthly.py collect | money | check` -> `monthly_trades.pkl`, `monthly.pkl`; Excel by
+    `gold/build_monthly_xlsx.py` (texts in `monthly_readme.json`) -> `Gold_Monthly_1_MonFri_NoFilters.xlsx`, `Gold_Monthly_2_TueWedThu_KillZones_News.xlsx`
+    (Read me, Summary, one sheet per strategy, one "By month" sheet per rule). The 19 strategies of item 15 x 17 rules (fixed $50, Crooks C, caps $500 /
+    $250 / $150 Start again, over 2 wins, forget 2 / 3, 50% + forget 2 / 3, wait 2W N2 / 3W N2 / 2W N3, skip 3d N2 / 2d N3 keep / forget) x 70 months,
+    each month alone (fresh $10,000 and recovery state, $50 base, gold spread, 1:100 leverage via `recovery.simulate` element 5, no lot rounding). file1:
+    no day / hour / kill-zone / news filter (the strategies' own filters removed: 4 M1 London Close only, 4 M5 18:30-22:30, M15-S9 Asia only); file2:
+    Tue / Wed / Thu IST, kill zones Asia + London + New York with kzAuto, daily news 17:45-18:15 IST following New York time, 60 min no new trades before
+    it, at its start close at the next bar's open / cancel a waiting entry (Pine semantics: newsBlock on the arm bar = not taken; newsBlock on a bar
+    between arm and fill = cancelled; newsStart on a bar from the fill to the bar before the engine exit = closed at O[b+1]). Checks: file1 equals the
+    stored trades for the 10 strategies without own filters; fixed $50 = 50 x net R per month; an independent re-implementation (`verify_monthly/verify.py`,
+    Sonnet high) matched trade lists, counts and 4 rules x 70 months on M15-S8 / M1-S4 / M5-S4 / H1-S8 (file2) and M15-S8 (file1), 0 differences.
+    Findings: summed over the 19 strategies every rule is negative in both files because the M1 / M5 strategies lose without their own windows; M15 and
+    H1 stay positive in file1; in file2 the news close hits M15 (about 40% of its trades); the leverage limit cut 727 (file1) / 192 (file2) trade sizes of
+    Crooks C and kept every month from blowing the account.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -291,6 +306,7 @@ Other gold findings:
 | TP1 rule % and any final exit (v3.8) | `crooks_t1p.py` | `crooks_t1p.pkl` (30 MB, not kept), `crooks_t1p_money.pkl`, `crooks_t1p.txt` | about 2 min |
 | Crooks C single wins | `crooks_alt.py`, `crooks_alt2.py`, `crooks_alt3.py` (no cap) | `crooks_alt*.pkl`, `crooks_alt*.txt` | 1 min each |
 | The user's Crooks C rules (v3.9) | `crooks_user.py` (wait for wins, skip days, forget, %; random orders over the real trade times) | `crooks_user.pkl`, `crooks_user.txt` | 1 min |
+| Month-by-month workbooks | `monthly.py collect`, `monthly.py money`, `monthly.py check`, then `build_monthly_xlsx.py` | `monthly_trades.pkl`, `monthly.pkl`, 2 xlsx | 1.5 min, 1 min, seconds, 1 min + recalc |
 | Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py`, `crooks_sheet.py` and `vwfilter_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |
 

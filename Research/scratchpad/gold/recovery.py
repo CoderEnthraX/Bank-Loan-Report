@@ -12,7 +12,9 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
     v3.9 Crooks C rule after crkPrN losing recovery trades in a row (Crooks C only): crkPr 'forget' (new cycle), 'pct' (every recovery trade goes for
     crkPrPct % of the loss, the rest is forgotten when its last part wins; forget after N), 'wait' (no recovery trade until crkPrM wins in a row, then the
     first one needs a loss, then a win), 'skip' (no trades for the rest of the day and crkPrD counted days; crkPrForget = forget the loss). Day events: the
-    new days (True = counted) that start before the trade, as the strategy / EA see them; a skipped trade adds 'SKIP' to the trace."""
+    new days (True = counted) that start before the trade, as the strategy / EA see them; a skipped trade adds 'SKIP' to the trace. The day events can
+    also be a pair (since the previous signal's day, since the previous taken trade's exit day): the second is used after a taken trade.
+    A 5th element (optional) is the leverage limit: the largest risk per $1 of equity (leverage x stop distance x (1 + cost) / entry price)."""
     eq = start; peak = start; maxDD = 0.0; maxDDp = 0.0; net = 0.0
     recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
     capStop = False; n = 0; maxRisk = 0.0; maxRiskPct = 0.0; ruined = False; ruinAt = None; gp = gl = 0.0
@@ -20,17 +22,21 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
     crL = 0.0; crN = 0; crW = False      # Crooks: $ loss to win back, closed trades in the cycle, the last trade won (Crooks C)
     crP = cN                             # Crooks C over N wins: parts of the loss still to win back (each recovery trade wins loss / parts)
     prOn = mode == MODES[20] and crkPr != 'off'                  # v3.9 Crooks C rule after N losing recovery trades in a row
-    crF = 0; crWait = False; crWW = 0; crNeedL = False; crSkip = False; crSkipLeft = 0
+    crF = 0; crWait = False; crWW = 0; crNeedL = False; crSkip = False; crSkipLeft = 0; prevTaken = False
     for k, tr in enumerate(trades):
         res, c = tr[0], tr[1]; parts = tr[2] if len(tr) > 2 else None
         if capStop or ruined: break
-        for ev in (tr[3] if len(tr) > 3 else ()):                  # a new day while the skip rule pauses trading
+        evs = tr[3] if len(tr) > 3 and tr[3] is not None else []      # a list of day events, or a pair of lists (see above)
+        if isinstance(evs, tuple): evs = evs[1] if prevTaken else evs[0]
+        for ev in evs:                                               # a new day while the skip rule pauses trading
             if not crSkip: break
             if crSkipLeft <= 0: crSkip = False
             elif ev: crSkipLeft -= 1
         if prOn and crkPr == 'skip' and crSkip:
             if trace is not None: trace.append('SKIP')
+            prevTaken = False
             continue
+        prevTaken = True
         add = recPool if mode == MODES[1] else recPool / recN if mode == MODES[2] else recPool * recPct / 100 if mode == MODES[3] else recPool / exitR if mode == MODES[5] else step * recLosses if mode == MODES[6] else 0.0
         fa = fb = 1.0
         for _ in range(2, min(recLosses, 200) + 1): fa, fb = fb, fa + fb   # capped: beyond ~200 losses every rule is far past any cap or account
@@ -59,6 +65,8 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
                 crL = 0.0; crN = 0; crRec = False; crW = False; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False
                 r = min(baseC, cap)
             else: r = cap
+        levk = tr[4] if len(tr) > 4 else None                       # the leverage limit (the strategy's 1:100 by default)
+        if levk is not None and eq > 0: r = min(r, eq * levk)
         if trace is not None: trace.append(r)
         maxRisk = max(maxRisk, r); maxRiskPct = max(maxRiskPct, r / eq if eq > 0 else 9.99); sumRisk += r
         pnl = r * (res - c) / (1.0 + c); n += 1

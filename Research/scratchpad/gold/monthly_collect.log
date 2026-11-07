@@ -1,0 +1,63 @@
+H1-S1 file1 186 {'engine': 186, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+H1-S1 file2 128 {'engine': 140, 'skipped_news': 7, 'cancelled': 5, 'closed_news': 0}
+H1-S3 file1 228 {'engine': 228, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+H1-S3 file2 118 {'engine': 132, 'skipped_news': 7, 'cancelled': 7, 'closed_news': 0}
+H1-S6 file1 542 {'engine': 542, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+H1-S6 file2 272 {'engine': 320, 'skipped_news': 42, 'cancelled': 6, 'closed_news': 0}
+H1-S7 file1 208 {'engine': 208, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+H1-S7 file2 94 {'engine': 106, 'skipped_news': 9, 'cancelled': 3, 'closed_news': 0}
+H1-S8 file1 498 {'engine': 498, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+H1-S8 file2 209 {'engine': 249, 'skipped_news': 34, 'cancelled': 6, 'closed_news': 0}
+M1-S1 file1 7392 {'engine': 7392, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M1-S1 file2 3988 {'engine': 4330, 'skipped_news': 338, 'cancelled': 4, 'closed_news': 118}
+M1-S2 file1 7392 {'engine': 7392, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M1-S2 file2 3827 {'engine': 4255, 'skipped_news': 422, 'cancelled': 6, 'closed_news': 132}
+M1-S3 file1 7404 {'engine': 7404, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M1-S3 file2 4082 {'engine': 4382, 'skipped_news': 297, 'cancelled': 3, 'closed_news': 103}
+M1-S4 file1 7408 {'engine': 7408, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M1-S4 file2 4014 {'engine': 4353, 'skipped_news': 336, 'cancelled': 3, 'closed_news': 115}
+M15-S1 file1 1388 {'engine': 1388, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M15-S1 file2 854 {'engine': 998, 'skipped_news': 134, 'cancelled': 10, 'closed_news': 376}
+M15-S3 file1 1129 {'engine': 1129, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M15-S3 file2 710 {'engine': 846, 'skipped_news': 127, 'cancelled': 9, 'closed_news': 340}
+M15-S6 file1 1776 {'engine': 1776, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M15-S6 file2 943 {'engine': 1102, 'skipped_news': 148, 'cancelled': 11, 'closed_news': 329}
+M15-S7 file1 1377 {'engine': 1377, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M15-S7 file2 844 {'engine': 988, 'skipped_news': 134, 'cancelled': 10, 'closed_news': 371}
+M15-S8 file1 1179 {'engine': 1179, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M15-S8 file2 810 {'engine': 938, 'skipped_news': 119, 'cancelled': 9, 'closed_news': 391}
+M15-S9 file1 1155 {'engine': 1155, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M15-S9 file2 711 {'engine': 839, 'skipped_news': 118, 'cancelled': 10, 'closed_news': 323}
+M5-S1 file1 5171 {'engine': 5171, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M5-S1 file2 2024 {'engine': 2428, 'skipped_news': 404, 'cancelled': 0, 'closed_news': 193}
+M5-S2 file1 6639 {'engine': 6639, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M5-S2 file2 2351 {'engine': 2827, 'skipped_news': 476, 'cancelled': 0, 'closed_news': 55}
+M5-S3 file1 6155 {'engine': 6155, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M5-S3 file2 2475 {'engine': 2959, 'skipped_news': 484, 'cancelled': 0, 'closed_news': 197}
+M5-S4 file1 4533 {'engine': 4533, 'skipped_news': 0, 'cancelled': 0, 'closed_news': 0}
+M5-S4 file2 1719 {'engine': 2088, 'skipped_news': 369, 'cancelled': 0, 'closed_news': 45}
+
+real	1m14.921s
+user	4m47.487s
+sys	0m6.013s
+saved monthly.pkl
+M1-S1    has its own time filter (removed in file1): 7392 trades in file1 vs 1958 stored
+M1-S2    has its own time filter (removed in file1): 7392 trades in file1 vs 1802 stored
+M1-S3    has its own time filter (removed in file1): 7404 trades in file1 vs 2111 stored
+M1-S4    has its own time filter (removed in file1): 7408 trades in file1 vs 2006 stored
+M5-S1    has its own time filter (removed in file1): 5171 trades in file1 vs 1472 stored
+M5-S2    has its own time filter (removed in file1): 6639 trades in file1 vs 1692 stored
+M5-S3    has its own time filter (removed in file1): 6155 trades in file1 vs 1805 stored
+M5-S4    has its own time filter (removed in file1): 4533 trades in file1 vs 1488 stored
+M15-S1   file1 vs the stored trades: 1388 vs 1388 trades, identical True
+M15-S3   file1 vs the stored trades: 1129 vs 1129 trades, identical True
+M15-S6   file1 vs the stored trades: 1776 vs 1776 trades, identical True
+M15-S7   file1 vs the stored trades: 1377 vs 1377 trades, identical True
+M15-S8   file1 vs the stored trades: 1179 vs 1179 trades, identical True
+M15-S9   has its own time filter (removed in file1): 1155 trades in file1 vs 712 stored
+H1-S1    file1 vs the stored trades: 186 vs 186 trades, identical True
+H1-S3    file1 vs the stored trades: 228 vs 228 trades, identical True
+H1-S6    file1 vs the stored trades: 542 vs 542 trades, identical True
+H1-S7    file1 vs the stored trades: 208 vs 208 trades, identical True
+H1-S8    file1 vs the stored trades: 498 vs 498 trades, identical True
+fixed $50 month net vs 50 x net R: worst difference 1.36e-12

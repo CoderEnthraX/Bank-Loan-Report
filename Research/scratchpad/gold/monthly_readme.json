@@ -1,0 +1,119 @@
+{
+ "files": {
+  "file1": {
+   "filename": "Gold_Monthly_1_MonFri_NoFilters.xlsx",
+   "title": "Gold 2021-2026, month by month: Monday to Friday, no news window, no time window",
+   "setup": [
+    "Every day the market is open (Monday to Friday; the New York Friday session that runs past midnight IST is included).",
+    "No time window, no kill zones, no daily news window: every signal of the strategy is taken (as many trades as possible).",
+    "Each strategy keeps its signal settings; its own day / hour / kill-zone filter (9 of the 19 have one) is removed."
+   ]
+  },
+  "file2": {
+   "filename": "Gold_Monthly_2_TueWedThu_KillZones_News.xlsx",
+   "title": "Gold 2021-2026, month by month: Tue / Wed / Thu, kill zones Asia + London + New York, daily news 17:45-18:15 IST",
+   "setup": [
+    "Trades only on Tuesday, Wednesday and Thursday (Indian time, IST).",
+    "Kill zones Asia 05:30-09:30, London 11:30-14:30 and New York 16:30-19:30 IST (London Close off). They follow summer time: London 1 hour later in UK winter, New York 1 hour later in US winter.",
+    "Daily news window 17:45-18:15 IST that follows New York time (18:45-19:15 IST in US winter). No new trades from 60 minutes before it until it ends; at its start an open trade is closed at market and a waiting entry is cancelled (the strategy's own news rules).",
+    "Each strategy keeps its signal settings; its own day / hour / kill-zone filter (9 of the 19 have one) is replaced by this setup."
+   ]
+  }
+ },
+ "common": [
+  "Each month is tested on its own, from its first day to its last day (Indian time): only the trades opened in that month, a fresh $10,000 account and a fresh loss-recovery state on the 1st.",
+  "Base risk $50 per trade. The gold spread is counted as the cost of every trade. The position size respects the strategy's 1:100 leverage limit; lots are not rounded.",
+  "Data: gold M1 bars 4 Jan 2021 to 2 Oct 2026 (October 2026 has only 2 days). Same engine as the TradingView indicator / strategy and the MT5 EA (checked trade for trade).",
+  "The 19 strategies are the ones that were profitable at a fixed $50 in the earlier gold study (no partial close). Their names describe what they were picked for, with their own filters.",
+  "Research results on past data only; they do not promise future results."
+ ],
+ "columns": [
+  "Trades / Wins / Losses / Net R: every trade the setup takes in the month (the skip rules take fewer: see Trades taken).",
+  "Net $: the month's profit or loss with each loss-recovery rule (the account starts at $10,000 every month).",
+  "Biggest fall $: the largest drop from a high of the account within the month.",
+  "Biggest loss $: the largest single losing trade of the month.",
+  "Red cell: the $10,000 account was blown that month (never happened in these runs unless shown)."
+ ],
+ "labels": {
+  "Fixed $50": "Fixed $50",
+  "Crooks C": "Crooks C (no cap)",
+  "C cap $500": "C + cap $500",
+  "C cap $250": "C + cap $250",
+  "C cap $150": "C + cap $150",
+  "C over 2 wins": "C over 2 wins",
+  "Forget after 2": "Forget after 2",
+  "Forget after 3": "Forget after 3",
+  "50% forget 2": "50% + forget 2",
+  "50% forget 3": "50% + forget 3",
+  "Wait 2W after 2": "Wait 2 wins (N2)",
+  "Wait 3W after 2": "Wait 3 wins (N2)",
+  "Wait 2W after 3": "Wait 2 wins (N3)",
+  "Skip 3d after 2": "Skip 3d (N2) keep",
+  "Skip 3d after 2 F": "Skip 3d (N2) forget",
+  "Skip 2d after 3": "Skip 2d (N3) keep",
+  "Skip 2d after 3 F": "Skip 2d (N3) forget"
+ },
+ "names": {
+  "M1-S1": "M1-S1 Most profit",
+  "M1-S2": "M1-S2 Shortest streak",
+  "M1-S3": "M1-S3 Most trades",
+  "M1-S4": "M1-S4 Simplest",
+  "M5-S1": "M5-S1 Most profit",
+  "M5-S2": "M5-S2 Shortest streak",
+  "M5-S3": "M5-S3 Most trades",
+  "M5-S4": "M5-S4 Simplest",
+  "M15-S1": "M15-S1 Most profit",
+  "M15-S3": "M15-S3 Shortest streak ind",
+  "M15-S6": "M15-S6 Most trades",
+  "M15-S7": "M15-S7 Every year +",
+  "M15-S8": "M15-S8 Simplest",
+  "M15-S9": "M15-S9 Asia only",
+  "H1-S1": "H1-S1 Most profit",
+  "H1-S3": "H1-S3 Shortest streak ind",
+  "H1-S6": "H1-S6 Most trades",
+  "H1-S7": "H1-S7 Smoothest",
+  "H1-S8": "H1-S8 Simplest"
+ },
+ "settings": {
+  "M1-S1": "Cooldown after exit 8 bars, Stop distance 4 x ATR, VWAP anchor month",
+  "M1-S2": "Cooldown after exit 30 bars, Stop distance 4 x ATR, VWAP anchor month",
+  "M1-S3": "Min displacement 0.4 x ATR, Stop distance 4 x ATR, VWAP anchor month",
+  "M1-S4": "Stop distance 4 x ATR, VWAP anchor month",
+  "M5-S1": "Choppy-session gate max 8 VWAP crosses, Entry at market, Stop distance 2.4 x ATR, TP4 2.5 R, VWAP anchor month",
+  "M5-S2": "Choppy-session gate max 8 VWAP crosses, Entry at market, When TP2 hits move stop on, Stop distance 2.4 x ATR, VWAP anchor month",
+  "M5-S3": "Choppy-session gate max 8 VWAP crosses, Entry at market, Momentum lookback 5 bars, Stop distance 2.4 x ATR, VWAP anchor month",
+  "M5-S4": "Choppy-session gate max 8 VWAP crosses, 1h EMA20 speed gate max 1.4 x ATR, Entry at market, VWAP anchor month",
+  "M15-S1": "Half stop 1.2 x ATR, When TP3 hits move stop on, Stop distance 4 x ATR",
+  "M15-S3": "1h EMA20 speed gate max 1.2 x ATR, Half stop 1.2 x ATR, When TP3 hits move stop on, VWAP slope bars 0, Stop distance 4 x ATR",
+  "M15-S6": "Half stop 1.2 x ATR, When TP2 hits move stop on, When TP3 hits move stop on, Stop distance 4 x ATR",
+  "M15-S7": "Break lookback 8 bars, Half stop 1.2 x ATR, When TP3 hits move stop on, Stop distance 4 x ATR",
+  "M15-S8": "Stop distance 4 x ATR",
+  "M15-S9": "1h EMA20 speed gate max 1.2 x ATR, Entry lookback 8 bars, Half stop 1.2 x ATR, When TP3 hits move stop on, Stop distance 4 x ATR",
+  "H1-S1": "Cooldown after exit 12 bars, Min displacement 0.65 x ATR, Momentum lookback 5 bars, Don't chase beyond 2 sigma, Stop distance 2.4 x ATR",
+  "H1-S3": "Min displacement body 60%, Don't chase beyond 2 sigma, Stop distance 2.2 x ATR",
+  "H1-S6": "Min displacement 0.5 x ATR, Min displacement body 45%, Stop distance 2.2 x ATR, Structure lookback 20 bars, TP4 3 R, VWAP anchor month",
+  "H1-S7": "Don't chase beyond 1.25 sigma, Skip Sunday off, Stop distance 2.2 x ATR, Structure lookback 20 bars, VWAP anchor month",
+  "H1-S8": "Don't chase beyond 2.2 sigma, VWAP anchor month"
+ },
+ "notes": {
+  "M1-S1": "Its own time filter (kill zones London Close) is replaced by this file's setup.",
+  "M1-S2": "Its own time filter (kill zones London Close) is replaced by this file's setup.",
+  "M1-S3": "Its own time filter (kill zones London Close) is replaced by this file's setup.",
+  "M1-S4": "Its own time filter (kill zones London Close) is replaced by this file's setup.",
+  "M5-S1": "Its own time filter (hours 1830-2230 IST) is replaced by this file's setup.",
+  "M5-S2": "Its own time filter (hours 1830-2230 IST) is replaced by this file's setup.",
+  "M5-S3": "Its own time filter (hours 1830-2230 IST) is replaced by this file's setup.",
+  "M5-S4": "Its own time filter (hours 1830-2230 IST) is replaced by this file's setup.",
+  "M15-S1": "",
+  "M15-S3": "",
+  "M15-S6": "",
+  "M15-S7": "",
+  "M15-S8": "",
+  "M15-S9": "Its own time filter (kill zones Asia) is replaced by this file's setup.",
+  "H1-S1": "",
+  "H1-S3": "",
+  "H1-S6": "",
+  "H1-S7": "",
+  "H1-S8": ""
+ }
+}

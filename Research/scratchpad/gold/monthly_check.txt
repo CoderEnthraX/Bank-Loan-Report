@@ -1,0 +1,20 @@
+M1-S1    has its own time filter (removed in file1): 7392 trades in file1 vs 1958 stored
+M1-S2    has its own time filter (removed in file1): 7392 trades in file1 vs 1802 stored
+M1-S3    has its own time filter (removed in file1): 7404 trades in file1 vs 2111 stored
+M1-S4    has its own time filter (removed in file1): 7408 trades in file1 vs 2006 stored
+M5-S1    has its own time filter (removed in file1): 5171 trades in file1 vs 1472 stored
+M5-S2    has its own time filter (removed in file1): 6639 trades in file1 vs 1692 stored
+M5-S3    has its own time filter (removed in file1): 6155 trades in file1 vs 1805 stored
+M5-S4    has its own time filter (removed in file1): 4533 trades in file1 vs 1488 stored
+M15-S1   file1 vs the stored trades: 1388 vs 1388 trades, identical True
+M15-S3   file1 vs the stored trades: 1129 vs 1129 trades, identical True
+M15-S6   file1 vs the stored trades: 1776 vs 1776 trades, identical True
+M15-S7   file1 vs the stored trades: 1377 vs 1377 trades, identical True
+M15-S8   file1 vs the stored trades: 1179 vs 1179 trades, identical True
+M15-S9   has its own time filter (removed in file1): 1155 trades in file1 vs 712 stored
+H1-S1    file1 vs the stored trades: 186 vs 186 trades, identical True
+H1-S3    file1 vs the stored trades: 228 vs 228 trades, identical True
+H1-S6    file1 vs the stored trades: 542 vs 542 trades, identical True
+H1-S7    file1 vs the stored trades: 208 vs 208 trades, identical True
+H1-S8    file1 vs the stored trades: 498 vs 498 trades, identical True
+fixed $50 month net vs 50 x net R: worst difference 1.36e-12
