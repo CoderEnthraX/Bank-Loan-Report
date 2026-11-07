@@ -322,6 +322,14 @@ Other gold findings:
     PARITY_SHIFT_DAYS 49 / -189; parity_rec 1,680 runs, parity_tp1 5,824 runs (now pass `InpSpread=0`), parity_crkpr 5,184 runs, 0 differences;
     `lots_harness` 8 cases = TradingView's sizing formula. Logs `*_v40.log`.
 
+21. **TradingView vs EA v4.0, 6 Oct - 6 Nov** (asked 2026-11-07, analysis only). The TradingView list sent again was byte-identical to the old run
+    (sha256 cb44af75..., `in_nov7b_tv`); the EA report (`in_nov7b_ea`) is v4.0 with all defaults: 53 trades, -$452.72 (TV +$458.54). Match 42 of 52
+    (41 same result; was 35), base-trade lots equal. Through 4 Nov TV +$459.69, EA +$463.12; the whole gap is 5 Nov (TV -$1.15, EA -$915.84): after
+    06:45 both owed the same ($153.46 / $153.36); TV's recovery trade 07:40 long (#49; no FxPro signal) won +$143.96; the EA's recovery moved to 08:40
+    (TV still in #49): -$249.10, then 20:20 short 0.45 lot (planned $622 = owed / 0.6R; TV took it as a 3 oz base trade): -$611.56. Recovery trades TV 14
+    (+$358.93) vs EA 15 (-$569.68); base trades 38 each (+$99.61 vs +$116.96). 20 Oct: TV #22 limit 4140.415 filled (low about 4140.30); the EA's level
+    4140.26 (+ spread shift) was not reached. EA sizing checked = Crooks C rule, no bug. Tool: `nov7/ledger.py TV.csv REPORT.xlsx`.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
