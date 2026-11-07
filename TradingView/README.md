@@ -189,6 +189,26 @@ the data moved across the October / November and March clock changes, 0 differen
 `parity_tp1.py` 5,824 runs / 7.98 M trades, `parity_crkpr.py` 5,184 runs / 7.43 M signals, 0 differences (the older test configurations pass the
 v3.9 defaults explicitly).
 
+### EA v4.1: Crooks C hedge rule (EA only)
+
+New choice in **Crooks C: After N Losing Recovery Trades In A Row** (`InpCrkPr`): **Hedge: a buy and a sell on the next signal**. After N recovery
+trades in a row have lost (the N box, default 2), the next signal the EA takes opens a **buy and a sell at the same entry price**, both sized like
+the recovery trade, each with its own stop loss and take profit at the broker:
+
+| Input | Default | What it does |
+|---|---|---|
+| `InpCrkHgSl` hedge stop loss | 1 | Stop loss of both trades (in R: 1 = the signal's own stop distance) |
+| `InpCrkHgTp` hedge take profit | 0.6 | Take profit of both trades (in R: 0.6 = TP1) |
+| `InpCrkHgUnit` | R | R (x the signal's stop distance) or Price (e.g. 5.0 = $5 on gold) |
+| `InpCrkHgForget` | on | On: when both trades have closed, forget the loss and start again from the base risk. Off: keep what is left of the loss; if the trade that closed last won, the next trade is a recovery trade, if it lost, base trades until a win |
+
+The two trades run to their own stop loss and take profit: the engine's exit, stop moves, earn-back, partials and the TP1 rule do not touch them;
+force-close, weekend and news close them like any trade. New signals are skipped while they are open, and the table shows "hedge pair on the next
+signal" / "hedge pair open". It needs an MT5 **hedging** account: on a netting account a buy and a sell cancel out, so there the rule forgets the
+loss instead (a message in the Journal). With the default 0.6R target and 1R stop, a price that keeps going one way gives one target and one stop
+(-0.4R for the pair); the pair wins 1.2R only when the price reaches both targets. Not tested on gold (built on request without a test). The
+TradingView strategy does not have this rule: a TradingView strategy cannot hold a buy and a sell at the same time.
+
 ## Same signals in the indicator, the strategy and the EA
 
 The indicator and the strategy contain a **byte-identical ENGINE block** (between `// >>> ENGINE BEGIN` and `// <<< ENGINE END`, plus the shared
