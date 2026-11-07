@@ -42,9 +42,13 @@
 //| half-stop cap.                                                   |
 //| New Spread input: the costs (sizing, earn-back) use 0.16 like    |
 //| TradingView, so lots and target levels match it (0 = live).      |
+//| v4.1 (EA only): Crooks C hedge rule: after N losing recovery     |
+//| trades in a row, the next signal opens a buy and a sell at the   |
+//| same entry (hedging account), with their own stop loss and take  |
+//| profit; then forget the loss, or go on from the last trade.      |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "4.00"
+#property version   "4.10"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -102,7 +106,10 @@ enum ENUM_CRK_PR { CPR_OFF    = 0,   // Off (Crooks C as now)
                    CPR_FORGET = 1,   // Forget the loss
                    CPR_PCT    = 2,   // Go for a % of the loss, forget it after N
                    CPR_WAIT   = 3,   // Wait for M wins in a row, then a loss and a win
-                   CPR_SKIP   = 4 }; // Skip D trading days
+                   CPR_SKIP   = 4,   // Skip D trading days
+                   CPR_HEDGE  = 5 }; // Hedge: a buy and a sell on the next signal (hedging account)
+enum ENUM_HG_UNIT { HGU_R     = 0,   // R (x the signal's stop distance)
+                    HGU_PRICE = 1 }; // Price (e.g. 5.0 = $5 on gold)
 
 //--- ENGINE inputs: same names, order and defaults as the shared Pine inputs
 input group "SIGNAL MODEL (same as the indicator)"
@@ -299,6 +306,10 @@ input int    InpCrkPrM   = 2;      //   ...M wins in a row to wait for (the wait
 input int    InpCrkPrD   = 4;      //   ...D trading days to skip (the skip rule; the rest of that day is skipped too)
 input bool   InpCrkPrForget = false; //   ...forget the loss after the skipped days (the skip rule)
 input bool   InpCrkPrAll = false;  //   ...count every day, not only the trading days (the skip rule)
+input double InpCrkHgSl  = 1.0;    //   ...hedge rule: stop loss of the buy and the sell (R: 1 = the signal's own stop)
+input double InpCrkHgTp  = 0.6;    //   ...hedge rule: take profit of the buy and the sell (R: 0.6 = TP1)
+input ENUM_HG_UNIT InpCrkHgUnit = HGU_R; //   ...hedge rule: stop loss and take profit in R or in price
+input bool   InpCrkHgForget = true; //   ...hedge rule: forget the loss after the pair (off: Crooks C goes on from the trade that closed last)
 input int    InpParN     = 3;      // Paroli: wins before reset
 input int    InpDelayN   = 2;      // Delayed: losses before recovery starts
 input double InpEqPct    = 1.0;    // % of equity (% mode)
@@ -393,6 +404,10 @@ int      crkP = 0;                                       // Crooks C over N wins
 int      crkF = 0;                                       // Crooks C rule: losing recovery trades in a row in this cycle
 bool     crkWait = false; int crkWW = 0; bool crkNeedL = false;   // wait rule: waiting for M wins in a row (wins so far); then the next recovery needs a loss first
 bool     crkSkip = false; int crkSkipLeft = 0; int crkUDay = -1;  // skip rule: trading paused, counted days still to skip, your day of the last live bar
+bool     crkHg = false;                                   // hedge rule: the next signal opens a buy and a sell
+bool     exHg = false; double exHgS = 0, exHgT = 0;      // hedge rule: the working setup / open trades are the pair; its stop loss and take profit distances
+double   gLastOutProfit = 0;                              // profit of the last closing deal (hedge rule: did the trade that closed last win)
+bool     gHedgeOk = false;                                // the account can hold a buy and a sell at the same time (hedging)
 long     gPauseArm = -1;                                  // skip rule: armBar of a setup armed on a caught-up bar while trading was paused (never placed)
 int      gCrkPrPrev = -1;                                 // the Crooks C rule the state belongs to (a new choice starts its state again)
 bool     exT1MvPend = false;                              // Crooks TP1 rule: a stop move before TP1 still has to reach the broker
@@ -503,7 +518,7 @@ double NewDealsPnl(bool &closed)
       if(HistoryDealGetString(tk, DEAL_SYMBOL) != _Symbol || HistoryDealGetInteger(tk, DEAL_MAGIC) != InpMagic) continue;
       sum += HistoryDealGetDouble(tk, DEAL_PROFIT) + HistoryDealGetDouble(tk, DEAL_COMMISSION) + HistoryDealGetDouble(tk, DEAL_SWAP) + HistoryDealGetDouble(tk, DEAL_FEE);
       long entry = HistoryDealGetInteger(tk, DEAL_ENTRY);
-      if(entry == DEAL_ENTRY_OUT || entry == DEAL_ENTRY_INOUT || entry == DEAL_ENTRY_OUT_BY) closed = true;
+      if(entry == DEAL_ENTRY_OUT || entry == DEAL_ENTRY_INOUT || entry == DEAL_ENTRY_OUT_BY) { closed = true; gLastOutProfit = HistoryDealGetDouble(tk, DEAL_PROFIT); }
    }
    lastDeal = maxTk;
    return sum;
@@ -790,11 +805,12 @@ void ProcessBar(int s)
 bool   CrkPrOn()  { return InpRec == REC_CRC && InpCrkPr != CPR_OFF; }
 double CrkPrPct() { return CrkPrOn() && InpCrkPr == CPR_PCT ? MathMax(10.0, MathMin(100.0, InpCrkPrPct)) / 100.0 : 1.0; }
 bool   CrkPause() { return CrkPrOn() && InpCrkPr == CPR_SKIP && crkSkip; }   // the skip rule pauses trading
+bool   CrkHedgeNow() { return CrkPrOn() && InpCrkPr == CPR_HEDGE && crkHg && crkL > 0; }   // hedge rule: this signal opens the pair
 //--- Crooks: the next trade is a recovery trade. A / B: trades 3, 5, 7 ... of the cycle; C: the trade after a win while a loss is owed; D: trades 3, 6, 9 ...
 bool CrkRecNext()
 {
    if(InpRec == REC_CRA || InpRec == REC_CRB) return crkN >= 2 && crkN % 2 == 0;
-   if(InpRec == REC_CRC) return crkW && crkL > 0 && !(CrkPrOn() && InpCrkPr == CPR_WAIT && (crkWait || crkNeedL));   // wait rule: not while waiting
+   if(InpRec == REC_CRC) return (crkW && crkL > 0 && !(CrkPrOn() && InpCrkPr == CPR_WAIT && (crkWait || crkNeedL))) || CrkHedgeNow();   // wait rule: not while waiting; the hedge pair is sized as a recovery trade
    if(InpRec == REC_CRD) return crkN >= 2 && (crkN - 2) % 3 == 0;
    return false;
 }
@@ -804,7 +820,7 @@ bool CrkRecNext()
 double CrkT1P() { return MathMax(10.0, MathMin(90.0, InpCrkT1Pct)) / 100.0; }
 double CrkT1Dist()
 {
-   if(!InpCrkT1 || (InpExitAt != EXIT_TP1 && !InpCrkT1Any) || !CrkRecNext()) return 0;
+   if(!InpCrkT1 || (InpExitAt != EXIT_TP1 && !InpCrkT1Any) || !CrkRecNext() || CrkHedgeNow()) return 0;
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    if(tv <= 0 || ts <= 0) return 0;
    double spr = CostSpr(), p = CrkT1P();
@@ -815,7 +831,7 @@ double CrkT1Dist()
 //--- Crooks C over N wins: N, and the parts of the loss still to win back
 int CrkNp() { return InpCrkCnOn ? MathMax(1, InpCrkCn) : 1; }
 int CrkParts() { int np = CrkNp(); return (crkP < 1 || crkP > np) ? np : crkP; }
-void   CrkCycle() { crkL = 0; crkN = 0; crkP = CrkNp(); crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; }   // a new cycle at the base risk
+void   CrkCycle() { crkL = 0; crkN = 0; crkP = CrkNp(); crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkHg = false; }   // a new cycle at the base risk
 //--- skip rule: a new day in your time zone while trading is paused; counted days end the pause (the day the count reaches 0 is still skipped)
 void   CrkDayCount(bool counted) { if(!crkSkip) return; if(crkSkipLeft <= 0) crkSkip = false; else if(counted) crkSkipLeft--; }
 //--- called for every live bar right after ProcessBar() (gDayOk is that bar's day filter): counted = every day, the ticked days, or Monday-Friday
@@ -979,6 +995,56 @@ double T1Stop0Px(bool isL, double d)
 }
 
 double MinDist() { return MathMax((double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL), (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_FREEZE_LEVEL)) * _Point; }
+//--- Crooks C hedge rule: a buy and a sell at the engine's entry level with the hedge stop loss and take profit
+//--- (bid-chart levels: the buy-side prices are shifted by the spread, like the normal orders)
+double HgDist(double x)                                 // at least the stops level + the spread + 1 tick, or the broker rejects the order
+{
+   double ts = TickSize(), d = InpCrkHgUnit == HGU_R ? x * trRisk : x;
+   double sp = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
+   return MathMax(MinDist() + sp + ts, MathRound(d / ts) * ts);
+}
+void   HgLevels(bool buy, double &sl, double &tp)
+{
+   double tl = TickSize() * 0.001;
+   if(buy) { sl = FloorTick(lim - exHgS + tl); tp = CeilTick(lim + exHgT - tl); }
+   else    { sl = CeilTick(lim + exHgS - tl + Spr()); tp = FloorTick(lim - exHgT + tl + Spr()); }
+}
+bool   HgMarket(double v)                                // both trades at market (the level is reached, or Market entry); one trade alone is closed again
+{
+   double slB, tpB, slS, tpS; HgLevels(true, slB, tpB); HgLevels(false, slS, tpS);
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), g = MinDist() + TickSize();
+   slB = MathMin(slB, FloorTick(bid - g)); tpB = MathMax(tpB, CeilTick(bid + g));   // the price already past a level (a gap): keep the order valid
+   slS = MathMax(slS, CeilTick(ask + g)); tpS = MathMin(tpS, FloorTick(ask - g));
+   bool a = trade.Buy(v, _Symbol, 0, slB, tpB, "HEDGE");
+   if(!a) Print("Hedge buy failed: ", trade.ResultRetcodeDescription());
+   bool b = trade.Sell(v, _Symbol, 0, slS, tpS, "HEDGE");
+   if(!b) Print("Hedge sell failed: ", trade.ResultRetcodeDescription());
+   if(a != b) { CloseAll(); Print("Hedge: only one of the two trades opened, so it was closed again."); return false; }
+   return a && b;
+}
+bool   PlaceHedge(bool isL, double v)                    // the pair's orders: a limit in the signal's direction and a stop the other way, both at the entry level
+{
+   if(InpEntryMode == ENTRY_MARKET) return HgMarket(v);
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), gap = MathMax(MinDist(), TickSize());
+   double pB = EntryPx(true), pS = EntryPx(false);       // the buy and the sell trigger when the bid reaches the entry level
+   double slB, tpB, slS, tpS; HgLevels(true, slB, tpB); HgLevels(false, slS, tpS);
+   if(isL ? (ask <= pB || bid <= pS) : (bid >= pS || ask >= pB)) return HgMarket(v);   // at / through the level: both now
+   if(isL ? (ask - pB < gap || bid - pS < gap) : (pS - bid < gap || pB - ask < gap)) { gVirt = true; return true; }   // inside the stops distance: VirtualEntry opens both
+   bool a = isL ? trade.BuyLimit(v, pB, _Symbol, slB, tpB, ORDER_TIME_GTC, 0, "HEDGE") : trade.SellLimit(v, pS, _Symbol, slS, tpS, ORDER_TIME_GTC, 0, "HEDGE");
+   bool b = a && (isL ? trade.SellStop(v, pS, _Symbol, slS, tpS, ORDER_TIME_GTC, 0, "HEDGE") : trade.BuyStop(v, pB, _Symbol, slB, tpB, ORDER_TIME_GTC, 0, "HEDGE"));
+   if(!b) { Print("Hedge orders failed: ", trade.ResultRetcodeDescription()); CancelPending(); return false; }
+   return true;
+}
+bool   HgOpen()                                          // a hedge trade of this EA is open (e.g. after a restart)
+{
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+   {
+      ulong tk = PositionGetTicket(i);
+      if(tk == 0) continue;
+      if(PositionGetString(POSITION_SYMBOL) == _Symbol && PositionGetInteger(POSITION_MAGIC) == InpMagic && PositionGetString(POSITION_COMMENT) == "HEDGE") return true;
+   }
+   return false;
+}
 void SetExits(bool withTarget)
 {
    ulong tk; double vol, op;
@@ -1138,8 +1204,8 @@ string StateText(bool newsBlk)
                 (trSkip == 5 ? "BEYOND MAX VWAP DISTANCE" : (trSkip == 6 ? "STOP BEYOND VWAP" : (trSkip == 7 ? "VWAP TOUCHED RECENTLY" : "ENTRY TOO CLOSE TO VWAP"))))));
    string s = st != 0 && trGhost ? "SKIPPED (" + why + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
               capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : CrkPause() ? "CROOKS C PAUSE (" + IntegerToString(crkSkipLeft) + "d left)" : dayBlock ? "STREAK STOP TODAY" :
-              !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : "SCANNING";
-   string ex = exState == 2 ? " (in trade)" : (exState == 1 ? (gVirt ? " (waiting for the level)" : " (order working)") : "");
+              !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : CrkHedgeNow() ? "SCANNING (HEDGE PAIR ON THE NEXT SIGNAL)" : "SCANNING";
+   string ex = exState == 2 ? (exHg ? " (hedge pair open)" : " (in trade)") : (exState == 1 ? (gVirt ? " (waiting for the level)" : exHg ? " (hedge orders working)" : " (order working)") : "");
    return s + ex;
 }
 void TblAdd(string k, string v, color vc, color bg)
@@ -1188,9 +1254,9 @@ void UpdateTable()
    string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRC ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") : (crkL > 0 ? " | base, waiting for a win" : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "")
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
-                    crkNeedL ? " | waiting for a loss, then a win" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
+                    crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v4.0", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v4.1", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -1236,18 +1302,28 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    bool crkPs = CrkPause();
    bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock || crkPs);   // the hard cap acts only on a signal that can be taken
    double rAmt = NextRisk(ExitR(), canTake);
+   bool   hg = CrkHedgeNow();                        // Crooks C hedge rule: a buy and a sell (after NextRisk: a hard-cap restart cancels it)
+   double hgS = hg ? HgDist(InpCrkHgSl) : 0, hgT = hg ? HgDist(InpCrkHgTp) : 0;
+   if(hg && InpCapOn && hgT > hgS) rAmt = MathMin(rAmt, InpHardCap / 2.0);   // both trades can lose: the pair stays inside the hard cap
    double t1d = CrkT1Dist();                         // after a cap restart this is 0: trade 1 of a new cycle
-   double sd = t1d > 0 ? t1d : trRisk;               // stop distance used for the size
-   double ld = t1d > 0 ? CrkT1Stop0Dist(t1d) : trRisk;   // the real stop-out distance (a wider TP1-rule stop)
+   double sd = hg ? hgS : t1d > 0 ? t1d : trRisk;    // stop distance used for the size
+   double ld = hg ? hgS : t1d > 0 ? CrkT1Stop0Dist(t1d) : trRisk;   // the real stop-out distance (a wider TP1-rule stop)
    double v = (capStop || crkPs) ? 0 : LotsFor(rAmt, sd, lim, isL, ld);
+   if(hg && v > 0)                                   // hedge pair: the free margin must carry both trades
+   {
+      double vst = InpLotStep > 0 ? InpLotStep : SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP), vmn = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), mg;
+      if(vst <= 0) vst = vmn > 0 ? vmn : 0.01;
+      while(v >= vmn && OrderCalcMargin(ORDER_TYPE_BUY, _Symbol, 2 * v, lim, mg) && mg > AccountInfoDouble(ACCOUNT_MARGIN_FREE)) v = NormalizeDouble(v - vst, 8);
+      if(v < vmn) v = 0;
+   }
    skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : crkPs ? "Crooks C pause" : v <= 0 ? "size 0" : "";
    if(skipWhy != "") { skipN++; return; }
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    double sprNow = CostSpr();
-   exCostPx = InpEarnBack && tv > 0 ? InpCommLot / (tv / ts) + sprNow : 0;
+   exCostPx = InpEarnBack && tv > 0 && !hg ? InpCommLot / (tv / ts) + sprNow : 0;   // no earn-back on the hedge pair: its levels are the inputs
    exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot);
    exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = exT1 ? T1Stop0Px(isL, t1d) : 0; exT1Tight = exT1 ? T1StopPx(isL, t1d) : 0; exT1Entry = lim;
-   exT1Tp1 = t1; exT1Tp2 = t2; exKeepSl = 0;
+   exT1Tp1 = t1; exT1Tp2 = t2; exKeepSl = 0; exHg = false; exHgS = hgS; exHgT = hgT; gLastOutProfit = 0;
    for(int q = 0; q < 3; q++) pDone[q] = false;
    CancelPending();
    gVirt = false;
@@ -1258,7 +1334,8 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    if(isL) sl = MathMin(sl, FloorTick(MathMin(ep, bid) - minD));
    else    sl = MathMax(sl, CeilTick(MathMax(ep, ask) + minD));
    bool ok;
-   if(InpEntryMode == ENTRY_MARKET)
+   if(hg) ok = PlaceHedge(isL, v);
+   else if(InpEntryMode == ENTRY_MARKET)
       ok = isL ? trade.Buy(v, _Symbol, 0, sl, 0, "ARM") : trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
    else if(isL)
    {
@@ -1272,7 +1349,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
       else if(bid >= ep)                ok = trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
       else { ok = true; gVirt = true; }
    }
-   if(ok) { exState = 1; exArm = armBar; exSynced = false; takenN++; crkRec = CrkRecNext(); }
+   if(ok) { exState = 1; exArm = armBar; exSynced = false; takenN++; crkRec = CrkRecNext(); exHg = hg; }
    else { skipN++; skipWhy = "order rejected"; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
 }
 
@@ -1282,6 +1359,11 @@ void VirtualEntry()
    if(!gVirt) return;
    if(exState != 1) { gVirt = false; return; }
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
+   if(exHg)                                             // hedge pair: both trades at market when the level is reached
+   {
+      if(exL ? (ask <= EntryPx(true) || bid <= EntryPx(false)) : (bid >= EntryPx(false) || ask >= EntryPx(true))) { gVirt = false; HgMarket(exLots); }
+      return;
+   }
    double ep = EntryPx(exL), sl = exT1 ? exT1Stop : StopPx(exL);
    if(exL ? ask <= ep : bid >= ep)
    {
@@ -1320,7 +1402,12 @@ void BookClosed()
    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, D: also when a recovery trade wins; C keeps a leftover)
    bool lastPart = CrkParts() == 1;                     // this recovery trade went for the last part of the loss (Crooks C over N wins)
    crkL = MathMax(0.0, crkL - exPnl);
-   if(crkL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRD) && win && crkRec)) CrkCycle();
+   if(exHg)                                             // the hedge pair closed (exPnl = both trades): forget the loss, or Crooks C goes on from the trade that closed last
+   {
+      crkF = 0; crkHg = false;
+      if(InpCrkHgForget || crkL < 0.01) CrkCycle(); else { crkN++; crkP = CrkNp(); }
+   }
+   else if(crkL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRD) && win && crkRec)) CrkCycle();
    else
    {
       crkN++; crkP = !win ? CrkNp() : crkRec ? MathMax(1, CrkParts() - 1) : CrkParts();   // Crooks C over N wins: a loss starts the parts again
@@ -1335,12 +1422,13 @@ void BookClosed()
             if(InpCrkPr == CPR_FORGET || InpCrkPr == CPR_PCT) CrkCycle();
             else if(InpCrkPr == CPR_WAIT) { crkWait = true; crkWW = 0; crkNeedL = false; }
             else if(InpCrkPr == CPR_SKIP) { crkSkip = true; crkSkipLeft = MathMax(1, InpCrkPrD); if(InpCrkPrForget) CrkCycle(); }
+            else if(InpCrkPr == CPR_HEDGE) { if(gHedgeOk) crkHg = true; else CrkCycle(); }   // hedge rule: the next signal opens the pair (netting account: forget the loss)
          }
       }
    }
-   crkW = win;
+   crkW = exHg ? gLastOutProfit > 0 : win;             // hedge pair: the trade that closed last decides (a win -> the next trade is a recovery trade)
    crkRec = false; exT1 = false; exT1Half = false; exT1Be = false; exKeepSl = 0;
-   exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false;
+   exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false; exHg = false;
    CancelPending();
 }
 
@@ -1376,7 +1464,7 @@ void OnNewBar()
    {
       CancelPending();
       if(exMine && lastFill > exArm) missN++;          // engine filled, broker did not
-      exState = 0; exArm = -1; gVirt = false;
+      exState = 0; exArm = -1; gVirt = false; exHg = false;
    }
    if(exState == 2 && exMine && MathAbs(st) == 2) exSynced = true;   // the engine is in the EA's setup (filled on this bar or a caught-up bar)
    // Crooks TP1 rule: TP1 was reached but no tick booked the TP1 part (missed tick, failed close, disconnect): book it now, before the
@@ -1386,14 +1474,14 @@ void OnNewBar()
    bool t1Due = (((evExit && evWin) || t1Bar) && exMine) || gT1Seen;
    gT1Seen = false;                                                  // a failed close below sets it again: retried at the next bar close
    if(t1Due && exState == 2 && exT1 && !exT1Half && pos) { T1Half(pTk, pVol); pos = HasPosition(pTk, pVol, pOpen); }
-   if(exState == 2 && exMine && (evFill || evMove)) SetExits(true);
-   if(evExit && exState == 2 && exMine && (!InpEarnBack || !evWin) && !(exT1 && (evWin || exT1Half))) CloseAll();   // engine exited: never stay in (earn-back and the Crooks TP1 rule only outlive a win)
+   if(exState == 2 && exMine && !exHg && (evFill || evMove)) SetExits(true);
+   if(evExit && exState == 2 && exMine && !exHg && (!InpEarnBack || !evWin) && !(exT1 && (evWin || exT1Half))) CloseAll();   // engine exited: never stay in (earn-back and the Crooks TP1 rule only outlive a win)
    // Crooks TP1 rule: stop choices that move the stop at a bar close, before the TP1 half is booked
    if(exState == 2 && exT1 && !exT1Half && (InpCrkT1Stop == T1S_FILL || InpCrkT1Stop == T1S_PT || InpCrkT1Stop == T1S_PBE)) T1StopMove();
    // engine wins: close a broker position the engine is not in (early fill on a spread spike, a fill racing a cancel,
    // or an engine exit on a bar caught up after a disconnect); with earn-back a synced trade may outlive the engine exit
    bool engHolds = (MathAbs(st) == 2 && exSynced && exMine) || (MathAbs(st) == 1 && !exSynced && exState == 2 && exMine);
-   if(pos && !exClosed && !evExit && !engHolds && !(InpEarnBack && exSynced) && !(exT1 && exSynced))
+   if(pos && !exClosed && !evExit && !engHolds && !(InpEarnBack && exSynced) && !(exT1 && exSynced) && !exHg)
    {
       CloseAll(); exState = 2;   // booked on the next bar unless the exit deal is already visible
       ulong cTk; double cVol, cOp;
@@ -1412,7 +1500,8 @@ void OnNewBar()
    bool wkndStart = InpWeekendOn && DowOf(ut) == 6 && DowOf(utPrev) != 6;
    bool flatNow = fcNow || wkndStart || nStart;
    if(flatNow && pos) CloseAll();
-   if(exState == 1 && (flatNow || newsBlk)) { CancelPending(); exState = 0; exArm = -1; gVirt = false; }
+   if(exHg && exState == 2 && (flatNow || newsBlk)) CancelPending();   // hedge pair: a trade still waiting is not opened after force-close, weekend or news
+   if(exState == 1 && (flatNow || newsBlk)) { CancelPending(); exState = 0; exArm = -1; gVirt = false; exHg = false; }
 
    // 5. take the engine's new setup
    if(evArm) TakeSetup(evArmL, newsBlk, flatNow);
@@ -1425,7 +1514,7 @@ void OnNewBar()
 //--- partial closes, intrabar (execution only) ---------------------------------
 void ManagePartials()
 {
-   if(exState != 2) return;
+   if(exState != 2 || exHg) return;
    int exitK = (int)InpExitAt;
    ulong tk; double vol, op;
    if(!HasPosition(tk, vol, op)) return;
@@ -1466,7 +1555,7 @@ void ResetEngine()
    st = 0; armBar = -1; fillBar = -1; lastExit = -1; lastFill = -1; lastDir = 0;
    lim = 0; stp = 0; stp0 = 0; trRisk = 0; t1 = 0; t2 = 0; t3 = 0; t4 = 0; tF = 0; tpHit = 0; trHalf = false; trGhost = false;
    totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true; gKzOk = true;
-   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false; exT1 = false; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0; exKeepSl = 0;
+   exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false; exT1 = false; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0; exKeepSl = 0; exHg = false; exHgS = 0; exHgT = 0; gLastOutProfit = 0;
    sigN = 0; takenN = 0; skipN = 0; missN = 0; skipWhy = "";
    gVirt = false; gDayPend = false; gPrevT = 0; capStop = false; gT1Seen = false; gPauseArm = -1;   // crkUDay is kept with the pause (MT5 keeps globals)
    for(int q = 0; q < 3; q++) pDone[q] = false;
@@ -1484,8 +1573,10 @@ int OnInit()
    trade.SetTypeFillingBySymbol(_Symbol);
    ResetEngine();
    LabReset();
-   if(gCrkPrPrev != (int)InpCrkPr || InpRec != REC_CRC) { crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; }
+   if(gCrkPrPrev != (int)InpCrkPr || InpRec != REC_CRC) { crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; }
    gCrkPrPrev = (int)InpCrkPr;
+   gHedgeOk = (ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE) == ACCOUNT_MARGIN_MODE_RETAIL_HEDGING;
+   if(InpRec == REC_CRC && InpCrkPr == CPR_HEDGE && !gHedgeOk) Print("Crooks C hedge rule: this account cannot hold a buy and a sell together (netting), so the rule forgets the loss instead.");
    // markings and table only where they can be seen (not in non-visual tests or optimisation)
    gCanDraw = MQLInfoInteger(MQL_OPTIMIZATION) == 0 && (MQLInfoInteger(MQL_TESTER) == 0 || MQLInfoInteger(MQL_VISUAL_MODE) != 0);
    ObjectsDeleteAll(0, "ARM_");
@@ -1495,6 +1586,7 @@ int OnInit()
    if(InpTouchVwOn && InpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
    if(InpCrkT1 && (InpCrkT1Pct < 10 || InpCrkT1Pct > 90)) { Print("Crooks TP1 rule: % closed at TP1 must be 10 to 90."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRC && InpCrkPr != CPR_OFF && (InpCrkPrN < 1 || InpCrkPrM < 1 || InpCrkPrD < 1)) { Print("Crooks C rule: N, M and D must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpRec == REC_CRC && InpCrkPr == CPR_HEDGE && (InpCrkHgSl <= 0 || InpCrkHgTp <= 0)) { Print("Crooks C hedge rule: stop loss and take profit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRC && InpCrkPr == CPR_PCT && (InpCrkPrPct < 10 || InpCrkPrPct > 100)) { Print("Crooks C rule: % of the loss must be 10 to 100."); return INIT_PARAMETERS_INCORRECT; }
    // warm up the engine on history (no orders): it ends in the same state as the TradingView engine would
    int bars = Bars(_Symbol, _Period);
@@ -1509,7 +1601,8 @@ int OnInit()
    bool c; NewDealsPnl(c);   // do not count old history
    // restart: adopt this EA's open position if the engine is in the same trade, keep managing it
    ulong tk; double vol, op;
-   if(HasPosition(tk, vol, op) && PositionSelectByTicket(tk))
+   if(HgOpen()) { exState = 2; exHg = true; Print("Hedge pair still open: its trades run to their own stop loss and take profit."); }
+   else if(HasPosition(tk, vol, op) && PositionSelectByTicket(tk))
    {
       bool isL = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY;
       if((isL && st == 2) || (!isL && st == -2))
@@ -1564,7 +1657,7 @@ void OnTick()
          if(exState != 0 && exT1 && !exT1Half && exArm >= 0 && exArm == armBar && lastFill > exArm && lastFill < bi && (exL ? Hi(s) >= exT1Tp1 + exCostPx : Lo(s) <= exT1Tp1 - exCostPx)) gT1Seen = true;
       }
       OnNewBar();
-      if(caught && exState == 2 && MathAbs(st) == 2 && exArm == armBar) SetExits(true);   // re-sync stop moves of the missed bars
+      if(caught && exState == 2 && MathAbs(st) == 2 && exArm == armBar && !exHg) SetExits(true);   // re-sync stop moves of the missed bars
       if(caught && !evArm && MathAbs(st) == 1 && !trGhost && exState == 0 && armBar > biBefore && armBar != gPauseArm) gRearm = true;   // armed on a caught-up bar: place it now
    }
    if(gRearm)

@@ -39,6 +39,11 @@ extern "C" int rec_t1() { return CrkT1Dist() > 0 ? 1 : 0; }
 // Crooks C skip rule: a new day (counted or not) while trading is paused, and whether the next signal is skipped by the pause
 extern "C" void rec_day(int counted) { CrkDayCount(counted != 0); }
 extern "C" int rec_paused() { return CrkPause() ? 1 : 0; }
+// v4.1 hedge rule: hedging account on/off, close the pair (lastOut = profit of the trade that closed last), state getters
+extern "C" void rec_hgok(int on) { gHedgeOk = on != 0; }
+extern "C" void rec_hgclose(double lastOut) { exHg = true; gLastOutProfit = lastOut; BookClosed(); }
+extern "C" int rec_hgnow() { return CrkHedgeNow() ? 1 : 0; }
+extern "C" double rec_owed() { return crkL; }
 // lot sizing test: the EA's own LotsFor() with a set lot step / minimum / maximum, equity, tick value and spread
 extern "C" double rec_lots(double risk, double sd, double entry, int isL, double ld, double tv, double spread, double vstep, double vmin, double eq)
 { rec_tv = tv; rec_bid = entry; rec_ask = entry + spread; rec_vstep = vstep; rec_vmin = vmin; rec_vmax = 100.0; rec_eq = eq; return LotsFor(risk, sd, entry, isL != 0, ld); }

@@ -206,8 +206,16 @@ The two trades run to their own stop loss and take profit: the engine's exit, st
 force-close, weekend and news close them like any trade. New signals are skipped while they are open, and the table shows "hedge pair on the next
 signal" / "hedge pair open". It needs an MT5 **hedging** account: on a netting account a buy and a sell cancel out, so there the rule forgets the
 loss instead (a message in the Journal). With the default 0.6R target and 1R stop, a price that keeps going one way gives one target and one stop
-(-0.4R for the pair); the pair wins 1.2R only when the price reaches both targets. Not tested on gold (built on request without a test). The
-TradingView strategy does not have this rule: a TradingView strategy cannot hold a buy and a sell at the same time.
+(-0.4R for the pair); the pair wins 1.2R only when the price reaches both targets. With a take profit beyond the stop loss both trades can
+lose; with the hard cap on, each trade then risks at most half the cap. The stop loss and take profit are kept at least the broker's minimum
+distance plus the spread from the entry; the free margin must carry both trades; if only one of the two can be opened it is closed again (never one
+trade alone); a trade still waiting when the other has opened is cancelled at force-close, weekend and news. Not tested on gold (built on request
+without a test). The TradingView strategy does not have this rule: a TradingView strategy cannot hold a buy and a sell at the same time.
+
+Checks: compile 0 errors / 0 warnings; the EA's own code run through scripted sequences (forget, keep with the last trade lost / won, netting
+account): trigger, recovery sizing and booking as described; engine parity 51 configurations (3 shifts) and money-management parity (1,680 /
+5,824 / 5,184 runs) unchanged, 0 differences; independent review (5 edge cases fixed: the distances above, a gap past a level, a lone trade, margin
+for both trades, a waiting trade after force-close / news).
 
 ## Same signals in the indicator, the strategy and the EA
 

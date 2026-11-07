@@ -330,6 +330,17 @@ Other gold findings:
     (+$358.93) vs EA 15 (-$569.68); base trades 38 each (+$99.61 vs +$116.96). 20 Oct: TV #22 limit 4140.415 filled (low about 4140.30); the EA's level
     4140.26 (+ spread shift) was not reached. EA sizing checked = Crooks C rule, no bug. Tool: `nov7/ledger.py TV.csv REPORT.xlsx`.
 
+22. **EA v4.1: Crooks C hedge rule** (asked 2026-11-07; EA only, not tested on gold at the user's request). `build/patch_ea_v41.py` + review fixes
+    `build/patch_ea_v41b.py`: `CPR_HEDGE = 5` in `InpCrkPr`; inputs `InpCrkHgSl` 1, `InpCrkHgTp` 0.6, `InpCrkHgUnit` (R / price), `InpCrkHgForget` true.
+    After N losing recovery trades in a row `crkHg`; the next taken signal: `CrkHedgeNow()` makes it a recovery trade (NextRisk), `PlaceHedge` = BuyLimit
+    + SellStop (buy signal) or SellLimit + BuyStop at `lim` (buy side + Spr()), comment HEDGE, own SL / TP (`HgLevels`, `HgDist` >= stops level +
+    spread + tick); market / virtual fallbacks (`HgMarket` clamps stops to the live price and closes a lone trade); margin for 2 x lots; hard cap: with
+    TP > SL each trade at most cap / 2. Guards `!exHg` on SetExits, engine exit, engine-wins close, caught-up SetExits, ManagePartials; a waiting leg
+    cancelled at force-close / weekend / news. `BookClosed`: exPnl of both, forget (CrkCycle) or keep (crkW = last closing deal `gLastOutProfit` > 0).
+    Netting account (`gHedgeOk` false): the rule forgets the loss. Restart: `HgOpen()` leaves the pair to its SL / TP. Checks: mq5check 0/0; regression
+    parity unchanged (logs `*_v41.log`, `*_v41b.log`); `mq5check/rec/hg_driver.cpp` (entry points `rec_hgok` / `rec_hgclose` / `rec_hgnow` / `rec_owed`
+    in rec/build.sh) scripted cases forget / keep-lost / keep-won / netting all as designed; review (Sonnet high) 5 edge cases fixed, rest nits.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |

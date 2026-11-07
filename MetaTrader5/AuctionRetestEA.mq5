@@ -997,21 +997,30 @@ double T1Stop0Px(bool isL, double d)
 double MinDist() { return MathMax((double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL), (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_FREEZE_LEVEL)) * _Point; }
 //--- Crooks C hedge rule: a buy and a sell at the engine's entry level with the hedge stop loss and take profit
 //--- (bid-chart levels: the buy-side prices are shifted by the spread, like the normal orders)
-double HgDist(double x) { double ts = TickSize(); double d = InpCrkHgUnit == HGU_R ? x * trRisk : x; return MathMax(MathMax(ts, MinDist()), MathRound(d / ts) * ts); }
+double HgDist(double x)                                 // at least the stops level + the spread + 1 tick, or the broker rejects the order
+{
+   double ts = TickSize(), d = InpCrkHgUnit == HGU_R ? x * trRisk : x;
+   double sp = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
+   return MathMax(MinDist() + sp + ts, MathRound(d / ts) * ts);
+}
 void   HgLevels(bool buy, double &sl, double &tp)
 {
    double tl = TickSize() * 0.001;
    if(buy) { sl = FloorTick(lim - exHgS + tl); tp = CeilTick(lim + exHgT - tl); }
    else    { sl = CeilTick(lim + exHgS - tl + Spr()); tp = FloorTick(lim - exHgT + tl + Spr()); }
 }
-bool   HgMarket(double v)                                // both trades at market (the level is reached, or Market entry)
+bool   HgMarket(double v)                                // both trades at market (the level is reached, or Market entry); one trade alone is closed again
 {
    double slB, tpB, slS, tpS; HgLevels(true, slB, tpB); HgLevels(false, slS, tpS);
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), g = MinDist() + TickSize();
+   slB = MathMin(slB, FloorTick(bid - g)); tpB = MathMax(tpB, CeilTick(bid + g));   // the price already past a level (a gap): keep the order valid
+   slS = MathMax(slS, CeilTick(ask + g)); tpS = MathMin(tpS, FloorTick(ask - g));
    bool a = trade.Buy(v, _Symbol, 0, slB, tpB, "HEDGE");
    if(!a) Print("Hedge buy failed: ", trade.ResultRetcodeDescription());
    bool b = trade.Sell(v, _Symbol, 0, slS, tpS, "HEDGE");
    if(!b) Print("Hedge sell failed: ", trade.ResultRetcodeDescription());
-   return a || b;
+   if(a != b) { CloseAll(); Print("Hedge: only one of the two trades opened, so it was closed again."); return false; }
+   return a && b;
 }
 bool   PlaceHedge(bool isL, double v)                    // the pair's orders: a limit in the signal's direction and a stop the other way, both at the entry level
 {
@@ -1295,10 +1304,18 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    double rAmt = NextRisk(ExitR(), canTake);
    bool   hg = CrkHedgeNow();                        // Crooks C hedge rule: a buy and a sell (after NextRisk: a hard-cap restart cancels it)
    double hgS = hg ? HgDist(InpCrkHgSl) : 0, hgT = hg ? HgDist(InpCrkHgTp) : 0;
+   if(hg && InpCapOn && hgT > hgS) rAmt = MathMin(rAmt, InpHardCap / 2.0);   // both trades can lose: the pair stays inside the hard cap
    double t1d = CrkT1Dist();                         // after a cap restart this is 0: trade 1 of a new cycle
    double sd = hg ? hgS : t1d > 0 ? t1d : trRisk;    // stop distance used for the size
    double ld = hg ? hgS : t1d > 0 ? CrkT1Stop0Dist(t1d) : trRisk;   // the real stop-out distance (a wider TP1-rule stop)
    double v = (capStop || crkPs) ? 0 : LotsFor(rAmt, sd, lim, isL, ld);
+   if(hg && v > 0)                                   // hedge pair: the free margin must carry both trades
+   {
+      double vst = InpLotStep > 0 ? InpLotStep : SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP), vmn = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), mg;
+      if(vst <= 0) vst = vmn > 0 ? vmn : 0.01;
+      while(v >= vmn && OrderCalcMargin(ORDER_TYPE_BUY, _Symbol, 2 * v, lim, mg) && mg > AccountInfoDouble(ACCOUNT_MARGIN_FREE)) v = NormalizeDouble(v - vst, 8);
+      if(v < vmn) v = 0;
+   }
    skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : crkPs ? "Crooks C pause" : v <= 0 ? "size 0" : "";
    if(skipWhy != "") { skipN++; return; }
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
@@ -1483,6 +1500,7 @@ void OnNewBar()
    bool wkndStart = InpWeekendOn && DowOf(ut) == 6 && DowOf(utPrev) != 6;
    bool flatNow = fcNow || wkndStart || nStart;
    if(flatNow && pos) CloseAll();
+   if(exHg && exState == 2 && (flatNow || newsBlk)) CancelPending();   // hedge pair: a trade still waiting is not opened after force-close, weekend or news
    if(exState == 1 && (flatNow || newsBlk)) { CancelPending(); exState = 0; exArm = -1; gVirt = false; exHg = false; }
 
    // 5. take the engine's new setup

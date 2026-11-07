@@ -1,0 +1,1 @@
+review41: diff read, all hunks traced. Findings drafted: pending leg survives force-close/news when one leg filled; HgMarket no stops clamp / one-leg naked on failure; TP distance not spread-aware; pair loss 2x when TP>SL vs hard cap; margin check single leg; restart exPnl. Compile: no issues found. Regression: none found.
