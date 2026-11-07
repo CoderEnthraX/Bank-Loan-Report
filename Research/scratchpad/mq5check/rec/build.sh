@@ -36,6 +36,9 @@ extern "C" int rec_capstop() { return capStop ? 1 : 0; }
 // TP1 rule: the engine's stop distance and the spread of the next setup, then whether the EA uses the TP1 rule for it
 extern "C" void rec_setup(double risk, double spread) { trRisk = risk; rec_tv = 1.0; rec_bid = 1000.0; rec_ask = 1000.0 + spread; }
 extern "C" int rec_t1() { return CrkT1Dist() > 0 ? 1 : 0; }
+// Crooks C skip rule: a new day (counted or not) while trading is paused, and whether the next signal is skipped by the pause
+extern "C" void rec_day(int counted) { CrkDayCount(counted != 0); }
+extern "C" int rec_paused() { return CrkPause() ? 1 : 0; }
 // lot sizing test: the EA's own LotsFor() with a set lot step / minimum / maximum, equity, tick value and spread
 extern "C" double rec_lots(double risk, double sd, double entry, int isL, double ld, double tv, double spread, double vstep, double vmin, double eq)
 { rec_tv = tv; rec_bid = entry; rec_ask = entry + spread; rec_vstep = vstep; rec_vmin = vmin; rec_vmax = 100.0; rec_eq = eq; return LotsFor(risk, sd, entry, isL != 0, ld); }

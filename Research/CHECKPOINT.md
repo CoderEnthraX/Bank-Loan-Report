@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-06 (session `21ed2550`, v3.8). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-06 (session `21ed2550`, v3.9). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -42,8 +42,8 @@ To refresh this checkpoint after new work, run `python3 -I $S/tools/make_checkpo
 |---|---|
 | `TradingView/Auction_Retest_Model.pine` | Indicator, v3.8: clone of *Auction Retest Pro* (session VWAP + displacement + timed retest), with tables and optional filters (v3.6: max distance from the VWAP; v3.8: stop beyond / VWAP touched / entry too close to the VWAP; kill zones follow London / New York summer time). |
 | `TradingView/Auction_Retest_Strategy.pine` | The same engine as a strategy: risk sizing, partials, 21 loss-recovery rules (incl. Crooks A, B, C, D and the Crooks TP1 rule), streak pauses, news and force-close. |
-| `MetaTrader5/AuctionRetestEA.mq5` | MT5 EA v3.8: port of the same engine plus the strategy's money management (21 recovery rules incl. Crooks A-D, Crooks TP1 rule), on-chart table and trade markings. |
-| `TradingView/README.md` | User documentation of every rule and setting, v3 to v3.8 (Crooks A-D in the Loss recovery row; sections per version; v3.8: the three VWAP skip rules, kill zones and daily news follow summer time, TP1 rule % and any final exit, with the gold results). |
+| `MetaTrader5/AuctionRetestEA.mq5` | MT5 EA v3.9: port of the same engine plus the strategy's money management (21 recovery rules incl. Crooks A-D, Crooks TP1 rule), on-chart table and trade markings. |
+| `TradingView/README.md` | User documentation of every rule and setting, v3 to v3.9 (Crooks A-D in the Loss recovery row; sections per version; v3.8: the three VWAP skip rules, kill zones and daily news follow summer time, TP1 rule % and any final exit, with the gold results). |
 | `Research/deliverables/` | `Gold_2021_2026_Auction_Retest.xlsx` (gold study), `VWAP_vs_EMA_results.md`, `VWAP_settings_and_70pct_strategies.md`. |
 | `Research/scratchpad/` | Every code and text file of the working scratchpad, each up to 2 MB. |
 | `Research/inputs/` | The data files the user uploaded (screenshots not included), plus the Pine parser wheels. |
@@ -256,6 +256,17 @@ Other gold findings:
     fall 27% / 26% / 27%, never blown); 50% of the loss +$104k (worst 25%, blown 0.6%); 50% + forget after 2 +$93k (worst 20%, biggest loss avg $156);
     75% +$130k (worst 49%, blown 5.7%); over 2 / 3 wins +$96k / +$114k (3 / 1 accounts blown in the real order); wait for 2 wins +$25k (6 blown).
 
+16. **v3.9: Crooks C rule after N losing recovery trades in a row** (asked 2026-11-06; strategy and EA v3.9, the indicator unchanged). The user's two ideas
+    (wait for M wins in a row; skip D trading days) plus forget the loss and a % of the loss, in one dropdown (`crkPr`, EA `InpCrkPr`; N `crkPrN`, % `crkPrPct`,
+    M `crkPrM`, D `crkPrD`, `crkPrForget`, `crkPrAll`). Decided with the user: after the M wins the recovery waits for a loss, then a win; the skip rule keeps
+    the loss unless the checkbox is on; it skips the rest of that day plus D counted days (the ticked days with the day filter, else Monday-Friday, or every
+    day); the hard caps stay in the Hard Cap box. State: `crkF` (losing recovery trades in a row; base trades do not reset it), `crkWait` / `crkWW` /
+    `crkNeedL`, `crkSkip` / `crkSkipLeft`; days counted per new day in the DAYS AND HOURS zone before the bar's booking (Pine `udKey`, EA `CrkDayTick()`
+    after `ProcessBar()` for the closed and the caught-up bars). Python twin: `recovery.simulate(crkPr=..., trades with day events)`, equal to
+    `crooks_user.py` / `crooks_alt3.py` on 342 runs. EA parity `mq5check/rec/parity_crkpr.py` (REC_DAYS mode of rec_driver: day events + SKIP): 5,184 runs,
+    7.43 M signals (1.05 M skipped by the pause), 0 differences; parity_rec / parity_tp1 / engine parity unchanged, 0 differences. Gold numbers: item 15
+    and `gold/crooks_user.txt` (README v3.9 table).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -276,6 +287,7 @@ Other gold findings:
 | VWAP skip rules (v3.8) | `vwfilter2.py collect`, `vwfilter2.py check`, `vwfilter2.py scan` | `vwfilter2_trades.pkl`, `vwfilter2_scan.pkl`, `vwfilter2.txt` | about 2 min, 1 min, seconds |
 | TP1 rule % and any final exit (v3.8) | `crooks_t1p.py` | `crooks_t1p.pkl` (30 MB, not kept), `crooks_t1p_money.pkl`, `crooks_t1p.txt` | about 2 min |
 | Crooks C single wins | `crooks_alt.py`, `crooks_alt2.py`, `crooks_alt3.py` (no cap) | `crooks_alt*.pkl`, `crooks_alt*.txt` | 1 min each |
+| The user's Crooks C rules (v3.9) | `crooks_user.py` (wait for wins, skip days, forget, %; random orders over the real trade times) | `crooks_user.pkl`, `crooks_user.txt` | 1 min |
 | Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py`, `crooks_sheet.py` and `vwfilter_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |
 

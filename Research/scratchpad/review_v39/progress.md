@@ -1,0 +1,1 @@
+v3.9 review notes: read all 3 diffs; checked booking order (Pine day block before booking, EA CrkDayTick before BookClosed in OnNewBar) ok; wait/skip state machines match line by line; remaining: gDayOk timing, ResetEngine recovery state, caught-up path, Pine dayOk/udDow tz, % factor/crkP

@@ -33,9 +33,11 @@
 //| v3.8: VWAP skip rules (stop beyond / touched / entry too close), |
 //| kill zones and daily news follow summer time, TP1 rule % and     |
 //| any final exit.                                                  |
+//| v3.9: Crooks C rule after N losing recovery trades in a row:     |
+//| forget the loss, a % of it, wait for M wins, or skip D days.     |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "3.80"
+#property version   "3.90"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -89,6 +91,11 @@ enum ENUM_REC {
    REC_CRC   = 20, // Crooks C (base until a win, then one recovery trade)
    REC_CRD   = 21  // Crooks D (base, base, recovery: every 3rd trade)
 };
+enum ENUM_CRK_PR { CPR_OFF    = 0,   // Off (Crooks C as now)
+                   CPR_FORGET = 1,   // Forget the loss
+                   CPR_PCT    = 2,   // Go for a % of the loss, forget it after N
+                   CPR_WAIT   = 3,   // Wait for M wins in a row, then a loss and a win
+                   CPR_SKIP   = 4 }; // Skip D trading days
 
 //--- ENGINE inputs: same names, order and defaults as the shared Pine inputs
 input group "SIGNAL MODEL (same as the indicator)"
@@ -277,6 +284,13 @@ input double InpCrkT1Pct = 50.0;   //   ...% closed at TP1 (10-90; that part alo
 input bool   InpCrkT1Any = false;  //   ...with any final exit (not only TP1; the rest still runs to TP2)
 input bool   InpCrkCnOn  = false;  // Crooks C: win the loss back over N wins
 input int    InpCrkCn    = 1;      //   ...N (1 = all on the trade after a win, 2 = half then the rest, ...)
+input ENUM_CRK_PR InpCrkPr = CPR_OFF; // Crooks C: after N losing recovery trades in a row
+input int    InpCrkPrN   = 2;      //   ...N losing recovery trades in a row
+input double InpCrkPrPct = 50.0;   //   ...% of the loss each recovery trade goes for (the % rule, 10-100)
+input int    InpCrkPrM   = 2;      //   ...M wins in a row to wait for (the wait rule)
+input int    InpCrkPrD   = 3;      //   ...D trading days to skip (the skip rule; the rest of that day is skipped too)
+input bool   InpCrkPrForget = false; //   ...forget the loss after the skipped days (the skip rule)
+input bool   InpCrkPrAll = false;  //   ...count every day, not only the trading days (the skip rule)
 input int    InpParN     = 3;      // Paroli: wins before reset
 input int    InpDelayN   = 2;      // Delayed: losses before recovery starts
 input double InpEqPct    = 1.0;    // % of equity (% mode)
@@ -368,6 +382,9 @@ double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP =
 double   crkL = 0; int crkN = 0; bool crkRec = false;   // Crooks: $ loss to win back, closed trades in the cycle, the open trade is a recovery trade
 bool     crkW = false;                                   // Crooks C: the last closed trade was a win
 int      crkP = 0;                                       // Crooks C over N wins: parts of the loss still to win back (0 = not set yet)
+int      crkF = 0;                                       // Crooks C rule: losing recovery trades in a row in this cycle
+bool     crkWait = false; int crkWW = 0; bool crkNeedL = false;   // wait rule: waiting for M wins in a row (wins so far); then the next recovery needs a loss first
+bool     crkSkip = false; int crkSkipLeft = 0; int crkUDay = -1;  // skip rule: trading paused, counted days still to skip, your day of the last live bar
 bool     exT1MvPend = false;                              // Crooks TP1 rule: a stop move before TP1 still has to reach the broker
 bool     exT1 = false, exT1Half = false, exT1Be = false;   // Crooks TP1 rule: this trade, its TP1 half is booked, the rest's stop is at the entry
 double   exT1Stop = 0, exT1Tp1 = 0, exT1Tp2 = 0;              // its stop and its own TP1 / TP2 (the engine's levels change with its next setup)
@@ -757,11 +774,15 @@ void ProcessBar(int s)
    DrawBar(t);
 }
 
+//--- Crooks C rule after N losing recovery trades in a row (Crooks C only)
+bool   CrkPrOn()  { return InpRec == REC_CRC && InpCrkPr != CPR_OFF; }
+double CrkPrPct() { return CrkPrOn() && InpCrkPr == CPR_PCT ? MathMax(10.0, MathMin(100.0, InpCrkPrPct)) / 100.0 : 1.0; }
+bool   CrkPause() { return CrkPrOn() && InpCrkPr == CPR_SKIP && crkSkip; }   // the skip rule pauses trading
 //--- Crooks: the next trade is a recovery trade. A / B: trades 3, 5, 7 ... of the cycle; C: the trade after a win while a loss is owed; D: trades 3, 6, 9 ...
 bool CrkRecNext()
 {
    if(InpRec == REC_CRA || InpRec == REC_CRB) return crkN >= 2 && crkN % 2 == 0;
-   if(InpRec == REC_CRC) return crkW && crkL > 0;
+   if(InpRec == REC_CRC) return crkW && crkL > 0 && !(CrkPrOn() && InpCrkPr == CPR_WAIT && (crkWait || crkNeedL));   // wait rule: not while waiting
    if(InpRec == REC_CRD) return crkN >= 2 && (crkN - 2) % 3 == 0;
    return false;
 }
@@ -782,6 +803,18 @@ double CrkT1Dist()
 //--- Crooks C over N wins: N, and the parts of the loss still to win back
 int CrkNp() { return InpCrkCnOn ? MathMax(1, InpCrkCn) : 1; }
 int CrkParts() { int np = CrkNp(); return (crkP < 1 || crkP > np) ? np : crkP; }
+void   CrkCycle() { crkL = 0; crkN = 0; crkP = CrkNp(); crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; }   // a new cycle at the base risk
+//--- skip rule: a new day in your time zone while trading is paused; counted days end the pause (the day the count reaches 0 is still skipped)
+void   CrkDayCount(bool counted) { if(!crkSkip) return; if(crkSkipLeft <= 0) crkSkip = false; else if(counted) crkSkipLeft--; }
+//--- called for every live bar right after ProcessBar() (gDayOk is that bar's day filter): counted = every day, the ticked days, or Monday-Friday
+void   CrkDayTick(datetime t)
+{
+   datetime ut = UserTime(t); int k = DayKey(ut);
+   if(crkUDay == -1 || k == crkUDay) { crkUDay = k; return; }
+   crkUDay = k;
+   int dw = DowOf(ut);
+   CrkDayCount(InpCrkPrAll || (InpDayOn ? gDayOk : (dw >= 1 && dw <= 5)));
+}
 //--- Crooks TP1 rule, stop before TP1: its distance from the entry (bid chart; the size always uses the tight distance d)
 double CrkT1Stop0Dist(double d)
 {
@@ -838,7 +871,7 @@ double NextRisk(double exitR, bool canTake = true)
       case REC_CRC:
       case REC_CRD:
       {
-         double x = crkL / (InpRec == REC_CRB ? InpCSplit : InpRec == REC_CRC ? CrkParts() : 1);
+         double x = crkL / (InpRec == REC_CRB ? InpCSplit : InpRec == REC_CRC ? CrkParts() : 1) * (InpRec == REC_CRC ? CrkPrPct() : 1.0);   // % rule: a part of the loss
          r = !CrkRecNext() ? base : CrkT1Dist() > 0 ? MathMax(base, x) : exitR > 0 ? MathMax(base, x / exitR) : base;   // TP1 rule: a stop-out loses x
          break;
       }
@@ -850,7 +883,7 @@ double NextRisk(double exitR, bool canTake = true)
       if(InpCapAction == CAP_STOP) capStop = true;
       else if(InpCapAction == CAP_RESET)
       {
-         recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; crkL = 0; crkN = 0; crkW = false; crkP = CrkNp();
+         recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; CrkCycle(); crkW = false;
          r = MathMin(baseC, InpHardCap);
       }
       else r = InpHardCap / mul;
@@ -1092,7 +1125,7 @@ string StateText(bool newsBlk)
    string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : (trSkip == 3 ? "1H EMA20 TOO FAST" : (trSkip == 4 ? "TOO CLOSE TO VWAP" :
                 (trSkip == 5 ? "BEYOND MAX VWAP DISTANCE" : (trSkip == 6 ? "STOP BEYOND VWAP" : (trSkip == 7 ? "VWAP TOUCHED RECENTLY" : "ENTRY TOO CLOSE TO VWAP"))))));
    string s = st != 0 && trGhost ? "SKIPPED (" + why + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
-              capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : dayBlock ? "STREAK STOP TODAY" :
+              capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : CrkPause() ? "CROOKS C PAUSE (" + IntegerToString(crkSkipLeft) + " days left)" : dayBlock ? "STREAK STOP TODAY" :
               !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : "SCANNING";
    string ex = exState == 2 ? " (in trade)" : (exState == 1 ? (gVirt ? " (waiting for the level)" : " (order working)") : "");
    return s + ex;
@@ -1141,9 +1174,11 @@ void UpdateTable()
    bool   isC = InpRec == REC_C || InpRec == REC_CS, isK = InpRec == REC_CRA || InpRec == REC_CRB || InpRec == REC_CRC || InpRec == REC_CRD;
    bool   kRec = exState != 0 ? crkRec : CrkRecNext();
    string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRC ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") : (crkL > 0 ? " | base, waiting for a win" : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
-                 + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "");
+                 + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "")
+                 + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
+                    crkNeedL ? " | waiting for a loss, then a win" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v3.8", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v3.9", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -1186,13 +1221,14 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    sigN++;
    ulong pTk; double pVol, pOpen;
    bool posNow = HasPosition(pTk, pVol, pOpen);
-   bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock);   // the hard cap acts only on a signal that can be taken
+   bool crkPs = CrkPause();
+   bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock || crkPs);   // the hard cap acts only on a signal that can be taken
    double rAmt = NextRisk(ExitR(), canTake);
    double t1d = CrkT1Dist();                         // after a cap restart this is 0: trade 1 of a new cycle
    double sd = t1d > 0 ? t1d : trRisk;               // stop distance used for the size
    double ld = t1d > 0 ? CrkT1Stop0Dist(t1d) : trRisk;   // the real stop-out distance (a wider TP1-rule stop)
-   double v = capStop ? 0 : LotsFor(rAmt, sd, lim, isL, ld);
-   skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : v <= 0 ? "size 0" : "";
+   double v = (capStop || crkPs) ? 0 : LotsFor(rAmt, sd, lim, isL, ld);
+   skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : crkPs ? "Crooks C pause" : v <= 0 ? "size 0" : "";
    if(skipWhy != "") { skipN++; return; }
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    double sprNow = MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBOL_ASK) - SymbolInfoDouble(_Symbol, SYMBOL_BID));
@@ -1270,9 +1306,26 @@ void BookClosed()
    oscP += exPnl;
    if(oscP >= InpBaseRisk) { oscU = 1; oscP = 0; } else if(win) oscU++;
    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, D: also when a recovery trade wins; C keeps a leftover)
+   bool lastPart = CrkParts() == 1;                     // this recovery trade went for the last part of the loss (Crooks C over N wins)
    crkL = MathMax(0.0, crkL - exPnl);
-   if(crkL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRD) && win && crkRec)) { crkL = 0; crkN = 0; crkP = CrkNp(); }
-   else { crkN++; crkP = !win ? CrkNp() : crkRec ? MathMax(1, CrkParts() - 1) : CrkParts(); }   // Crooks C over N wins: a loss starts the parts again
+   if(crkL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRD) && win && crkRec)) CrkCycle();
+   else
+   {
+      crkN++; crkP = !win ? CrkNp() : crkRec ? MathMax(1, CrkParts() - 1) : CrkParts();   // Crooks C over N wins: a loss starts the parts again
+      if(CrkPrOn())                                     // Crooks C rule after N losing recovery trades in a row
+      {
+         if(crkWait) { crkWW = win ? crkWW + 1 : 0; if(crkWW >= MathMax(1, InpCrkPrM)) { crkWait = false; crkWW = 0; crkNeedL = true; } }   // M wins in a row end the wait
+         else if(crkNeedL && !win) crkNeedL = false;   // ... then a loss: the trade after the next win is the recovery trade
+         if(crkRec && win) { crkF = 0; if(InpCrkPr == CPR_PCT && lastPart) CrkCycle(); }   // % rule: the % went for is back, the rest is forgotten
+         else if(crkRec && ++crkF >= MathMax(1, InpCrkPrN))
+         {
+            crkF = 0;
+            if(InpCrkPr == CPR_FORGET || InpCrkPr == CPR_PCT) CrkCycle();
+            else if(InpCrkPr == CPR_WAIT) { crkWait = true; crkWW = 0; crkNeedL = false; }
+            else if(InpCrkPr == CPR_SKIP) { crkSkip = true; crkSkipLeft = MathMax(1, InpCrkPrD); if(InpCrkPrForget) CrkCycle(); }
+         }
+      }
+   }
    crkW = win;
    crkRec = false; exT1 = false; exT1Half = false; exT1Be = false; exKeepSl = 0;
    exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false;
@@ -1283,6 +1336,7 @@ void BookClosed()
 void OnNewBar()
 {
    ProcessBar(1);
+   CrkDayTick(iTime(_Symbol, _Period, 1));              // Crooks C skip rule: a new day in your time zone counts before this bar's booking
    datetime bt = iTime(_Symbol, _Period, 1);
    datetime ut = UserTime(bt), utPrev = UserTime(gPrevT > 0 ? gPrevT : iTime(_Symbol, _Period, 2));
 
@@ -1402,7 +1456,7 @@ void ResetEngine()
    totW = 0; totL = 0; totR = 0; gNewDay = false; gDayOk = true; gHourOk = true; gKzOk = true;
    exState = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exPnl = 0; exArm = -1; exSynced = false; gRearm = false; gDrawOn = false; exT1 = false; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0; exKeepSl = 0;
    sigN = 0; takenN = 0; skipN = 0; missN = 0; skipWhy = "";
-   gVirt = false; gDayPend = false; gPrevT = 0; capStop = false; gT1Seen = false;
+   gVirt = false; gDayPend = false; gPrevT = 0; capStop = false; gT1Seen = false; crkUDay = -1;
    for(int q = 0; q < 3; q++) pDone[q] = false;
    trSkip = 0; lastRes = "-"; bestPx = 0; ghW = 0; ghL = 0; ghR = 0;
    vxSide = 0; vxN = 0; tchL = 1000000; tchS = 1000000; hK = -1; hC = 0; hSum = 0; hNum = 0; ArrayInitialize(hE, 0.0);
@@ -1425,6 +1479,8 @@ int OnInit()
    if(InpMaxVwOn && InpMaxVwDist <= 0) { Print("Max distance from VWAP must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpTouchVwOn && InpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
    if(InpCrkT1 && (InpCrkT1Pct < 10 || InpCrkT1Pct > 90)) { Print("Crooks TP1 rule: % closed at TP1 must be 10 to 90."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpRec == REC_CRC && InpCrkPr != CPR_OFF && (InpCrkPrN < 1 || InpCrkPrM < 1 || InpCrkPrD < 1)) { Print("Crooks C rule: N, M and D must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpRec == REC_CRC && InpCrkPr == CPR_PCT && (InpCrkPrPct < 10 || InpCrkPrPct > 100)) { Print("Crooks C rule: % of the loss must be 10 to 100."); return INIT_PARAMETERS_INCORRECT; }
    // warm up the engine on history (no orders): it ends in the same state as the TradingView engine would
    int bars = Bars(_Symbol, _Period);
    int look = (int)MathMax(MathMax(InpStructLen, InpBrkLen + 1), MathMax(InpMomLen + 1, InpStopLen)) + 2;
@@ -1486,6 +1542,7 @@ void OnTick()
       for(int s = sh - 1; s >= 2; s--)                                 // bars missed while offline: engine only
       {
          ProcessBar(s); caught = true; if(gNewDay) gDayPend = true;
+         CrkDayTick(iTime(_Symbol, _Period, s));                          // Crooks C skip rule: count the missed days too
          // Crooks TP1 rule: a missed bar after the engine's fill of this setup reached TP1 and the TP1 part is not booked: book it on this bar
          // (exState may still be 1 when the broker filled during the disconnect; with no position nothing is booked)
          if(exState != 0 && exT1 && !exT1Half && exArm >= 0 && exArm == armBar && lastFill > exArm && lastFill < bi && (exL ? Hi(s) >= exT1Tp1 + exCostPx : Lo(s) <= exT1Tp1 - exCostPx)) gT1Seen = true;

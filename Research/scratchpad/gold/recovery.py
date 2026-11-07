@@ -5,18 +5,32 @@ import math
 MODES = ['Off', 'Recover all losses on the next trade', 'Recover losses over N trades', 'Recover a % of losses per trade', 'Martingale (multiply after each loss)',
          'Exact recovery at final TP', 'Step-up (+$ per loss in a row)', 'Fibonacci', "D'Alembert", 'Rule C: carry the losses', 'Rule C split', 'Labouchere',
          'Grand Martingale', 'Paroli', "Reverse D'Alembert", 'Delayed recovery', '% of equity', "Oscar's Grind", 'Crooks A', 'Crooks B', 'Crooks C', 'Crooks D']
-def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0, trace=None, cN=1):
-    """trades: iterable of (R result, spread cost in R) or (R result, spread cost in R, parts). parts = [(R of the part, share of the position)]
-    for a trade with a partial close: Rule C's carried losses are then updated after each part, like the strategy (once per candle)."""
+def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0, trace=None, cN=1,
+             crkPr='off', crkPrN=2, crkPrPct=50.0, crkPrM=2, crkPrD=3, crkPrForget=False):
+    """trades: iterable of (R result, spread cost in R) or (R result, spread cost in R, parts) or (R, cost, parts, day events). parts = [(R of the part,
+    share of the position)] for a trade with a partial close: Rule C's carried losses are then updated after each part, like the strategy (once per candle).
+    v3.9 Crooks C rule after crkPrN losing recovery trades in a row (Crooks C only): crkPr 'forget' (new cycle), 'pct' (every recovery trade goes for
+    crkPrPct % of the loss, the rest is forgotten when its last part wins; forget after N), 'wait' (no recovery trade until crkPrM wins in a row, then the
+    first one needs a loss, then a win), 'skip' (no trades for the rest of the day and crkPrD counted days; crkPrForget = forget the loss). Day events: the
+    new days (True = counted) that start before the trade, as the strategy / EA see them; a skipped trade adds 'SKIP' to the trace."""
     eq = start; peak = start; maxDD = 0.0; maxDDp = 0.0; net = 0.0
     recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
     capStop = False; n = 0; maxRisk = 0.0; maxRiskPct = 0.0; ruined = False; ruinAt = None; gp = gl = 0.0
     lossRun = 0.0; worstRun = 0.0; sumRisk = 0.0
     crL = 0.0; crN = 0; crW = False      # Crooks: $ loss to win back, closed trades in the cycle, the last trade won (Crooks C)
     crP = cN                             # Crooks C over N wins: parts of the loss still to win back (each recovery trade wins loss / parts)
+    prOn = mode == MODES[20] and crkPr != 'off'                  # v3.9 Crooks C rule after N losing recovery trades in a row
+    crF = 0; crWait = False; crWW = 0; crNeedL = False; crSkip = False; crSkipLeft = 0
     for k, tr in enumerate(trades):
         res, c = tr[0], tr[1]; parts = tr[2] if len(tr) > 2 else None
         if capStop or ruined: break
+        for ev in (tr[3] if len(tr) > 3 else ()):                  # a new day while the skip rule pauses trading
+            if not crSkip: break
+            if crSkipLeft <= 0: crSkip = False
+            elif ev: crSkipLeft -= 1
+        if prOn and crkPr == 'skip' and crSkip:
+            if trace is not None: trace.append('SKIP')
+            continue
         add = recPool if mode == MODES[1] else recPool / recN if mode == MODES[2] else recPool * recPct / 100 if mode == MODES[3] else recPool / exitR if mode == MODES[5] else step * recLosses if mode == MODES[6] else 0.0
         fa = fb = 1.0
         for _ in range(2, min(recLosses, 200) + 1): fa, fb = fb, fa + fb   # capped: beyond ~200 losses every rule is far past any cap or account
@@ -30,17 +44,19 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         # Crooks recovery trade: A / B trades 3, 5, 7 ... of a cycle; C the trade right after a win while a loss is owed; D trades 3, 6, 9 ...
         crRec = ((mode in (MODES[18], MODES[19]) and crN >= 2 and crN % 2 == 0) or (mode == MODES[20] and crW and crL > 0)
                  or (mode == MODES[21] and crN >= 2 and (crN - 2) % 3 == 0))
+        if crRec and prOn and crkPr == 'wait' and (crWait or crNeedL): crRec = False
         r = {MODES[11]: base * labU, MODES[12]: base * mult ** min(recLosses, 200) + base * recLosses, MODES[13]: base * 2 ** parWins, MODES[14]: base * rdUnits,
              MODES[15]: (base + recPool / recN) if recLosses >= delayN else base, MODES[16]: eq * eqPct / 100.0, MODES[17]: base * min(oscU, oscNeed),
              MODES[4]: base * mult ** min(recLosses, 200), MODES[7]: base * (1.0 if recLosses == 0 else fb), MODES[8]: base * dUnits,
              MODES[9]: max(baseC, carried / cSplit), MODES[10]: max(baseC, carried / cSplit),
              MODES[18]: max(base, crL / exitR) if crRec else base, MODES[19]: max(base, crL / cSplit / exitR) if crRec else base,
-             MODES[20]: max(base, crL / crP / exitR) if crRec else base, MODES[21]: max(base, crL / exitR) if crRec else base}.get(mode, base + add)
+             MODES[20]: max(base, crL / crP * (crkPrPct / 100.0 if prOn and crkPr == 'pct' else 1.0) / exitR) if crRec else base,
+             MODES[21]: max(base, crL / exitR) if crRec else base}.get(mode, base + add)
         if cap > 0 and r > cap:
             if capAction == 'stop': capStop = True; break
             elif capAction == 'reset':
                 recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
-                crL = 0.0; crN = 0; crRec = False; crW = False; crP = cN
+                crL = 0.0; crN = 0; crRec = False; crW = False; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False
                 r = min(baseC, cap)
             else: r = cap
         if trace is not None: trace.append(r)
@@ -70,11 +86,30 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         elif win: oscU += 1
         # Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back (A, D: also when a recovery trade wins;
         # C keeps a leftover: a recovery trade that wins without winning everything back is followed by another recovery trade)
+        lastPart = crP == 1                                            # this recovery trade went for the last part of the loss
         crL = max(0.0, crL - pnl)
-        if crL < 0.01 or (mode in (MODES[18], MODES[21]) and win and crRec): crL = 0.0; crN = 0; crP = cN      # less than a cent left = all won back
+        if crL < 0.01 or (mode in (MODES[18], MODES[21]) and win and crRec):      # less than a cent left = all won back
+            crL = 0.0; crN = 0; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False
         else:
             crN += 1
             crP = cN if not win else (max(1, crP - 1) if crRec else crP)     # a loss starts the N parts again after the next win
+            if prOn:
+                if crWait:                                             # wait rule: M wins in a row end the wait, then a loss is needed
+                    crWW = crWW + 1 if win else 0
+                    if crWW >= crkPrM: crWait = False; crWW = 0; crNeedL = True
+                elif crNeedL and not win: crNeedL = False
+                if crRec and win:
+                    crF = 0
+                    if crkPr == 'pct' and lastPart: crL = 0.0; crN = 0; crP = cN    # the % went for is back, the rest is forgotten
+                elif crRec:
+                    crF += 1
+                    if crF >= crkPrN:
+                        crF = 0
+                        if crkPr in ('forget', 'pct'): crL = 0.0; crN = 0; crP = cN
+                        elif crkPr == 'wait': crWait = True; crWW = 0; crNeedL = False
+                        elif crkPr == 'skip':
+                            crSkip = True; crSkipLeft = crkPrD
+                            if crkPrForget: crL = 0.0; crN = 0; crP = cN
         crW = win
     return dict(mode=mode, trades=n, avgRisk=sumRisk / n if n else 0.0, net=net, end=eq, maxDD=maxDD, maxDDpct=maxDDp, maxRisk=maxRisk, maxRiskPct=maxRiskPct, ruined=ruined, ruinAt=ruinAt,
                 pf=(gp / gl) if gl > 0 else float('inf'), worstRun=-worstRun, capStopped=capStop)

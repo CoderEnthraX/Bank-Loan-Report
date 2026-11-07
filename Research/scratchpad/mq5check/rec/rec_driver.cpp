@@ -15,6 +15,8 @@ int rec_capstop();
 void rec_init();
 void rec_setup(double risk, double spread);
 int rec_t1();
+void rec_day(int counted);
+int rec_paused();
 }
 int main(int argc, char** argv)
 {
@@ -28,6 +30,30 @@ int main(int argc, char** argv)
    rec_init();
    FILE* f = std::fopen(argv[1], "r");
    if(!f) return 2;
+   if(std::getenv("REC_DAYS"))
+   {
+      // Crooks C rule mode: "nd d1 .. dnd res c k pr1 pw1 ..." per signal: the new days before it (1 = counted), then the trade; a signal the
+      // skip rule pauses prints SKIP and is not traded
+      int nd;
+      while(std::fscanf(f, "%d", &nd) == 1)
+      {
+         for(int j = 0; j < nd; j++) { int dv; if(std::fscanf(f, "%d", &dv) != 1) return 3; rec_day(dv); }
+         double res, c; int k;
+         if(std::fscanf(f, "%lf %lf %d", &res, &c, &k) != 3) return 3;
+         std::vector<double> pr(k), pw(k);
+         for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
+         if(rec_paused()) { std::printf("SKIP\n"); continue; }
+         double r = rec_next(exitR);
+         if(rec_capstop()) { std::printf("STOP\n"); break; }
+         rec_take();
+         if(k == 0) rec_part(r * (res - c) / (1.0 + c));
+         else for(int j = 0; j < k; j++) rec_part(r * (pr[j] - pw[j] * c) / (1.0 + c));
+         rec_close();
+         std::printf("R %.12g\n", r);
+      }
+      std::fclose(f);
+      return 0;
+   }
    if(std::getenv("REC_T1"))
    {
       // TP1 mode: "risk spread u" per taken trade; prints the $ risk and whether the TP1 rule was used
