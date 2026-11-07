@@ -296,6 +296,18 @@ Other gold findings:
     69/69, +$18,105 (+0.05R -> 1, 15th-14th -> 3). Most robust: M1-S3 as designed, Exact recovery, Clamp, +$50: 0 in all 6 stress cases but +$6,187 and falls
     to $4,719. Independent re-implementation (Sonnet high, `verify_bestmonth/sim.py`) confirmed both winners and the +$500 / Start-again variants.
 
+19. **TradingView vs EA, 6 Oct - 6 Nov 2026** (asked 2026-11-07; analysis only, no code change). Inputs: OANDA trade list
+    (`ARS_OANDA_XAUUSD_2026-11-07_cb7e3.csv`, 52 trades), FxPro MT5 report (`ReportTester-592122324_6_OCT_TO_6_NOV.xlsx`, 50 trades, EA inputs at the top),
+    11 screenshots of the strategy inputs. Tools: `tools/csvcheck/cmp_ea_tv.py TV.csv REPORT.xlsx 5.5 3 2 2026-10-25` (match),
+    `nov7/classify.py` (kill zone / news / fill count of every order and trade under each platform's settings), `nov7/spread.py` (FxPro spread from the
+    earn-back targets: median 0.16), `tools/csvcheck/replay.py TV.csv 0.6` (confirmed TradingView is on Crooks C), `nov7/build_cmp_xlsx.py` ->
+    `TradingView_vs_EA_6Oct_6Nov_2026.xlsx`. Result: 35 of 52 same trades, 17 TradingView only, 15 EA only; +$458.54 vs +$626.68. Settings that differ:
+    EA news window 17:55 + 75 min (TV 17:45-18:15), `InpServerTz` US rule (FxPro is EET: set 2), London Close on, kill zones not following summer time,
+    max fills 5 (TV 10), `InpBidChart` off (EA buy orders on the ask: 2 missed long fills, 1 win turned loss), lot rounding nearest (TV down),
+    `InpCommLot` 0.16 (FxPro charges $7 per lot round trip; TV commission input 0, Properties $0.07 per oz), half-stop cap off (TV on). 12 differences
+    directly from settings, 3 likely; the rest knock-on, OANDA vs FxPro prices / volume, and the EU-US clock-change week (FxPro's day, and so the EA's
+    VWAP, starts at 18:00 New York from 25 Oct to 1 Nov; TradingView's at 17:00). Offered, not built: an EA option to start the VWAP day at 17:00 New York.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -359,6 +371,8 @@ Pick rules:
 - `CLAUDE.md` model routing: state each agent's model and effort; mechanical work goes to haiku, deciding work stays on the session model.
 - TradingView: inputs that share an `inline` id may carry a title only on the first one; run `pinecheck/inline_lint.py` on both files before delivering.
 - A distance from the VWAP in ATR depends on the anchor: with the Month anchor most gold signals are more than 5 ATR away, with Session about half are under 2.5 ATR.
+- EA vs TradingView comparisons: FxPro's server is EET (EU clock change), so convert with UTC+3 until the last Sunday of October and UTC+2 after;
+  the EA's Orders table (armed setups, including cancelled ones) shows which TradingView-only trades were the same setup left unfilled.
 
 ## 7. Possible next steps (not requested yet)
 

@@ -81,7 +81,8 @@ def results():
 def deliverables():
     dst = OUT + '/deliverables'; os.makedirs(dst, exist_ok=True); out = []
     for f in ('Gold_2021_2026_Auction_Retest.xlsx', 'VWAP_vs_EMA_results.md', 'VWAP_settings_and_70pct_strategies.md',
-              'Gold_Monthly_1_MonFri_NoFilters.xlsx', 'Gold_Monthly_2_TueWedThu_KillZones_News.xlsx', 'Gold_No_Losing_Month.xlsx'):
+              'Gold_Monthly_1_MonFri_NoFilters.xlsx', 'Gold_Monthly_2_TueWedThu_KillZones_News.xlsx', 'Gold_No_Losing_Month.xlsx',
+              'TradingView_vs_EA_6Oct_6Nov_2026.xlsx'):
         if os.path.exists(S + '/' + f): shutil.copy2(S + '/' + f, dst + '/' + f); out.append(f)
     return out
 
