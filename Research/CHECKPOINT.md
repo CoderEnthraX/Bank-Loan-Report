@@ -285,6 +285,17 @@ Other gold findings:
     H1 stay positive in file1; in file2 the news close hits M15 (about 40% of its trades); the leverage limit cut 727 (file1) / 192 (file2) trade sizes of
     Crooks C and kept every month from blowing the account.
 
+18. **Settings with no losing month** (asked 2026-11-07; research only). `gold/bestmonth.py collect | screen | money | report | exact`,
+    `bestmonth_final.py` (exact engine re-runs), workbook `build_bestmonth_xlsx.py` -> `Gold_No_Losing_Month.xlsx`. Each window (calendar month or
+    15th-14th) on its own as in item 17. Criteria: fewest losing windows, then the best worst window, then profit; >= 3 signals a window, no blown window;
+    choice on 2021-23, then 2024-26. Lesson: filters applied to the trades afterwards were badly optimistic (exact re-runs: 5 -> 13 and 5 -> 11 losing
+    months), so the final search uses exact trade sets only (as designed, no time filter, file2). Today's settings: no setting without losing months even in
+    2021-23; best 7-8 of 69. With a new monthly lock ("stop for the month once it is up $X", plus the recovery restarted each month): 317 settings had 0 in
+    2021-23, 55% of them also 0 in 2024-26. Best: M15-S9 signals without its kill zone, Labouchere, cap $500 Clamp, lock +$250: 69/69 positive, +$27,110,
+    worst month +$259, deepest fall $1,950 (fragile: +0.02R costs -> 1 losing month, 15th-14th -> 8). M15-S7 as designed, Martingale x2, Clamp, +$150:
+    69/69, +$18,105 (+0.05R -> 1, 15th-14th -> 3). Most robust: M1-S3 as designed, Exact recovery, Clamp, +$50: 0 in all 6 stress cases but +$6,187 and falls
+    to $4,719. Independent re-implementation (Sonnet high, `verify_bestmonth/sim.py`) confirmed both winners and the +$500 / Start-again variants.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -307,6 +318,7 @@ Other gold findings:
 | Crooks C single wins | `crooks_alt.py`, `crooks_alt2.py`, `crooks_alt3.py` (no cap) | `crooks_alt*.pkl`, `crooks_alt*.txt` | 1 min each |
 | The user's Crooks C rules (v3.9) | `crooks_user.py` (wait for wins, skip days, forget, %; random orders over the real trade times) | `crooks_user.pkl`, `crooks_user.txt` | 1 min |
 | Month-by-month workbooks | `monthly.py collect`, `monthly.py money`, `monthly.py check`, then `build_monthly_xlsx.py` | `monthly_trades.pkl`, `monthly.pkl`, 2 xlsx | 1.5 min, 1 min, seconds, 1 min + recalc |
+| No losing month | `bestmonth.py collect`, `screen`, `money`, `report`, `exact`; `bestmonth_final.py`; `build_bestmonth_xlsx.py` | `bestmonth_*.pkl`, `bestmonth*.txt`, xlsx | 1 min, seconds, 20 s, 20 s, 1 min, 1 min, seconds |
 | Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py`, `crooks_sheet.py` and `vwfilter_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |
 

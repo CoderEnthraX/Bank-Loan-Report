@@ -1,0 +1,12 @@
+F1 calendar, lock +$250: M15-S9, Labouchere, cap $500 clamp, lock 250.0 | engine trades 1155 (16.7 a window)
+   21-23 lose 0/36 worst +259 net +14918 | 24-26 lose 0/33 worst +261 net +12191 | all lose 0/69 worst +259 net +27110 | max trade $500, worst drop $1950, blown 0
+F2 calendar, lock +$150: M15-S7, Martingale x2, cap $500 clamp, lock 150.0 | engine trades 1377 (20.0 a window)
+   21-23 lose 0/36 worst +161 net +9688 | 24-26 lose 0/33 worst +183 net +8417 | all lose 0/69 worst +161 net +18105 | max trade $500, worst drop $2753, blown 0
+F3 mid-month, lock +$150: M5-S3, Martingale x2, cap $500 clamp, lock 150.0 | engine trades 1531 (22.5 a window)
+   21-23 lose 2/36 worst -4435 net +3079 | 24-26 lose 0/32 worst +186 net +11045 | all lose 2/68 worst -4435 net +14124 | max trade $500, worst drop $4882, blown 0
+F4 calendar, no lock: M5-S3, Fibonacci, cap $500 clamp, lock None | engine trades 1531 (22.2 a window)
+   21-23 lose 7/36 worst -2947 net +15617 | 24-26 lose 6/33 worst -4027 net +12431 | all lose 13/69 worst -4027 net +28048 | max trade $500, worst drop $5019, blown 0
+F5 mid-month, no lock: M15-S1, Rule C split 1, cap $500 clamp, lock None | engine trades 1095 (16.1 a window)
+   21-23 lose 7/36 worst -2438 net +2405 | 24-26 lose 4/32 worst -2225 net +9414 | all lose 11/68 worst -2438 net +11819 | max trade $500, worst drop $3415, blown 0
+F6 calendar, lock +$250 (chosen on 2021-23): M15-S7, Labouchere, cap $500 clamp, lock 250.0 | engine trades 1058 (15.3 a window)
+   21-23 lose 0/36 worst +264 net +14910 | 24-26 lose 6/33 worst -2480 net +2126 | all lose 6/69 worst -2480 net +17036 | max trade $500, worst drop $2581, blown 0
