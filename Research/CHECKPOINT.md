@@ -265,7 +265,10 @@ Other gold findings:
     after `ProcessBar()` for the closed and the caught-up bars). Python twin: `recovery.simulate(crkPr=..., trades with day events)`, equal to
     `crooks_user.py` / `crooks_alt3.py` on 342 runs. EA parity `mq5check/rec/parity_crkpr.py` (REC_DAYS mode of rec_driver: day events + SKIP): 5,184 runs,
     7.43 M signals (1.05 M skipped by the pause), 0 differences; parity_rec / parity_tp1 / engine parity unchanged, 0 differences. Gold numbers: item 15
-    and `gold/crooks_user.txt` (README v3.9 table).
+    and `gold/crooks_user.txt` (README v3.9 table). Independent review (Sonnet, high effort): no high or medium findings; fixed in the EA: the day
+    tracker `crkUDay` is kept on a re-init (MT5 keeps the pause), a setup armed on a caught-up bar while paused is not placed on reconnect (`gPauseArm`),
+    a new dropdown choice starts the rule's state again (`gCrkPrPrev`), state text "d left" like the strategy. Known limit: a trade that closes during a
+    disconnect starts the pause when the EA books it (on reconnect). All checks re-run: 0 differences.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
