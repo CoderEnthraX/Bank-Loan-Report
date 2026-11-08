@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-06 (session `21ed2550`, v3.9). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-08 (session `21ed2550`, v4.2). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -340,6 +340,47 @@ Other gold findings:
     Netting account (`gHedgeOk` false): the rule forgets the loss. Restart: `HgOpen()` leaves the pair to its SL / TP. Checks: mq5check 0/0; regression
     parity unchanged (logs `*_v41.log`, `*_v41b.log`); `mq5check/rec/hg_driver.cpp` (entry points `rec_hgok` / `rec_hgclose` / `rec_hgnow` / `rec_owed`
     in rec/build.sh) scripted cases forget / keep-lost / keep-won / netting all as designed; review (Sonnet high) 5 edge cases fixed, rest nits.
+
+23. **v4.2: monthly profit lock in the strategy and the EA, and workbook v2** (asked 2026-11-07). All new settings are off by default.
+    - **Pine:** `build/patch_strat_v42.py` (applied to `build/strategy_template.pine`, then `assemble.py`).
+      - Group `GRP_ML` "MONTHLY PROFIT LOCK (strategy only)" with inputs `mLockOn` / `mLockAmt` 150, `pLockOn` / `pLockAt` 500 / `pLockPct` 20 (1-100),
+        and `mRestart`.
+      - State: `mNet0`, `mPeak`, `mStop`, `pLocked`, `mRestPend`.
+      - Month key `year(time, tzUse) * 100 + month(time, tzUse)`. On a new month: `mNet0 = strategy.netprofit[1]`; the locks reset; `mRestPend` is set
+        if `mRestart`.
+      - Before "3. follow the engine":
+        - the restart, when `exState == 0` and flat;
+        - then `mPnl = strategy.netprofit - mNet0` and the checks (lock at the amount; the profit lock arms at `pLockAt`, the locked level is
+          `pLockPct` % x `mPeak` (trailing), and it stops when `mPnl` is at or below that level).
+      - `preSkip` also checks `mStop`; skip reason "monthly lock"; status "MONTHLY LOCK (until the 1st)"; the DAY P&L row shows the month.
+    - **EA:** `build/patch_ea_v42.py`, then review fixes in `build/patch_ea_v42b.py`.
+      - Inputs `InpMLockOn` / `InpMLockAmt`, `InpPLockOn` / `InpPLockAt` / `InpPLockPct`, `InpMRestart`.
+      - Globals `gMonKey`, `monPnl`, `monPeak`, `monStop`, `monLocked`, `monRestPend`.
+      - `RecoveryRestart()` resets the same state as the hard cap's Start again, plus `CrkCycle`, `crkW` and the skip pause.
+      - `MonthTick(UserTime(bt))` runs on every bar.
+      - `BookClosed()` adds the whole trade's `exPnl`, so the engine-wins path is covered too.
+      - Just before "5. take the engine's new setup": the restart (when `exState == 0` and there is no position), then `MonthCheck()`.
+      - `MonthFromHistory()` runs in OnInit:
+        - the month of the last closed bar;
+        - deals of this symbol and magic number whose own user-time month matches;
+        - positions still open are skipped;
+        - `MonthCheck` runs after each OUT deal.
+      - Version 4.20.
+    - **Checks:**
+      - mq5check 0 / 0; Pine lint 0, both files parse, the shared blocks are identical, 6 new inputs.
+      - `mq5check/rec/month_driver.cpp` (entry points `rec_mtick` / `rec_mpnl` / `rec_mcheck` / `rec_mrestart` / `rec_mpeak`): lock $150, the
+        profit-lock example (stops at +$129 with the high at $650 and 20%), the restart (owed $20 forgotten, or kept when off), and a BookClosed
+        trade counting.
+      - `hg_driver` cases unchanged. Log: `v40/hg_month_v42_final.log`.
+      - Parity with the locks off, `v40/run_parity_v42b.sh`: engine ALL IDENTICAL x 3 shifts; rec 1,680 runs, tp1 3,360, crkpr 5,184; 0 mismatches.
+      - Review (Sonnet high): no Pine findings; 5 EA findings fixed in v42b.
+    - **Workbook:** `gold/build_bestmonth_xlsx_v2.py` builds `Gold_No_Losing_Month.xlsx` from the saved `gold/bestmonth_book.pkl` + `gold/monthly.pkl`.
+      Every sheet now opens with WHAT THIS SHEET IS / HOW TO READ IT. New sheets:
+      - "Strategies explained": the goal words, the base settings, and each strategy's changes with their TradingView group / title and EA input.
+        The titles are read from the repo .pine files.
+      - "Settings explained": time filters, 22 recovery rules, hard caps, the monthly lock and the v4.2 settings.
+      - The Read me's stale "neither exists yet" line was replaced.
+      - Recalc: 0 errors.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

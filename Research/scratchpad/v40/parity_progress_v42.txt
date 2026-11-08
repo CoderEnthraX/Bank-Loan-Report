@@ -1,0 +1,8 @@
+start 00:52:10
+engine ALL IDENTICAL 00:52:27
+engine +49 ALL IDENTICAL 00:52:43
+engine -189 ALL IDENTICAL 00:52:59
+rec runs 1680, trades compared 2150319, mismatches 0, worst relative difference 4.99e-12; runs where the account blew (compared up to that trade): 29 00:53:17
+tp1 p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 3360, trades compared 3870319 (TP1-rule trades 1127020), mismatches 0 00:53:58
+crkpr runs 5184, signals compared 7429684 (skipped by the pause 1050235), mismatches 0 00:54:40
+done 00:54:40

@@ -1,0 +1,1 @@
+review42: diffed both files. Findings: EA:1548 monPnl not added + no MonthCheck/restart after BookClosed on CloseAll path (bug); MonthFromHistory DST from-time (risk); init month key vs bar key (risk); IN-deal commission in monPnl (risk); PLockPct min 1 vs >0 (nit). Pine ok. Done -> report sent.

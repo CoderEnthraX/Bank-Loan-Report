@@ -1,0 +1,22 @@
+1) Stop for the month once it is up $150
+   trade   +60.00  month   +60.00  high     0.00  -> keep trading
+   trade   +50.00  month  +110.00  high     0.00  -> keep trading
+   trade   +45.00  month  +155.00  high     0.00  -> STOP for the month
+   new month -> trading again
+2) Lock profit once the month is up $500, lock 20% of the high
+   trade  +300.00  month  +300.00  high   300.00  -> keep trading
+   trade  +250.00  month  +550.00  high   550.00  -> keep trading
+   trade  -200.00  month  +350.00  high   550.00  -> keep trading
+   trade  +300.00  month  +650.00  high   650.00  -> keep trading
+   trade  -400.00  month  +250.00  high   650.00  -> keep trading
+   trade  -119.00  month  +131.00  high   650.00  -> keep trading
+   trade    -2.00  month  +129.00  high   650.00  -> STOP for the month
+   new month -> trading again
+3) Restart the loss recovery on the 1st (Crooks C)
+   Oct: base trade risk 50.00 lost, owed 50.00
+   Oct: base trade risk 50.00 won, owed 20.00, next risk 50.00 (recovery)
+   1 Nov: restart done, owed 0.00, next risk 50.00
+   restart off: next month restart not done, owed 50.00 (kept)
+4) Trades booked by the EA (BookClosed) count in the month: lock $150
+   trade closed +80.00 (risk 50.00) -> keep trading
+   trade closed +80.00 (risk 50.00) -> STOP for the month

@@ -217,6 +217,49 @@ account): trigger, recovery sizing and booking as described; engine parity 51 co
 5,824 / 5,184 runs) unchanged, 0 differences; independent review (5 edge cases fixed: the distances above, a gap past a level, a lone trade, margin
 for both trades, a waiting trade after force-close / news).
 
+### v4.2: monthly profit lock (strategy and EA; all off by default)
+
+New group **MONTHLY PROFIT LOCK** (TradingView: "MONTHLY PROFIT LOCK (strategy only)"; the indicator does not have it). The month is the calendar
+month in your time zone (TradingView: the Time Zone of DAYS AND HOURS; EA: `InpUserGMT`), and only closed trades count, with their costs.
+
+| TradingView setting | EA input | Default | What it does |
+|---|---|---|---|
+| Stop For The Month Once It Is Up ($) + amount box | `InpMLockOn`, `InpMLockAmt` | off, 150 | Once this month's closed profit reaches the amount, no new trades until the 1st of next month |
+| Lock Profit Once The Month Is Up ($) · Lock % (two boxes) | `InpPLockOn`, `InpPLockAt`, `InpPLockPct` | off, 500, 20 | Once this month's closed profit reaches the amount, the lock % of the month's highest closed profit is locked; if the month's profit falls back to that level, no new trades until the 1st |
+| Restart The Loss Recovery On The 1st Of Each Month | `InpMRestart` | off | On the 1st the loss recovery starts again from the base risk |
+
+- **Profit lock example:** amount $500, lock 20%. The month reaches +$500, so $100 is locked. It climbs to +$650, so $130 is locked (the locked level
+  only rises). It falls back to +$129, so it stops until the 1st. It is checked when a trade closes, so one big losing trade can end below the
+  locked level. A lock % of 100 stops at the first trade that closes below the month's high.
+- **Stop for the month** = the gold study's "Monthly lock +$X" column (`Research/deliverables/Gold_No_Losing_Month.xlsx`). The study also restarted
+  the loss recovery every month: switch both on to trade a setting from that workbook. The profit lock was not part of the study.
+- **Restart** forgets the loss to win back, the losing runs, the Labouchere list, Rule C's carried losses and the Crooks C rule state, including a
+  skip pause, like the hard cap's "Start again". If a trade or entry order of the old month is still open, the restart happens right after it closes.
+- **Already open:** a trade or entry order that is already open runs to its exit; the locks only stop new trades. Skipped signals show
+  "monthly lock". The status reads "MONTHLY LOCK (until the 1st)". With a lock on, the DAY P&L row also shows the month (and the locked level).
+- **How a trade counts:** TradingView uses its closed profit (commission included). The EA counts a trade when it has fully closed: its deals,
+  commission, swap and fees. The EA counts only its own trades (this symbol and magic number). After the EA or MT5 restarts in the middle of a month,
+  the EA rebuilds this month's profit, its high and the locks from the deal history.
+
+Checks:
+- **TradingView:** assembled with the shared blocks unchanged. Inline lint 0, both files parse. Six new inputs; every other input is unchanged.
+- **EA:** compiles with 0 errors and 0 warnings. The EA's own code passed scripted sequences:
+  - stop at +$150;
+  - the profit-lock example above;
+  - the restart with Crooks C (owed $20 forgotten on the 1st, or kept with the restart off);
+  - a trade closed by the EA counting in its month.
+- **Unchanged with the locks off (0 differences):** engine parity, 51 configurations across 3 data shifts; money-management parity, 1,680 / 3,360 /
+  5,184 runs; the v4.1 hedge sequences.
+- **Independent review:** no findings in the strategy. In the EA it found 5 points, all fixed:
+  - a trade closed by the engine's exit was missed;
+  - a summer-time hour was missing in the history rebuild;
+  - the month at start-up;
+  - an open trade's entry commission was counted early;
+  - a lock % below 1 was accepted.
+
+**Loading v4.2:** remove the strategy from the chart and add it again, or use Settings -> Defaults -> Reset settings. Then switch the locks on in
+MONTHLY PROFIT LOCK. In MT5, compile the new EA and reset its inputs. Nothing changes until a lock is switched on.
+
 ## Same signals in the indicator, the strategy and the EA
 
 The indicator and the strategy contain a **byte-identical ENGINE block** (between `// >>> ENGINE BEGIN` and `// <<< ENGINE END`, plus the shared

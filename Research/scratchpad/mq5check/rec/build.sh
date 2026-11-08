@@ -44,6 +44,12 @@ extern "C" void rec_hgok(int on) { gHedgeOk = on != 0; }
 extern "C" void rec_hgclose(double lastOut) { exHg = true; gLastOutProfit = lastOut; BookClosed(); }
 extern "C" int rec_hgnow() { return CrkHedgeNow() ? 1 : 0; }
 extern "C" double rec_owed() { return crkL; }
+// v4.2 monthly profit lock: a month tick (your time zone), closed P&L, the checks, the restart once flat
+extern "C" void rec_mtick(long long t) { MonthTick((datetime)t); }
+extern "C" void rec_mpnl(double p) { monPnl += p; }
+extern "C" int rec_mcheck() { MonthCheck(); return monStop ? 1 : 0; }
+extern "C" int rec_mrestart() { if(monRestPend && exState == 0) { monRestPend = false; RecoveryRestart(); return 1; } return 0; }
+extern "C" double rec_mpeak() { return monPeak; }
 // lot sizing test: the EA's own LotsFor() with a set lot step / minimum / maximum, equity, tick value and spread
 extern "C" double rec_lots(double risk, double sd, double entry, int isL, double ld, double tv, double spread, double vstep, double vmin, double eq)
 { rec_tv = tv; rec_bid = entry; rec_ask = entry + spread; rec_vstep = vstep; rec_vmin = vmin; rec_vmax = 100.0; rec_eq = eq; return LotsFor(risk, sd, entry, isL != 0, ld); }

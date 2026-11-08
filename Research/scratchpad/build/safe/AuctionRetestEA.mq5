@@ -46,9 +46,12 @@
 //| trades in a row, the next signal opens a buy and a sell at the   |
 //| same entry (hedging account), with their own stop loss and take  |
 //| profit; then forget the loss, or go on from the last trade.      |
+//| v4.2: MONTHLY PROFIT LOCK (same as the TradingView strategy):    |
+//| stop for the month once it is up $X; lock a % of the month's     |
+//| profit once it is up $Y; restart the loss recovery on the 1st.   |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "4.10"
+#property version   "4.20"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -259,6 +262,14 @@ input bool InpPauseOn = false; // Pause after N losses in a row
 input int  InpPauseN  = 3;     //   N losses
 input int  InpPauseDays = 1;   //   Days to pause (1-3)
 
+input group "MONTHLY PROFIT LOCK"
+input bool   InpMLockOn  = false;  // Stop for the month once it is up (closed profit this month, your time zone)
+input double InpMLockAmt = 150.0;  //   amount (account currency)
+input bool   InpPLockOn  = false;  // Lock profit once the month is up (stop when it falls back to the locked part)
+input double InpPLockAt  = 500.0;  //   amount (account currency)
+input double InpPLockPct = 20.0;   //   lock % of the month's highest profit (rises with new highs)
+input bool   InpMRestart = false;  // Restart the loss recovery on the 1st of each month (after a trade still open closes)
+
 input group "FORCE-CLOSE, WEEKEND AND NEWS (YOUR time zone)"
 input bool   InpFcOn      = true;  // Force-close open trades daily at
 input int    InpFcH       = 23;    //   hour
@@ -407,6 +418,9 @@ bool     crkSkip = false; int crkSkipLeft = 0; int crkUDay = -1;  // skip rule: 
 bool     crkHg = false;                                   // hedge rule: the next signal opens a buy and a sell
 bool     exHg = false; double exHgS = 0, exHgT = 0;      // hedge rule: the working setup / open trades are the pair; its stop loss and take profit distances
 double   gLastOutProfit = 0;                              // profit of the last closing deal (hedge rule: did the trade that closed last win)
+int      gMonKey = -1;                                    // monthly lock: the month (your time zone) of the last processed bar
+double   monPnl = 0, monPeak = 0;                         //   this month's closed profit (costs included) and its high
+bool     monStop = false, monLocked = false, monRestPend = false;   //   no new trades until next month; profit lock armed; restart the recovery once flat
 bool     gHedgeOk = false;                                // the account can hold a buy and a sell at the same time (hedging)
 long     gPauseArm = -1;                                  // skip rule: armBar of a setup armed on a caught-up bar while trading was paused (never placed)
 int      gCrkPrPrev = -1;                                 // the Crooks C rule the state belongs to (a new choice starts its state again)
@@ -863,6 +877,59 @@ double CrkT1Mult()
    return per > 0 ? perL / per : 1.0;
 }
 
+//--- monthly profit lock (calendar month in your time zone; closed deals, costs included) and the monthly restart of the loss recovery
+void RecoveryRestart()                                // like the hard cap's Start again: the loss recovery starts again from the base risk
+{
+   recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; CrkCycle(); crkW = false;
+   crkSkip = false; crkSkipLeft = 0;
+}
+void MonthTick(datetime ut)                           // a new month: the locks start again; the recovery restart waits until no trade of the old month is left
+{
+   MqlDateTime d; TimeToStruct(ut, d);
+   int k = d.year * 100 + d.mon;
+   if(gMonKey != -1 && k != gMonKey) { monPnl = 0; monPeak = 0; monStop = false; monLocked = false; if(InpMRestart) monRestPend = true; }
+   gMonKey = k;
+}
+void MonthCheck()                                     // stop for the month at the lock amount, or when the profit falls back to the locked part of its high
+{
+   if(InpMLockOn && monPnl >= InpMLockAmt) monStop = true;
+   if(InpPLockOn)
+   {
+      monPeak = MathMax(monPeak, monPnl);
+      if(monPnl >= InpPLockAt) monLocked = true;
+      if(monLocked && monPnl <= InpPLockPct / 100.0 * monPeak) monStop = true;
+   }
+}
+void MonthFromHistory()                               // after a restart: this month's closed trades, its high and the locks from the deal history
+{
+   datetime b1 = iTime(_Symbol, _Period, 1), now = TimeCurrent();
+   MqlDateTime d; TimeToStruct(UserTime(b1 > 0 ? b1 : now), d);
+   gMonKey = d.year * 100 + d.mon;                    // the month of the last closed bar, as MonthTick will see it
+   monPnl = 0; monPeak = 0; monLocked = false; monStop = false;
+   long open[]; int no = 0;                           // positions still open: their deals are not closed profit yet
+   for(int i = PositionsTotal() - 1; i >= 0; i--)
+   {
+      ulong pt = PositionGetTicket(i);
+      if(pt == 0 || PositionGetString(POSITION_SYMBOL) != _Symbol || PositionGetInteger(POSITION_MAGIC) != InpMagic) continue;
+      ArrayResize(open, no + 1); open[no++] = PositionGetInteger(POSITION_IDENTIFIER);
+   }
+   if(!HistorySelect(now - 40 * 86400, now + 86400)) return;
+   int n = HistoryDealsTotal();
+   for(int i = 0; i < n; i++)
+   {
+      ulong tk = HistoryDealGetTicket(i);
+      if(tk == 0 || HistoryDealGetString(tk, DEAL_SYMBOL) != _Symbol || HistoryDealGetInteger(tk, DEAL_MAGIC) != InpMagic) continue;
+      MqlDateTime dd; TimeToStruct(UserTime((datetime)HistoryDealGetInteger(tk, DEAL_TIME)), dd);
+      if(dd.year * 100 + dd.mon != gMonKey) continue;  // only this month's deals (your time zone)
+      long pid = HistoryDealGetInteger(tk, DEAL_POSITION_ID); bool isOpen = false;
+      for(int q = 0; q < no; q++) if(open[q] == pid) { isOpen = true; break; }
+      if(isOpen) continue;
+      monPnl += HistoryDealGetDouble(tk, DEAL_PROFIT) + HistoryDealGetDouble(tk, DEAL_COMMISSION) + HistoryDealGetDouble(tk, DEAL_SWAP) + HistoryDealGetDouble(tk, DEAL_FEE);
+      long e = HistoryDealGetInteger(tk, DEAL_ENTRY);
+      if(e == DEAL_ENTRY_OUT || e == DEAL_ENTRY_INOUT || e == DEAL_ENTRY_OUT_BY) MonthCheck();
+   }
+}
+
 //--- risk $ for the next trade (loss recovery + hard cap) -------------------
 double NextRisk(double exitR, bool canTake = true)
 {
@@ -1203,7 +1270,7 @@ string StateText(bool newsBlk)
    string why = trSkip == 1 ? "TOO FAR FROM VWAP" : (trSkip == 2 ? "CHOPPY VWAP SESSION" : (trSkip == 3 ? "1H EMA20 TOO FAST" : (trSkip == 4 ? "TOO CLOSE TO VWAP" :
                 (trSkip == 5 ? "BEYOND MAX VWAP DISTANCE" : (trSkip == 6 ? "STOP BEYOND VWAP" : (trSkip == 7 ? "VWAP TOUCHED RECENTLY" : "ENTRY TOO CLOSE TO VWAP"))))));
    string s = st != 0 && trGhost ? "SKIPPED (" + why + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
-              capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : CrkPause() ? "CROOKS C PAUSE (" + IntegerToString(crkSkipLeft) + "d left)" : dayBlock ? "STREAK STOP TODAY" :
+              capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : CrkPause() ? "CROOKS C PAUSE (" + IntegerToString(crkSkipLeft) + "d left)" : monStop ? "MONTHLY LOCK (until the 1st)" : dayBlock ? "STREAK STOP TODAY" :
               !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : CrkHedgeNow() ? "SCANNING (HEDGE PAIR ON THE NEXT SIGNAL)" : "SCANNING";
    string ex = exState == 2 ? (exHg ? " (hedge pair open)" : " (in trade)") : (exState == 1 ? (gVirt ? " (waiting for the level)" : exHg ? " (hedge orders working)" : " (order working)") : "");
    return s + ex;
@@ -1256,14 +1323,14 @@ void UpdateTable()
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v4.1", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v4.2", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
    TblAdd("RISK | LOTS", exState != 0 ? DoubleToString(exRiskAmt, 2) + " | " + DoubleToString(exLots, 2) : "base " + DoubleToString(InpBaseRisk, 2), white, cell);
    TblAdd(isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", rec, (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white, cell);
    TblAdd("STREAK W | L", IntegerToString(winRow) + " | " + IntegerToString(lossRow) + " | total " + IntegerToString(exW) + "W/" + IntegerToString(exLn) + "L", white, cell);
-   TblAdd("DAY P&L | FILLS", DoubleToString(dayPnl, 2) + " | " + IntegerToString(dayFills) + "/" + IntegerToString(InpMaxFills), dayPnl >= 0 ? posC : negC, cell);
+   TblAdd("DAY P&L | FILLS", DoubleToString(dayPnl, 2) + " | " + IntegerToString(dayFills) + "/" + IntegerToString(InpMaxFills) + (InpMLockOn || InpPLockOn ? " | month " + DoubleToString(monPnl, 2) + (monLocked ? " (locked " + DoubleToString(InpPLockPct / 100.0 * monPeak, 2) + ")" : "") : ""), dayPnl >= 0 ? posC : negC, cell);
    TblAdd("SIGNALS | TAKEN | SKIPPED", IntegerToString(sigN) + " | " + IntegerToString(takenN) + " | " + IntegerToString(skipN) + (missN > 0 ? " | missed " + IntegerToString(missN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN > 0 ? negC : white, cell);
    TblAdd("SIGNAL TRADES | WIN % | R", AccTxt() + " | last " + lastRes, totR >= 0 ? posC : negC, cell);
    TblAdd("TP HIT", TpTxt(), posC, cell);
@@ -1300,7 +1367,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    ulong pTk; double pVol, pOpen;
    bool posNow = HasPosition(pTk, pVol, pOpen);
    bool crkPs = CrkPause();
-   bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock || crkPs);   // the hard cap acts only on a signal that can be taken
+   bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock || crkPs || monStop);   // the hard cap acts only on a signal that can be taken
    double rAmt = NextRisk(ExitR(), canTake);
    bool   hg = CrkHedgeNow();                        // Crooks C hedge rule: a buy and a sell (after NextRisk: a hard-cap restart cancels it)
    double hgS = hg ? HgDist(InpCrkHgSl) : 0, hgT = hg ? HgDist(InpCrkHgTp) : 0;
@@ -1316,7 +1383,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
       while(v >= vmn && OrderCalcMargin(ORDER_TYPE_BUY, _Symbol, 2 * v, lim, mg) && mg > AccountInfoDouble(ACCOUNT_MARGIN_FREE)) v = NormalizeDouble(v - vst, 8);
       if(v < vmn) v = 0;
    }
-   skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : crkPs ? "Crooks C pause" : v <= 0 ? "size 0" : "";
+   skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : crkPs ? "Crooks C pause" : monStop ? "monthly lock" : v <= 0 ? "size 0" : "";
    if(skipWhy != "") { skipN++; return; }
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    double sprNow = CostSpr();
@@ -1377,6 +1444,7 @@ void VirtualEntry()
 void BookClosed()
 {
    bool win = exPnl > 0;
+   monPnl += exPnl;                                     // monthly locks: the whole trade counts in the month it closes
    dayPnl += exPnl;
    if(win) exW++; else exLn++;
    lossRow = win ? 0 : lossRow + 1; winRow = win ? winRow + 1 : 0;
@@ -1439,6 +1507,7 @@ void OnNewBar()
    CrkDayTick(iTime(_Symbol, _Period, 1));              // Crooks C skip rule: a new day in your time zone counts before this bar's booking
    datetime bt = iTime(_Symbol, _Period, 1);
    datetime ut = UserTime(bt), utPrev = UserTime(gPrevT > 0 ? gPrevT : iTime(_Symbol, _Period, 2));
+   MonthTick(ut);                                     // a new month (your time zone): its closed deals count from this bar on
 
    if(gNewDay || gDayPend)
    {
@@ -1502,6 +1571,10 @@ void OnNewBar()
    if(flatNow && pos) CloseAll();
    if(exHg && exState == 2 && (flatNow || newsBlk)) CancelPending();   // hedge pair: a trade still waiting is not opened after force-close, weekend or news
    if(exState == 1 && (flatNow || newsBlk)) { CancelPending(); exState = 0; exArm = -1; gVirt = false; exHg = false; }
+
+   // monthly restart (once no trade of the old month is left) and the monthly locks, after every booking of this bar
+   if(monRestPend && exState == 0 && !HasPosition(pTk, pVol, pOpen)) { monRestPend = false; RecoveryRestart(); }
+   MonthCheck();
 
    // 5. take the engine's new setup
    if(evArm) TakeSetup(evArmL, newsBlk, flatNow);
@@ -1586,6 +1659,7 @@ int OnInit()
    if(InpTouchVwOn && InpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
    if(InpCrkT1 && (InpCrkT1Pct < 10 || InpCrkT1Pct > 90)) { Print("Crooks TP1 rule: % closed at TP1 must be 10 to 90."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRC && InpCrkPr != CPR_OFF && (InpCrkPrN < 1 || InpCrkPrM < 1 || InpCrkPrD < 1)) { Print("Crooks C rule: N, M and D must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
+   if((InpMLockOn && InpMLockAmt <= 0) || (InpPLockOn && (InpPLockAt <= 0 || InpPLockPct < 1 || InpPLockPct > 100))) { Print("Monthly profit lock: the amounts must be above 0 and the lock % 1 to 100."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRC && InpCrkPr == CPR_HEDGE && (InpCrkHgSl <= 0 || InpCrkHgTp <= 0)) { Print("Crooks C hedge rule: stop loss and take profit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRC && InpCrkPr == CPR_PCT && (InpCrkPrPct < 10 || InpCrkPrPct > 100)) { Print("Crooks C rule: % of the loss must be 10 to 100."); return INIT_PARAMETERS_INCORRECT; }
    // warm up the engine on history (no orders): it ends in the same state as the TradingView engine would
@@ -1599,6 +1673,7 @@ int OnInit()
    gLive = true;
    gLastBarTime = iTime(_Symbol, _Period, 0);
    bool c; NewDealsPnl(c);   // do not count old history
+   MonthFromHistory();       // this month's closed profit and the monthly locks (a restart in the middle of a month keeps them)
    // restart: adopt this EA's open position if the engine is in the same trade, keep managing it
    ulong tk; double vol, op;
    if(HgOpen()) { exState = 2; exHg = true; Print("Hedge pair still open: its trades run to their own stop loss and take profit."); }
