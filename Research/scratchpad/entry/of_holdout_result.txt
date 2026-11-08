@@ -1,0 +1,37 @@
+-- OFA-C1 narrow prior value area M5
+OFA-C1 narrow prior value area train both  n   3004   83.4/mo fill  75% | hit  63.3  51.0  41.1  35.0 | excess  +1.0  +1.1  +1.1  +1.8 avg +1.23 (se 0.9) | E@TP1 -0.091 E@TP4 -0.055
+OFA-C1 narrow prior value area train long  n   1464   40.7/mo fill  73% | hit  62.4  51.6  42.1  35.5 | excess  +0.3  +1.9  +2.1  +2.4 avg +1.65 (se 1.3) | E@TP1 -0.107 E@TP4 -0.041
+OFA-C1 narrow prior value area train short n   1540   42.8/mo fill  77% | hit  64.2  50.4  40.2  34.5 | excess  +1.6  +0.3  +0.2  +1.3 avg +0.83 (se 1.3) | E@TP1 -0.075 E@TP4 -0.067
+OFA-C1 narrow prior value area valid both  n   1622   90.1/mo fill  76% | hit  64.7  52.7  43.6  36.2 | excess  +2.3  +2.5  +3.1  +2.3 avg +2.54 (se 1.2) | E@TP1 +0.002 E@TP4 +0.052
+OFA-C1 narrow prior value area valid long  n    896   49.8/mo fill  76% | hit  65.5  53.6  45.3  38.1 | excess  +1.2  +0.7  +1.9  +1.1 avg +1.26 (se 1.7) | E@TP1 +0.013 E@TP4 +0.107
+OFA-C1 narrow prior value area valid short n    726   40.3/mo fill  75% | hit  63.8  51.7  41.5  33.9 | excess  +3.7  +4.6  +4.5  +3.7 avg +4.13 (se 1.9) | E@TP1 -0.011 E@TP4 -0.015
+OFA-C1 narrow prior value area test  both  n   1492   98.8/mo fill  77% | hit  63.1  50.7  40.3  34.9 | excess  +0.8  +0.8  +0.2  +1.5 avg +0.82 (se 1.3) | E@TP1 -0.010 E@TP4 +0.027
+OFA-C1 narrow prior value area test  long  n    747   49.5/mo fill  77% | hit  62.5  51.4  39.4  34.0 | excess  +1.0  +2.4  +0.2  +1.3 avg +1.22 (se 1.8) | E@TP1 -0.019 E@TP4 +0.001
+OFA-C1 narrow prior value area test  short n    745   49.3/mo fill  78% | hit  63.6  50.1  41.2  35.7 | excess  +0.6  -0.9  +0.3  +1.7 avg +0.42 (se 1.8) | E@TP1 -0.001 E@TP4 +0.052
+-- OFA-C1b narrow prior range (no volume) M5
+OFA-C1b narrow prior range (no train both  n   3025   84.0/mo fill  75% | hit  63.0  51.0  41.4  35.0 | excess  +0.6  +1.1  +1.3  +1.9 avg +1.25 (se 0.9) | E@TP1 -0.087 E@TP4 -0.044
+OFA-C1b narrow prior range (no train long  n   1467   40.8/mo fill  72% | hit  61.6  51.7  43.0  36.2 | excess  -0.5  +1.9  +3.0  +3.1 avg +1.88 (se 1.3) | E@TP1 -0.110 E@TP4 -0.009
+OFA-C1b narrow prior range (no train short n   1558   43.3/mo fill  77% | hit  64.3  50.4  39.8  34.0 | excess  +1.8  +0.3  -0.2  +0.8 avg +0.66 (se 1.3) | E@TP1 -0.066 E@TP4 -0.076
+OFA-C1b narrow prior range (no valid both  n   1568   87.1/mo fill  77% | hit  64.3  52.9  43.4  35.3 | excess  +1.9  +2.6  +2.9  +1.4 avg +2.21 (se 1.3) | E@TP1 -0.003 E@TP4 +0.029
+OFA-C1b narrow prior range (no valid long  n    864   48.0/mo fill  77% | hit  65.6  55.0  45.9  38.2 | excess  +1.4  +2.1  +2.6  +1.3 avg +1.83 (se 1.7) | E@TP1 +0.017 E@TP4 +0.112
+OFA-C1b narrow prior range (no valid short n    704   39.1/mo fill  77% | hit  62.6  50.3  40.2  31.8 | excess  +2.6  +3.3  +3.2  +1.6 avg +2.67 (se 1.9) | E@TP1 -0.027 E@TP4 -0.074
+OFA-C1b narrow prior range (no test  both  n   1354   89.7/mo fill  74% | hit  62.5  50.6  41.0  35.1 | excess  +0.2  +0.6  +0.9  +1.7 avg +0.87 (se 1.4) | E@TP1 -0.018 E@TP4 +0.034
+OFA-C1b narrow prior range (no test  long  n    676   44.8/mo fill  73% | hit  60.8  50.1  39.9  34.8 | excess  -0.7  +1.2  +0.8  +2.1 avg +0.81 (se 1.9) | E@TP1 -0.046 E@TP4 +0.024
+OFA-C1b narrow prior range (no test  short n    678   44.9/mo fill  76% | hit  64.2  51.0  42.0  35.4 | excess  +1.1  +0.1  +1.1  +1.4 avg +0.93 (se 1.9) | E@TP1 +0.009 E@TP4 +0.045
+-- OFB-C3 fade extension from POC M5
+OFB-C3 fade extension from POC train both  n   1529   42.5/mo fill 100% | hit  66.2  54.9  44.5  39.1 | excess  +3.9  +5.0  +4.5  +6.0 avg +4.84 (se 1.3) | E@TP1 -0.057 E@TP4 +0.057
+OFB-C3 fade extension from POC train long  n    755   21.0/mo fill 100% | hit  66.0  54.8  45.4  39.3 | excess  +3.9  +5.1  +5.5  +6.2 avg +5.16 (se 1.8) | E@TP1 -0.061 E@TP4 +0.064
+OFB-C3 fade extension from POC train short n    774   21.5/mo fill 100% | hit  66.4  55.0  43.7  38.9 | excess  +3.9  +4.9  +3.6  +5.7 avg +4.53 (se 1.8) | E@TP1 -0.053 E@TP4 +0.051
+OFB-C3 fade extension from POC valid both  n    873   48.5/mo fill 100% | hit  65.5  53.5  43.6  37.3 | excess  +3.7  +4.1  +4.0  +4.4 avg +4.04 (se 1.7) | E@TP1 +0.005 E@TP4 +0.077
+OFB-C3 fade extension from POC valid long  n    361   20.1/mo fill 100% | hit  68.7  58.4  49.0  42.7 | excess  +4.4  +5.6  +5.6  +5.7 avg +5.35 (se 2.6) | E@TP1 +0.062 E@TP4 +0.242
+OFB-C3 fade extension from POC valid short n    512   28.4/mo fill 100% | hit  63.3  50.0  39.8  33.6 | excess  +3.2  +3.0  +2.9  +3.4 avg +3.12 (se 2.2) | E@TP1 -0.035 E@TP4 -0.040
+OFB-C3 fade extension from POC test  both  n    719   47.6/mo fill 100% | hit  60.1  48.0  39.1  31.7 | excess  -2.3  -2.1  -1.1  -1.7 avg -1.77 (se 1.9) | E@TP1 -0.060 E@TP4 -0.070
+OFB-C3 fade extension from POC test  long  n    330   21.9/mo fill 100% | hit  59.1  47.0  37.3  31.2 | excess  -2.4  -2.0  -1.9  -1.5 avg -1.96 (se 2.8) | E@TP1 -0.075 E@TP4 -0.084
+OFB-C3 fade extension from POC test  short n    389   25.8/mo fill 100% | hit  60.9  48.8  40.6  32.1 | excess  -2.1  -2.1  -0.3  -1.8 avg -1.60 (se 2.5) | E@TP1 -0.047 E@TP4 -0.058
+-- OFB-C1L long far below POC M5
+OFB-C1L long far below POC     train both  n   1008   28.0/mo fill 100% | hit  68.0  55.8  43.8  38.0 | excess  +5.9  +6.0  +3.8  +4.9 avg +5.13 (se 1.6) | E@TP1 -0.035 E@TP4 +0.018
+OFB-C1L long far below POC     train long  n   1008   28.0/mo fill 100% | hit  68.0  55.8  43.8  38.0 | excess  +5.9  +6.0  +3.8  +4.9 avg +5.13 (se 1.6) | E@TP1 -0.035 E@TP4 +0.018
+OFB-C1L long far below POC     valid both  n    461   25.6/mo fill 100% | hit  67.9  57.3  47.9  42.3 | excess  +3.6  +4.4  +4.6  +5.4 avg +4.49 (se 2.3) | E@TP1 +0.041 E@TP4 +0.224
+OFB-C1L long far below POC     valid long  n    461   25.6/mo fill 100% | hit  67.9  57.3  47.9  42.3 | excess  +3.6  +4.4  +4.6  +5.4 avg +4.49 (se 2.3) | E@TP1 +0.041 E@TP4 +0.224
+OFB-C1L long far below POC     test  both  n    445   29.5/mo fill 100% | hit  59.3  46.5  36.6  31.5 | excess  -2.2  -2.4  -2.6  -1.2 avg -2.12 (se 2.4) | E@TP1 -0.073 E@TP4 -0.078
+OFB-C1L long far below POC     test  long  n    445   29.5/mo fill 100% | hit  59.3  46.5  36.6  31.5 | excess  -2.2  -2.4  -2.6  -1.2 avg -2.12 (se 2.4) | E@TP1 -0.073 E@TP4 -0.078
