@@ -260,6 +260,24 @@ Checks:
 **Loading v4.2:** remove the strategy from the chart and add it again, or use Settings -> Defaults -> Reset settings. Then switch the locks on in
 MONTHLY PROFIT LOCK. In MT5, compile the new EA and reset its inputs. Nothing changes until a lock is switched on.
 
+### Entry accuracy research (November 2026, no code change)
+
+Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.
+
+- **No edge today.** The signals hit TP1-TP4 about 62 / 50 / 40 / 33 % of the time. Random entries with the same stop and targets do the same
+  (1 / (1 + target in R) = 62.5 / 50 / 40 / 33.3 %). Your v4.0 settings are the same.
+- **What was tested.** About 1,100 entry rules and 3,700 mined conditions:
+  - filters on the signals and machine learning on about 60 features;
+  - other retest and confirmation entries, stops and VWAP rules;
+  - opening ranges, liquidity sweeps, fades and time-of-day rules.
+- **Result.** The best rules looked 3-7 points better than random on 2021-2025. None beat random on July 2025 - October 2026, the months kept
+  aside and tested once.
+- **Decision.** The engine is unchanged.
+- **The one real pattern is New York time of day:** gold is weaker 07:00-10:00 and stronger 13:00-17:00. It was strong in 2023-2025 but weak
+  in the test months.
+- **Why the retest entry can't add accuracy:** the limit fills mostly on moves that are already weakening, and the strongest moves never come
+  back to it.
+
 ## Same signals in the indicator, the strategy and the EA
 
 The indicator and the strategy contain a **byte-identical ENGINE block** (between `// >>> ENGINE BEGIN` and `// <<< ENGINE END`, plus the shared

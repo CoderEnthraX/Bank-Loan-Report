@@ -1,0 +1,77 @@
+-- C1 fade NY 12-18 (PRIMARY) M5
+C1 fade NY 12-18 (PRIMARY)     train both  n   1687   46.9/mo fill 100% | hit  66.9  54.4  44.3  37.8 | excess  +4.6  +4.5  +4.3  +4.6 avg +4.51 (se 1.2) | E@TP1 -0.055 E@TP4 +0.007
+C1 fade NY 12-18 (PRIMARY)     train long  n    868   24.1/mo fill 100% | hit  67.2  54.5  44.9  38.2 | excess  +5.1  +4.7  +5.0  +5.2 avg +4.98 (se 1.7) | E@TP1 -0.055 E@TP4 +0.018
+C1 fade NY 12-18 (PRIMARY)     train short n    819   22.8/mo fill 100% | hit  66.7  54.3  43.7  37.2 | excess  +4.1  +4.2  +3.7  +4.1 avg +4.02 (se 1.7) | E@TP1 -0.055 E@TP4 -0.005
+C1 fade NY 12-18 (PRIMARY)     valid both  n    837   46.5/mo fill 100% | hit  67.6  55.1  45.5  38.0 | excess  +5.7  +5.5  +5.7  +4.8 avg +5.44 (se 1.7) | E@TP1 +0.030 E@TP4 +0.088
+C1 fade NY 12-18 (PRIMARY)     valid long  n    369   20.5/mo fill 100% | hit  71.8  62.6  53.4  46.3 | excess  +7.5  +9.7 +10.0  +9.4 avg +9.18 (se 2.6) | E@TP1 +0.098 E@TP4 +0.339
+C1 fade NY 12-18 (PRIMARY)     valid short n    468   26.0/mo fill 100% | hit  64.3  49.1  39.3  31.4 | excess  +4.2  +2.1  +2.4  +1.2 avg +2.48 (se 2.3) | E@TP1 -0.024 E@TP4 -0.111
+C1 fade NY 12-18 (PRIMARY)     test  both  n    721   47.7/mo fill 100% | hit  61.9  49.4  39.7  33.0 | excess  -0.4  -0.6  -0.4  -0.3 avg -0.43 (se 1.9) | E@TP1 -0.038 E@TP4 -0.038
+C1 fade NY 12-18 (PRIMARY)     test  long  n    361   23.9/mo fill 100% | hit  61.2  51.5  42.4  36.6 | excess  -0.3  +2.6  +3.2  +3.9 avg +2.32 (se 2.6) | E@TP1 -0.049 E@TP4 +0.069
+C1 fade NY 12-18 (PRIMARY)     test  short n    360   23.8/mo fill 100% | hit  62.5  47.2  36.9  29.4 | excess  -0.5  -3.7  -4.0  -4.5 avg -3.20 (se 2.6) | E@TP1 -0.028 E@TP4 -0.145
+-- C1L fade, longs only M5
+C1L fade, longs only           train both  n    868   24.1/mo fill 100% | hit  67.2  54.5  44.9  38.2 | excess  +5.1  +4.7  +5.0  +5.2 avg +4.98 (se 1.7) | E@TP1 -0.055 E@TP4 +0.018
+C1L fade, longs only           train long  n    868   24.1/mo fill 100% | hit  67.2  54.5  44.9  38.2 | excess  +5.1  +4.7  +5.0  +5.2 avg +4.98 (se 1.7) | E@TP1 -0.055 E@TP4 +0.018
+C1L fade, longs only           valid both  n    369   20.5/mo fill 100% | hit  71.8  62.6  53.4  46.3 | excess  +7.5  +9.7 +10.0  +9.4 avg +9.18 (se 2.6) | E@TP1 +0.098 E@TP4 +0.339
+C1L fade, longs only           valid long  n    369   20.5/mo fill 100% | hit  71.8  62.6  53.4  46.3 | excess  +7.5  +9.7 +10.0  +9.4 avg +9.18 (se 2.6) | E@TP1 +0.098 E@TP4 +0.339
+C1L fade, longs only           test  both  n    361   23.9/mo fill 100% | hit  61.2  51.5  42.4  36.6 | excess  -0.3  +2.6  +3.2  +3.9 avg +2.32 (se 2.6) | E@TP1 -0.049 E@TP4 +0.069
+C1L fade, longs only           test  long  n    361   23.9/mo fill 100% | hit  61.2  51.5  42.4  36.6 | excess  -0.3  +2.6  +3.2  +3.9 avg +2.32 (se 2.6) | E@TP1 -0.049 E@TP4 +0.069
+-- ORB NY 09:30-10:00 M15
+ORB NY 09:30-10:00             train both  n    908   25.2/mo fill  59% | hit  66.3  53.5  42.6  35.2 | excess  +3.8  +3.6  +2.9  +2.2 avg +3.13 (se 1.7) | E@TP1 +0.015 E@TP4 +0.011
+ORB NY 09:30-10:00             train long  n    455   12.6/mo fill  59% | hit  64.4  51.6  41.1  34.7 | excess  +1.8  +1.9  +1.5  +1.7 avg +1.75 (se 2.3) | E@TP1 -0.015 E@TP4 -0.004
+ORB NY 09:30-10:00             train short n    453   12.6/mo fill  59% | hit  68.2  55.4  44.2  35.8 | excess  +5.7  +5.3  +4.4  +2.6 avg +4.51 (se 2.3) | E@TP1 +0.045 E@TP4 +0.027
+ORB NY 09:30-10:00             valid both  n    494   27.4/mo fill  64% | hit  66.4  54.3  43.1  37.4 | excess  +4.0  +4.2  +2.7  +3.2 avg +3.52 (se 2.2) | E@TP1 +0.047 E@TP4 +0.109
+ORB NY 09:30-10:00             valid long  n    256   14.2/mo fill  66% | hit  68.0  57.8  48.4  43.4 | excess  +2.2  +3.9  +4.2  +5.4 avg +3.93 (se 3.1) | E@TP1 +0.073 E@TP4 +0.286
+ORB NY 09:30-10:00             valid short n    238   13.2/mo fill  62% | hit  64.7  50.4  37.4  31.1 | excess  +5.9  +4.4  +1.1  +0.8 avg +3.08 (se 3.2) | E@TP1 +0.020 E@TP4 -0.082
+ORB NY 09:30-10:00             test  both  n    427   28.3/mo fill  65% | hit  61.8  47.8  38.6  32.6 | excess  -0.6  -2.2  -1.3  -1.1 avg -1.29 (se 2.4) | E@TP1 -0.020 E@TP4 -0.032
+ORB NY 09:30-10:00             test  long  n    217   14.4/mo fill  67% | hit  60.8  47.5  38.7  34.1 | excess  -1.3  -2.2  -1.4  -0.1 avg -1.24 (se 3.4) | E@TP1 -0.036 E@TP4 +0.014
+ORB NY 09:30-10:00             test  short n    210   13.9/mo fill  64% | hit  62.9  48.1  38.6  31.0 | excess  +0.0  -2.1  -1.1  -2.1 avg -1.34 (se 3.5) | E@TP1 -0.003 E@TP4 -0.080
+-- SWEEP prev-day H/L M15
+SWEEP prev-day H/L             train both  n    430   11.9/mo fill  65% | hit  66.5  52.3  42.3  39.3 | excess  +4.0  +2.4  +2.6  +6.2 avg +3.82 (se 2.4) | E@TP1 -0.028 E@TP4 +0.087
+SWEEP prev-day H/L             train long  n    217    6.0/mo fill  65% | hit  65.4  51.6  41.5  39.6 | excess  +2.9  +1.9  +1.9  +6.6 avg +3.32 (se 3.4) | E@TP1 -0.044 E@TP4 +0.098
+SWEEP prev-day H/L             train short n    213    5.9/mo fill  64% | hit  67.6  53.1  43.2  39.0 | excess  +5.1  +3.0  +3.4  +5.8 avg +4.33 (se 3.4) | E@TP1 -0.011 E@TP4 +0.076
+SWEEP prev-day H/L             valid both  n    203   11.3/mo fill  63% | hit  70.9  55.2  48.8  38.4 | excess  +9.3  +5.9  +9.1  +5.0 avg +7.30 (se 3.5) | E@TP1 +0.103 E@TP4 +0.120
+SWEEP prev-day H/L             valid long  n     85    4.7/mo fill  62% | hit  76.5  57.6  50.6  41.2 | excess +10.7  +3.7  +6.3  +3.2 avg +6.01 (se 5.4) | E@TP1 +0.198 E@TP4 +0.210
+SWEEP prev-day H/L             valid short n    118    6.6/mo fill  64% | hit  66.9  53.4  47.5  36.4 | excess  +8.2  +7.4 +11.1  +6.2 avg +8.23 (se 4.6) | E@TP1 +0.034 E@TP4 +0.056
+SWEEP prev-day H/L             test  both  n    192   12.7/mo fill  68% | hit  59.4  50.0  41.7  33.3 | excess  -3.1  +0.1  +1.8  -0.3 avg -0.39 (se 3.6) | E@TP1 -0.065 E@TP4 -0.015
+SWEEP prev-day H/L             test  long  n     96    6.4/mo fill  69% | hit  53.1  45.8  36.5  32.3 | excess  -9.0  -3.8  -3.7  -1.9 avg -4.59 (se 5.1) | E@TP1 -0.162 E@TP4 -0.044
+SWEEP prev-day H/L             test  short n     96    6.4/mo fill  67% | hit  65.6  54.2  46.9  34.4 | excess  +2.8  +3.9  +7.2  +1.3 avg +3.81 (se 5.1) | E@TP1 +0.032 E@TP4 +0.014
+-- ref: time-of-day bias M15
+ref: time-of-day bias          train both  n  21311  592.0/mo fill 100% | hit  64.6  51.6  41.6  35.2 | excess  +2.0  +1.8  +1.9  +2.2 avg +1.97 (se 0.3) | E@TP1 -0.028 E@TP4 -0.005
+ref: time-of-day bias          train long  n  12044  334.6/mo fill 100% | hit  65.3  51.7  41.5  35.1 | excess  +2.8  +2.0  +1.9  +2.1 avg +2.20 (se 0.5) | E@TP1 -0.018 E@TP4 -0.010
+ref: time-of-day bias          train short n   9267  257.4/mo fill 100% | hit  63.6  51.5  41.7  35.4 | excess  +1.1  +1.5  +1.9  +2.3 avg +1.68 (se 0.5) | E@TP1 -0.041 E@TP4 +0.003
+ref: time-of-day bias          valid both  n  10650  591.7/mo fill 100% | hit  68.4  56.3  46.3  39.6 | excess  +5.7  +5.8  +5.5  +5.0 avg +5.50 (se 0.5) | E@TP1 +0.070 E@TP4 +0.163
+ref: time-of-day bias          valid long  n   6018  334.3/mo fill 100% | hit  72.4  60.4  50.6  44.0 | excess  +6.7  +6.5  +6.3  +6.0 avg +6.37 (se 0.6) | E@TP1 +0.130 E@TP4 +0.291
+ref: time-of-day bias          valid short n   4632  257.3/mo fill 100% | hit  63.2  51.0  40.8  33.8 | excess  +4.4  +5.0  +4.4  +3.6 avg +4.36 (se 0.7) | E@TP1 -0.007 E@TP4 -0.004
+ref: time-of-day bias          test  both  n   8969  594.0/mo fill 100% | hit  63.5  50.5  40.6  34.3 | excess  +1.1  +0.6  +0.6  +0.6 avg +0.74 (se 0.5) | E@TP1 +0.003 E@TP4 +0.017
+ref: time-of-day bias          test  long  n   5057  334.9/mo fill 100% | hit  63.8  50.1  40.9  35.0 | excess  +1.7  +0.5  +0.7  +0.8 avg +0.94 (se 0.7) | E@TP1 +0.005 E@TP4 +0.034
+ref: time-of-day bias          test  short n   3912  259.1/mo fill 100% | hit  63.1  50.9  40.2  33.5 | excess  +0.3  +0.7  +0.5  +0.4 avg +0.47 (se 0.8) | E@TP1 -0.001 E@TP4 -0.006
+-- ref: time-of-day bias M5
+ref: time-of-day bias          train both  n  63945 1776.2/mo fill 100% | hit  62.6  50.6  40.8  34.0 | excess  +0.3  +0.7  +0.7  +0.9 avg +0.65 (se 0.2) | E@TP1 -0.122 E@TP4 -0.102
+ref: time-of-day bias          train long  n  36118 1003.3/mo fill 100% | hit  62.6  50.3  40.4  33.4 | excess  +0.5  +0.6  +0.4  +0.3 avg +0.45 (se 0.3) | E@TP1 -0.145 E@TP4 -0.145
+ref: time-of-day bias          train short n  27827  773.0/mo fill 100% | hit  62.6  50.9  41.2  34.9 | excess  +0.0  +0.7  +1.2  +1.7 avg +0.91 (se 0.3) | E@TP1 -0.093 E@TP4 -0.047
+ref: time-of-day bias          valid both  n  31937 1774.3/mo fill 100% | hit  65.3  54.7  45.8  39.4 | excess  +2.8  +4.4  +5.2  +5.4 avg +4.45 (se 0.3) | E@TP1 -0.005 E@TP4 +0.133
+ref: time-of-day bias          valid long  n  18041 1002.3/mo fill 100% | hit  67.2  57.7  49.4  43.0 | excess  +2.9  +4.9  +6.0  +6.0 avg +4.98 (se 0.4) | E@TP1 +0.011 E@TP4 +0.225
+ref: time-of-day bias          valid short n  13896  772.0/mo fill 100% | hit  62.8  50.7  41.1  34.7 | excess  +2.7  +3.7  +4.1  +4.6 avg +3.77 (se 0.4) | E@TP1 -0.025 E@TP4 +0.012
+ref: time-of-day bias          test  both  n  26916 1782.5/mo fill 100% | hit  62.6  50.4  40.5  33.6 | excess  +0.4  +0.6  +0.6  +0.4 avg +0.49 (se 0.3) | E@TP1 -0.025 E@TP4 -0.017
+ref: time-of-day bias          test  long  n  15180 1005.3/mo fill 100% | hit  62.4  50.3  40.0  32.9 | excess  +0.9  +1.3  +0.8  +0.2 avg +0.81 (se 0.4) | E@TP1 -0.034 E@TP4 -0.045
+ref: time-of-day bias          test  short n  11736  777.2/mo fill 100% | hit  62.8  50.6  41.2  34.6 | excess  -0.2  -0.3  +0.3  +0.6 avg +0.08 (se 0.5) | E@TP1 -0.013 E@TP4 +0.019
+-- ref: indicator as is M5
+ref: indicator as is           train both  n   9067  251.9/mo fill  78% | hit  61.3  49.1  38.9  32.1 | excess  -1.0  -0.9  -1.1  -1.0 avg -1.01 (se 0.5) | E@TP1 -0.170 E@TP4 -0.188
+ref: indicator as is           train long  n   4565  126.8/mo fill  76% | hit  60.4  49.0  39.0  32.3 | excess  -1.7  -0.8  -1.0  -0.8 avg -1.07 (se 0.7) | E@TP1 -0.185 E@TP4 -0.181
+ref: indicator as is           train short n   4502  125.1/mo fill  79% | hit  62.3  49.2  38.8  31.9 | excess  -0.3  -1.0  -1.3  -1.3 avg -0.95 (se 0.7) | E@TP1 -0.155 E@TP4 -0.196
+ref: indicator as is           valid both  n   4514  250.8/mo fill  77% | hit  62.3  50.7  40.8  33.7 | excess  -0.1  +0.3  +0.2  -0.2 avg +0.03 (se 0.7) | E@TP1 -0.058 E@TP4 -0.043
+ref: indicator as is           valid long  n   2546  141.4/mo fill  76% | hit  63.9  52.6  43.1  35.7 | excess  -0.4  -0.3  -0.3  -1.2 avg -0.54 (se 1.0) | E@TP1 -0.033 E@TP4 +0.017
+ref: indicator as is           valid short n   1968  109.3/mo fill  78% | hit  60.3  48.2  37.7  31.1 | excess  +0.2  +1.2  +0.7  +1.0 avg +0.77 (se 1.1) | E@TP1 -0.090 E@TP4 -0.120
+ref: indicator as is           test  both  n   3734  247.3/mo fill  76% | hit  62.1  49.9  40.2  34.3 | excess  -0.1  +0.1  +0.2  +1.0 avg +0.31 (se 0.8) | E@TP1 -0.032 E@TP4 +0.004
+ref: indicator as is           test  long  n   2067  136.9/mo fill  74% | hit  62.2  50.5  40.6  34.8 | excess  +0.7  +1.5  +1.4  +2.1 avg +1.43 (se 1.1) | E@TP1 -0.030 E@TP4 +0.018
+ref: indicator as is           test  short n   1667  110.4/mo fill  78% | hit  62.0  49.2  39.7  33.7 | excess  -1.0  -1.8  -1.2  -0.3 avg -1.07 (se 1.2) | E@TP1 -0.034 E@TP4 -0.015
+-- ref: indicator as is M15
+ref: indicator as is           train both  n   3261   90.6/mo fill  77% | hit  62.6  49.3  38.6  32.6 | excess  +0.0  -0.6  -1.0  -0.5 avg -0.52 (se 0.9) | E@TP1 -0.080 E@TP4 -0.103
+ref: indicator as is           train long  n   1692   47.0/mo fill  76% | hit  62.5  48.9  38.2  31.7 | excess  -0.1  -0.8  -1.4  -1.3 avg -0.90 (se 1.2) | E@TP1 -0.081 E@TP4 -0.130
+ref: indicator as is           train short n   1569   43.6/mo fill  79% | hit  62.7  49.7  39.1  33.6 | excess  +0.1  -0.4  -0.7  +0.5 avg -0.10 (se 1.3) | E@TP1 -0.080 E@TP4 -0.074
+ref: indicator as is           valid both  n   1707   94.8/mo fill  76% | hit  60.0  48.1  38.6  33.5 | excess  -2.9  -2.6  -2.4  -1.3 avg -2.31 (se 1.2) | E@TP1 -0.067 E@TP4 -0.022
+ref: indicator as is           valid long  n   1013   56.3/mo fill  76% | hit  61.0  50.8  42.4  37.1 | excess  -4.7  -3.1  -1.8  -0.8 avg -2.61 (se 1.6) | E@TP1 -0.051 E@TP4 +0.086
+ref: indicator as is           valid short n    694   38.6/mo fill  76% | hit  58.5  44.1  33.0  28.2 | excess  -0.3  -1.9  -3.3  -2.0 avg -1.87 (se 1.9) | E@TP1 -0.090 E@TP4 -0.179
+ref: indicator as is           test  both  n   1384   91.7/mo fill  76% | hit  63.9  50.8  42.8  37.1 | excess  +1.5  +0.9  +2.8  +3.4 avg +2.18 (se 1.3) | E@TP1 +0.009 E@TP4 +0.100
+ref: indicator as is           test  long  n    772   51.1/mo fill  72% | hit  64.5  50.8  43.3  38.0 | excess  +2.4  +1.1  +3.1  +3.8 avg +2.61 (se 1.8) | E@TP1 +0.019 E@TP4 +0.125
+ref: indicator as is           test  short n    612   40.5/mo fill  80% | hit  63.2  50.8  42.2  36.1 | excess  +0.4  +0.6  +2.5  +3.0 avg +1.63 (se 2.0) | E@TP1 -0.003 E@TP4 +0.069

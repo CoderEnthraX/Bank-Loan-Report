@@ -382,6 +382,42 @@ Other gold findings:
       - The Read me's stale "neither exists yet" line was replaced.
       - Recalc: 0 errors.
 
+24. **Entry accuracy research** (asked 2026-11-08: "rethink the entry / VWAP rules so that the accuracy of every TP goes up"; research only, the
+    indicator, strategy and EA were NOT changed because nothing passed the final test). Workbook `deliverables/Gold_Entry_Accuracy_Research.xlsx`.
+    - **Kit, `$S/entry/`** (guide: `README_KIT.md`; run `python3 -I`, numba / scikit-learn / LightGBM / scipy installed with pip):
+      - `data.py`: bars as cached `.npz` + the engine's session / week / month VWAP, sigma, ATR.
+      - `signals.py raw(tf)`: every raw signal without the position rules. Checked against `ref_g`: H1 exact; M15 4 and M5 19 trades differ (the
+        re-anchored break).
+      - `outcomes.py`: numba fill and outcome on the 1-minute path and on the chart convention.
+      - `features.py`: about 60 causal features. `dataset.py` writes `ds_TF.pkl`; `barscan.py` writes `bars_TF.pkl` (every bar, long and short at
+        market, stop 1.8 ATR); `baseline_m1.py` writes the M1 version (every third bar).
+      - `kit.py evaluate()`: excess = hit% minus random entries of the same direction and split. `placebo.py` shifts the clock; `exact.py` builds
+        the `ref_g` trade table.
+    - **Splits:** train 2021-23, valid 2024-01..2025-06, TEST 2025-07..2026-10. The finalists were pre-registered in `holdout_plan.md` and TEST was
+      opened once (`holdout_result.txt`).
+    - **The signals' accuracy equals random.** Random TP1-4 hit is about 62.5 / 50 / 40 / 33.3 %. Raw-signal excess (train / valid / test): M5
+      -1.0 / 0.0 / +0.3, M15 -0.5 / -2.3 / +2.2, H1 -4.1 / -1.8 / 0.0.
+    - **Models and screens:** LightGBM on the signals reaches AUC 0.50-0.51 (valid); on every M15 bar 0.53 (the trend regime). The univariate
+      screen (`screen1.py`, `barscreen.py`) finds only noise.
+    - **Rule mining (`rulemine.py`):** use per-trade means with day-clustered errors. The first version averaged per-day means, which inflated
+      mean reversion (+12.7 vs +1.2 per trade).
+    - **The retest limit is adverse selection (`adverse.py`).** Taken at market instead of at the limit: TP1 about 51 % when the limit would have
+      filled, about 96 % when it never fills.
+    - **Time of day (`season.py`, `seas_entry.py`):** shorts NY 07-10, longs NY 13-17. It beats every clock-shifted copy; M15 +2.0 train / +5.5 valid,
+      by year +0..2 in 2021-22 and +3.5..10 in 2023-25, only +0.7 on TEST.
+    - **Explorers (Opus, high effort):**
+      - agent A (`entry/agentA/`, 357 variants): new setups.
+      - agent B (`entry/agentB/`, 522 variants): the indicator's own entry.
+    - **Finalists on TEST:**
+      - C1, the fade of the raw M5 signal NY 12:00-17:59 at market with a 1.8 ATR stop: -0.43 (L +2.32 / S -3.20). It was +4.51 / +5.44 before.
+      - C1 longs only: +2.32, se 2.6.
+      - ORB, M15 NY 09:30-10:00 stop entries: -1.29.
+      - SWEEP, M15 previous-day high / low plus a confirmation stop entry: -0.39.
+      - None passed. The verifier (Sonnet, high effort; `entry/verify/`, its own code) reproduced every number. Day-bootstrap 95 % CI for C1 on
+        TEST [-4.1, +3.5]: a +4.8 edge has p about 0.3 %.
+    - **Offered to the user, not built:** an off-by-default "long after a bearish signal NY 12-18" for a demo forward test; a "random" row in the
+      TP tables.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
