@@ -14,4 +14,10 @@ python3 -I "$S/gold/convert.py" "$S/gold_raw/GOLD_M1_2021_01_04_to_2026_10_02.cs
 for f in "$R"/results/gold/*.xz; do               # compact gold results: picks, every scored setting, search paths, recovery runs
   xz -dc "$f" > "$S/gold/$(basename "${f%.xz}")"
 done
+# entry research kit (CHECKPOINT items 24-25): python packages and the regenerated datasets (caches are not kept in the repo)
+pip install --quiet numba scikit-learn lightgbm scipy || echo "pip install failed: install numba scikit-learn lightgbm scipy by hand"
+if python3 -c "import numba" 2>/dev/null; then
+  (cd "$S/entry" && python3 -I dataset.py H1 M15 M5 M1 && python3 -I barscan.py H1 M15 M5 && python3 -I baseline_m1.py) || echo "entry datasets: rebuild failed"
+  [ -f "$S/entry/of.py" ] && (cd "$S/entry" && python3 -I of.py build) || true
+fi
 echo "restored to $S"

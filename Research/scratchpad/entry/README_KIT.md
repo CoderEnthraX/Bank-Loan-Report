@@ -38,3 +38,15 @@ ATR, time (UTC / New York / London local time), earlier bars of the same or a hi
   won (TP1 ~95%). Market entry on all signals = random. Stop entry at the signal bar's extreme +0.05 ATR = +0.5 excess (noise).
 - Time of day (New York local time, drift-neutral, every bar): shorts favoured NY 07:00-10:00 (D about -2 to -4 pts), longs favoured
   NY 14:00-17:00 (+3 to +5 pts, every year), NY 18:00 reopen slightly long. Small but consistent.
+
+## Order flow (added 2026-11-08, `of.py`): tick volume only
+Gold CFD data (FxPro, OANDA) has TICK volume, no bid/ask (aggressor) volume, so real delta / footprint is impossible; TradingView's
+order-flow tools on XAUUSD estimate from tick volume too. `of.py` gives what can be computed (all causal, at a bar's close):
+- `of.flow(tf)` per chart bar: `vol` (tick volume), `dtk` / `dcl` = estimated delta (sum over the bar's 1-minute candles of
+  TV x sign(C-O), or TV x (2C-H-L)/(H-L)), `cvd_tk` / `cvd_cl` = session cumulative delta (reset at the session start = the VWAP's),
+  `dpoc dvah dval` developing volume profile (POC, 70 % value area) at the bar's close, `ppoc pvah pval` the previous session's.
+- Profile = every 1-minute candle's tick volume spread evenly over its high-low range in $0.50 bins, per session (server day).
+- `of.rvp(tf, i, prices, 'dev'|'prior')` = relative volume at a price (bin volume / mean of the traded bins): LVN ~ < 0.5, HVN ~ > 1.5.
+  At breakouts the developing profile is thin (price is new), so RVP at the signal close is low (median 0.19 on M15): compare with care.
+- `of.path_rvp(tf, i, p0, p1, which)` -> (min, max, mean) RVP over the bins between two prices (e.g. entry -> TP1 / entry -> stop).
+- `of.store(tf)` -> per-session final histograms (base, nb, off, flat; bin k price = (base + k + 0.5) x 0.5) for composite profiles.

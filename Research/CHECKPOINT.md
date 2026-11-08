@@ -418,6 +418,23 @@ Other gold findings:
     - **Offered to the user, not built:** an off-by-default "long after a bearish signal NY 12-18" for a demo forward test; a "random" row in the
       TP tables.
 
+25. **IN PROGRESS: order-flow research** (asked 2026-11-08: "do order-flow concepts (LVN, POC, delta, cumulative delta, absorption,
+    exhaustion ...) combined with the entry signals find the false losing signals and the winners?"; also "save everything, checkpoints").
+    - **Data limit:** gold CFD has tick volume only, no bid/ask volume. `entry/of.py` (README_KIT "Order flow") builds estimated delta / CVD from
+      1-minute candles and the session volume profile (POC, VAH / VAL, RVP for LVN / HVN), developing and prior; caches `entry/of_TF.npz`
+      (`python3 -I of.py build`, 4 s).
+    - **Agents** (Opus, high effort, run in parallel, each writes `progress.md` after every step):
+      - OF-A, `entry/of_agentA/`: order flow as a filter or confirmation of the indicator's signals (signal-bar delta, absorption, CVD
+        divergence, profile location of the entry / stop / TP, LVN / HVN on the path to the targets, pullback volume and delta with cancel
+        rules, and LightGBM with the order-flow features added);
+      - OF-B, `entry/of_agentB/`: order-flow entries (absorption / exhaustion at value-area edges, failed auctions, LVN breakouts, POC
+        reversion, CVD divergence reversals, delta flips) alone and with the indicator's signal.
+    - **Protocol** as item 24: train / valid only, excess vs random entries of the same direction and period. Then the finalists are
+      pre-registered in `entry/of_holdout_plan.md`, TEST is opened once, an independent verifier checks it, and the workbook is updated.
+    - **Resume after a stop:** `bash Research/restore.sh` (also installs the packages and rebuilds the caches), read this item and
+      `entry/of_agent*/progress.md`, then relaunch an agent with "resume from progress.md". Auto-checkpoint: the session commits
+      `Research/` every 20 minutes while the agents run.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
