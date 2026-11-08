@@ -277,6 +277,9 @@ Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The dat
   in the test months.
 - **Why the retest entry can't add accuracy:** the limit fills mostly on moves that are already weakening, and the strongest moves never come
   back to it.
+- **Order flow (about 940 more variants), estimated from tick volume:** gold CFDs have no real buy / sell volume. Volume profile (POC, value area,
+  LVN / HVN), delta and cumulative delta, absorption, exhaustion and low-volume pullbacks were tested, both as filters on the signals and as
+  entries. None separated the winning signals from the losing ones in the test months (workbook sheet "7 Order flow").
 
 ## Same signals in the indicator, the strategy and the EA
 

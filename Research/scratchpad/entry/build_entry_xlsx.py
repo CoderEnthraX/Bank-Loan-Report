@@ -71,7 +71,11 @@ for t in ('1. Today the signals have no edge in direction. The indicator hits TP
           '4. The one real pattern found is the time of day in New York: gold tends to fall 07:00-10:00 and rise 13:00-17:00 New York time. It was strong in 2023-2025 '
           'but much weaker in the test months, so it cannot be relied on as a fixed rule (sheet 4).',
           '5. Why the pullback entry cannot add accuracy: the retest limit fills mostly on the moves that are already failing; the strong moves never come back to it '
-          '(sheet 5). What really changes results is the cost per trade, not the entry (sheet 6).'):
+          '(sheet 5). What really changes results is the cost per trade, not the entry (sheet 6).',
+          '6. Order flow (sheet 7): POC / value area, LVN / HVN, delta, cumulative delta, absorption, exhaustion and pullback volume were tested by two more research '
+          'agents (about 940 variants) as filters on the signals and as entries of their own. None finds the false signals or the winners: the best looked 2-5 points '
+          'better than random on 2021-2025 and were at or below random in the test months. Gold has tick volume only (no real buy / sell volume), so delta is an '
+          'estimate, the same as TradingView\'s order-flow tools show on XAUUSD.'):
     rm(t)
 rm('HOW THE TEST WAS DONE', f_sub, fill_sec)
 for t in ('• Periods: rules were found on 2021-2023, checked on January 2024 - June 2025, and the best ones were tested ONCE on July 2025 - October 2026, written '
@@ -89,7 +93,8 @@ for t in ('1 Accuracy vs random: the hit rates of random entries, the indicator\
           '3 Finalists and test: the 4 best rules and 2 references on all three periods, longs and shorts, with the pass / fail rule written before the test.',
           '4 Time of day: which New York hours favoured longs or shorts in each year (the one real pattern) and how it faded in the test months.',
           '5 Why the retest limit: the same signals entered at the limit vs at market, split by whether the limit filled.',
-          '6 What to do: practical conclusions for your trading and the two optional additions I can make.'):
+          '6 What to do: practical conclusions for your trading and the two optional additions I can make.',
+          '7 Order flow: volume profile, delta and the other order-flow ideas, as filters and as entries, with their final test.'):
     rm('• ' + t)
 
 # ======================================================================== 1 Accuracy vs random
@@ -250,10 +255,49 @@ for t in (
     'Use it as background knowledge, not as a fixed filter.',
     '6. Your v4.0 settings were at the random level in 2021-2025 and a few points above it in the latest 15 months (sheet 1, 625 trades on 5-minute): that is within '
     'normal luck for that many trades, so expect random-level accuracy in the future too.',
-    '7. Optional, only if you want it (not done, because neither is a proven improvement): (a) an off-by-default experimental setting "buy after a bearish signal '
+    '7. Order flow does not help on gold CFD data: tick-volume profile levels, estimated delta and cumulative delta, absorption, exhaustion and low-volume '
+    'pullbacks did not separate the winning signals from the losing ones in the test months (sheet 7). Do not pay for or rely on order-flow add-ons for this.',
+    '8. Optional, only if you want it (not done, because neither is a proven improvement): (a) an off-by-default experimental setting "buy after a bearish signal '
     '12:00-18:00 New York time" (the only idea whose direction held in all three periods: +5.0 / +9.2 / +2.3 points), to forward-test on a demo account for 3-6 '
     'months; (b) a "random" row in the TP table of the indicator and the EA, so every backtest shows the no-edge rate next to the hit rates.'):
     r = note(ws, r, t, N)
+
+# ======================================================================== 7 Order flow
+ws = wb.create_sheet('7 Order flow'); widths(ws, [40, 11, 26, 8, 8, 8, 8, 8, 8, 13, 10]); N = 11
+r = explain(ws, N, '7. Order flow: does it find the false signals and the winners?', [
+    'Your question: do order-flow concepts (POC, value area, LVN / HVN, delta, cumulative delta, absorption, exhaustion ...) combined with the signals tell the '
+    'losing signals from the winning ones, or give better entries? Two research agents tested it in parallel (about 940 variants), with the same rules as '
+    'sheets 1-3: found on 2021 - June 2025, the best written down, then tested once on July 2025 - October 2026.',
+    'Data limit: gold CFD (FxPro, OANDA) has TICK volume only, no real buy / sell (bid / ask) volume. Delta and cumulative delta were estimated from the '
+    '1-minute candles (up-minute volume minus down-minute volume, and a close-location version); the volume profile spreads each minute\'s tick volume over '
+    'its range ($0.50 rows, per session). This is also what TradingView\'s order-flow tools show on XAUUSD.'],
+    ['What failed (every timeframe, both periods or the test): signal-candle delta and delta %, cumulative delta trend and divergence, absorption (big volume, '
+     'small range), exhaustion / climax volume, low-volume ("no supply") pullbacks and pullback delta as cancel rules, entry / stop / targets inside or outside '
+     'the previous value area, near the POC, at an LVN or HVN, LVN or HVN on the way to TP1-TP4, failed auctions and the 80 % rule, LVN breakouts and '
+     'rejections, POC reversion and migration, delta flips after sweeps, initial-balance breakouts with delta. Machine learning with 40 order-flow features '
+     'added: score 0.50-0.51 (coin flip), the same as without them.',
+     'The table: the 4 finalists on all three periods; TEST rows green = above random, red = below. Pass rule (written before the test): above random for longs '
+     'AND shorts, by at least one standard error overall, at 3 of the 4 targets. None passed.'])
+OFRULES = {
+    'OFA-C1 narrow prior value area': 'Filter on the signals (5-minute): take a signal only if the previous session\'s value area was narrow (VAH - VAL <= 7.5 ATR)',
+    'OFA-C1b narrow prior range (no volume)': 'The same with the previous session\'s high - low <= 16.8 ATR: no volume needed (control)',
+    'OFB-C3 fade extension from POC': 'Entry (5-minute): the signal points away from the developing POC while price is >= 5.8 ATR from it -> take the OPPOSITE trade at market',
+    'OFB-C1L long far below POC': 'Entry (5-minute): price >= 8.6 ATR below the developing POC -> buy at market (long only)',
+}
+r = header(ws, r, ['Rule', 'Timeframe', 'Period', 'Side', 'Trades', 'TP1 %', 'TP2 %', 'TP3 %', 'TP4 %', 'Excess (pts)', 'se'])
+for fz in D['of_finalists']:
+    r = note(ws, r, OFRULES.get(fz['name'], fz['name']), N, f_bold, fill_sec)
+    sides = ('long',) if 'long far' in fz['name'] else ('long', 'short', 'both')
+    for sp in ('train', 'valid', 'test'):
+        for sd in sides:
+            x = fz['res'].get('%s|%s' % (sp, sd))
+            if not x or not x.get('n'): continue
+            fill = (fill_good if x['avg_excess'] > 0 else fill_bad) if sp == 'test' else None
+            r = put(ws, r, ['', fz['tf'], PER[sp], sd, x['n']] + x['hit'] + [x['avg_excess'], x['se']], sp == 'test',
+                    {5: '#,##0', 6: '0.0', 7: '0.0', 8: '0.0', 9: '0.0', 10: '+0.00;-0.00', 11: '0.0'}, fill)
+r = note(ws, r + 1, 'Verdict: order flow built from tick volume does not find the false signals or the winners. The two order-flow entries fell to -1.8 and -2.1 '
+         'below random in the test. The only effect whose sign held is not order flow: signals after a NARROW previous session were about +0.8 points better '
+         'in the test (+1 to +4 before), the same with or without volume, too small to matter after costs.', N, f_bold, fill_key)
 
 for w in wb.worksheets:
     w.sheet_view.showGridLines = False

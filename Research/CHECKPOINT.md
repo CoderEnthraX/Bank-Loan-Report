@@ -418,7 +418,7 @@ Other gold findings:
     - **Offered to the user, not built:** an off-by-default "long after a bearish signal NY 12-18" for a demo forward test; a "random" row in the
       TP tables.
 
-25. **IN PROGRESS: order-flow research** (asked 2026-11-08: "do order-flow concepts (LVN, POC, delta, cumulative delta, absorption,
+25. **Order-flow research (done 2026-11-08; no change to the engine)** (asked 2026-11-08: "do order-flow concepts (LVN, POC, delta, cumulative delta, absorption,
     exhaustion ...) combined with the entry signals find the false losing signals and the winners?"; also "save everything, checkpoints").
     - **Data limit:** gold CFD has tick volume only, no bid/ask volume. `entry/of.py` (README_KIT "Order flow") builds estimated delta / CVD from
       1-minute candles and the session volume profile (POC, VAH / VAL, RVP for LVN / HVN), developing and prior; caches `entry/of_TF.npz`
@@ -434,6 +434,18 @@ Other gold findings:
     - **Resume after a stop:** `bash Research/restore.sh` (also installs the packages and rebuilds the caches), read this item and
       `entry/of_agent*/progress.md`, then relaunch an agent with "resume from progress.md". Auto-checkpoint: the session commits
       `Research/` every 20 minutes while the agents run.
+    - **Results:**
+      - OF-A (446 variants): no order-flow filter separates winners from losers. LightGBM valid AUC 0.501 -> 0.506 with 40 order-flow
+        features (M5), M15 0.485-0.500.
+      - OF-B (495 variants): order-flow entries fail.
+      - Finalists, re-derived by the main session (`entry/of_finalists.py`, plan `of_holdout_plan.md`, result `of_holdout_result.txt`); TEST
+        excess pooled, long / short:
+        - OFA-C1 (M5 signals after a narrow previous value area, <= 7.5 ATR): +0.82 (se 1.3), +1.22 / +0.42;
+        - OFA-C1b (narrow previous high-low <= 16.8 ATR, no volume): +0.87, +0.81 / +0.93;
+        - OFB-C3 (fade a signal pointing away from the developing POC, >= 5.8 ATR): -1.77;
+        - OFB-C1L (long >= 8.6 ATR below the POC): -2.12.
+      - None passed (< 1 se or negative). The only effect that kept its sign is compression before breakouts, which is not order flow.
+      - Workbook sheet "7 Order flow". The test evaluation is the same `kit.evaluate` that the item-24 verifier reproduced exactly.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
