@@ -288,9 +288,13 @@ only when a value changes and flushed to disk at once, so a crash or power cut l
 1. The EA replays the chart as before and loads the saved state.
 2. It counts the days that passed: the streak pause, the Crooks C skip days, and a new month (the locks start again; the monthly restart
    waits for a trade still open).
-3. It books every deal the broker made while it was off, through the same code as after an internet disconnect. That covers a stop loss or
+3. It waits until MT5 is connected to the trade server (positions and deals are not visible before), so a trade that is still open is never
+   booked as closed.
+4. It books every deal the broker made while it was off, through the same code as after an internet disconnect. That covers a stop loss or
    take profit that closed the trade, and an entry order that filled.
-4. It adopts a trade that is still open, and re-places a setup that is still waiting.
+5. It adopts a trade that is still open, and re-places a setup that is still waiting. A trade that runs on after the engine's exit (the
+   Crooks TP1 rule's rest, earn-back) or an order that filled just before the engine's fill bar is kept.
+6. If a force-close time, a weekend start or a news start passed while it was off, a trade still open is closed now (as after a disconnect).
 
 The Journal prints `Restart memory: continued from <time> | loss to win back ...`, and the table shows `RESTART MEMORY | on | continued from
 <time>`.
@@ -299,9 +303,12 @@ The Journal prints `Restart memory: continued from <time> | loss to win back ...
 - **Starting fresh:** switch the setting off (the saved state is deleted), then on again.
 - **One saved state per symbol and magic number on this MT5.** A state saved by another account is not loaded. Use a different magic number
   for each EA on the same symbol.
-- **MT5 deletes global variables that are not used for 4 weeks.**
+- **MT5 deletes global variables that are not used for 4 weeks.** The EA rewrites every value once a day while it runs, so the memory is
+  lost only after MT5 has been off for 4 weeks.
 - **The Strategy Tester ignores it.** Every test starts fresh.
-- **A hard-cap Stop stays in force after a restart.** Change any input to trade again (as before).
+- **A hard-cap Stop stays in force after a restart.** Change any input to trade again (as before); it also ends when the cap is switched
+  off or no longer set to Stop.
+- **Changing inputs** now also keeps the open trade's bookkeeping (e.g. a Crooks TP1-rule trade). It was wiped before.
 - **Also fixed:** after a disconnect or restart that spans several days, each missed day now counts for the streak pause (before: only one).
   The Labouchere list is now kept when inputs change, like the other rules (it was reset).
 - **Limits** (the same as after a disconnect):

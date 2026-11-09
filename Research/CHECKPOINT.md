@@ -446,6 +446,32 @@ Other gold findings:
         - OFB-C1L (long >= 8.6 ATR below the POC): -2.12.
       - None passed (< 1 se or negative). The only effect that kept its sign is compression before breakouts, which is not order flow.
       - Workbook sheet "7 Order flow". The test evaluation is the same `kit.evaluate` that the item-24 verifier reproduced exactly.
+26. **EA v4.3: restart memory** (asked 2026-11-09: "continue from the same streak / loss amount when the laptop or MT5 restarts, automatically";
+    EA only, because the TradingView strategy recalculates from the chart history).
+    - **Patches** `build/patch_ea_v43.py`, then the review fixes `v43b` (month values saved), `v43c` (named by symbol + magic, account saved as a
+      value), `v43d` (no save before a processed bar), `v43e` (independent review F1-F5, L1-L4, L6, L8). Backup: `bak/v42_final/`.
+    - **Input:** `InpRemember` (group RESTART MEMORY, default on). Off in the Strategy Tester. Version 4.30.
+    - **Storage:** terminal global variables `ARS|<symbol>|<magic>|<field>`.
+      - `StateIO(save)` is the single list of saved values (recovery: every rule's state, totalNet, capStop; Crooks: crkL ... crkHg, gCrkPrPrev;
+        day: dayPnl, lossRow, winRow, dayBlock, pauseLeft, paused; month: gMonKey, monRestPend, monPnl, monPeak, monStop, monLocked; trade:
+        exState, exL, exLots, exRiskAmt, exCostPx, exPnl, exKeepSl, crkRec, exSynced, pDone, exT1*, exHg*; the deal cursor lastDeal; the
+        Labouchere list L0..; meta: ver, lb = the last processed bar, sv, acc).
+      - `StateSave` writes only the values that changed (a full rewrite at OnInit, OnDeinit and once a day), then `GlobalVariablesFlush`.
+    - **Start (OnInit), also on new inputs:**
+      - `StateLoad`. A state of another account is refused. A hard-cap Stop ends on new inputs, or when the cap no longer stops.
+      - The warm-up reaches back to `lb` (at most 100,000 bars). For the bars after `lb` it counts `gDayPendN`, `CrkDayTick` and `gPauseArm`,
+        and `FlatBetween` (force-close, weekend start, news start) sets `gRestFlat`.
+      - `BrokerStart()` runs at once if MT5 is connected, else at the first tick once it is; nothing is saved meanwhile. It runs `MonthTick`,
+        then `RestoreTrade`, then adoption (a restored runner or an early fill is kept, `exArm` relinked), `CancelPending` (a restored hedge
+        pair keeps its waiting leg), `DayStart`, the TP1 catch-up, `BookBrokerDeals` (a copy of OnNewBar steps 1-2), `gRestFlat` close, the
+        monthly restart, `MonthCheck`, and `gRearm`.
+      - `gDayPend` became the counter `gDayPendN`: `DayStart(n)` ends one pause day per new day, including after a disconnect.
+    - **Harness:**
+      - `mq5check/mql5shim.h` and `run/rt_impl.h`: GlobalVariable* functions (an in-memory hash store) and `StringGetCharacter`.
+      - `rec/gen_fresh.py` generates `rec_fresh()`, which puts every EA global back to its declared initial value, i.e. a fresh program load.
+      - `rec_restart()` is save, then fresh, then what OnInit does. `rec_driver` with `REC_RESTART=k` restarts at every k-th step.
+      - Negative control: `v43neg/run_neg.sh`.
+    - **Results** (`v40/final_v43.txt`): FINAL_V43_RESULTS.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

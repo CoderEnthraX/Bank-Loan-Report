@@ -437,6 +437,9 @@ bool     gPersist = false; string gSvBase = ""_mq;           //   on (live / dem
 bool     gRestored = false; datetime gSvT = 0, gSvLast = 0;   //   state reloaded at this start; when it was saved; the last processed bar it belongs to
 MqlArr<string>   gIoN; MqlArr<double> gIoV; int gIoC = 0; bool gIoSave = true;   //   the values being written / read
 MqlArr<string>   gSvN; MqlArr<double> gSvV; int gSvC = 0;              //   the values last written (only changes are written)
+bool     gBrokerPend = false;                             //   the broker part of the start waits until MT5 is connected (positions and deals visible)
+bool     gRestFlat = false;                               //   a force-close, weekend start or news start passed while the EA was off
+datetime gSvFullT = 0; mql_long gSvAcc = 0;                   //   the last full rewrite (daily: MT5 deletes global variables not accessed for 4 weeks); the saved account
 bool     exT1MvPend = false;                              // Crooks TP1 rule: a stop move before TP1 still has to reach the broker
 bool     exT1 = false, exT1Half = false, exT1Be = false;   // Crooks TP1 rule: this trade, its TP1 half is booked, the rest's stop is at the entry
 double   exT1Stop = 0, exT1Tp1 = 0, exT1Tp2 = 0;              // its stop and its own TP1 / TP2 (the engine's levels change with its next setup)
@@ -1683,7 +1686,7 @@ void StateIO(bool save)
    IoI("mk"_mq, gMonKey); IoB("mr"_mq, monRestPend); IoD("mp"_mq, monPnl); IoD("mq"_mq, monPeak); IoB("ms"_mq, monStop); IoB("ml"_mq, monLocked);
    // the trade the EA is in, or its working order: its type and what it booked so far; the broker deals already counted
    IoI("xs"_mq, exState); IoB("xl"_mq, exL); IoD("xv"_mq, exLots); IoD("xr"_mq, exRiskAmt); IoD("xc"_mq, exCostPx); IoD("xp"_mq, exPnl); IoD("xk"_mq, exKeepSl);
-   IoB("kr"_mq, crkRec);
+   IoB("kr"_mq, crkRec); IoB("xy"_mq, exSynced);
    bool p0 = pDone[0], p1 = pDone[1], p2 = pDone[2];
    IoB("p0"_mq, p0); IoB("p1"_mq, p1); IoB("p2"_mq, p2);
    pDone[0] = p0; pDone[1] = p1; pDone[2] = p2;
@@ -1705,7 +1708,8 @@ void StateIO(bool save)
 //--- write what changed (force: everything), then flush to disk so it survives a crash or a power cut
 void StateSave(bool force)
 {
-   if(!gPersist) return;
+   if(!gPersist || gLastDone <= 0 || gBrokerPend) return;   // not before the engine processed a bar (OnDeinit after a failed start) or the broker part ran
+   if(TimeCurrent() - gSvFullT >= 86400) force = true;   // every value at least once a day: MT5 deletes global variables not accessed for 4 weeks
    StateIO(true);
    bool ch = force || gIoC != gSvC;
    for(int q = 0; q < gIoC && !ch; q++)
@@ -1717,12 +1721,17 @@ void StateSave(bool force)
    if(ArraySize(gSvN) < gIoC) { ArrayResize(gSvN, gIoC); ArrayResize(gSvV, gIoC); }
    for(int q = 0; q < gIoC; q++) { gSvN[q] = gIoN[q]; gSvV[q] = gIoV[q]; }
    gSvC = gIoC;
+   if(force) gSvFullT = TimeCurrent();
    GlobalVariablesFlush();
 }
 //--- read the saved state back (false: nothing saved for this symbol, magic number and account)
 bool StateLoad()
 {
-   if(!GlobalVariableCheck(gSvBase + "ver"_mq) || (int)MathRound(GlobalVariableGet(gSvBase + "ver"_mq)) != SvVer()) return false;
+   if(!GlobalVariableCheck(gSvBase + "ver"_mq) || (int)MathRound(GlobalVariableGet(gSvBase + "ver"_mq)) != SvVer())
+   {
+      if(GlobalVariableCheck(gSvBase + "lb"_mq)) Print("Restart memory: the saved state is incomplete (unused for 4 weeks?): starting fresh."_mq);
+      return false;
+   }
    double svAcc = GlobalVariableCheck(gSvBase + "acc"_mq) ? GlobalVariableGet(gSvBase + "acc"_mq) : 0, nowAcc = (double)AccountInfoInteger(ACCOUNT_LOGIN);
    if(svAcc != 0 && nowAcc != 0 && svAcc != nowAcc)    // saved by another account (same symbol and magic number): start fresh
    {
@@ -1730,6 +1739,8 @@ bool StateLoad()
       return false;
    }
    StateIO(false);
+   gSvAcc = (mql_long)MathRound(svAcc);
+   for(int q = ArraySize(labSeq); q < 100000 && GlobalVariableCheck(gSvBase + "L"_mq + IntegerToString(q)); q++) GlobalVariableDel(gSvBase + "L"_mq + IntegerToString(q));   // a longer old list
    gSvC = 0;                                            // the next save writes every value again
    return true;
 }
@@ -1778,6 +1789,24 @@ void BookBrokerDeals()
    if((exState == 1 && !pos && closedNew) || (exState == 2 && !pos)) BookClosed();
 }
 
+//--- the saved state was not this account's: the money-management state starts fresh (as without restart memory)
+void MemoryFresh()
+{
+   recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; totalNet = 0; exW = 0; exLn = 0; capStop = false;
+   crkL = 0; crkN = 0; crkW = false; crkP = 0; crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false;
+   dayPnl = 0; lossRow = 0; winRow = 0; dayBlock = false; pauseLeft = 0; paused = false; monRestPend = false;
+   TradeClear(); gDayPendN = 0; gRestFlat = false; gPauseArm = -1; gRestored = false;
+}
+//--- a force-close time, a weekend start or a news start between two bars (your time zone), as OnNewBar checks it
+bool FlatBetween(datetime utPrev, datetime ut)
+{
+   bool nStart; NewsBlock(ut, nStart, utPrev);
+   int fcM = InpFcH * 60 + InpFcM, curM = MinOfDay(ut), prvM = MinOfDay(utPrev);
+   bool fcNow = InpFcOn && (curM >= prvM ? (prvM < fcM && curM >= fcM) : (fcM > prvM || fcM <= curM));
+   bool wkndStart = InpWeekendOn && DowOf(ut) == 6 && DowOf(utPrev) != 6;
+   return fcNow || wkndStart || nStart;
+}
+
 //--- reset every engine / execution variable (MT5 keeps globals when inputs or the timeframe change) ---
 void ResetEngine()
 {
@@ -1800,6 +1829,74 @@ void ResetEngine()
 }
 
 //--- events -----------------------------------------------------------------
+//--- the broker part of a start: the deals since the saved state, the month, the saved trade, adoption, orders (restart memory: once connected)
+void BrokerStart()
+{
+   mql_long nowAcc = AccountInfoInteger(ACCOUNT_LOGIN);
+   if(gRestored && gSvAcc != 0 && nowAcc != 0 && gSvAcc != nowAcc)   // only known now: the saved state belongs to another account
+   {
+      Print("Restart memory: the saved state belongs to account "_mq, gSvAcc, ", not "_mq, nowAcc, ": starting fresh."_mq);
+      MemoryFresh();
+   }
+   if(!gRestored) { bool c; NewDealsPnl(c); }            // do not count old history (restored: the deals since the saved state are booked below)
+   if(!gRestored) MonthFromHistory();                    // this month's closed profit and the monthly locks from the deal history
+   else
+   {
+      datetime b1 = iTime(_Symbol, _Period, 1);
+      MonthTick(UserTime(b1 > 0 ? b1 : TimeCurrent()));  // restored: the saved month goes on, or a new month began while the EA was off (locks start again)
+      RestoreTrade();                                    // the saved trade: still open, closed while the EA was off, or gone
+   }
+   // restart: adopt this EA's open position if the engine is in the same trade, keep managing it
+   ulong tk; double vol, op;
+   if(HgOpen()) { exState = 2; exHg = true; Print("Hedge pair still open: its trades run to their own stop loss and take profit."_mq); }
+   else if(HasPosition(tk, vol, op) && PositionSelectByTicket(tk))
+   {
+      bool isL = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY;
+      if((isL && st == 2) || (!isL && st == -2))
+      {
+         double oldSl = PositionGetDouble(POSITION_SL);
+         exState = 2; exL = isL; if(!(gRestored && exLots > 0)) exLots = vol; exArm = armBar; exSynced = true;   // a restored trade keeps its lots (partials)
+         for(int q = 0; q < 3; q++) pDone[q] = pDone[q] || tpHit >= q + 1;
+         Print("Adopted open position #"_mq, tk, " (engine is in the same trade)."_mq);
+         // never widen the stop of an adopted position (a Crooks TP1-rule position is sized for its tighter stop): SetExits keeps it from now on
+         exKeepSl = oldSl > 0 && (isL ? oldSl > StopPx(isL) : oldSl < StopPx(isL)) ? oldSl : 0;
+         SetExits(true);
+      }
+      else
+      {
+         exState = 2;
+         bool early = gRestored && MathAbs(st) == 1 && (st > 0) == isL;          // restored: the broker filled before the engine's fill bar
+         bool runner = gRestored && exSynced && (exT1 || InpEarnBack);           // restored: a Crooks TP1-rule rest or an earn-back trade outliving the engine's exit
+         if(early) { exL = isL; exArm = armBar; exSynced = false; }
+         Print("Open position #"_mq, tk, early ? " kept: it filled before the engine's fill bar (restored trade)."_mq : runner ? " kept: the restored trade runs on after the engine's exit."_mq :
+               " does not match the engine state; it will be closed on the next bar (the engine wins)."_mq);
+      }
+   }
+   if(!(gRestored && exHg && exState == 2)) CancelPending();   // a pending order from before the restart has no tracked state (a restored hedge pair keeps its waiting trade)
+   if(gRestored)                                         // the days and the broker's deals since the saved state, booked like after a disconnect
+   {
+      DayStart(gDayPendN); gDayPendN = 0;
+      // Crooks TP1 rule: TP1 was reached while the EA was off and its part is not booked yet: it is booked at the next bar close
+      if(exState == 2 && exT1 && !exT1Half && exSynced)
+         for(int s = 1; s < Bars(_Symbol, _Period); s++)
+         {
+            if(iTime(_Symbol, _Period, s) <= gSvLast || bi - (s - 1) <= lastFill) break;
+            if(exL ? Hi(s) >= exT1Tp1 + exCostPx : Lo(s) <= exT1Tp1 - exCostPx) { gT1Seen = true; break; }
+         }
+      BookBrokerDeals();
+      ulong rTk; double rVol, rOp;
+      if(gRestFlat && HasPosition(rTk, rVol, rOp)) { CloseAll(); BookBrokerDeals(); }   // a force-close, weekend start or news start passed while the EA was off
+      if(gRestFlat && exHg && exState == 2) CancelPending();
+      if(monRestPend && exState == 0 && !HasPosition(rTk, rVol, rOp)) { monRestPend = false; RecoveryRestart(); }
+      MonthCheck();
+      bool isCC = InpRec == REC_C || InpRec == REC_CS, isKK = InpRec == REC_CRA || InpRec == REC_CRB || InpRec == REC_CRC || InpRec == REC_CRD;
+      Print("Restart memory: continued from "_mq, DateTxt(UserTime(gSvT), true), " | loss to win back "_mq, DoubleToString(isCC ? carried : isKK ? crkL : recPool, 2),
+            " | streak "_mq, winRow, "W / "_mq, lossRow, "L"_mq, (paused || pauseLeft > 0) ? " | paused"_mq : ""_mq, CrkPause() ? " | Crooks C pause"_mq : ""_mq,
+            capStop ? " | hard cap stop"_mq : ""_mq, exState == 2 ? " | trade still open"_mq : ""_mq);
+   }
+   gRearm = MathAbs(st) == 1 && !trGhost && exState == 0 && armBar != gPauseArm;   // re-place the engine's armed setup on the first tick (not one armed while paused)
+}
+
 int OnInit()
 {
    mq_dot(trade).SetExpertMagicNumber(InpMagic);
@@ -1811,7 +1908,9 @@ int OnInit()
    gPersist = InpRemember && MQLInfoInteger(MQL_TESTER) == 0 && MQLInfoInteger(MQL_OPTIMIZATION) == 0;
    gSvBase = SvBaseName(); gRestored = false;
    if(!InpRemember && MQLInfoInteger(MQL_TESTER) == 0) SvWipe();
-   if(gPersist && !gInitDone) gRestored = StateLoad();
+   gRestFlat = false; gBrokerPend = false;
+   if(gPersist) gRestored = StateLoad();                 // a fresh start or new inputs: continue from the saved state (written at OnDeinit)
+   if(gRestored && (gInitDone || !InpCapOn || InpCapAction != CAP_STOP)) capStop = false;   // a hard-cap Stop ends with new inputs (as before) or a cap that no longer stops
    if(gCrkPrPrev != (int)InpCrkPr || InpRec != REC_CRC) { crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; }
    gCrkPrPrev = (int)InpCrkPr;
    gHedgeOk = (ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE) == ACCOUNT_MARGIN_MODE_RETAIL_HEDGING;
@@ -1843,60 +1942,20 @@ int OnInit()
    for(int s = start; s >= 1; s--)
    {
       ProcessBar(s);
-      if(gRestored && iTime(_Symbol, _Period, s) > gSvLast)   // the bars since the saved state count like bars missed in a disconnect
+      if(gRestored && gSvLast > 0 && iTime(_Symbol, _Period, s) > gSvLast)   // the bars since the saved state count like bars missed in a disconnect
       {
          if(gNewDay) gDayPendN++;
          CrkDayTick(iTime(_Symbol, _Period, s));          // Crooks C skip rule: the days that passed
          if(evArm && CrkPause()) gPauseArm = armBar;      // armed while paused: the strategy skips it, so it is not placed now
+         if(FlatBetween(UserTime(iTime(_Symbol, _Period, s + 1)), UserTime(iTime(_Symbol, _Period, s)))) gRestFlat = true;
       }
    }
    gLive = true;
    gLastBarTime = iTime(_Symbol, _Period, 0);
-   if(!gRestored) { bool c; NewDealsPnl(c); }            // do not count old history (restored: the deals since the saved state are booked below)
-   if(!gRestored) MonthFromHistory();                    // this month's closed profit and the monthly locks from the deal history
-   else
-   {
-      datetime b1 = iTime(_Symbol, _Period, 1);
-      MonthTick(UserTime(b1 > 0 ? b1 : TimeCurrent()));  // restored: the saved month goes on, or a new month began while the EA was off (locks start again)
-      RestoreTrade();                                    // the saved trade: still open, closed while the EA was off, or gone
-   }
-   // restart: adopt this EA's open position if the engine is in the same trade, keep managing it
-   ulong tk; double vol, op;
-   if(HgOpen()) { exState = 2; exHg = true; Print("Hedge pair still open: its trades run to their own stop loss and take profit."_mq); }
-   else if(HasPosition(tk, vol, op) && PositionSelectByTicket(tk))
-   {
-      bool isL = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY;
-      if((isL && st == 2) || (!isL && st == -2))
-      {
-         double oldSl = PositionGetDouble(POSITION_SL);
-         exState = 2; exL = isL; exLots = vol; exArm = armBar; exSynced = true; for(int q = 0; q < 3; q++) pDone[q] = tpHit >= q + 1; Print("Adopted open position #"_mq, tk, " (engine is in the same trade)."_mq);
-         // never widen the stop of an adopted position (a Crooks TP1-rule position is sized for its tighter stop): SetExits keeps it from now on
-         exKeepSl = oldSl > 0 && (isL ? oldSl > StopPx(isL) : oldSl < StopPx(isL)) ? oldSl : 0;
-         SetExits(true);
-      }
-      else { exState = 2; Print("Open position #"_mq, tk, " does not match the engine state; it will be closed on the next bar (the engine wins)."_mq); }
-   }
-   CancelPending();   // a pending order from before the restart has no tracked state
-   if(gRestored)                                         // the days and the broker's deals since the saved state, booked like after a disconnect
-   {
-      DayStart(gDayPendN); gDayPendN = 0;
-      // Crooks TP1 rule: TP1 was reached while the EA was off and its part is not booked yet: it is booked at the next bar close
-      if(exState == 2 && exT1 && !exT1Half && exSynced)
-         for(int s = 1; s < bars; s++)
-         {
-            if(iTime(_Symbol, _Period, s) <= gSvLast || bi - (s - 1) <= lastFill) break;
-            if(exL ? Hi(s) >= exT1Tp1 + exCostPx : Lo(s) <= exT1Tp1 - exCostPx) { gT1Seen = true; break; }
-         }
-      BookBrokerDeals();
-      ulong rTk; double rVol, rOp;
-      if(monRestPend && exState == 0 && !HasPosition(rTk, rVol, rOp)) { monRestPend = false; RecoveryRestart(); }
-      MonthCheck();
-      bool isCC = InpRec == REC_C || InpRec == REC_CS, isKK = InpRec == REC_CRA || InpRec == REC_CRB || InpRec == REC_CRC || InpRec == REC_CRD;
-      Print("Restart memory: continued from "_mq, DateTxt(UserTime(gSvT), true), " | loss to win back "_mq, DoubleToString(isCC ? carried : isKK ? crkL : recPool, 2),
-            " | streak "_mq, winRow, "W / "_mq, lossRow, "L"_mq, (paused || pauseLeft > 0) ? " | paused"_mq : ""_mq, CrkPause() ? " | Crooks C pause"_mq : ""_mq,
-            capStop ? " | hard cap stop"_mq : ""_mq, exState == 2 ? " | trade still open"_mq : ""_mq);
-   }
-   gRearm = MathAbs(st) == 1 && !trGhost && exState == 0 && armBar != gPauseArm;   // re-place the engine's armed setup on the first tick (not one armed while paused)
+   // the broker part (deals, positions, orders): now when MT5 is connected, else at the first tick once it is (positions are not visible before)
+   gBrokerPend = MQLInfoInteger(MQL_TESTER) == 0 && (TerminalInfoInteger(TERMINAL_CONNECTED) == 0 || AccountInfoInteger(ACCOUNT_LOGIN) == 0);
+   if(gBrokerPend) Print("Waiting for the connection to the trade server before checking positions and deals."_mq);
+   else BrokerStart();
    gStateTxt = StateText(false);
    UpdateTable();
    StateSave(true);                                      // restart memory: the state after this start
@@ -1922,6 +1981,11 @@ void OnChartEvent(const int id, const mql_long &lparam, const double &dparam, co
 
 void OnTick()
 {
+   if(gBrokerPend)                                       // restart memory: the broker part of the start, once MT5 is connected
+   {
+      if(TerminalInfoInteger(TERMINAL_CONNECTED) == 0 || AccountInfoInteger(ACCOUNT_LOGIN) == 0) return;
+      gBrokerPend = false; BrokerStart(); gStateTxt = StateText(false); UpdateTable();
+   }
    datetime t0 = iTime(_Symbol, _Period, 0);
    if(t0 != gLastBarTime)
    {
@@ -1959,13 +2023,13 @@ void OnTick()
 }
 //+------------------------------------------------------------------+
 
-#line 1921 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
+#line 1980 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
 typedef void (*mq_t_OnTick)();
 static mq_t_OnTick mq_chk_OnTick = &OnTick;
-#line 1905 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
+#line 1964 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
 typedef void (*mq_t_OnDeinit)(const int);
 static mq_t_OnDeinit mq_chk_OnDeinit = &OnDeinit;
-#line 1913 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
+#line 1972 "/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/mq5check/rec/EA_copy.mq5"
 typedef void (*mq_t_OnChartEvent)(const int, const mql_long&, const double&, const string&);
 static mq_t_OnChartEvent mq_chk_OnChartEvent = &OnChartEvent;
 #line 1 "<rt-wrapper>"
@@ -2194,7 +2258,7 @@ extern "C" void rec_fresh();
 extern "C" void rec_restart()
 {
    bool hgOk = gHedgeOk;                                  // from the account in OnInit, not saved
-   gPersist = true; gSvBase = "T|";
+   gPersist = true; gSvBase = "T|"; if(gLastDone <= 0) gLastDone = 1;   // as if a bar was processed (the harness has no bars)
    StateSave(true);
    rec_fresh();
    gPersist = true; gSvBase = "T|"; gHedgeOk = hgOk;
@@ -2380,6 +2444,10 @@ extern "C" void rec_fresh()
    ArrayResize(gSvN, 0);
    ArrayResize(gSvV, 0);
    gSvC = 0;
+   gBrokerPend = false;
+   gRestFlat = false;
+   gSvFullT = 0;
+   gSvAcc = 0;
    exT1MvPend = false;
    exT1 = false;
    exT1Half = false;
