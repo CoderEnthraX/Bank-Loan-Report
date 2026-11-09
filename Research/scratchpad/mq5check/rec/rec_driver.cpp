@@ -17,7 +17,11 @@ void rec_setup(double risk, double spread);
 int rec_t1();
 void rec_day(int counted);
 int rec_paused();
+void rec_restart();
 }
+// REC_RESTART=k: a restart (save, fresh load, reload) at every k-th point between the steps of the trades (0 / unset = never)
+static long rs_k = 0, rs_c = 0;
+static void rp() { if(rs_k > 0 && ++rs_c % rs_k == 0) rec_restart(); }
 int main(int argc, char** argv)
 {
    if(argc < 3) { std::fprintf(stderr, "usage: %s seq.txt exitR [NAME=VALUE ...]\n", argv[0]); return 2; }
@@ -28,6 +32,7 @@ int main(int argc, char** argv)
       if(p == std::string::npos || !rt_SetInput(a.substr(0, p).c_str(), std::atof(a.c_str() + p + 1))) { std::fprintf(stderr, "bad input %s\n", argv[i]); return 2; }
    }
    rec_init();
+   if(std::getenv("REC_RESTART")) rs_k = std::atol(std::getenv("REC_RESTART"));
    FILE* f = std::fopen(argv[1], "r");
    if(!f) return 2;
    if(std::getenv("REC_DAYS"))
@@ -37,7 +42,7 @@ int main(int argc, char** argv)
       int nd;
       while(std::fscanf(f, "%d", &nd) == 1)
       {
-         for(int j = 0; j < nd; j++) { int dv; if(std::fscanf(f, "%d", &dv) != 1) return 3; rec_day(dv); }
+         for(int j = 0; j < nd; j++) { int dv; if(std::fscanf(f, "%d", &dv) != 1) return 3; rec_day(dv); rp(); }
          double res, c; int k;
          if(std::fscanf(f, "%lf %lf %d", &res, &c, &k) != 3) return 3;
          std::vector<double> pr(k), pw(k);
@@ -45,10 +50,10 @@ int main(int argc, char** argv)
          if(rec_paused()) { std::printf("SKIP\n"); continue; }
          double r = rec_next(exitR);
          if(rec_capstop()) { std::printf("STOP\n"); break; }
-         rec_take();
-         if(k == 0) rec_part(r * (res - c) / (1.0 + c));
-         else for(int j = 0; j < k; j++) rec_part(r * (pr[j] - pw[j] * c) / (1.0 + c));
-         rec_close();
+         rp(); rec_take(); rp();
+         if(k == 0) { rec_part(r * (res - c) / (1.0 + c)); rp(); }
+         else for(int j = 0; j < k; j++) { rec_part(r * (pr[j] - pw[j] * c) / (1.0 + c)); rp(); }
+         rec_close(); rp();
          std::printf("R %.12g\n", r);
       }
       std::fclose(f);
@@ -64,9 +69,9 @@ int main(int argc, char** argv)
          double r = rec_next(exitR);
          if(rec_capstop()) { std::printf("STOP\n"); break; }
          int t1 = rec_t1();
-         rec_take();
-         rec_part(r * u);
-         rec_close();
+         rec_take(); rp();
+         rec_part(r * u); rp();
+         rec_close(); rp();
          std::printf("R %.12g %d\n", r, t1);
       }
       std::fclose(f);
@@ -79,10 +84,10 @@ int main(int argc, char** argv)
       for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
       double r = rec_next(exitR);
       if(rec_capstop()) { std::printf("STOP\n"); break; }
-      rec_take();
-      if(k == 0) rec_part(r * (res - c) / (1.0 + c));
-      else for(int j = 0; j < k; j++) rec_part(r * (pr[j] - pw[j] * c) / (1.0 + c));
-      rec_close();
+      rp(); rec_take(); rp();
+      if(k == 0) { rec_part(r * (res - c) / (1.0 + c)); rp(); }
+      else for(int j = 0; j < k; j++) { rec_part(r * (pr[j] - pw[j] * c) / (1.0 + c)); rp(); }
+      rec_close(); rp();
       std::printf("R %.12g\n", r);
    }
    std::fclose(f);

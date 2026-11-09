@@ -1,0 +1,627 @@
+// mql5shim.h - declaration-only model of the MQL5 API for offline type checking (clang -fsyntax-only).
+// Self-contained on purpose: NO standard headers are included, so no libc names (time, index, y1, ...)
+// leak into the global namespace and clash with MQL5 identifiers.
+#pragma once
+#pragma clang system_header
+
+#define __MQL5__ 1
+#define __MQL__ 1
+#define __MQLBUILD__ 5000
+
+typedef __SIZE_TYPE__ mq_size_t;
+
+// ---- MQL5 scalar types (the preprocessor rewrites the token `long` to `mql_long`) ----
+typedef long long          mql_long;
+typedef unsigned long long ulong;
+typedef unsigned int       uint;
+typedef unsigned char      uchar;
+typedef unsigned short     ushort;
+typedef long long          datetime;
+typedef unsigned int       color;
+
+// ---- tiny type traits ----
+template<class T, class U> struct mq_same { static constexpr bool v = false; };
+template<class T> struct mq_same<T, T> { static constexpr bool v = true; };
+template<bool B, class T = void> struct mq_if {};
+template<class T> struct mq_if<true, T> { typedef T type; };
+template<bool B, class T, class F> struct mq_cond { typedef T type; };
+template<class T, class F> struct mq_cond<false, T, F> { typedef F type; };
+template<class T> struct mq_nocv { typedef T type; };
+template<class T> struct mq_nocv<const T> { typedef T type; };
+template<class T> struct mq_nocv<volatile T> { typedef T type; };
+template<class T> struct mq_nocv<const volatile T> { typedef T type; };
+template<class T> struct mq_arith { static constexpr bool v = false; static constexpr int rank = -1; };
+#define MQ_AR(t, r) template<> struct mq_arith<t> { static constexpr bool v = true; static constexpr int rank = r; };
+MQ_AR(bool, 0) MQ_AR(char, 1) MQ_AR(signed char, 1) MQ_AR(unsigned char, 2) MQ_AR(short, 3) MQ_AR(unsigned short, 4)
+MQ_AR(int, 5) MQ_AR(unsigned int, 6) MQ_AR(long, 7) MQ_AR(long long, 7) MQ_AR(unsigned long, 8) MQ_AR(unsigned long long, 8)
+MQ_AR(float, 9) MQ_AR(double, 10) MQ_AR(long double, 10)
+#undef MQ_AR
+template<class T> struct mq_num { static constexpr bool v = mq_arith<typename mq_nocv<T>::type>::v || __is_enum(T); };
+template<class T> struct mq_prom { typedef typename mq_cond<__is_enum(T), int, typename mq_nocv<T>::type>::type type; };
+template<class A, class B> struct mq_pick {
+   typedef typename mq_prom<A>::type PA; typedef typename mq_prom<B>::type PB;
+   typedef typename mq_cond<(mq_arith<PA>::rank >= mq_arith<PB>::rank), PA, PB>::type type;
+};
+
+// ---- string: NO implicit conversion from numbers without a diagnostic (MetaEditor warns) ----
+#define MQ_NUM2STR [[deprecated("implicit conversion from 'number' to 'string'")]]
+struct mqlstring {
+   char* s; int n;
+   mqlstring() : s(0), n(0) {}
+   mqlstring(decltype(nullptr)) : s(0), n(0) {}
+   mqlstring(const char* c) : s(0), n(0) { if(c) { while(c[n]) n++; s = new char[n + 1]; for(int i = 0; i <= n; i++) s[i] = c[i]; } }
+   mqlstring(const char* c, mq_size_t len) : s(0), n((int)len) { s = new char[n + 1]; for(int i = 0; i < n; i++) s[i] = c[i]; s[n] = 0; }
+   mqlstring(const mqlstring& o) : s(0), n(0) { *this = o; }
+   mqlstring& operator=(const mqlstring& o) {
+      if(this != &o) { delete[] s; s = 0; n = o.n; if(o.s) { s = new char[n + 1]; for(int i = 0; i <= n; i++) s[i] = o.s[i]; } }
+      return *this; }
+   ~mqlstring() { delete[] s; }
+   template<class T, typename mq_if<mq_num<T>::v, int>::type = 0> MQ_NUM2STR mqlstring(T) : s(0), n(0) {}
+   ushort operator[](long long i) const { return s ? (uchar)s[i] : 0; }
+   mqlstring& operator+=(const mqlstring& o) { return *this; }
+   explicit operator bool() const { return n > 0; }
+   explicit operator char() const { return 0; } explicit operator uchar() const { return 0; } explicit operator short() const { return 0; }
+   explicit operator ushort() const { return 0; } explicit operator int() const { return 0; } explicit operator uint() const { return 0; }
+   explicit operator long long() const { return 0; } explicit operator unsigned long long() const { return 0; }
+   explicit operator float() const { return 0; } explicit operator double() const { return 0; }
+};
+struct mq_strcast : mqlstring {          // target of the explicit (string) cast: numbers convert without the implicit-conversion warning
+   mq_strcast(const mqlstring& o) : mqlstring(o) {}
+   template<class T, typename mq_if<mq_num<T>::v, int>::type = 0> mq_strcast(T) : mqlstring() {}
+};
+mqlstring operator+(const mqlstring& a, const mqlstring& b);
+bool operator==(const mqlstring& a, const mqlstring& b);
+bool operator!=(const mqlstring& a, const mqlstring& b);
+bool operator<(const mqlstring& a, const mqlstring& b);
+bool operator>(const mqlstring& a, const mqlstring& b);
+bool operator<=(const mqlstring& a, const mqlstring& b);
+bool operator>=(const mqlstring& a, const mqlstring& b);
+typedef mqlstring string;
+inline mqlstring operator""_mq(const char* c, mq_size_t n) { return mqlstring(c, n); }
+
+// ---- `.` on object pointers: MQL5 uses obj.m for both objects and pointers; the preprocessor writes mq_dot(obj).m ----
+template<class T> T& mq_dot(T& x) { return x; }
+template<class T> T& mq_dot(T* x) { return *x; }
+template<class T> T mq_dot(T&& x) { return x; }
+
+// ---- arrays ----
+template<class T> struct MqlArr {
+   T* p; int n;
+   MqlArr() : p(0), n(0) {}
+   MqlArr(const MqlArr& o) : p(0), n(0) { *this = o; }
+   MqlArr& operator=(const MqlArr& o) { if(this != &o) { delete[] p; p = 0; n = o.n; if(n > 0) { p = new T[n]; for(int i = 0; i < n; i++) p[i] = o.p[i]; } } return *this; }
+   ~MqlArr() { delete[] p; }
+   T& operator[](long long i) const { return p[i]; }
+   int resize(int m) {
+      if(m < 0) return -1;
+      T* q = m > 0 ? new T[m] : 0;
+      for(int i = 0; i < m && i < n; i++) q[i] = p[i];
+      delete[] p; p = q; n = m; return n; }
+};
+template<class T> struct ArrayView {   // what `T &a[]` parameters become
+   T* p; int n; MqlArr<T>* dyn;
+   ArrayView(MqlArr<T>& a) : p(a.p), n(a.n), dyn(&a) {}
+   template<mq_size_t N> ArrayView(T (&a)[N]) : p(a), n((int)N), dyn(0) {}
+   T& operator[](long long i) const { return p[i]; }
+};
+template<class T> int arr_size(const MqlArr<T>& a) { return a.n; }
+template<class T> int arr_size(const ArrayView<T>& a) { return a.n; }
+template<class T, mq_size_t N> int arr_size(T (&)[N]) { return (int)N; }
+template<class A> int ArraySize(const A& a) { return arr_size(a); }
+template<class T> int ArrayResize(MqlArr<T>& a, int new_size, int reserve_size = 0) { return a.resize(new_size); }
+template<class T> int ArrayResize(ArrayView<T> a, int new_size, int reserve_size = 0) { return a.dyn ? a.dyn->resize(new_size) : -1; }
+template<class T, mq_size_t N> int ArrayResize(T (&)[N], int new_size, int reserve_size = 0) { return -1; }
+template<class A, class V> int ArrayInitialize(A& a, V v);
+template<class T> void ArrayFree(MqlArr<T>& a);
+template<class T> void ArrayFree(ArrayView<T> a);
+template<class A> bool ArraySetAsSeries(A& a, bool flag);
+template<class A> bool ArrayGetAsSeries(const A& a);
+template<class A> bool ArrayIsSeries(const A& a);
+template<class A> bool ArrayIsDynamic(const A& a);
+template<class A, class B> int ArrayCopy(A& dst, const B& src, int dst_start = 0, int src_start = 0, int count = -1);
+template<class A, class V> void ArrayFill(A& a, int start, int count, V value);
+template<class A> int ArrayMaximum(const A& a, int start = 0, int count = -1);
+template<class A> int ArrayMinimum(const A& a, int start = 0, int count = -1);
+template<class A> bool ArraySort(A& a);
+template<class A> bool ArrayReverse(A& a, int start = 0, int count = -1);
+template<class A, class V> int ArrayBsearch(const A& a, V value);
+template<class A> int ArrayRange(const A& a, int rank_index);
+template<class A> int ArrayDimension(const A& a);
+template<class A, class B> int ArrayInsert(A& dst, const B& src, int dst_start, int src_start = 0, int count = -1);
+template<class A> bool ArrayRemove(A& a, int start, int count = -1);
+#define WHOLE_ARRAY (-1)
+template<class T> void ZeroMemory(T& v);
+
+
+// ---- generic printing-style functions ----
+template<class... A> void Print(const A&...);
+template<class... A> void Alert(const A&...);
+template<class... A> void Comment(const A&...);
+template<class... A> void PrintFormat(const string& fmt, const A&...);
+template<class... A> string StringFormat(const string& fmt, const A&...);
+template<class... A> string StringConcatenate(string& dst, const A&...);
+template<class... A> bool SendNotification(const A&...);
+
+// ---- math ----
+template<class A> typename mq_prom<A>::type MathAbs(A a) { typedef typename mq_prom<A>::type R; return a < 0 ? (R)-a : (R)a; }
+template<class A, class B> typename mq_pick<A, B>::type MathMax(A a, B b) { typedef typename mq_pick<A, B>::type R; return (R)a > (R)b ? (R)a : (R)b; }
+template<class A, class B> typename mq_pick<A, B>::type MathMin(A a, B b) { typedef typename mq_pick<A, B>::type R; return (R)a < (R)b ? (R)a : (R)b; }
+double MathSqrt(double); double MathFloor(double); double MathCeil(double); double MathRound(double); double MathPow(double, double);
+double MathLog(double); double MathLog10(double); double MathExp(double); double MathSin(double); double MathCos(double); double MathTan(double);
+double MathArcsin(double); double MathArccos(double); double MathArctan(double); double MathMod(double, double);
+double MathSinh(double); double MathCosh(double); double MathTanh(double);
+bool MathIsValidNumber(double);
+int MathRand(); void MathSrand(int seed);
+
+// ---- limits / constants ----
+#define DBL_MAX 1.7976931348623158e+308
+#define DBL_MIN 2.2250738585072014e-308
+#define DBL_EPSILON 2.2204460492503131e-016
+#define DBL_DIG 15
+#define FLT_MAX 3.402823466e+38f
+#define FLT_MIN 1.175494351e-38f
+#define FLT_EPSILON 1.192092896e-07f
+#define CHAR_MAX 127
+#define CHAR_MIN (-128)
+#define UCHAR_MAX 255
+#define SHORT_MAX 32767
+#define SHORT_MIN (-32768)
+#define USHORT_MAX 65535
+#define INT_MAX 2147483647
+#define INT_MIN (-2147483647 - 1)
+#define UINT_MAX 4294967295u
+#define LONG_MAX 9223372036854775807ll
+#define LONG_MIN (-9223372036854775807ll - 1)
+#define ULONG_MAX 18446744073709551615ull
+#define EMPTY_VALUE DBL_MAX
+#define INVALID_HANDLE (-1)
+#define EMPTY (-1)
+#define CLR_NONE 0xFFFFFFFFu
+#define M_PI 3.14159265358979323846
+#define M_PI_2 1.57079632679489661923
+#define M_E 2.71828182845904523536
+#define NULL 0
+#define TRUE true
+#define FALSE false
+#define __FUNCTION__ mqlstring(__func__)
+#define __FUNCSIG__ mqlstring(__PRETTY_FUNCTION__)
+#define MQ_FILE__ mqlstring(__FILE__)
+#define MQ_DATE__ mqlstring(__DATE__)
+#define MQ_DATETIME__ ((datetime)0)
+#define MQ_PATH__ mqlstring(__FILE__)
+
+// ---- enums: general ----
+enum ENUM_TIMEFRAMES { PERIOD_CURRENT = 0, PERIOD_M1 = 1, PERIOD_M2 = 2, PERIOD_M3 = 3, PERIOD_M4 = 4, PERIOD_M5 = 5, PERIOD_M6 = 6, PERIOD_M10 = 10,
+   PERIOD_M12 = 12, PERIOD_M15 = 15, PERIOD_M20 = 20, PERIOD_M30 = 30, PERIOD_H1 = 16385, PERIOD_H2 = 16386, PERIOD_H3 = 16387, PERIOD_H4 = 16388,
+   PERIOD_H6 = 16390, PERIOD_H8 = 16392, PERIOD_H12 = 16396, PERIOD_D1 = 16408, PERIOD_W1 = 32769, PERIOD_MN1 = 49153 };
+enum ENUM_APPLIED_PRICE { PRICE_CLOSE = 1, PRICE_OPEN, PRICE_HIGH, PRICE_LOW, PRICE_MEDIAN, PRICE_TYPICAL, PRICE_WEIGHTED };
+enum ENUM_MA_METHOD { MODE_SMA = 0, MODE_EMA, MODE_SMMA, MODE_LWMA };
+enum ENUM_STO_PRICE { STO_LOWHIGH = 0, STO_CLOSECLOSE };
+enum ENUM_INIT_RETCODE { INIT_SUCCEEDED = 0, INIT_FAILED = 1, INIT_PARAMETERS_INCORRECT = 2, INIT_AGENT_NOT_SUITABLE = 3 };
+enum ENUM_LOG_LEVELS { LOG_LEVEL_NO = 0, LOG_LEVEL_ERRORS, LOG_LEVEL_ALL };
+#define REASON_PROGRAM 0
+#define REASON_REMOVE 1
+#define REASON_RECOMPILE 2
+#define REASON_CHARTCHANGE 3
+#define REASON_CHARTCLOSE 4
+#define REASON_PARAMETERS 5
+#define REASON_ACCOUNT 6
+#define REASON_TEMPLATE 7
+#define REASON_INITFAILED 8
+#define REASON_CLOSE 9
+enum ENUM_SERIESMODE { MODE_OPEN = 0, MODE_LOW, MODE_HIGH, MODE_CLOSE, MODE_VOLUME, MODE_REAL_VOLUME, MODE_SPREAD, MODE_TIME };
+enum ENUM_LINE_STYLE { STYLE_SOLID = 0, STYLE_DASH, STYLE_DOT, STYLE_DASHDOT, STYLE_DASHDOTDOT };
+enum ENUM_BASE_CORNER { CORNER_LEFT_UPPER = 0, CORNER_LEFT_LOWER, CORNER_RIGHT_LOWER, CORNER_RIGHT_UPPER };
+enum ENUM_ANCHOR_POINT { ANCHOR_LEFT_UPPER = 0, ANCHOR_LEFT, ANCHOR_LEFT_LOWER, ANCHOR_LOWER, ANCHOR_RIGHT_LOWER, ANCHOR_RIGHT, ANCHOR_RIGHT_UPPER, ANCHOR_UPPER, ANCHOR_CENTER };
+enum ENUM_BORDER_TYPE { BORDER_FLAT = 0, BORDER_RAISED, BORDER_SUNKEN };
+enum ENUM_ALIGN_MODE { ALIGN_LEFT = 1, ALIGN_CENTER = 2, ALIGN_RIGHT = 3 };
+
+#define TIME_DATE 1
+#define TIME_MINUTES 2
+#define TIME_SECONDS 4
+#define FW_DONTCARE 0
+#define FW_THIN 100
+#define FW_EXTRALIGHT 200
+#define FW_ULTRALIGHT 200
+#define FW_LIGHT 300
+#define FW_NORMAL 400
+#define FW_REGULAR 400
+#define FW_MEDIUM 500
+#define FW_SEMIBOLD 600
+#define FW_DEMIBOLD 600
+#define FW_BOLD 700
+#define FW_EXTRABOLD 800
+#define FW_ULTRABOLD 800
+#define FW_HEAVY 900
+#define FONT_ITALIC 255
+#define FONT_UNDERLINE 256
+#define FONT_STRIKEOUT 512
+#define SELECT_BY_POS 0
+#define SELECT_BY_TICKET 1
+#define MODE_TRADES 0
+#define MODE_HISTORY 1
+enum ENUM_POINTER_TYPE { POINTER_INVALID = 0, POINTER_DYNAMIC = 1, POINTER_AUTOMATIC = 2 };
+template<class T> ENUM_POINTER_TYPE CheckPointer(const T* p);
+enum ENUM_CHART_EVENT { CHARTEVENT_KEYDOWN = 0, CHARTEVENT_MOUSE_MOVE = 1, CHARTEVENT_OBJECT_CREATE = 2, CHARTEVENT_OBJECT_CHANGE = 3,
+   CHARTEVENT_OBJECT_DELETE = 4, CHARTEVENT_CLICK = 5, CHARTEVENT_OBJECT_CLICK = 6, CHARTEVENT_OBJECT_DRAG = 7, CHARTEVENT_OBJECT_ENDEDIT = 8,
+   CHARTEVENT_CHART_CHANGE = 9, CHARTEVENT_CUSTOM = 1000, CHARTEVENT_CUSTOM_LAST = 65535 };
+enum ENUM_PROGRAM_TYPE { PROGRAM_SCRIPT = 1, PROGRAM_EXPERT = 2, PROGRAM_INDICATOR = 4, PROGRAM_SERVICE = 5 };
+enum ENUM_MQL_INFO_INTEGER { MQL_PROGRAM_TYPE = 0, MQL_DLLS_ALLOWED, MQL_TRADE_ALLOWED, MQL_SIGNALS_ALLOWED, MQL_DEBUG, MQL_PROFILER, MQL_TESTER,
+   MQL_OPTIMIZATION, MQL_VISUAL_MODE, MQL_FRAME_MODE, MQL_LICENSE_TYPE, MQL_STARTED_FROM_INI, MQL_MEMORY_LIMIT, MQL_MEMORY_USED };
+enum ENUM_MQL_INFO_STRING { MQL_PROGRAM_NAME = 100, MQL_PROGRAM_PATH };
+enum ENUM_TERMINAL_INFO_INTEGER { TERMINAL_BUILD = 5, TERMINAL_COMMUNITY_ACCOUNT = 23, TERMINAL_COMMUNITY_CONNECTION = 24, TERMINAL_CONNECTED = 6,
+   TERMINAL_DLLS_ALLOWED = 7, TERMINAL_TRADE_ALLOWED = 8, TERMINAL_EMAIL_ENABLED = 9, TERMINAL_FTP_ENABLED = 10, TERMINAL_NOTIFICATIONS_ENABLED = 26,
+   TERMINAL_MAXBARS = 11, TERMINAL_MQID = 22, TERMINAL_CODEPAGE = 12, TERMINAL_CPU_CORES = 21, TERMINAL_DISK_SPACE = 20, TERMINAL_MEMORY_PHYSICAL = 14,
+   TERMINAL_MEMORY_TOTAL = 15, TERMINAL_MEMORY_AVAILABLE = 16, TERMINAL_MEMORY_USED = 17, TERMINAL_X64 = 17001, TERMINAL_OPENCL_SUPPORT = 17002,
+   TERMINAL_SCREEN_DPI = 27, TERMINAL_PING_LAST = 28, TERMINAL_KEYSTATE_LEFT = 1000, TERMINAL_KEYSTATE_UP, TERMINAL_KEYSTATE_RIGHT, TERMINAL_KEYSTATE_DOWN,
+   TERMINAL_KEYSTATE_SHIFT, TERMINAL_KEYSTATE_CONTROL, TERMINAL_KEYSTATE_MENU, TERMINAL_KEYSTATE_CAPSLOCK, TERMINAL_KEYSTATE_NUMLOCK, TERMINAL_KEYSTATE_SCRLOCK,
+   TERMINAL_KEYSTATE_ENTER, TERMINAL_KEYSTATE_INSERT, TERMINAL_KEYSTATE_DELETE, TERMINAL_KEYSTATE_HOME, TERMINAL_KEYSTATE_END, TERMINAL_KEYSTATE_TAB,
+   TERMINAL_KEYSTATE_PAGEUP, TERMINAL_KEYSTATE_PAGEDOWN, TERMINAL_KEYSTATE_ESCAPE };
+enum ENUM_TERMINAL_INFO_DOUBLE { TERMINAL_COMMUNITY_BALANCE = 25, TERMINAL_RETRANSMISSION = 29 };
+enum ENUM_TERMINAL_INFO_STRING { TERMINAL_LANGUAGE = 13, TERMINAL_COMPANY = 0, TERMINAL_NAME = 1, TERMINAL_PATH = 2, TERMINAL_DATA_PATH = 3, TERMINAL_COMMONDATA_PATH = 4 };
+
+// ---- enums: trading ----
+enum ENUM_ORDER_TYPE { ORDER_TYPE_BUY = 0, ORDER_TYPE_SELL, ORDER_TYPE_BUY_LIMIT, ORDER_TYPE_SELL_LIMIT, ORDER_TYPE_BUY_STOP, ORDER_TYPE_SELL_STOP,
+   ORDER_TYPE_BUY_STOP_LIMIT, ORDER_TYPE_SELL_STOP_LIMIT, ORDER_TYPE_CLOSE_BY };
+enum ENUM_ORDER_TYPE_TIME { ORDER_TIME_GTC = 0, ORDER_TIME_DAY, ORDER_TIME_SPECIFIED, ORDER_TIME_SPECIFIED_DAY };
+enum ENUM_ORDER_TYPE_FILLING { ORDER_FILLING_FOK = 0, ORDER_FILLING_IOC, ORDER_FILLING_RETURN, ORDER_FILLING_BOC };
+enum ENUM_ORDER_STATE { ORDER_STATE_STARTED = 0, ORDER_STATE_PLACED, ORDER_STATE_CANCELED, ORDER_STATE_PARTIAL, ORDER_STATE_FILLED, ORDER_STATE_REJECTED,
+   ORDER_STATE_EXPIRED, ORDER_STATE_REQUEST_ADD, ORDER_STATE_REQUEST_MODIFY, ORDER_STATE_REQUEST_CANCEL };
+enum ENUM_POSITION_TYPE { POSITION_TYPE_BUY = 0, POSITION_TYPE_SELL };
+enum ENUM_POSITION_REASON { POSITION_REASON_CLIENT = 0, POSITION_REASON_MOBILE, POSITION_REASON_WEB, POSITION_REASON_EXPERT };
+enum ENUM_DEAL_TYPE { DEAL_TYPE_BUY = 0, DEAL_TYPE_SELL, DEAL_TYPE_BALANCE, DEAL_TYPE_CREDIT, DEAL_TYPE_CHARGE, DEAL_TYPE_CORRECTION, DEAL_TYPE_BONUS,
+   DEAL_TYPE_COMMISSION, DEAL_TYPE_COMMISSION_DAILY, DEAL_TYPE_COMMISSION_MONTHLY, DEAL_TYPE_COMMISSION_AGENT_DAILY, DEAL_TYPE_COMMISSION_AGENT_MONTHLY,
+   DEAL_TYPE_INTEREST, DEAL_TYPE_BUY_CANCELED, DEAL_TYPE_SELL_CANCELED, DEAL_DIVIDEND, DEAL_DIVIDEND_FRANKED, DEAL_TAX };
+enum ENUM_DEAL_ENTRY { DEAL_ENTRY_IN = 0, DEAL_ENTRY_OUT, DEAL_ENTRY_INOUT, DEAL_ENTRY_OUT_BY };
+enum ENUM_DEAL_REASON { DEAL_REASON_CLIENT = 0, DEAL_REASON_MOBILE, DEAL_REASON_WEB, DEAL_REASON_EXPERT, DEAL_REASON_SL, DEAL_REASON_TP, DEAL_REASON_SO,
+   DEAL_REASON_ROLLOVER, DEAL_REASON_VMARGIN, DEAL_REASON_SPLIT };
+enum ENUM_TRADE_REQUEST_ACTIONS { TRADE_ACTION_DEAL = 1, TRADE_ACTION_PENDING = 5, TRADE_ACTION_SLTP = 6, TRADE_ACTION_MODIFY = 7, TRADE_ACTION_REMOVE = 8, TRADE_ACTION_CLOSE_BY = 10 };
+enum ENUM_TRADE_TRANSACTION_TYPE { TRADE_TRANSACTION_ORDER_ADD = 0, TRADE_TRANSACTION_ORDER_UPDATE, TRADE_TRANSACTION_ORDER_DELETE, TRADE_TRANSACTION_DEAL_ADD,
+   TRADE_TRANSACTION_DEAL_UPDATE, TRADE_TRANSACTION_DEAL_DELETE, TRADE_TRANSACTION_HISTORY_ADD, TRADE_TRANSACTION_HISTORY_UPDATE,
+   TRADE_TRANSACTION_HISTORY_DELETE, TRADE_TRANSACTION_POSITION, TRADE_TRANSACTION_REQUEST };
+enum ENUM_ACCOUNT_MARGIN_MODE { ACCOUNT_MARGIN_MODE_RETAIL_NETTING = 0, ACCOUNT_MARGIN_MODE_EXCHANGE, ACCOUNT_MARGIN_MODE_RETAIL_HEDGING };
+enum ENUM_ACCOUNT_TRADE_MODE { ACCOUNT_TRADE_MODE_DEMO = 0, ACCOUNT_TRADE_MODE_CONTEST, ACCOUNT_TRADE_MODE_REAL };
+enum ENUM_SYMBOL_TRADE_MODE { SYMBOL_TRADE_MODE_DISABLED = 0, SYMBOL_TRADE_MODE_LONGONLY, SYMBOL_TRADE_MODE_SHORTONLY, SYMBOL_TRADE_MODE_CLOSEONLY, SYMBOL_TRADE_MODE_FULL };
+enum ENUM_SYMBOL_CALC_MODE { SYMBOL_CALC_MODE_FOREX = 0, SYMBOL_CALC_MODE_CFD = 3, SYMBOL_CALC_MODE_FUTURES = 2, SYMBOL_CALC_MODE_CFDINDEX = 4, SYMBOL_CALC_MODE_EXCH_STOCKS = 32 };
+
+#define TRADE_RETCODE_REQUOTE 10004
+#define TRADE_RETCODE_REJECT 10006
+#define TRADE_RETCODE_CANCEL 10007
+#define TRADE_RETCODE_PLACED 10008
+#define TRADE_RETCODE_DONE 10009
+#define TRADE_RETCODE_DONE_PARTIAL 10010
+#define TRADE_RETCODE_ERROR 10011
+#define TRADE_RETCODE_TIMEOUT 10012
+#define TRADE_RETCODE_INVALID 10013
+#define TRADE_RETCODE_INVALID_VOLUME 10014
+#define TRADE_RETCODE_INVALID_PRICE 10015
+#define TRADE_RETCODE_INVALID_STOPS 10016
+#define TRADE_RETCODE_TRADE_DISABLED 10017
+#define TRADE_RETCODE_MARKET_CLOSED 10018
+#define TRADE_RETCODE_NO_MONEY 10019
+#define TRADE_RETCODE_PRICE_CHANGED 10020
+#define TRADE_RETCODE_PRICE_OFF 10021
+#define TRADE_RETCODE_INVALID_EXPIRATION 10022
+#define TRADE_RETCODE_ORDER_CHANGED 10023
+#define TRADE_RETCODE_TOO_MANY_REQUESTS 10024
+#define TRADE_RETCODE_NO_CHANGES 10025
+#define TRADE_RETCODE_CONNECTION 10031
+#define TRADE_RETCODE_FROZEN 10029
+#define TRADE_RETCODE_INVALID_FILL 10030
+
+enum ENUM_SYMBOL_INFO_INTEGER { SYMBOL_SUBSCRIPTION_DELAY = 0, SYMBOL_SECTOR, SYMBOL_INDUSTRY, SYMBOL_CUSTOM, SYMBOL_BACKGROUND_COLOR, SYMBOL_CHART_MODE,
+   SYMBOL_EXIST, SYMBOL_SELECT, SYMBOL_VISIBLE, SYMBOL_SESSION_DEALS, SYMBOL_SESSION_BUY_ORDERS, SYMBOL_SESSION_SELL_ORDERS, SYMBOL_VOLUME,
+   SYMBOL_VOLUMEHIGH, SYMBOL_VOLUMELOW, SYMBOL_TIME, SYMBOL_DIGITS, SYMBOL_SPREAD, SYMBOL_SPREAD_FLOAT, SYMBOL_TICKS_BOOKDEPTH, SYMBOL_TRADE_CALC_MODE,
+   SYMBOL_TRADE_MODE, SYMBOL_START_TIME, SYMBOL_EXPIRATION_TIME, SYMBOL_TRADE_STOPS_LEVEL, SYMBOL_TRADE_FREEZE_LEVEL, SYMBOL_TRADE_EXEMODE,
+   SYMBOL_SWAP_MODE, SYMBOL_SWAP_ROLLOVER3DAYS, SYMBOL_MARGIN_HEDGED_USE_LEG, SYMBOL_EXPIRATION_MODE, SYMBOL_FILLING_MODE, SYMBOL_ORDER_MODE,
+   SYMBOL_ORDER_GTC_MODE, SYMBOL_OPTION_MODE, SYMBOL_OPTION_RIGHT };
+enum ENUM_SYMBOL_INFO_DOUBLE { SYMBOL_BID = 100, SYMBOL_BIDHIGH, SYMBOL_BIDLOW, SYMBOL_ASK, SYMBOL_ASKHIGH, SYMBOL_ASKLOW, SYMBOL_LAST, SYMBOL_LASTHIGH,
+   SYMBOL_LASTLOW, SYMBOL_VOLUME_REAL, SYMBOL_VOLUMEHIGH_REAL, SYMBOL_VOLUMELOW_REAL, SYMBOL_OPTION_STRIKE, SYMBOL_POINT, SYMBOL_TRADE_TICK_VALUE,
+   SYMBOL_TRADE_TICK_VALUE_PROFIT, SYMBOL_TRADE_TICK_VALUE_LOSS, SYMBOL_TRADE_TICK_SIZE, SYMBOL_TRADE_CONTRACT_SIZE, SYMBOL_TRADE_ACCRUED_INTEREST,
+   SYMBOL_TRADE_FACE_VALUE, SYMBOL_TRADE_LIQUIDITY_RATE, SYMBOL_VOLUME_MIN, SYMBOL_VOLUME_MAX, SYMBOL_VOLUME_STEP, SYMBOL_VOLUME_LIMIT,
+   SYMBOL_SWAP_LONG, SYMBOL_SWAP_SHORT, SYMBOL_SWAP_SUNDAY, SYMBOL_SWAP_MONDAY, SYMBOL_SWAP_TUESDAY, SYMBOL_SWAP_WEDNESDAY, SYMBOL_SWAP_THURSDAY,
+   SYMBOL_SWAP_FRIDAY, SYMBOL_SWAP_SATURDAY, SYMBOL_MARGIN_INITIAL, SYMBOL_MARGIN_MAINTENANCE, SYMBOL_MARGIN_HEDGED, SYMBOL_SESSION_VOLUME,
+   SYMBOL_SESSION_TURNOVER, SYMBOL_SESSION_INTEREST, SYMBOL_SESSION_BUY_ORDERS_VOLUME, SYMBOL_SESSION_SELL_ORDERS_VOLUME, SYMBOL_SESSION_OPEN,
+   SYMBOL_SESSION_CLOSE, SYMBOL_SESSION_AW, SYMBOL_SESSION_PRICE_SETTLEMENT, SYMBOL_SESSION_PRICE_LIMIT_MIN, SYMBOL_SESSION_PRICE_LIMIT_MAX,
+   SYMBOL_PRICE_CHANGE, SYMBOL_PRICE_VOLATILITY, SYMBOL_PRICE_THEORETICAL, SYMBOL_PRICE_DELTA, SYMBOL_PRICE_THETA, SYMBOL_PRICE_GAMMA,
+   SYMBOL_PRICE_VEGA, SYMBOL_PRICE_RHO, SYMBOL_PRICE_OMEGA, SYMBOL_PRICE_SENSITIVITY };
+enum ENUM_SYMBOL_INFO_STRING { SYMBOL_BASIS = 200, SYMBOL_CATEGORY, SYMBOL_COUNTRY, SYMBOL_SECTOR_NAME, SYMBOL_INDUSTRY_NAME, SYMBOL_CURRENCY_BASE,
+   SYMBOL_CURRENCY_PROFIT, SYMBOL_CURRENCY_MARGIN, SYMBOL_BANK, SYMBOL_DESCRIPTION, SYMBOL_EXCHANGE, SYMBOL_FORMULA, SYMBOL_ISIN, SYMBOL_PAGE, SYMBOL_PATH };
+enum ENUM_ACCOUNT_INFO_INTEGER { ACCOUNT_LOGIN = 0, ACCOUNT_TRADE_MODE, ACCOUNT_LEVERAGE, ACCOUNT_LIMIT_ORDERS, ACCOUNT_MARGIN_SO_MODE, ACCOUNT_TRADE_ALLOWED,
+   ACCOUNT_TRADE_EXPERT, ACCOUNT_MARGIN_MODE, ACCOUNT_CURRENCY_DIGITS, ACCOUNT_FIFO_CLOSE, ACCOUNT_HEDGE_ALLOWED };
+enum ENUM_ACCOUNT_INFO_DOUBLE { ACCOUNT_BALANCE = 100, ACCOUNT_CREDIT, ACCOUNT_PROFIT, ACCOUNT_EQUITY, ACCOUNT_MARGIN, ACCOUNT_MARGIN_FREE,
+   ACCOUNT_MARGIN_LEVEL, ACCOUNT_MARGIN_SO_CALL, ACCOUNT_MARGIN_SO_SO, ACCOUNT_MARGIN_INITIAL, ACCOUNT_MARGIN_MAINTENANCE, ACCOUNT_ASSETS,
+   ACCOUNT_LIABILITIES, ACCOUNT_COMMISSION_BLOCKED };
+enum ENUM_ACCOUNT_INFO_STRING { ACCOUNT_NAME = 200, ACCOUNT_SERVER, ACCOUNT_CURRENCY, ACCOUNT_COMPANY };
+enum ENUM_POSITION_PROPERTY_INTEGER { POSITION_TICKET = 0, POSITION_TIME, POSITION_TIME_MSC, POSITION_TIME_UPDATE, POSITION_TIME_UPDATE_MSC, POSITION_TYPE,
+   POSITION_MAGIC, POSITION_IDENTIFIER, POSITION_REASON };
+enum ENUM_POSITION_PROPERTY_DOUBLE { POSITION_VOLUME = 100, POSITION_PRICE_OPEN, POSITION_SL, POSITION_TP, POSITION_PRICE_CURRENT, POSITION_COMMISSION,
+   POSITION_SWAP, POSITION_PROFIT };
+enum ENUM_POSITION_PROPERTY_STRING { POSITION_SYMBOL = 200, POSITION_COMMENT, POSITION_EXTERNAL_ID };
+enum ENUM_ORDER_PROPERTY_INTEGER { ORDER_TICKET = 0, ORDER_TIME_SETUP, ORDER_TYPE, ORDER_STATE, ORDER_TIME_EXPIRATION, ORDER_TIME_DONE, ORDER_TIME_SETUP_MSC,
+   ORDER_TIME_DONE_MSC, ORDER_TYPE_FILLING, ORDER_TYPE_TIME, ORDER_MAGIC, ORDER_REASON, ORDER_POSITION_ID, ORDER_POSITION_BY_ID };
+enum ENUM_ORDER_PROPERTY_DOUBLE { ORDER_VOLUME_INITIAL = 100, ORDER_VOLUME_CURRENT, ORDER_PRICE_OPEN, ORDER_SL, ORDER_TP, ORDER_PRICE_CURRENT, ORDER_PRICE_STOPLIMIT };
+enum ENUM_ORDER_PROPERTY_STRING { ORDER_SYMBOL = 200, ORDER_COMMENT, ORDER_EXTERNAL_ID };
+enum ENUM_DEAL_PROPERTY_INTEGER { DEAL_TICKET = 0, DEAL_ORDER, DEAL_TIME, DEAL_TIME_MSC, DEAL_TYPE, DEAL_ENTRY, DEAL_MAGIC, DEAL_REASON, DEAL_POSITION_ID };
+enum ENUM_DEAL_PROPERTY_DOUBLE { DEAL_VOLUME = 100, DEAL_PRICE, DEAL_COMMISSION, DEAL_SWAP, DEAL_PROFIT, DEAL_FEE, DEAL_SL, DEAL_TP };
+enum ENUM_DEAL_PROPERTY_STRING { DEAL_SYMBOL = 200, DEAL_COMMENT, DEAL_EXTERNAL_ID };
+
+// ---- enums: chart / objects ----
+enum ENUM_OBJECT { OBJ_VLINE = 0, OBJ_HLINE, OBJ_TREND, OBJ_TRENDBYANGLE, OBJ_CYCLES, OBJ_ARROWED_LINE, OBJ_CHANNEL, OBJ_STDDEVCHANNEL, OBJ_REGRESSION,
+   OBJ_PITCHFORK, OBJ_GANNLINE, OBJ_GANNFAN, OBJ_GANNGRID, OBJ_FIBO, OBJ_FIBOTIMES, OBJ_FIBOFAN, OBJ_FIBOARC, OBJ_FIBOCHANNEL, OBJ_EXPANSION,
+   OBJ_ELLIOTWAVE5, OBJ_ELLIOTWAVE3, OBJ_RECTANGLE, OBJ_TRIANGLE, OBJ_ELLIPSE, OBJ_ARROW_THUMB_UP, OBJ_ARROW_THUMB_DOWN, OBJ_ARROW_UP, OBJ_ARROW_DOWN,
+   OBJ_ARROW_STOP, OBJ_ARROW_CHECK, OBJ_ARROW_LEFT_PRICE, OBJ_ARROW_RIGHT_PRICE, OBJ_ARROW_BUY, OBJ_ARROW_SELL, OBJ_ARROW, OBJ_TEXT, OBJ_LABEL,
+   OBJ_BUTTON, OBJ_CHART, OBJ_BITMAP, OBJ_BITMAP_LABEL, OBJ_EDIT, OBJ_EVENT, OBJ_RECTANGLE_LABEL };
+enum ENUM_OBJECT_PROPERTY_INTEGER { OBJPROP_COLOR = 0, OBJPROP_STYLE, OBJPROP_WIDTH, OBJPROP_BACK, OBJPROP_ZORDER, OBJPROP_FILL, OBJPROP_HIDDEN,
+   OBJPROP_SELECTED, OBJPROP_READONLY, OBJPROP_TYPE, OBJPROP_TIME, OBJPROP_SELECTABLE, OBJPROP_CREATETIME, OBJPROP_LEVELS, OBJPROP_LEVELCOLOR,
+   OBJPROP_LEVELSTYLE, OBJPROP_LEVELWIDTH, OBJPROP_ALIGN, OBJPROP_FONTSIZE, OBJPROP_RAY_LEFT, OBJPROP_RAY_RIGHT, OBJPROP_RAY, OBJPROP_ELLIPSE,
+   OBJPROP_ARROWCODE, OBJPROP_TIMEFRAMES, OBJPROP_ANCHOR, OBJPROP_XDISTANCE, OBJPROP_YDISTANCE, OBJPROP_DIRECTION, OBJPROP_DEGREE, OBJPROP_DRAWLINES,
+   OBJPROP_STATE, OBJPROP_CHART_ID, OBJPROP_XSIZE, OBJPROP_YSIZE, OBJPROP_XOFFSET, OBJPROP_YOFFSET, OBJPROP_PERIOD, OBJPROP_DATE_SCALE,
+   OBJPROP_PRICE_SCALE, OBJPROP_CHART_SCALE, OBJPROP_BGCOLOR, OBJPROP_CORNER, OBJPROP_BORDER_TYPE, OBJPROP_BORDER_COLOR };
+enum ENUM_OBJECT_PROPERTY_DOUBLE { OBJPROP_PRICE = 100, OBJPROP_LEVELVALUE, OBJPROP_SCALE, OBJPROP_ANGLE, OBJPROP_DEVIATION };
+enum ENUM_OBJECT_PROPERTY_STRING { OBJPROP_NAME = 200, OBJPROP_TEXT, OBJPROP_TOOLTIP, OBJPROP_LEVELTEXT, OBJPROP_FONT, OBJPROP_BMPFILE, OBJPROP_SYMBOL };
+#define OBJ_ALL_PERIODS 0x0003FFFF
+#define OBJ_PERIOD_M1 0x00000001
+#define OBJ_PERIOD_M5 0x00000002
+#define OBJ_PERIOD_M15 0x00000004
+#define OBJ_PERIOD_M30 0x00000008
+#define OBJ_PERIOD_H1 0x00000010
+#define OBJ_PERIOD_H4 0x00000020
+#define OBJ_PERIOD_D1 0x00000040
+#define OBJ_PERIOD_W1 0x00000080
+#define OBJ_PERIOD_MN1 0x00000100
+#define OBJ_NO_PERIODS 0
+enum ENUM_CHART_PROPERTY_INTEGER { CHART_IS_OBJECT = 0, CHART_BRING_TO_TOP, CHART_MOUSE_SCROLL, CHART_EVENT_MOUSE_MOVE, CHART_EVENT_OBJECT_CREATE,
+   CHART_EVENT_OBJECT_DELETE, CHART_MODE, CHART_FOREGROUND, CHART_SHIFT, CHART_AUTOSCROLL, CHART_KEYBOARD_CONTROL, CHART_QUICK_NAVIGATION, CHART_SCALE,
+   CHART_SCALEFIX, CHART_SCALEFIX_11, CHART_SCALE_PT_PER_BAR, CHART_SHOW_TICKER, CHART_SHOW_OHLC, CHART_SHOW_BID_LINE, CHART_SHOW_ASK_LINE,
+   CHART_SHOW_LAST_LINE, CHART_SHOW_PERIOD_SEP, CHART_SHOW_GRID, CHART_SHOW_VOLUMES, CHART_SHOW_OBJECT_DESCR, CHART_VISIBLE_BARS, CHART_WINDOWS_TOTAL,
+   CHART_WINDOW_IS_VISIBLE, CHART_WINDOW_HANDLE, CHART_WINDOW_YDISTANCE, CHART_FIRST_VISIBLE_BAR, CHART_WIDTH_IN_BARS, CHART_WIDTH_IN_PIXELS,
+   CHART_HEIGHT_IN_PIXELS, CHART_COLOR_BACKGROUND, CHART_COLOR_FOREGROUND, CHART_COLOR_GRID, CHART_COLOR_VOLUME, CHART_COLOR_CHART_UP,
+   CHART_COLOR_CHART_DOWN, CHART_COLOR_CHART_LINE, CHART_COLOR_CANDLE_BULL, CHART_COLOR_CANDLE_BEAR, CHART_COLOR_BID, CHART_COLOR_ASK,
+   CHART_COLOR_LAST, CHART_COLOR_STOP_LEVEL, CHART_SHOW_TRADE_LEVELS, CHART_DRAG_TRADE_LEVELS, CHART_SHOW_DATE_SCALE, CHART_SHOW_PRICE_SCALE,
+   CHART_SHOW_ONE_CLICK, CHART_IS_MAXIMIZED, CHART_IS_MINIMIZED, CHART_CONTEXT_MENU, CHART_CROSSHAIR_TOOL, CHART_SHOW };
+enum ENUM_CHART_PROPERTY_DOUBLE { CHART_SHIFT_SIZE = 100, CHART_FIXED_POSITION, CHART_FIXED_MAX, CHART_FIXED_MIN, CHART_POINTS_PER_BAR, CHART_PRICE_MIN, CHART_PRICE_MAX };
+enum ENUM_CHART_PROPERTY_STRING { CHART_COMMENT = 200, CHART_EXPERT_NAME, CHART_SCRIPT_NAME };
+enum ENUM_CHART_MODE { CHART_BARS = 0, CHART_CANDLES, CHART_LINE };
+
+// ---- web colors (RGB -> BGR color) ----
+#define MQ_C(n, r, g, b) static const color n = (color)((r) | ((g) << 8) | ((b) << 16));
+MQ_C(clrBlack,0,0,0) MQ_C(clrDarkGreen,0,100,0) MQ_C(clrDarkSlateGray,47,79,79) MQ_C(clrOlive,128,128,0) MQ_C(clrGreen,0,128,0) MQ_C(clrTeal,0,128,128)
+MQ_C(clrNavy,0,0,128) MQ_C(clrPurple,128,0,128) MQ_C(clrMaroon,128,0,0) MQ_C(clrIndigo,75,0,130) MQ_C(clrMidnightBlue,25,25,112) MQ_C(clrDarkBlue,0,0,139)
+MQ_C(clrDarkOliveGreen,85,107,47) MQ_C(clrSaddleBrown,139,69,19) MQ_C(clrForestGreen,34,139,34) MQ_C(clrOliveDrab,107,142,35) MQ_C(clrSeaGreen,46,139,87)
+MQ_C(clrDarkGoldenrod,184,134,11) MQ_C(clrDarkSlateBlue,72,61,139) MQ_C(clrSienna,160,82,45) MQ_C(clrMediumBlue,0,0,205) MQ_C(clrBrown,165,42,42)
+MQ_C(clrDarkTurquoise,0,206,209) MQ_C(clrDimGray,105,105,105) MQ_C(clrLightSeaGreen,32,178,170) MQ_C(clrDarkViolet,148,0,211) MQ_C(clrFireBrick,178,34,34)
+MQ_C(clrMediumVioletRed,199,21,133) MQ_C(clrMediumSeaGreen,60,179,113) MQ_C(clrChocolate,210,105,30) MQ_C(clrCrimson,220,20,60) MQ_C(clrSteelBlue,70,130,180)
+MQ_C(clrGoldenrod,218,165,32) MQ_C(clrMediumSpringGreen,0,250,154) MQ_C(clrLawnGreen,124,252,0) MQ_C(clrCadetBlue,95,158,160) MQ_C(clrDarkOrchid,153,50,204)
+MQ_C(clrYellowGreen,154,205,50) MQ_C(clrLimeGreen,50,205,50) MQ_C(clrOrangeRed,255,69,0) MQ_C(clrDarkOrange,255,140,0) MQ_C(clrOrange,255,165,0)
+MQ_C(clrGold,255,215,0) MQ_C(clrYellow,255,255,0) MQ_C(clrChartreuse,127,255,0) MQ_C(clrLime,0,255,0) MQ_C(clrSpringGreen,0,255,127) MQ_C(clrAqua,0,255,255)
+MQ_C(clrDeepSkyBlue,0,191,255) MQ_C(clrBlue,0,0,255) MQ_C(clrMagenta,255,0,255) MQ_C(clrRed,255,0,0) MQ_C(clrGray,128,128,128) MQ_C(clrSlateGray,112,128,144)
+MQ_C(clrPeru,205,133,63) MQ_C(clrBlueViolet,138,43,226) MQ_C(clrLightSlateGray,119,136,153) MQ_C(clrDeepPink,255,20,147) MQ_C(clrMediumTurquoise,72,209,204)
+MQ_C(clrDodgerBlue,30,144,255) MQ_C(clrTurquoise,64,224,208) MQ_C(clrRoyalBlue,65,105,225) MQ_C(clrSlateBlue,106,90,205) MQ_C(clrDarkKhaki,189,183,107)
+MQ_C(clrIndianRed,205,92,92) MQ_C(clrMediumOrchid,186,85,211) MQ_C(clrGreenYellow,173,255,47) MQ_C(clrMediumAquamarine,102,205,170) MQ_C(clrDarkSeaGreen,143,188,143)
+MQ_C(clrTomato,255,99,71) MQ_C(clrRosyBrown,188,143,143) MQ_C(clrOrchid,218,112,214) MQ_C(clrMediumPurple,147,112,219) MQ_C(clrPaleVioletRed,219,112,147)
+MQ_C(clrCoral,255,127,80) MQ_C(clrCornflowerBlue,100,149,237) MQ_C(clrDarkGray,169,169,169) MQ_C(clrSandyBrown,244,164,96) MQ_C(clrMediumSlateBlue,123,104,238)
+MQ_C(clrTan,210,180,140) MQ_C(clrDarkSalmon,233,150,122) MQ_C(clrBurlyWood,222,184,135) MQ_C(clrHotPink,255,105,180) MQ_C(clrSalmon,250,128,114)
+MQ_C(clrViolet,238,130,238) MQ_C(clrLightCoral,240,128,128) MQ_C(clrSkyBlue,135,206,235) MQ_C(clrLightSalmon,255,160,122) MQ_C(clrPlum,221,160,221)
+MQ_C(clrKhaki,240,230,140) MQ_C(clrLightGreen,144,238,144) MQ_C(clrAquamarine,127,255,212) MQ_C(clrSilver,192,192,192) MQ_C(clrLightSkyBlue,135,206,250)
+MQ_C(clrLightSteelBlue,176,196,222) MQ_C(clrLightBlue,173,216,230) MQ_C(clrPaleGreen,152,251,152) MQ_C(clrThistle,216,191,216) MQ_C(clrPowderBlue,176,224,230)
+MQ_C(clrPaleGoldenrod,238,232,170) MQ_C(clrPaleTurquoise,175,238,238) MQ_C(clrLightGray,211,211,211) MQ_C(clrWheat,245,222,179) MQ_C(clrNavajoWhite,255,222,173)
+MQ_C(clrMoccasin,255,228,181) MQ_C(clrLightPink,255,182,193) MQ_C(clrGainsboro,220,220,220) MQ_C(clrPeachPuff,255,218,185) MQ_C(clrPink,255,192,203)
+MQ_C(clrBisque,255,228,196) MQ_C(clrLightGoldenrod,250,250,210) MQ_C(clrBlanchedAlmond,255,235,205) MQ_C(clrLemonChiffon,255,250,205) MQ_C(clrBeige,245,245,220)
+MQ_C(clrAntiqueWhite,250,235,215) MQ_C(clrPapayaWhip,255,239,213) MQ_C(clrCornsilk,255,248,220) MQ_C(clrLightYellow,255,255,224) MQ_C(clrLightCyan,224,255,255)
+MQ_C(clrLinen,250,240,230) MQ_C(clrLavender,230,230,250) MQ_C(clrMistyRose,255,228,225) MQ_C(clrOldLace,253,245,230) MQ_C(clrWhiteSmoke,245,245,245)
+MQ_C(clrSeashell,255,245,238) MQ_C(clrIvory,255,255,240) MQ_C(clrHoneydew,240,255,240) MQ_C(clrAliceBlue,240,248,255) MQ_C(clrLavenderBlush,255,240,245)
+MQ_C(clrMintCream,245,255,250) MQ_C(clrSnow,255,250,250) MQ_C(clrWhite,255,255,255)
+#undef MQ_C
+static const color clrNONE = 0xFFFFFFFFu;
+
+// ---- structs ----
+struct MqlDateTime { int year; int mon; int day; int hour; int min; int sec; int day_of_week; int day_of_year; };
+struct MqlRates { datetime time; double open; double high; double low; double close; mql_long tick_volume; int spread; mql_long real_volume; };
+struct MqlTick { datetime time; double bid; double ask; double last; ulong volume; mql_long time_msc; uint flags; double volume_real; };
+struct MqlTradeRequest { ENUM_TRADE_REQUEST_ACTIONS action; ulong magic; ulong order; string symbol; double volume; double price; double stoplimit; double sl;
+   double tp; ulong deviation; ENUM_ORDER_TYPE type; ENUM_ORDER_TYPE_FILLING type_filling; ENUM_ORDER_TYPE_TIME type_time; datetime expiration;
+   string comment; ulong position; ulong position_by; };
+struct MqlTradeResult { uint retcode; ulong deal; ulong order; double volume; double price; double bid; double ask; string comment; uint request_id; int retcode_external; };
+struct MqlTradeCheckResult { uint retcode; double balance; double equity; double profit; double margin; double margin_free; double margin_level; string comment; };
+struct MqlTradeTransaction { ulong deal; ulong order; string symbol; ENUM_TRADE_TRANSACTION_TYPE type; ENUM_ORDER_TYPE order_type; ENUM_ORDER_STATE order_state;
+   ENUM_DEAL_TYPE deal_type; ENUM_ORDER_TYPE_TIME time_type; datetime time_expiration; double price; double price_trigger; double price_sl; double price_tp;
+   double volume; ulong position; ulong position_by; };
+
+// ---- predefined variables (read-only in MQL5) ----
+extern const string _Symbol;
+extern const ENUM_TIMEFRAMES _Period;
+extern const int _Digits;
+extern const double _Point;
+extern const int _LastError;
+extern const bool _StopFlag;
+extern const int _UninitReason;
+extern const int _RandomSeed;
+string Symbol(); ENUM_TIMEFRAMES Period(); int Digits(); double Point();
+
+// ---- environment / time ----
+datetime TimeCurrent(); datetime TimeCurrent(MqlDateTime& dt_struct); datetime TimeLocal(); datetime TimeGMT(); datetime TimeTradeServer();
+bool TimeToStruct(datetime dt, MqlDateTime& dt_struct); datetime StructToTime(MqlDateTime& dt_struct);
+string TimeToString(datetime value, int mode = TIME_DATE | TIME_MINUTES); datetime StringToTime(const string& time_string);
+int PeriodSeconds(ENUM_TIMEFRAMES period = PERIOD_CURRENT);
+ulong GetTickCount64(); uint GetTickCount(); ulong GetMicrosecondCount();
+void Sleep(int milliseconds); bool IsStopped(); int GetLastError(); void ResetLastError(); void SetUserError(ushort user_error);
+void ExpertRemove(); bool EventSetTimer(int seconds); bool EventSetMillisecondTimer(int milliseconds); void EventKillTimer();
+bool EventChartCustom(mql_long chart_id, ushort custom_event_id, mql_long lparam, double dparam, string sparam);
+int MQLInfoInteger(ENUM_MQL_INFO_INTEGER property_id); string MQLInfoString(ENUM_MQL_INFO_STRING property_id);
+int TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER property_id); double TerminalInfoDouble(ENUM_TERMINAL_INFO_DOUBLE property_id);
+string TerminalInfoString(ENUM_TERMINAL_INFO_STRING property_id);
+bool GlobalVariableCheck(const string& name); double GlobalVariableGet(const string& name); datetime GlobalVariableSet(const string& name, double value);
+bool GlobalVariableDel(const string& name); bool GlobalVariableTemp(const string& name);
+
+// ---- strings ----
+int StringLen(const string& s); string StringSubstr(const string& s, int start_pos, int length = -1); int StringFind(const string& s, const string& match, int start_pos = 0);
+int StringReplace(string& s, const string& find, const string& replacement); int StringTrimLeft(string& s); int StringTrimRight(string& s);
+bool StringToUpper(string& s); bool StringToLower(string& s); int StringCompare(const string& a, const string& b, bool case_sensitive = true);
+bool StringAdd(string& s, const string& add); bool StringInit(string& s, int new_length = 0, ushort character = 0); bool StringFill(string& s, ushort character);
+ushort StringGetCharacter(const string& s, int pos); bool StringSetCharacter(string& s, int pos, ushort character);
+int StringSplit(const string& s, ushort separator, ArrayView<string> result);
+int StringSplit(const string& s, ushort separator, MqlArr<string>& result);
+double StringToDouble(const string& s); mql_long StringToInteger(const string& s);
+string DoubleToString(double value, int digits = 8); string IntegerToString(mql_long number, int str_len = 0, ushort fill_symbol = ' ');
+string ShortToString(ushort symbol_code); string CharToString(uchar char_code); string ColorToString(color color_value, bool color_name = false);
+color StringToColor(const string& s); string EnumToString(int v);
+double NormalizeDouble(double value, int digits);
+uint ColorToARGB(color clr, uchar alpha = 255);
+
+// ---- series access ----
+int Bars(const string& symbol, ENUM_TIMEFRAMES timeframe); int Bars(const string& symbol, ENUM_TIMEFRAMES timeframe, datetime start_time, datetime stop_time);
+int iBars(const string& symbol, ENUM_TIMEFRAMES timeframe); int iBarShift(const string& symbol, ENUM_TIMEFRAMES timeframe, datetime time, bool exact = false);
+double iOpen(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift); double iHigh(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift);
+double iLow(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift); double iClose(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift);
+datetime iTime(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift); mql_long iVolume(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift);
+mql_long iTickVolume(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift); mql_long iRealVolume(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift);
+int iSpread(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift);
+int iHighest(const string& symbol, ENUM_TIMEFRAMES timeframe, ENUM_SERIESMODE type, int count = -1, int start = 0);
+int iLowest(const string& symbol, ENUM_TIMEFRAMES timeframe, ENUM_SERIESMODE type, int count = -1, int start = 0);
+int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<MqlRates> rates_array);
+int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, datetime start_time, int count, ArrayView<MqlRates> rates_array);
+int CopyTime(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<datetime> a);
+int CopyOpen(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<double> a);
+int CopyHigh(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<double> a);
+int CopyLow(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<double> a);
+int CopyClose(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<double> a);
+int CopyTickVolume(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<mql_long> a);
+int CopyBuffer(int indicator_handle, int buffer_num, int start_pos, int count, ArrayView<double> buffer);
+int CopyBuffer(int indicator_handle, int buffer_num, datetime start_time, int count, ArrayView<double> buffer);
+int BarsCalculated(int indicator_handle); bool IndicatorRelease(int indicator_handle);
+int iMA(const string& symbol, ENUM_TIMEFRAMES period, int ma_period, int ma_shift, ENUM_MA_METHOD ma_method, int applied_price);
+int iATR(const string& symbol, ENUM_TIMEFRAMES period, int ma_period);
+int iRSI(const string& symbol, ENUM_TIMEFRAMES period, int ma_period, int applied_price);
+int iBands(const string& symbol, ENUM_TIMEFRAMES period, int bands_period, int bands_shift, double deviation, int applied_price);
+int iMACD(const string& symbol, ENUM_TIMEFRAMES period, int fast_ema_period, int slow_ema_period, int signal_period, int applied_price);
+int iStochastic(const string& symbol, ENUM_TIMEFRAMES period, int Kperiod, int Dperiod, int slowing, ENUM_MA_METHOD ma_method, ENUM_STO_PRICE price_field);
+int iADX(const string& symbol, ENUM_TIMEFRAMES period, int adx_period); int iCCI(const string& symbol, ENUM_TIMEFRAMES period, int ma_period, int applied_price);
+int iMomentum(const string& symbol, ENUM_TIMEFRAMES period, int mom_period, int applied_price);
+bool SymbolSelect(const string& name, bool select); bool SymbolInfoTick(const string& symbol, MqlTick& tick); int SymbolsTotal(bool selected);
+double SymbolInfoDouble(const string& name, ENUM_SYMBOL_INFO_DOUBLE prop_id); bool SymbolInfoDouble(const string& name, ENUM_SYMBOL_INFO_DOUBLE prop_id, double& double_var);
+mql_long SymbolInfoInteger(const string& name, ENUM_SYMBOL_INFO_INTEGER prop_id); bool SymbolInfoInteger(const string& name, ENUM_SYMBOL_INFO_INTEGER prop_id, mql_long& long_var);
+string SymbolInfoString(const string& name, ENUM_SYMBOL_INFO_STRING prop_id); bool SymbolInfoString(const string& name, ENUM_SYMBOL_INFO_STRING prop_id, string& string_var);
+double AccountInfoDouble(ENUM_ACCOUNT_INFO_DOUBLE property_id); mql_long AccountInfoInteger(ENUM_ACCOUNT_INFO_INTEGER property_id); string AccountInfoString(ENUM_ACCOUNT_INFO_STRING property_id);
+
+// ---- trade functions ----
+bool OrderSend(const MqlTradeRequest& request, MqlTradeResult& result); bool OrderCheck(const MqlTradeRequest& request, MqlTradeCheckResult& result);
+bool OrderSendAsync(const MqlTradeRequest& request, MqlTradeResult& result);
+bool OrderCalcMargin(ENUM_ORDER_TYPE action, const string& symbol, double volume, double price, double& margin);
+bool OrderCalcProfit(ENUM_ORDER_TYPE action, const string& symbol, double volume, double price_open, double price_close, double& profit);
+int PositionsTotal(); ulong PositionGetTicket(int index); bool PositionSelect(const string& symbol); bool PositionSelectByTicket(ulong ticket);
+string PositionGetSymbol(int index);
+double PositionGetDouble(ENUM_POSITION_PROPERTY_DOUBLE property_id); bool PositionGetDouble(ENUM_POSITION_PROPERTY_DOUBLE property_id, double& double_var);
+mql_long PositionGetInteger(ENUM_POSITION_PROPERTY_INTEGER property_id); bool PositionGetInteger(ENUM_POSITION_PROPERTY_INTEGER property_id, mql_long& long_var);
+string PositionGetString(ENUM_POSITION_PROPERTY_STRING property_id); bool PositionGetString(ENUM_POSITION_PROPERTY_STRING property_id, string& string_var);
+int OrdersTotal(); ulong OrderGetTicket(int index); bool OrderSelect(ulong ticket);
+double OrderGetDouble(ENUM_ORDER_PROPERTY_DOUBLE property_id); bool OrderGetDouble(ENUM_ORDER_PROPERTY_DOUBLE property_id, double& double_var);
+mql_long OrderGetInteger(ENUM_ORDER_PROPERTY_INTEGER property_id); bool OrderGetInteger(ENUM_ORDER_PROPERTY_INTEGER property_id, mql_long& long_var);
+string OrderGetString(ENUM_ORDER_PROPERTY_STRING property_id); bool OrderGetString(ENUM_ORDER_PROPERTY_STRING property_id, string& string_var);
+bool HistorySelect(datetime from_date, datetime to_date); bool HistorySelectByPosition(mql_long position_id); bool HistoryOrderSelect(ulong ticket); bool HistoryDealSelect(ulong ticket);
+int HistoryDealsTotal(); ulong HistoryDealGetTicket(int index); int HistoryOrdersTotal(); ulong HistoryOrderGetTicket(int index);
+double HistoryDealGetDouble(ulong ticket_number, ENUM_DEAL_PROPERTY_DOUBLE property_id); bool HistoryDealGetDouble(ulong ticket_number, ENUM_DEAL_PROPERTY_DOUBLE property_id, double& double_var);
+mql_long HistoryDealGetInteger(ulong ticket_number, ENUM_DEAL_PROPERTY_INTEGER property_id); bool HistoryDealGetInteger(ulong ticket_number, ENUM_DEAL_PROPERTY_INTEGER property_id, mql_long& long_var);
+string HistoryDealGetString(ulong ticket_number, ENUM_DEAL_PROPERTY_STRING property_id); bool HistoryDealGetString(ulong ticket_number, ENUM_DEAL_PROPERTY_STRING property_id, string& string_var);
+double HistoryOrderGetDouble(ulong ticket_number, ENUM_ORDER_PROPERTY_DOUBLE property_id); mql_long HistoryOrderGetInteger(ulong ticket_number, ENUM_ORDER_PROPERTY_INTEGER property_id);
+string HistoryOrderGetString(ulong ticket_number, ENUM_ORDER_PROPERTY_STRING property_id);
+
+// ---- chart / objects ----
+mql_long ChartID(); string ChartSymbol(mql_long chart_id = 0); ENUM_TIMEFRAMES ChartPeriod(mql_long chart_id = 0); bool ChartRedraw(mql_long chart_id = 0);
+mql_long ChartFirst(); mql_long ChartNext(mql_long chart_id);
+mql_long ChartGetInteger(mql_long chart_id, ENUM_CHART_PROPERTY_INTEGER prop_id, int sub_window = 0);
+bool ChartGetInteger(mql_long chart_id, ENUM_CHART_PROPERTY_INTEGER prop_id, int sub_window, mql_long& long_var);
+double ChartGetDouble(mql_long chart_id, ENUM_CHART_PROPERTY_DOUBLE prop_id, int sub_window = 0);
+bool ChartGetDouble(mql_long chart_id, ENUM_CHART_PROPERTY_DOUBLE prop_id, int sub_window, double& double_var);
+string ChartGetString(mql_long chart_id, ENUM_CHART_PROPERTY_STRING prop_id);
+bool ChartSetInteger(mql_long chart_id, ENUM_CHART_PROPERTY_INTEGER prop_id, mql_long value);
+bool ChartSetInteger(mql_long chart_id, ENUM_CHART_PROPERTY_INTEGER prop_id, int sub_window, mql_long value);
+bool ChartSetDouble(mql_long chart_id, ENUM_CHART_PROPERTY_DOUBLE prop_id, double value);
+bool ChartSetString(mql_long chart_id, ENUM_CHART_PROPERTY_STRING prop_id, const string& value);
+bool ChartXYToTimePrice(mql_long chart_id, int x, int y, int& sub_window, datetime& time, double& price);
+bool ChartTimePriceToXY(mql_long chart_id, int sub_window, datetime time, double price, int& x, int& y);
+bool ObjectCreate(mql_long chart_id, const string& name, ENUM_OBJECT type, int sub_window, datetime time1, double price1,
+                  datetime time2 = 0, double price2 = 0, datetime time3 = 0, double price3 = 0);
+bool ObjectDelete(mql_long chart_id, const string& name);
+int ObjectsDeleteAll(mql_long chart_id, int sub_window = -1, int type = -1);
+int ObjectsDeleteAll(mql_long chart_id, const string& prefix, int sub_window = -1, int type = -1);
+int ObjectFind(mql_long chart_id, const string& name);
+int ObjectsTotal(mql_long chart_id, int sub_window = -1, int type = -1);
+string ObjectName(mql_long chart_id, int pos, int sub_window = -1, int type = -1);
+bool ObjectMove(mql_long chart_id, const string& name, int point_index, datetime time, double price);
+bool ObjectSetInteger(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_INTEGER prop_id, mql_long prop_value);
+bool ObjectSetInteger(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_INTEGER prop_id, int prop_modifier, mql_long prop_value);
+bool ObjectSetDouble(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_DOUBLE prop_id, double prop_value);
+bool ObjectSetDouble(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_DOUBLE prop_id, int prop_modifier, double prop_value);
+bool ObjectSetString(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_STRING prop_id, const string& prop_value);
+bool ObjectSetString(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_STRING prop_id, int prop_modifier, const string& prop_value);
+mql_long ObjectGetInteger(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_INTEGER prop_id, int prop_modifier = 0);
+bool ObjectGetInteger(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_INTEGER prop_id, int prop_modifier, mql_long& long_var);
+double ObjectGetDouble(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_DOUBLE prop_id, int prop_modifier = 0);
+bool ObjectGetDouble(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_DOUBLE prop_id, int prop_modifier, double& double_var);
+string ObjectGetString(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_STRING prop_id, int prop_modifier = 0);
+bool ObjectGetString(mql_long chart_id, const string& name, ENUM_OBJECT_PROPERTY_STRING prop_id, int prop_modifier, string& string_var);
+double ObjectGetValueByTime(mql_long chart_id, const string& name, datetime time, int line_id);
+datetime ObjectGetTimeByValue(mql_long chart_id, const string& name, double value, int line_id);
+bool TextSetFont(const string& name, int size, uint flags = 0, int orientation = 0);
+bool TextGetSize(const string& text, uint& width, uint& height);
+
+// ---- Standard Library (subset) ----
+class CTrade {
+public:
+   CTrade(); ~CTrade();
+   void LogLevel(ENUM_LOG_LEVELS log_level); void SetExpertMagicNumber(ulong magic); void SetDeviationInPoints(ulong deviation);
+   void SetTypeFilling(ENUM_ORDER_TYPE_FILLING filling); bool SetTypeFillingBySymbol(const string& symbol); void SetAsyncMode(bool mode);
+   void SetMarginMode();
+   bool PositionOpen(const string& symbol, ENUM_ORDER_TYPE order_type, double volume, double price, double sl, double tp, const string& comment = "");
+   bool PositionModify(const string& symbol, double sl, double tp); bool PositionModify(ulong ticket, double sl, double tp);
+   bool PositionClose(const string& symbol, ulong deviation = ULONG_MAX); bool PositionClose(ulong ticket, ulong deviation = ULONG_MAX);
+   bool PositionClosePartial(const string& symbol, double volume, ulong deviation = ULONG_MAX);
+   bool PositionClosePartial(ulong ticket, double volume, ulong deviation = ULONG_MAX);
+   bool OrderOpen(const string& symbol, ENUM_ORDER_TYPE order_type, double volume, double limit_price, double price, double sl, double tp,
+                  ENUM_ORDER_TYPE_TIME type_time = ORDER_TIME_GTC, datetime expiration = 0, const string& comment = "");
+   bool OrderModify(ulong ticket, double price, double sl, double tp, ENUM_ORDER_TYPE_TIME type_time, datetime expiration, double stoplimit = 0.0);
+   bool OrderDelete(ulong ticket);
+   bool Buy(double volume, const string& symbol = string(), double price = 0.0, double sl = 0.0, double tp = 0.0, const string& comment = "");
+   bool Sell(double volume, const string& symbol = string(), double price = 0.0, double sl = 0.0, double tp = 0.0, const string& comment = "");
+   bool BuyLimit(double volume, double price, const string& symbol = string(), double sl = 0.0, double tp = 0.0, ENUM_ORDER_TYPE_TIME type_time = ORDER_TIME_GTC, datetime expiration = 0, const string& comment = "");
+   bool BuyStop(double volume, double price, const string& symbol = string(), double sl = 0.0, double tp = 0.0, ENUM_ORDER_TYPE_TIME type_time = ORDER_TIME_GTC, datetime expiration = 0, const string& comment = "");
+   bool SellLimit(double volume, double price, const string& symbol = string(), double sl = 0.0, double tp = 0.0, ENUM_ORDER_TYPE_TIME type_time = ORDER_TIME_GTC, datetime expiration = 0, const string& comment = "");
+   bool SellStop(double volume, double price, const string& symbol = string(), double sl = 0.0, double tp = 0.0, ENUM_ORDER_TYPE_TIME type_time = ORDER_TIME_GTC, datetime expiration = 0, const string& comment = "");
+   void Request(MqlTradeRequest& request) const; double RequestPrice() const; double RequestVolume() const; double RequestSL() const; double RequestTP() const;
+   void Result(MqlTradeResult& result) const; uint ResultRetcode() const; ulong ResultDeal() const; ulong ResultOrder() const; double ResultVolume() const;
+   double ResultPrice() const; double ResultBid() const; double ResultAsk() const; string ResultComment() const; string ResultRetcodeDescription() const;
+   uint ResultRetcodeExternal() const;
+   void CheckResult(MqlTradeCheckResult& check) const; uint CheckResultRetcode() const; string CheckResultComment() const;
+   void PrintRequest() const; void PrintResult() const;
+};
+class CSymbolInfo {
+public:
+   CSymbolInfo(); bool Name(const string& name); string Name() const; bool Refresh(); bool RefreshRates(); bool Select(bool select = true);
+   double Ask() const; double Bid() const; double Last() const; int Digits() const; double Point() const; int Spread() const;
+   double TickSize() const; double TickValue() const; double ContractSize() const; double LotsMin() const; double LotsMax() const; double LotsStep() const;
+   int StopsLevel() const; int FreezeLevel() const; double NormalizePrice(double price) const; string CurrencyBase() const; string CurrencyProfit() const;
+};
+class CPositionInfo {
+public:
+   CPositionInfo(); bool Select(const string& symbol); bool SelectByIndex(int index); bool SelectByTicket(ulong ticket);
+   ulong Ticket() const; string Symbol() const; ulong Magic() const; double Volume() const; double PriceOpen() const; double StopLoss() const;
+   double TakeProfit() const; double PriceCurrent() const; double Commission() const; double Swap() const; double Profit() const;
+   ENUM_POSITION_TYPE PositionType() const; datetime Time() const; string Comment() const;
+};
+class CDealInfo {
+public:
+   CDealInfo(); bool SelectByIndex(int index); bool Ticket(ulong ticket); ulong Ticket() const; string Symbol() const; ulong Magic() const;
+   double Volume() const; double Price() const; double Profit() const; double Commission() const; double Swap() const; datetime Time() const;
+   ENUM_DEAL_TYPE DealType() const; ENUM_DEAL_ENTRY Entry() const;
+};
+class COrderInfo {
+public:
+   COrderInfo(); bool Select(ulong ticket); bool SelectByIndex(int index); ulong Ticket() const; string Symbol() const; ulong Magic() const;
+   double VolumeCurrent() const; double PriceOpen() const; double StopLoss() const; double TakeProfit() const; ENUM_ORDER_TYPE OrderType() const;
+};
+class CAccountInfo {
+public:
+   CAccountInfo(); double Balance() const; double Equity() const; double Profit() const; double FreeMargin() const; double Margin() const;
+   string Currency() const;
+};

@@ -455,6 +455,7 @@ int TerminalInfoInteger(ENUM_TERMINAL_INFO_INTEGER property_id); double Terminal
 string TerminalInfoString(ENUM_TERMINAL_INFO_STRING property_id);
 bool GlobalVariableCheck(const string& name); double GlobalVariableGet(const string& name); datetime GlobalVariableSet(const string& name, double value);
 bool GlobalVariableDel(const string& name); bool GlobalVariableTemp(const string& name);
+void GlobalVariablesFlush(); int GlobalVariablesDeleteAll(const string& prefix_name, datetime limit_data = 0); int GlobalVariablesTotal();
 
 // ---- strings ----
 int StringLen(const string& s); string StringSubstr(const string& s, int start_pos, int length = -1); int StringFind(const string& s, const string& match, int start_pos = 0);
@@ -895,5 +896,43 @@ bool CTrade::PositionClose(ulong, ulong) { return false; }
 bool CTrade::PositionModify(ulong, double, double) { return false; }
 bool CTrade::PositionClosePartial(ulong, double, ulong) { return false; }
 string CTrade::ResultRetcodeDescription() const { return string(); }
+
+// ---- terminal global variables: an in-memory hash store that outlives the EA's own globals (restart-memory tests) ----
+static const int RT_GV_CAP = 1 << 15;                           // slots (open addressing); at most RT_GV_CAP / 2 names
+static mqlstring* rt_gvN = 0; static double* rt_gvV = 0; static char* rt_gvU = 0; static int rt_gvC = 0;   // used: 0 empty, 1 live, 2 deleted
+static unsigned rt_gvHash(const string& s) { unsigned h = 2166136261u; for(int i = 0; i < s.n; i++) { h ^= (unsigned char)s.s[i]; h *= 16777619u; } return h; }
+static void rt_gvInit() { if(!rt_gvN) { rt_gvN = new mqlstring[RT_GV_CAP]; rt_gvV = new double[RT_GV_CAP]; rt_gvU = new char[RT_GV_CAP]; for(int i = 0; i < RT_GV_CAP; i++) rt_gvU[i] = 0; } }
+static int rt_gvFind(const string& name)                            // slot of a live name, or -1
+{
+   rt_gvInit();
+   for(unsigned i = rt_gvHash(name) & (RT_GV_CAP - 1), k = 0; k < (unsigned)RT_GV_CAP; i = (i + 1) & (RT_GV_CAP - 1), k++)
+   {
+      if(rt_gvU[i] == 0) return -1;
+      if(rt_gvU[i] == 1 && rt_gvN[i] == name) return (int)i;
+   }
+   return -1;
+}
+bool GlobalVariableCheck(const string& name) { return rt_gvFind(name) >= 0; }
+double GlobalVariableGet(const string& name) { int i = rt_gvFind(name); return i >= 0 ? rt_gvV[i] : 0.0; }
+datetime GlobalVariableSet(const string& name, double value)
+{
+   int i = rt_gvFind(name);
+   if(i >= 0) { rt_gvV[i] = value; return 1; }
+   if(rt_gvC >= RT_GV_CAP / 2) return 0;
+   for(unsigned j = rt_gvHash(name) & (RT_GV_CAP - 1);; j = (j + 1) & (RT_GV_CAP - 1))
+      if(rt_gvU[j] != 1) { rt_gvU[j] = 1; rt_gvN[j] = name; rt_gvV[j] = value; rt_gvC++; return 1; }
+}
+bool GlobalVariableDel(const string& name) { int i = rt_gvFind(name); if(i < 0) return false; rt_gvU[i] = 2; rt_gvC--; return true; }
+bool GlobalVariableTemp(const string& name) { return GlobalVariableSet(name, 0.0) != 0; }
+void GlobalVariablesFlush() {}
+int GlobalVariablesTotal() { return rt_gvC; }
+int GlobalVariablesDeleteAll(const string& prefix, datetime)
+{
+   rt_gvInit(); int n = 0;
+   for(int i = 0; i < RT_GV_CAP; i++) if(rt_gvU[i] == 1 && StringFind(rt_gvN[i], prefix) == 0) { rt_gvU[i] = 2; rt_gvC--; n++; }
+   return n;
+}
+extern "C" int rt_gv_count() { return rt_gvC; }
+ushort StringGetCharacter(const string& s, int pos) { return (s.s && pos >= 0 && pos < s.n) ? (ushort)(unsigned char)s.s[pos] : (ushort)0; }
 
 bool OrderCalcMargin(ENUM_ORDER_TYPE, const string&, double, double, double& margin) { margin = 0; return true; }   // harness stub

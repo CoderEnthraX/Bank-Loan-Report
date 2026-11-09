@@ -260,6 +260,54 @@ Checks:
 **Loading v4.2:** remove the strategy from the chart and add it again, or use Settings -> Defaults -> Reset settings. Then switch the locks on in
 MONTHLY PROFIT LOCK. In MT5, compile the new EA and reset its inputs. Nothing changes until a lock is switched on.
 
+### EA v4.3: restart memory (EA only, automatic)
+
+When MT5 or the EA restarts, the EA now continues where it left off. A restart means closing MT5, a reboot, a power cut, a crash, or removing
+and re-adding the EA. Closing the laptop lid (sleep) was never a problem: MT5 keeps running in memory and the EA catches up when it reconnects.
+Changing inputs or the timeframe also kept the EA's memory before (MT5 keeps it then). The TradingView strategy needs nothing: it recalculates
+every trade from the chart history each time it loads.
+
+**Setting:** **Continue after a restart** (`InpRemember`, group RESTART MEMORY), **on** by default.
+
+**What is kept:**
+- **Loss recovery:** the amount to win back, the losing / winning trades in a row, the Labouchere list, Rule C's carried losses, and the state
+  of every other rule. Total profit is kept too (the Step-up rule's size comes from it).
+- **Crooks C:** the loss to win back, the cycle, the wait for a win, and the Crooks C rule state (losing recoveries in a row, the wait or skip
+  pause and its days left, the hedge pair on the next signal).
+- **Streaks and pauses:** the day's P&L, the streak stop, the pause days left, the hard-cap stop.
+- **Monthly profit lock:** the month's profit, its high, the lock, and a monthly restart that is still waiting.
+- **The open trade or entry order:**
+  - whether it is a recovery trade, its risk, and what it has booked so far (partial closes);
+  - the Crooks TP1-rule levels, and the hedge pair;
+  - which broker deals were already counted.
+
+**How it is saved:** in MT5 global variables (Tools -> Global Variables, F3), names starting `ARS|<symbol>|<magic number>|`. They are written
+only when a value changes and flushed to disk at once, so a crash or power cut loses nothing.
+
+**What happens on a restart:**
+1. The EA replays the chart as before and loads the saved state.
+2. It counts the days that passed: the streak pause, the Crooks C skip days, and a new month (the locks start again; the monthly restart
+   waits for a trade still open).
+3. It books every deal the broker made while it was off, through the same code as after an internet disconnect. That covers a stop loss or
+   take profit that closed the trade, and an entry order that filled.
+4. It adopts a trade that is still open, and re-places a setup that is still waiting.
+
+The Journal prints `Restart memory: continued from <time> | loss to win back ...`, and the table shows `RESTART MEMORY | on | continued from
+<time>`.
+
+**Notes:**
+- **Starting fresh:** switch the setting off (the saved state is deleted), then on again.
+- **One saved state per symbol and magic number on this MT5.** A state saved by another account is not loaded. Use a different magic number
+  for each EA on the same symbol.
+- **MT5 deletes global variables that are not used for 4 weeks.**
+- **The Strategy Tester ignores it.** Every test starts fresh.
+- **A hard-cap Stop stays in force after a restart.** Change any input to trade again (as before).
+- **Also fixed:** after a disconnect or restart that spans several days, each missed day now counts for the streak pause (before: only one).
+  The Labouchere list is now kept when inputs change, like the other rules (it was reset).
+- **Limits** (the same as after a disconnect):
+  - a trade that closed while the EA was off counts from the moment the EA books it at the restart (e.g. a pause it starts begins then);
+  - EA-only partial closes whose level the price reached while the EA was off are not done afterwards.
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.

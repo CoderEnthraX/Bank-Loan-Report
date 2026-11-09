@@ -27,7 +27,7 @@ EOP
 cat >> "$HERE/ea_rt.cpp" <<'EOW'
 #line 1 "<rec-wrapper>"
 // what TakeSetup / the per-bar P&L update / BookClosed do with the money-management state (no broker calls)
-extern "C" void rec_init() { LabReset(); }
+extern "C" void rec_init() { LabReset(); gCrkPrPrev = (int)InpCrkPr; }   // as after the first OnInit
 extern "C" double rec_next(double exitR) { return NextRisk(exitR); }
 extern "C" void rec_take() { crkRec = CrkRecNext(); }
 extern "C" void rec_part(double np) { exPnl += np; totalNet += np; if(np != 0) carried = MathMax(0.0, carried - np); }
@@ -53,7 +53,22 @@ extern "C" double rec_mpeak() { return monPeak; }
 // lot sizing test: the EA's own LotsFor() with a set lot step / minimum / maximum, equity, tick value and spread
 extern "C" double rec_lots(double risk, double sd, double entry, int isL, double ld, double tv, double spread, double vstep, double vmin, double eq)
 { rec_tv = tv; rec_bid = entry; rec_ask = entry + spread; rec_vstep = vstep; rec_vmin = vmin; rec_vmax = 100.0; rec_eq = eq; return LotsFor(risk, sd, entry, isL != 0, ld); }
+// v4.3 restart memory: save, a fresh program load (every global back to its initial value), then what OnInit does with the saved state
+extern "C" void rec_fresh();
+extern "C" void rec_restart()
+{
+   bool hgOk = gHedgeOk;                                  // from the account in OnInit, not saved
+   gPersist = true; gSvBase = "T|"; if(gLastDone <= 0) gLastDone = 1;   // as if a bar was processed (the harness has no bars)
+   StateSave(true);
+   rec_fresh();
+   gPersist = true; gSvBase = "T|"; gHedgeOk = hgOk;
+   if(ArraySize(labSeq) == 0) LabReset();
+   if(!StateLoad()) Print("restart memory: nothing saved");
+   if(gCrkPrPrev != (int)InpCrkPr || InpRec != REC_CRC) { crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; }
+   gCrkPrPrev = (int)InpCrkPr;
+}
 EOW
+python3 -I "$HERE/gen_fresh.py" "$HERE/EA_copy.mq5" >> "$HERE/ea_rt.cpp"
 clang++ -std=c++17 -O1 -w -c "$HERE/ea_rt.cpp" -o "$HERE/ea_rt.o"
 clang++ -std=c++17 -O1 -c "$HERE/rec_driver.cpp" -o "$HERE/rec_driver.o"
 clang++ -O1 "$HERE/rec_driver.o" "$HERE/ea_rt.o" -o "$HERE/rec_harness"
