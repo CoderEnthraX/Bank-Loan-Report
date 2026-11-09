@@ -471,7 +471,17 @@ Other gold findings:
       - `rec/gen_fresh.py` generates `rec_fresh()`, which puts every EA global back to its declared initial value, i.e. a fresh program load.
       - `rec_restart()` is save, then fresh, then what OnInit does. `rec_driver` with `REC_RESTART=k` restarts at every k-th step.
       - Negative control: `v43neg/run_neg.sh`.
-    - **Results** (`v40/final_v43.txt`): FINAL_V43_RESULTS.
+    - **Results** (`v40/final_v43.txt`, final EA):
+      - Compile: mq5check 0 errors / 0 warnings, ASCII only.
+      - Money-management parity, normal / with a restart after every step (`REC_RESTART=1`), 0 / 0 mismatches each:
+        - rec: 1,680 runs, 2.15 M trades;
+        - tp1: 3,360 runs, 3.87 M trades;
+        - crkpr: 5,184 runs, 7.43 M signals.
+      - Negative control: without `crkL`, `totalNet` or `crkSkipLeft` the restart parity gives 460 / 213 / 3,294 mismatches, so omissions
+        are caught.
+      - Hedge and month scripted cases: unchanged.
+      - Engine parity: ALL IDENTICAL x 3 shifts.
+      - Independent review: Sonnet, high effort; its findings were verified, then fixed in v43e.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

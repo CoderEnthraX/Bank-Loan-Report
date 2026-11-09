@@ -1,0 +1,59 @@
+== hedge forget/ok/lastLeg: 1 1
+1 base, loses                      risk    50.00  result   -50.00  owed after    50.00  hedge next 0
+2 base, wins                       risk    50.00  result   +30.00  owed after    20.00  hedge next 0
+3 recovery, loses (1 in a row)     risk    50.00  result   -50.00  owed after    70.00  hedge next 0
+4 base, wins                       risk    50.00  result   +30.00  owed after    40.00  hedge next 0
+5 recovery, loses (2 in a row)     risk    66.67  result   -66.67  owed after   106.67  hedge next 1
+6 HEDGE PAIR, TP then SL           risk   177.78  result   -71.11  owed after     0.00  hedge next 0  (pair placed: 1)
+7 next trade, wins                 risk    50.00  result   +30.00  owed after     0.00  hedge next 0
+8 next trade, wins                 risk    50.00  result   +30.00  owed after     0.00  hedge next 0
+== hedge forget/ok/lastLeg: 0 1 -1
+1 base, loses                      risk    50.00  result   -50.00  owed after    50.00  hedge next 0
+2 base, wins                       risk    50.00  result   +30.00  owed after    20.00  hedge next 0
+3 recovery, loses (1 in a row)     risk    50.00  result   -50.00  owed after    70.00  hedge next 0
+4 base, wins                       risk    50.00  result   +30.00  owed after    40.00  hedge next 0
+5 recovery, loses (2 in a row)     risk    66.67  result   -66.67  owed after   106.67  hedge next 1
+6 HEDGE PAIR, TP then SL           risk   177.78  result   -71.11  owed after   177.78  hedge next 0  (pair placed: 1)
+7 next trade, wins                 risk    50.00  result   +30.00  owed after   147.78  hedge next 0
+8 next trade, wins                 risk   246.30  result  +147.78  owed after     0.00  hedge next 0
+== hedge forget/ok/lastLeg: 0 1 0.6
+1 base, loses                      risk    50.00  result   -50.00  owed after    50.00  hedge next 0
+2 base, wins                       risk    50.00  result   +30.00  owed after    20.00  hedge next 0
+3 recovery, loses (1 in a row)     risk    50.00  result   -50.00  owed after    70.00  hedge next 0
+4 base, wins                       risk    50.00  result   +30.00  owed after    40.00  hedge next 0
+5 recovery, loses (2 in a row)     risk    66.67  result   -66.67  owed after   106.67  hedge next 1
+6 HEDGE PAIR, TP then SL           risk   177.78  result   -71.11  owed after   177.78  hedge next 0  (pair placed: 1)
+7 next trade, wins                 risk   296.30  result  +177.78  owed after     0.00  hedge next 0
+8 next trade, wins                 risk    50.00  result   +30.00  owed after     0.00  hedge next 0
+== hedge forget/ok/lastLeg: 1 0
+1 base, loses                      risk    50.00  result   -50.00  owed after    50.00  hedge next 0
+2 base, wins                       risk    50.00  result   +30.00  owed after    20.00  hedge next 0
+3 recovery, loses (1 in a row)     risk    50.00  result   -50.00  owed after    70.00  hedge next 0
+4 base, wins                       risk    50.00  result   +30.00  owed after    40.00  hedge next 0
+5 recovery, loses (2 in a row)     risk    66.67  result   -66.67  owed after     0.00  hedge next 0
+6 HEDGE PAIR, TP then SL           risk    50.00  result   -20.00  owed after     0.00  hedge next 0  (pair placed: 0)
+7 next trade, wins                 risk    50.00  result   +30.00  owed after     0.00  hedge next 0
+8 next trade, wins                 risk    50.00  result   +30.00  owed after     0.00  hedge next 0
+== month
+1) Stop for the month once it is up $150
+   trade   +60.00  month   +60.00  high     0.00  -> keep trading
+   trade   +50.00  month  +110.00  high     0.00  -> keep trading
+   trade   +45.00  month  +155.00  high     0.00  -> STOP for the month
+   new month -> trading again
+2) Lock profit once the month is up $500, lock 20% of the high
+   trade  +300.00  month  +300.00  high   300.00  -> keep trading
+   trade  +250.00  month  +550.00  high   550.00  -> keep trading
+   trade  -200.00  month  +350.00  high   550.00  -> keep trading
+   trade  +300.00  month  +650.00  high   650.00  -> keep trading
+   trade  -400.00  month  +250.00  high   650.00  -> keep trading
+   trade  -119.00  month  +131.00  high   650.00  -> keep trading
+   trade    -2.00  month  +129.00  high   650.00  -> STOP for the month
+   new month -> trading again
+3) Restart the loss recovery on the 1st (Crooks C)
+   Oct: base trade risk 50.00 lost, owed 50.00
+   Oct: base trade risk 50.00 won, owed 20.00, next risk 50.00 (recovery)
+   1 Nov: restart done, owed 0.00, next risk 50.00
+   restart off: next month restart not done, owed 50.00 (kept)
+4) Trades booked by the EA (BookClosed) count in the month: lock $150
+   trade closed +80.00 (risk 50.00) -> keep trading
+   trade closed +80.00 (risk 50.00) -> STOP for the month

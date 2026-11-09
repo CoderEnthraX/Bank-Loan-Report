@@ -1,0 +1,4 @@
+without IoD("kl", crkL); -> runs 1680, trades compared 2150319, mismatches 460, worst relative difference 1.00e+00; runs where the account blew (compared up to that trade): 29
+without IoD("tn", totalNet); -> runs 1680, trades compared 2150319, mismatches 213, worst relative difference 8.99e+00; runs where the account blew (compared up to that trade): 29
+without IoI("kt", crkSkipLeft); -> runs 5184, signals compared 7401169 (skipped by the pause 1041843), mismatches 3294
+done

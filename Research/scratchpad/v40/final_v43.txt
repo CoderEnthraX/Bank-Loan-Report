@@ -1,3 +1,14 @@
 start 20:22:47
 normal rec runs 1680, trades compared 2150319, mismatches 0, worst relative difference 4.99e-12; runs where the account blew (compared up to that trade): 29 20:23:06
 normal tp1 p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 3360, trades compared 3870319 (TP1-rule trades 1127020), mismatches 0 20:23:54
+normal crkpr runs 5184, signals compared 7429684 (skipped by the pause 1050235), mismatches 0 20:24:47
+restart rec runs 1680, trades compared 2150319, mismatches 0, worst relative difference 4.99e-12; runs where the account blew (compared up to that trade): 29 20:31:39
+restart tp1 p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 3360, trades compared 3870319 (TP1-rule trades 1127020), mismatches 0 20:43:09
+restart crkpr runs 5184, signals compared 7429684 (skipped by the pause 1050235), mismatches 0 21:07:02
+scripted hedge + month tests: 59 lines, see hg_month_v43.log 21:07:02
+negative control: without IoD("kl", crkL); -> runs 1680, trades compared 2150319, mismatches 460, worst relative difference 1.00e+00; runs where the account blew (compared up to that trade): 29 without IoD("tn", totalNet); -> runs 1680, trades compared 2150319, mismatches 213, worst relative difference 8.99e+00; runs where the account blew (compared up to that trade): 29 without IoI("kt", crkSkipLeft); -> runs 5184, signals compared 7401169 (skipped by the pause 1041843), mismatches 3294 done  21:49:25
+engine ALL IDENTICAL 21:49:49
+engine +49 ALL IDENTICAL 21:50:10
+engine -189 ALL IDENTICAL 21:50:30
+engine (data files restored) ALL IDENTICAL 21:50:51
+done 21:50:51
