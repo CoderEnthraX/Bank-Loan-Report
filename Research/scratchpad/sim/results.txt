@@ -1,14 +1,16 @@
-Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults; Wed Nov 11 21:33:34 UTC 2026
+Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults; Wed Nov 11 21:43:19 UTC 2026
 
 ################ 01_base: JIT=0
 == sc_01_base_43.log: 100 trades opened, 100 closed, 100 bookings, driver events 0
    opened without a take profit at the broker: 100
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               65 trades, P&L   2940.35 (avg   45.24)
    closed by SL                                                               35 trades, P&L  -1515.68 (avg  -43.31)
    bookings equal to the broker P&L: 100 of 100
    total booked 1424.67, total broker P&L of closed trades 1424.67
 == sc_01_base_44.log: 100 trades opened, 100 closed, 100 bookings, driver events 0
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               67 trades, P&L   2910.89 (avg   43.45)
    closed by SL                                                               33 trades, P&L  -1380.24 (avg  -41.83)
    bookings equal to the broker P&L: 100 of 100
@@ -20,12 +22,14 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 02_spread: JIT=0.6
 == sc_02_spread_43.log: 99 trades opened, 99 closed, 99 bookings, driver events 0
    opened without a take profit at the broker: 99
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               64 trades, P&L   2903.83 (avg   45.37)
    closed by SL                                                               35 trades, P&L  -1517.30 (avg  -43.35)
    bookings equal to the broker P&L: 99 of 99
    total booked 1386.53, total broker P&L of closed trades 1386.53
 == sc_02_spread_44.log: 99 trades opened, 99 closed, 99 bookings, driver events 0
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               66 trades, P&L   2875.23 (avg   43.56)
    closed by SL                                                               33 trades, P&L  -1382.65 (avg  -41.90)
    bookings equal to the broker P&L: 99 of 99
@@ -37,12 +41,14 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 03_restart: JIT=0.6 RESTART=2999
 == sc_03_restart_43.log: 99 trades opened, 99 closed, 99 bookings, driver events 82
    opened without a take profit at the broker: 99
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               64 trades, P&L   2903.83 (avg   45.37)
    closed by SL                                                               35 trades, P&L  -1517.30 (avg  -43.35)
    bookings equal to the broker P&L: 99 of 99
    total booked 1386.53, total broker P&L of closed trades 1386.53
 == sc_03_restart_44.log: 99 trades opened, 99 closed, 99 bookings, driver events 82
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               66 trades, P&L   2875.23 (avg   43.56)
    closed by SL                                                               33 trades, P&L  -1382.65 (avg  -41.90)
    bookings equal to the broker P&L: 99 of 99
@@ -54,12 +60,14 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 04_restart_off: JIT=0.6 RESTART=2999 OFF=200
 == sc_04_restart_off_43.log: 90 trades opened, 90 closed, 90 bookings, driver events 77
    opened without a take profit at the broker: 90
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               57 trades, P&L   2588.71 (avg   45.42)
    closed by SL                                                               33 trades, P&L  -1421.66 (avg  -43.08)
    bookings equal to the broker P&L: 90 of 90
    total booked 1167.05, total broker P&L of closed trades 1167.05
 == sc_04_restart_off_44.log: 90 trades opened, 90 closed, 90 bookings, driver events 77
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               59 trades, P&L   2503.05 (avg   42.42)
    closed by SL                                                               31 trades, P&L  -1257.58 (avg  -40.57)
    bookings equal to the broker P&L: 90 of 90
@@ -71,12 +79,14 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 05_newinputs_same: JIT=0.6 REINIT=3001
 == sc_05_newinputs_same_43.log: 99 trades opened, 99 closed, 99 bookings, driver events 82
    opened without a take profit at the broker: 99
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               64 trades, P&L   2903.83 (avg   45.37)
    closed by SL                                                               35 trades, P&L  -1517.30 (avg  -43.35)
    bookings equal to the broker P&L: 99 of 99
    total booked 1386.53, total broker P&L of closed trades 1386.53
 == sc_05_newinputs_same_44.log: 99 trades opened, 99 closed, 99 bookings, driver events 82
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               66 trades, P&L   2875.23 (avg   43.56)
    closed by SL                                                               33 trades, P&L  -1382.65 (avg  -41.90)
    bookings equal to the broker P&L: 99 of 99
@@ -88,6 +98,7 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 06_newinputs_stress: JIT=0.6 REINIT=23 InpDispAtr=1.0 ALT=InpDispAtr:0.8
 == sc_06_newinputs_stress_43.log: 95 trades opened, 95 closed, 95 bookings, driver events 21524
    opened without a take profit at the broker: 95
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               56 trades, P&L   2811.44 (avg   50.20)
    closed by SL                                                               30 trades, P&L  -1399.39 (avg  -46.65)
    closed by EA: engine wins (the engine is not in this trade)                 9 trades, P&L     60.86 (avg    6.76)
@@ -95,6 +106,7 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
    total booked 1472.91, total broker P&L of closed trades 1472.91
 == sc_06_newinputs_stress_44.log: 94 trades opened, 94 closed, 94 bookings, driver events 21524
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               62 trades, P&L   3131.35 (avg   50.51)
    closed by SL                                                               32 trades, P&L  -1627.40 (avg  -50.86)
    bookings equal to the broker P&L: 94 of 94
@@ -106,12 +118,14 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 07_tfswitch: JIT=0.6 TFSW=1999 TFLEN=60
 == sc_07_tfswitch_43.log: 98 trades opened, 98 closed, 98 bookings, driver events 246
    opened without a take profit at the broker: 98
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               62 trades, P&L   3252.78 (avg   52.46)
    closed by SL                                                               36 trades, P&L  -1638.02 (avg  -45.50)
    bookings equal to the broker P&L: 98 of 98
    total booked 1614.76, total broker P&L of closed trades 1614.76
 == sc_07_tfswitch_44.log: 94 trades opened, 94 closed, 94 bookings, driver events 246
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               62 trades, P&L   2663.25 (avg   42.96)
    closed by SL                                                               32 trades, P&L  -1336.45 (avg  -41.76)
    bookings equal to the broker P&L: 94 of 94
@@ -123,6 +137,7 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 08_tfswitch_stress: JIT=0.6 TFSW=37 TFLEN=11
 == sc_08_tfswitch_stress_43.log: 167 trades opened, 167 closed, 167 bookings, driver events 13379
    opened without a take profit at the broker: 167
+   same signal traded twice (same side and stop as the trade before): 3
    closed by TP                                                               68 trades, P&L   3308.63 (avg   48.66)
    closed by SL                                                               50 trades, P&L  -1702.65 (avg  -34.05)
    closed by EA: engine wins (the engine is not in this trade)                48 trades, P&L    416.91 (avg    8.69)
@@ -131,6 +146,7 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
    total booked 2041.06, total broker P&L of closed trades 2041.06
 == sc_08_tfswitch_stress_44.log: 86 trades opened, 86 closed, 86 bookings, driver events 13379
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               54 trades, P&L   2433.95 (avg   45.07)
    closed by SL                                                               32 trades, P&L  -1358.26 (avg  -42.45)
    bookings equal to the broker P&L: 86 of 86
@@ -142,6 +158,7 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 09_hand_close: JIT=0.6 EXT=3 HOLD=40
 == sc_09_hand_close_43.log: 99 trades opened, 99 closed, 99 bookings, driver events 25
    opened without a take profit at the broker: 99
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               51 trades, P&L   2148.83 (avg   42.13)
    closed by hand (phone)                                                     25 trades, P&L    111.85 (avg    4.47)
    closed by SL                                                               23 trades, P&L  -1116.36 (avg  -48.54)
@@ -149,6 +166,7 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
    total booked 1032.47, total broker P&L of closed trades 1144.32
 == sc_09_hand_close_44.log: 99 trades opened, 99 closed, 99 bookings, driver events 23
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               54 trades, P&L   2324.62 (avg   43.05)
    closed by hand (phone)                                                     23 trades, P&L     97.78 (avg    4.25)
    closed by SL                                                               22 trades, P&L   -915.82 (avg  -41.63)
@@ -161,6 +179,7 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 10_other_ea_close: JIT=0.6 EXT=3 HOLD=40 EXTMAGIC=777
 == sc_10_other_ea_close_43.log: 99 trades opened, 99 closed, 99 bookings, driver events 25
    opened without a take profit at the broker: 99
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               51 trades, P&L   2148.83 (avg   42.13)
    closed by another EA                                                       25 trades, P&L    111.85 (avg    4.47)
    closed by SL                                                               23 trades, P&L  -1116.36 (avg  -48.54)
@@ -168,6 +187,7 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
    total booked 1032.47, total broker P&L of closed trades 1144.32
 == sc_10_other_ea_close_44.log: 99 trades opened, 99 closed, 99 bookings, driver events 23
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               54 trades, P&L   2324.62 (avg   43.05)
    closed by another EA                                                       23 trades, P&L     97.78 (avg    4.25)
    closed by SL                                                               22 trades, P&L   -915.82 (avg  -41.63)
@@ -180,12 +200,14 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 11_stops_level: JIT=0.6 STOPS=30
 == sc_11_stops_level_43.log: 99 trades opened, 99 closed, 99 bookings, driver events 0
    opened without a take profit at the broker: 99
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               64 trades, P&L   2903.83 (avg   45.37)
    closed by SL                                                               35 trades, P&L  -1517.30 (avg  -43.35)
    bookings equal to the broker P&L: 99 of 99
    total booked 1386.53, total broker P&L of closed trades 1386.53
 == sc_11_stops_level_44.log: 99 trades opened, 99 closed, 99 bookings, driver events 0
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               66 trades, P&L   2875.23 (avg   43.56)
    closed by SL                                                               33 trades, P&L  -1382.65 (avg  -41.90)
    bookings equal to the broker P&L: 99 of 99
@@ -197,23 +219,26 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
 ################ 12_commission: JIT=0.6 COMM=3.5
 == sc_12_commission_43.log: 99 trades opened, 99 closed, 99 bookings, driver events 0
    opened without a take profit at the broker: 99
-   closed by TP                                                               64 trades, P&L   2901.59 (avg   45.34)
-   closed by SL                                                               35 trades, P&L  -1524.12 (avg  -43.55)
-   bookings equal to the broker P&L: 0 of 99  MISMATCHES: [(('2026.08.04 06:45:00', -42.96, 0), -42.75, 1001, 'SL'), (('2026.08.04 17:35:00', -41.82, 0), -41.71, 1004, 'SL'), (('2026.08.05 03:55:00', 29.88, 0), 30.19, 1007, 'TP'), (('2026.08.05 04:40:00', 60.62, 0), 61.11, 1010, 'TP'), (('2026.08.05 09:25:00', -42.64, 0), -42.5, 1015, 'SL')]
-   total booked 1355.86, total broker P&L of closed trades 1377.47
+   same signal traded twice (same side and stop as the trade before): 0
+   closed by TP                                                               64 trades, P&L   2886.48 (avg   45.10)
+   closed by SL                                                               35 trades, P&L  -1530.94 (avg  -43.74)
+   bookings equal to the broker P&L: 99 of 99
+   total booked 1355.86, total broker P&L of closed trades 1355.54
 == sc_12_commission_44.log: 99 trades opened, 99 closed, 99 bookings, driver events 0
    opened without a take profit at the broker: 0
-   closed by TP                                                               66 trades, P&L   2872.84 (avg   43.53)
-   closed by SL                                                               33 trades, P&L  -1388.70 (avg  -42.08)
-   bookings equal to the broker P&L: 0 of 99  MISMATCHES: [(('2026.08.04 06:45:00', -42.96, 0), -42.75, 1001, 'SL'), (('2026.08.04 17:35:00', -41.82, 0), -41.71, 1004, 'SL'), (('2026.08.05 03:55:00', 29.88, 0), 30.19, 1007, 'TP'), (('2026.08.05 04:40:00', 60.62, 0), 61.11, 1010, 'TP'), (('2026.08.05 09:25:00', -42.64, 0), -42.5, 1015, 'SL')]
-   total booked 1463.17, total broker P&L of closed trades 1484.14
-== compare sc_12_commission_43.log vs sc_12_commission_44.log: trades 99 vs 99, identical in order 92, first difference at trade 11: ('2026.08.11 09:30:30', 'sell', 0.03, 23.6) vs ('2026.08.11 09:30:30', 'sell', 0.03, 23.51)
+   same signal traded twice (same side and stop as the trade before): 0
+   closed by TP                                                               66 trades, P&L   2857.58 (avg   43.30)
+   closed by SL                                                               33 trades, P&L  -1394.75 (avg  -42.27)
+   bookings equal to the broker P&L: 99 of 99
+   total booked 1463.17, total broker P&L of closed trades 1462.83
+== compare sc_12_commission_43.log vs sc_12_commission_44.log: trades 99 vs 99, identical in order 92, first difference at trade 11: ('2026.08.11 09:30:30', 'sell', 0.03, 23.5) vs ('2026.08.11 09:30:30', 'sell', 0.03, 23.41)
    v43 rejects: 0, early-close tags: 0, trades opened while on M1: 0, INIT FAILED: 0
    v44 rejects: 0, early-close tags: 0, trades opened while on M1: 0, INIT FAILED: 0
 
 ################ 13_combined: JIT=0.6 RESTART=4999 OFF=100 EXT=4 HOLD=30 TFSW=3001 TFLEN=40 REINIT=7001
 == sc_13_combined_43.log: 101 trades opened, 101 closed, 101 bookings, driver events 264
    opened without a take profit at the broker: 101
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               53 trades, P&L   2056.21 (avg   38.80)
    closed by SL                                                               24 trades, P&L   -927.67 (avg  -38.65)
    closed by hand (phone)                                                     22 trades, P&L     27.45 (avg    1.25)
@@ -222,6 +247,7 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
    total booked 1123.65, total broker P&L of closed trades 1151.10
 == sc_13_combined_44.log: 99 trades opened, 99 closed, 99 bookings, driver events 260
    opened without a take profit at the broker: 0
+   same signal traded twice (same side and stop as the trade before): 0
    closed by TP                                                               54 trades, P&L   2349.22 (avg   43.50)
    closed by SL                                                               27 trades, P&L  -1094.75 (avg  -40.55)
    closed by hand (phone)                                                     18 trades, P&L    181.44 (avg   10.08)

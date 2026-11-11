@@ -456,6 +456,7 @@ bool     gOurFill = false, gOurExit = false, gOurWin = false, gOurMove = false; 
 bool     gMissFill = false, gMissExit = false, gMissWin = false, gMissMove = false;   //   ... on bars caught up after a disconnect
 string   gLockN = ""; double gLockV = 0;                  // one copy per symbol + magic number (temporary global variable)
 int      gTfTrade = 0;                                    // the timeframe the EA trades: the one it was attached to (0 = not known yet)
+datetime gTakenT = 0;                                     // arm bar time of the last setup the EA placed: never placed again (restart, new inputs)
 bool     exT1MvPend = false;                              // Crooks TP1 rule: a stop move before TP1 still has to reach the broker
 bool     exT1 = false, exT1Half = false, exT1Be = false;   // Crooks TP1 rule: this trade, its TP1 half is booked, the rest's stop is at the entry
 double   exT1Stop = 0, exT1Tp1 = 0, exT1Tp2 = 0;              // its stop and its own TP1 / TP2 (the engine's levels change with its next setup)
@@ -1240,14 +1241,18 @@ double T1Stop0Px(bool isL, double d)
 
 double MinDist() { return MathMax((double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL), (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_FREEZE_LEVEL)) * _Point; }
 //--- an entry order's stop loss and take profit (v4.4: the target goes to the broker with the order): the engine's levels for this setup, kept
-//--- outside the stops level from the order price (pending) and the price (market); SetExits re-sends the engine's levels once it has filled
-void OrderExits(bool isL, double ep, double &sl, double &tp)
+//--- outside the stops level from what MT5 checks them against: the order's price (pending) or the price that closes the trade (market).
+//--- SetExits re-sends the engine's levels once it has filled. false: a market entry with the price already past the target (no entry)
+bool OrderExits(bool isL, double ep, bool market, double &sl, double &tp)
 {
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), minD = MinDist();
+   double ref = market ? (isL ? bid : ask) : ep;
    sl = exT1 ? exT1Stop : StopPx(isL);
    tp = exT1 ? TgtPx(isL, exT1Tp2) : TgtPx(isL, tF);   // Crooks TP1 rule: the rest's TP2 (its TP1 part closes at market)
-   if(isL) { sl = MathMin(sl, FloorTick(MathMin(ep, bid) - minD)); tp = MathMax(tp, CeilTick(MathMax(ep, bid) + minD)); }
-   else    { sl = MathMax(sl, CeilTick(MathMax(ep, ask) + minD)); tp = MathMin(tp, FloorTick(MathMin(ep, ask) - minD)); }
+   if(market && (isL ? ref >= tp : ref <= tp)) return false;
+   if(isL) { sl = MathMin(sl, FloorTick(MathMin(ep, ref) - minD)); tp = MathMax(tp, CeilTick(ref + minD)); }
+   else    { sl = MathMax(sl, CeilTick(MathMax(ep, ref) + minD)); tp = MathMin(tp, FloorTick(ref - minD)); }
+   return true;
 }
 //--- Crooks C hedge rule: a buy and a sell at the engine's entry level with the hedge stop loss and take profit
 //--- (bid-chart levels: the buy-side prices are shifted by the spread, like the normal orders)
@@ -1589,26 +1594,29 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    CancelPending();
    gVirt = false;
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double ep = EntryPx(isL), sl, tp;
+   double ep = EntryPx(isL), sl = 0, tp = 0;           // v4.4: the stop loss and the take profit go with the order (OrderExits)
    double minD = MinDist();
-   OrderExits(isL, ep, sl, tp);                        // v4.4: the stop loss and the take profit go with the order
-   bool ok;
+   bool ok, past = false;
    if(hg) ok = PlaceHedge(isL, v);
    else if(InpEntryMode == ENTRY_MARKET)
-      ok = isL ? trade.Buy(v, _Symbol, 0, sl, tp, "ARM") : trade.Sell(v, _Symbol, 0, sl, tp, "ARM");
+   {
+      past = !OrderExits(isL, ep, true, sl, tp);
+      ok = !past && (isL ? trade.Buy(v, _Symbol, 0, sl, tp, "ARM") : trade.Sell(v, _Symbol, 0, sl, tp, "ARM"));
+   }
    else if(isL)
    {
-      if(ask - ep >= MathMax(minD, ts)) ok = trade.BuyLimit(v, ep, _Symbol, sl, tp, ORDER_TIME_GTC, 0, "ARM");
-      else if(ask <= ep)                ok = trade.Buy(v, _Symbol, 0, sl, tp, "ARM");   // at / through the level: the engine fills on this bar
+      if(ask - ep >= MathMax(minD, ts)) { OrderExits(isL, ep, false, sl, tp); ok = trade.BuyLimit(v, ep, _Symbol, sl, tp, ORDER_TIME_GTC, 0, "ARM"); }
+      else if(ask <= ep)                { past = !OrderExits(isL, ep, true, sl, tp); ok = !past && trade.Buy(v, _Symbol, 0, sl, tp, "ARM"); }   // at / through the level: the engine fills on this bar
       else { ok = true; gVirt = true; }                                                  // inside the stops distance: wait for the level (VirtualEntry)
    }
    else
    {
-      if(ep - bid >= MathMax(minD, ts)) ok = trade.SellLimit(v, ep, _Symbol, sl, tp, ORDER_TIME_GTC, 0, "ARM");
-      else if(bid >= ep)                ok = trade.Sell(v, _Symbol, 0, sl, tp, "ARM");
+      if(ep - bid >= MathMax(minD, ts)) { OrderExits(isL, ep, false, sl, tp); ok = trade.SellLimit(v, ep, _Symbol, sl, tp, ORDER_TIME_GTC, 0, "ARM"); }
+      else if(bid >= ep)                { past = !OrderExits(isL, ep, true, sl, tp); ok = !past && trade.Sell(v, _Symbol, 0, sl, tp, "ARM"); }
       else { ok = true; gVirt = true; }
    }
-   if(ok) { exState = 1; exArm = armBar; exArmT = BarTimeOf(armBar); exSynced = false; takenN++; crkRec = CrkRecNext(); exHg = hg; }
+   if(ok) { exState = 1; exArm = armBar; exArmT = BarTimeOf(armBar); gTakenT = exArmT; exSynced = false; takenN++; crkRec = CrkRecNext(); exHg = hg; }
+   else if(past) { skipN++; skipWhy = "price already past the target"; }
    else { skipN++; skipWhy = "order rejected"; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
 }
 
@@ -1623,11 +1631,11 @@ void VirtualEntry()
       if(exL ? (ask <= EntryPx(true) || bid <= EntryPx(false)) : (bid >= EntryPx(false) || ask >= EntryPx(true))) { gVirt = false; HgMarket(exLots); }
       return;
    }
-   double ep = EntryPx(exL), sl, tp;
+   double ep = EntryPx(exL), sl = 0, tp = 0;
    if(exL ? ask <= ep : bid >= ep)
    {
       gVirt = false;
-      OrderExits(exL, ep, sl, tp);                     // v4.4: the take profit goes with the order
+      if(!OrderExits(exL, ep, true, sl, tp)) { Print("ARM entry skipped: the price is already past the target."); return; }   // v4.4: the take profit goes with the order
       if(!(exL ? trade.Buy(exLots, _Symbol, 0, sl, tp, "ARM") : trade.Sell(exLots, _Symbol, 0, sl, tp, "ARM")))
          Print("ARM entry failed: ", trade.ResultRetcodeDescription());
    }
@@ -1880,7 +1888,7 @@ void StateIO(bool save)
    IoI("xs", exState); IoB("xl", exL); IoD("xv", exLots); IoD("xr", exRiskAmt); IoD("xc", exCostPx); IoD("xp", exPnl); IoD("xk", exKeepSl);
    IoB("kr", crkRec); IoB("xy", exSynced);
    double xe = exLim, x1 = exTpL[0], x2 = exTpL[1], x3 = exTpL[2];   // v4.4: the trade's setup (arm bar time, entry) and its own TP1-TP3
-   IoT("xa", exArmT); IoD("xe", xe); IoD("x1", x1); IoD("x2", x2); IoD("x3", x3);
+   IoT("xa", exArmT); IoD("xe", xe); IoD("x1", x1); IoD("x2", x2); IoD("x3", x3); IoT("xt", gTakenT);
    exLim = xe; exTpL[0] = x1; exTpL[1] = x2; exTpL[2] = x3;
    bool p0 = pDone[0], p1 = pDone[1], p2 = pDone[2];
    IoB("p0", p0); IoB("p1", p1); IoB("p2", p2);
@@ -1970,6 +1978,7 @@ void RestoreTrade()
    ulong tk; double v, op;
    bool posNow = HasPosition(tk, v, op);
    if(sx == 2 || (sx == 1 && (posNow || ExitDealAfter(lastDeal)))) { exState = 2; return; }
+   if(sx == 1) gTakenT = 0;                             // an order still waiting when the EA stopped: it is placed again (below)
    TradeClear();                                        // nothing filled: a waiting order is re-placed from the engine's setup (CancelPending, gRearm)
    bool c; NewDealsPnl(c, true);                        // no trade of this EA was open: later deals are not its trades
 }
@@ -2101,7 +2110,7 @@ void BrokerStart()
             " | streak ", winRow, "W / ", lossRow, "L", (paused || pauseLeft > 0) ? " | paused" : "", CrkPause() ? " | Crooks C pause" : "",
             capStop ? " | hard cap stop" : "", exState == 2 ? " | trade still open" : "");
    }
-   gRearm = MathAbs(st) == 1 && !trGhost && exState == 0 && armBar != gPauseArm;   // re-place the engine's armed setup on the first tick (not one armed while paused)
+   gRearm = MathAbs(st) == 1 && !trGhost && exState == 0 && armBar != gPauseArm && BarTimeOf(armBar) != gTakenT;   // re-place the engine's armed setup on the first tick (not one armed while paused, not one already traded)
 }
 
 //--- one copy per symbol + magic number: two copies cancel and close each other's trades and share one restart memory. A temporary global

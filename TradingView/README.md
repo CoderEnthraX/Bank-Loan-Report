@@ -314,6 +314,87 @@ The Journal prints `Restart memory: continued from <time> | loss to win back ...
 - **Limits** (the same as after a disconnect):
   - a trade that closed while the EA was off counts from the moment the EA books it at the restart (e.g. a pause it starts begins then);
   - EA-only partial closes whose level the price reached while the EA was off are not done afterwards.
+- **Starting fresh** (v4.4): use **Start fresh once** (below). Switching the setting off and on does not clear the values MT5 keeps in
+  memory while the EA stays on the chart.
+
+### EA v4.4: no early closes; trades closed outside the EA are booked right (EA only)
+
+**The report (11 Nov 2026, new broker, `GOLD.i#`):** three trades closed at +$4.86, +$4.97 and +$6.48 a few minutes after entry, instead of
+reaching TP1 (0.6R). Two of them had no take profit at the broker.
+
+**What v4.3 did, and why trades could close early:**
+- **No take profit until the next candle close.** v4.3 sent only the stop loss with the order. The take profit followed when the engine
+  confirmed the fill at the next 5-minute candle close. Until then the trade had no target at the broker, and if the EA was off it had none
+  at all.
+- **"Engine wins".** At every candle close v4.3 closed any trade the engine was not in, at whatever the price was. The engine is
+  recalculated when the chart's timeframe is switched (for example to M1 to look closer), when an input is changed, or when the EA is
+  re-attached. It may then no longer hold the trade, which was closed at the next candle.
+  In a broker simulation on 3 months of gold ticks:
+  - frequent timeframe switches closed 48 trades this way, at +$8.69 on average;
+  - input changes closed 9 trades, at +$6.76 on average.
+  Running alone with no switches, v4.3 closed no trade early.
+- **Closes outside the EA were booked as $0 losses.** A trade closed by hand, from the phone app, or by another EA (for example a trade
+  manager) has a closing deal with another magic number. v4.3 did not count that deal, so it booked a winning trade as a $0 loss. The loss
+  recovery then went wrong: in the simulation 25 of 99 bookings were wrong, and Crooks C skipped the recovery trade after a win.
+- **The screenshot fits these causes:**
+  - trade 2 closed in the middle of a 5-minute candle (09:17:11), and v4.3 can close mid-candle on M5 only through the Crooks TP1 rule or
+    a restart;
+  - all three closed after only a small move in their favour.
+  Without the Experts / Journal log of that day the exact cause cannot be proven. v4.4 writes it down for every trade.
+
+**What v4.4 changes:**
+- **The take profit goes to the broker with the order.** Every trade has its stop loss and take profit from the moment it opens, including
+  while the EA or MT5 is off.
+- **A trade of this EA is never closed early.** A trade the engine stops following runs to its own stop loss and take profit. This covers:
+  - a fill a moment before the engine's, when the spread narrowed;
+  - a setup that ended;
+  - new inputs, another timeframe, or a re-attach;
+  - an order that filled while it was being cancelled.
+  The EA closes a trade itself only:
+  - at the engine's stop on the bid chart, as before;
+  - at the engine's final target when earn-back is off;
+  - at the force-close time, the weekend start or a news start (your settings);
+  - for the Crooks TP1 rule's part;
+  - for a hedge pair with only one trade open.
+- **Closes outside the EA are booked with their real profit**, and the loss recovery goes on from them. The same applies to a trade closed
+  while the EA was off.
+- **Who closed each trade.** The Experts tab prints one line per close, and the table shows the last close (red if it was outside the EA):
+  `Trade #990361292 closed: 0.06 lots at 4048.70 | trade P&L +4.86 (costs included) | closed by ...`.
+  The end of the line is one of: its take profit, its stop loss, this EA (with the reason), HAND (MetaTrader on the computer / the phone app
+  / the web terminal), ANOTHER EA OR SCRIPT (magic N), an EA with this magic number (a second copy?), or a margin stop-out. Every close the
+  EA makes is also printed first: `Closing #... : <reason>`.
+- **The EA trades the timeframe it was attached to.** If you switch the chart to another timeframe to look at the candles, it opens no new
+  trades until the chart is back (an alert says so, and the table shows `CHART ON M1: NO NEW TRADES`). The open trade keeps its stop loss and
+  take profit. To trade another timeframe, remove the EA and attach it again on that timeframe.
+- **One copy per symbol and magic number.** A second copy with the same symbol and magic number does not start (alert). Two copies cancel
+  and close each other's trades and share one restart memory. Another EA on the account is listed in the Experts tab at start.
+- **Broker server clock: Auto (new default).** The EA reads the broker's GMT offset from MT5 (server time minus GMT) and picks the EU or US
+  summer-time rule, or that fixed offset. A new broker no longer needs the clock set by hand. With any other choice, an alert appears when
+  the broker's clock differs from it, because your days, hours, kill zones, news and force-close times would be off. The table row `BROKER
+  CLOCK` shows the offset in use. In the Strategy Tester Auto means the EU rule, as before.
+- **Start fresh once** (`InpMemFresh`, restart memory group): forgets the loss recovery, streaks and pauses once. Set it to true and click
+  OK; set it back to false later. Use it if trades closed outside v4.3 were booked as losses.
+- **Restart memory:** the open trade's setup (its signal candle and entry level) is saved. After a restart, new inputs or a timeframe
+  switch, the trade is re-linked to the engine only when it is the same setup; otherwise it keeps its own levels. Before, the engine's other
+  setup's stop and target could be applied to it. A state saved by v4.3 loads unchanged.
+
+**How it was tested** (`Research/scratchpad/sim/`, results in `sim/results.txt`):
+- **Broker simulator.** v4.3 and v4.4 run on an MT5-like broker: hedging account, limit and stop orders, stops level, stop loss and take
+  profit at the tick, deals with reason, magic number and position id, and commission. Ticks come from FxPro gold M1 bars, 3 Aug - 2 Oct
+  2026, with varying spreads. There are 13 scenarios: restarts with the EA off, new inputs, timeframe switches, hand and other-EA closes,
+  stops level, commission, and all of them combined.
+- **v4.4 results:**
+  - 0 early closes;
+  - a take profit on every order;
+  - every booking equal to the broker's profit;
+  - restarts and same-input re-initialisations give exactly the same trades as no restart;
+  - the copy lock and the clock detection work (GMT+3 / +2 / 0 / +5.5 / -4).
+- **Earlier checks:** compile check 0 errors / 0 warnings. The money-management parity suites (normal and with a restart after every step)
+  and the engine parity are unchanged.
+
+**What to look at on the chart:** the Experts tab shows who closed each trade. If it says HAND or ANOTHER EA OR SCRIPT, look for another EA
+or trade manager on the account, a second MT5 or VPS logged in to the same account, or the phone app. If it says this EA, the reason is
+printed with it.
 
 ### Entry accuracy research (November 2026, no code change)
 

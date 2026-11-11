@@ -519,7 +519,14 @@ Other gold findings:
       as $0 (25 of 99 bookings wrong, Crooks C then skips the recovery trade). v4.4: 0 early closes, every trade has a TP from the open, all
       bookings equal the broker P&L, restarts and same-input re-inits give identical trades, lock refuses a second copy and takes a stale lock,
       clock read as GMT+3 / +2 / 0 / +5.5 / -4. (A commission-scenario mismatch was the analyzer missing the entry deal; fixed.)
-    - **Next:** re-run `sim/run_all.sh` and `v40/run_v44.sh v44final` on the final EA; independent review; README; ship.
+    - **v44d (simulator finds, 22:00):** (1) a setup already traded was placed again after a restart / timeframe switch when the engine still
+      showed it armed (v4.3 too: gRearm) -> `gTakenT` ("xt") = arm bar time of the last placed setup, never re-placed; an order still waiting at
+      the stop is re-placed as before (RestoreTrade clears gTakenT when sx == 1). (2) OrderExits checked a pending order's stops against the
+      current price, which pushed a limit's TP to the price when it had run past the target -> reference = order price (pending) / closing
+      price (market); a market entry past the target is skipped. Rebuild order: v44, v44b, v44c, v44d. All 13 scenarios + TP1 rule / hedge /
+      partials / market entry (with restarts, switches, hand closes): 0 early closes, 0 duplicates, 0 rejects, every booking = broker P&L.
+      A sell's TP moves by the live spread when re-sent after a restart (bid-chart shift by design).
+    - **Next:** independent review (Opus, high; running); `v40/run_v44.sh v44final` on the final EA; README (written); ship.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

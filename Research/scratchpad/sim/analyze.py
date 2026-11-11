@@ -48,6 +48,8 @@ def report(path):
     closed = [pos[i] for i in order if pos[i]['close_t']]
     print('== %s: %d trades opened, %d closed, %d bookings, driver events %d' % (path, len(order), len(closed), len(books), len(drv)))
     print('   opened without a take profit at the broker: %d' % sum(1 for i in order if pos[i]['tp'] == 0))
+    dup = sum(1 for x, y in zip(order, order[1:]) if pos[x]['side'] == pos[y]['side'] and pos[x]['sl'] == pos[y]['sl'] and pos[x]['sl'] > 0)
+    print('   same signal traded twice (same side and stop as the trade before): %d' % dup)
     cat = collections.Counter(p['why'] for p in closed)
     for k, v in cat.most_common():
         sub = [p for p in closed if p['why'] == k]
