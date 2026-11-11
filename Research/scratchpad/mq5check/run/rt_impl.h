@@ -294,5 +294,20 @@ int GlobalVariablesDeleteAll(const string& prefix, datetime)
    for(int i = 0; i < RT_GV_CAP; i++) if(rt_gvU[i] == 1 && StringFind(rt_gvN[i], prefix) == 0) { rt_gvU[i] = 2; rt_gvC--; n++; }
    return n;
 }
+bool GlobalVariableSetOnCondition(const string& name, double value, double check_value)
+{ int i = rt_gvFind(name); if(i < 0 || rt_gvV[i] != check_value) return false; rt_gvV[i] = value; return true; }
+string GlobalVariableName(int index)
+{ rt_gvInit(); int k = 0; for(int i = 0; i < RT_GV_CAP; i++) if(rt_gvU[i] == 1) { if(k == index) return rt_gvN[i]; k++; } return string(); }
+// ---- v4.4: deal history and chart list (no broker in these harnesses: empty; the broker simulator replaces them) ----
+ulong HistoryDealGetTicket(int) { return 0; }
+mql_long HistoryDealGetInteger(ulong, ENUM_DEAL_PROPERTY_INTEGER) { return 0; }
+double HistoryDealGetDouble(ulong, ENUM_DEAL_PROPERTY_DOUBLE) { return 0; }
+string HistoryDealGetString(ulong, ENUM_DEAL_PROPERTY_STRING) { return string(); }
+mql_long ChartFirst() { return -1; }
+mql_long ChartNext(mql_long) { return -1; }
+string ChartGetString(mql_long, ENUM_CHART_PROPERTY_STRING) { return string(); }
+string ChartSymbol(mql_long) { return _Symbol; }
+ENUM_TIMEFRAMES ChartPeriod(mql_long) { return _Period; }
+string EnumToString(int) { return string(); }
 extern "C" int rt_gv_count() { return rt_gvC; }
 ushort StringGetCharacter(const string& s, int pos) { return (s.s && pos >= 0 && pos < s.n) ? (ushort)(unsigned char)s.s[pos] : (ushort)0; }

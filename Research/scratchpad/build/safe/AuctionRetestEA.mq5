@@ -52,9 +52,15 @@
 //| v4.3: RESTART MEMORY: the loss recovery, streaks, pauses and the |
 //| open trade go on after MT5 or the EA restarts (MT5 global        |
 //| variables; trades that closed meanwhile are booked).             |
+//| v4.4: no early closes: the take profit goes to the broker with   |
+//| the order, and a trade the engine stops following runs to its    |
+//| own stop loss and take profit. Trades closed by hand, the phone  |
+//| app or another EA are booked with their real profit; the log     |
+//| says who closed each trade and why. One copy per symbol and      |
+//| magic number. The broker server clock is read from MT5 (Auto).   |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "4.30"
+#property version   "4.40"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -202,10 +208,11 @@ input bool   InpEntVwOn    = false; // Skip when the entry is too close to the V
 input double InpEntVwAtr   = 0.75;  //   min distance of the entry from the VWAP (x ATR)
 
 input group "DAYS AND HOURS (YOUR time zone)"
-enum ENUM_SRV_TZ { SRV_NYCLOSE = 0,   // Auto: GMT+2 winter / GMT+3 US summer time (most FX brokers)
+enum ENUM_SRV_TZ { SRV_NYCLOSE = 0,   // GMT+2 winter / GMT+3 US summer time (most FX brokers)
                    SRV_FIXED   = 1,   // Fixed: the GMT offset below
-                   SRV_EET     = 2 }; // Auto: GMT+2 winter / GMT+3 EU summer time (EET brokers, e.g. FxPro)
-input ENUM_SRV_TZ InpServerTz = SRV_EET;     // Broker server clock
+                   SRV_EET     = 2,   // GMT+2 winter / GMT+3 EU summer time (EET brokers, e.g. FxPro)
+                   SRV_AUTO    = 3 }; // Auto: read the broker's clock from MT5 (Strategy Tester: EU summer time)
+input ENUM_SRV_TZ InpServerTz = SRV_AUTO;    // Broker server clock
 input double InpServerGMT = 2.0;   // Broker server time zone if fixed (GMT +h; check Market Watch time)
 input double InpUserGMT   = 5.5;   // Your time zone (GMT +h; India = 5.5)
 input bool   InpDayOn     = true;  // Trade only on the ticked days
@@ -275,6 +282,7 @@ input bool   InpMRestart = false;  // Restart the loss recovery on the 1st of ea
 
 input group "RESTART MEMORY"
 input bool   InpRemember = true;   // Continue after a restart (keep the loss recovery, streaks and pauses when MT5 or the EA restarts)
+input bool   InpMemFresh = false;  // Start fresh once: forget the loss recovery, streaks and pauses (true + OK; set false again later)
 
 input group "FORCE-CLOSE, WEEKEND AND NEWS (YOUR time zone)"
 input bool   InpFcOn      = true;  // Force-close open trades daily at
@@ -438,6 +446,16 @@ string   gSvN[]; double gSvV[]; int gSvC = 0;              //   the values last 
 bool     gBrokerPend = false;                             //   the broker part of the start waits until MT5 is connected (positions and deals visible)
 bool     gRestFlat = false;                               //   a force-close, weekend start or news start passed while the EA was off
 datetime gSvFullT = 0; long gSvAcc = 0;                   //   the last full rewrite (daily: MT5 deletes global variables not accessed for 4 weeks); the saved account
+// v4.4
+int      gTzMode = SRV_EET; double gTzFix = 2.0, gTzDet = -99; bool gTzWarned = false;   // broker clock: the rule in use (Auto) and its fixed offset; the offset read now (-99 unknown)
+string   gCloseWhy = ""; long gCloseId = 0;                // why this EA closed a trade last, and that trade's position id
+string   gLastClose = "-"; bool gLastCloseOut = false;     // table: the last close; closed outside this EA (by hand, phone, another EA)
+datetime exArmT = 0; double exLim = 0;                    // the EA's trade: its setup's arm bar time and entry level (re-linked after a restart / new inputs)
+double   exTpL[3];                                        // the trade's own TP1-TP3 levels (partials)
+bool     gOurFill = false, gOurExit = false, gOurWin = false, gOurMove = false;   // the engine's events for the EA's setup (arm bar exArm) on the last processed bar
+bool     gMissFill = false, gMissExit = false, gMissWin = false, gMissMove = false;   //   ... on bars caught up after a disconnect
+string   gLockN = ""; double gLockV = 0;                  // one copy per symbol + magic number (temporary global variable)
+int      gTfTrade = 0;                                    // the timeframe the EA trades: the one it was attached to (0 = not known yet)
 bool     exT1MvPend = false;                              // Crooks TP1 rule: a stop move before TP1 still has to reach the broker
 bool     exT1 = false, exT1Half = false, exT1Be = false;   // Crooks TP1 rule: this trade, its TP1 half is booked, the rest's stop is at the entry
 double   exT1Stop = 0, exT1Tp1 = 0, exT1Tp2 = 0;              // its stop and its own TP1 / TP2 (the engine's levels change with its next setup)
@@ -465,11 +483,11 @@ datetime MkTime(int y, int mon, int day, int hr) { MqlDateTime d; ZeroMemory(d);
 bool UkSummer(datetime utc) { MqlDateTime d; TimeToStruct(utc, d); return utc >= MkTime(d.year, 3, LastSunday(d.year, 3), 1) && utc < MkTime(d.year, 10, LastSunday(d.year, 10), 1); }
 // New York daylight time at a UTC time: 07:00 UTC on the second Sunday of March to 06:00 UTC on the first Sunday of November
 bool NySummer(datetime utc) { MqlDateTime d; TimeToStruct(utc, d); return utc >= MkTime(d.year, 3, NthSunday(d.year, 3, 2), 7) && utc < MkTime(d.year, 11, NthSunday(d.year, 11, 1), 6); }
-double SrvGMT(datetime server)
+// the GMT offset of a summer-time rule (SRV_EET or SRV_NYCLOSE) at a server time
+double RuleGMT(int md, datetime server)
 {
-   if(InpServerTz == SRV_FIXED) return InpServerGMT;
    MqlDateTime d; TimeToStruct(server, d);
-   if(InpServerTz == SRV_EET)                         // EU summer time: last Sunday of March to last Sunday of October
+   if(md == SRV_EET)                                  // EU summer time: last Sunday of March to last Sunday of October
    {
       int es = LastSunday(d.year, 3), ee = LastSunday(d.year, 10);
       bool sum = (d.mon > 3 && d.mon < 10) || (d.mon == 3 && d.day >= es) || (d.mon == 10 && d.day < ee);
@@ -479,8 +497,73 @@ double SrvGMT(datetime server)
    bool dst = (d.mon > 3 && d.mon < 11) || (d.mon == 3 && d.day >= ds) || (d.mon == 11 && d.day < de);
    return dst ? 3.0 : 2.0;
 }
+double SrvGMT(datetime server)
+{
+   int md = InpServerTz == SRV_AUTO ? gTzMode : (int)InpServerTz;   // Auto: the rule picked from the broker's clock (TzPick)
+   if(md == SRV_FIXED) return InpServerTz == SRV_AUTO ? gTzFix : InpServerGMT;
+   return RuleGMT(md, server);
+}
 datetime UserTime(datetime server) { return server - (datetime)(SrvGMT(server) * 3600) + (datetime)(InpUserGMT * 3600); }
 datetime UtcTime(datetime server)  { return server - (datetime)(SrvGMT(server) * 3600); }
+//--- names the restart memory never deletes ("Continue after a restart" off): the copy lock, the broker clock, "Start fresh once"
+string SvExtra(string k) { return "ARX" + StringSubstr(gSvBase, 3) + k; }
+//--- the chart shows another timeframe than the one the EA was attached to: no new trades until it is back (live only)
+bool   TfHold() { return gTfTrade > 0 && (int)_Period != gTfTrade && MQLInfoInteger(MQL_TESTER) == 0; }
+string TfName(int p) { return p == PERIOD_M1 ? "M1" : p == PERIOD_M5 ? "M5" : p == PERIOD_M15 ? "M15" : p == PERIOD_M30 ? "M30" : p == PERIOD_H1 ? "H1" : p == PERIOD_H4 ? "H4" : p == PERIOD_D1 ? "D1" : IntegerToString(p) + " min"; }
+//--- the broker's GMT offset now, read from MT5 (server time - GMT, to the nearest half hour); live and connected only, -99 = unknown
+double TzNow()
+{
+   if(MQLInfoInteger(MQL_TESTER) != 0 || TerminalInfoInteger(TERMINAL_CONNECTED) == 0) return -99;
+   datetime sv = TimeTradeServer(), g = TimeGMT();
+   if(sv <= 0 || g <= 0) return -99;
+   double d = MathRound((double)(sv - g) / 1800.0) / 2.0;
+   return MathAbs(d) <= 14 ? d : -99;
+}
+string GmtTxt(double h) { return "GMT" + (h >= 0 ? "+" : "") + (MathAbs(h - MathRound(h)) < 0.01 ? IntegerToString((int)MathRound(h)) : DoubleToString(h, 1)); }
+string TzTxt()                                          // the broker clock in use now (table)
+{
+   int md = InpServerTz == SRV_AUTO ? gTzMode : (int)InpServerTz;
+   string r = GmtTxt(SrvGMT(TimeCurrent())) + (InpServerTz == SRV_AUTO ? " auto" : "") + (md == SRV_EET ? " (EU summer time)" : md == SRV_NYCLOSE ? " (US summer time)" : " (fixed)");
+   if(gTzDet > -90 && MathAbs(SrvGMT(TimeCurrent()) - gTzDet) > 0.01) r += " | broker " + GmtTxt(gTzDet) + ": CHECK";
+   return r;
+}
+//--- Auto: the summer-time rule that gives the broker's offset now (EU first, as FxPro; then US), else that offset fixed. While MT5 is not
+//--- connected yet, the clock read last time. Any choice: one message when the broker's clock differs from it (your days, hours, kill zones,
+//--- news and force-close would be off by the difference)
+void TzPick(bool atStart)
+{
+   if(MQLInfoInteger(MQL_TESTER) != 0) return;          // Strategy Tester: no real clock (Auto = EU summer time)
+   gTzDet = TzNow();
+   int md = gTzMode; double fx = gTzFix;
+   if(gTzDet > -90)
+   {
+      datetime now = TimeTradeServer();
+      if(RuleGMT(SRV_EET, now) == gTzDet) md = SRV_EET;
+      else if(RuleGMT(SRV_NYCLOSE, now) == gTzDet) md = SRV_NYCLOSE;
+      else { md = SRV_FIXED; fx = gTzDet; }
+      GlobalVariableSet(SvExtra("tzm"), md); GlobalVariableSet(SvExtra("tzf"), fx);
+   }
+   else if(atStart && GlobalVariableCheck(SvExtra("tzm")))   // not connected yet: the clock read last time
+   {
+      md = (int)MathRound(GlobalVariableGet(SvExtra("tzm")));
+      if(GlobalVariableCheck(SvExtra("tzf"))) fx = GlobalVariableGet(SvExtra("tzf"));
+      if(md != SRV_EET && md != SRV_NYCLOSE && md != SRV_FIXED) md = SRV_EET;
+   }
+   if(InpServerTz == SRV_AUTO)
+   {
+      bool chg = md != gTzMode || (md == SRV_FIXED && fx != gTzFix);
+      gTzMode = md; gTzFix = fx;
+      if(chg && !atStart) Print("Broker server clock is ", GmtTxt(SrvGMT(TimeTradeServer())), " now (read from MT5): your times follow it from here on.");
+      if(atStart && gTzDet > -90) Print("Broker server clock: ", TzTxt(), " (read from MT5).");
+   }
+   else if(gTzDet > -90 && MathAbs(SrvGMT(TimeTradeServer()) - gTzDet) > 0.01 && !gTzWarned)
+   {
+      gTzWarned = true;
+      string m = "The broker's server clock is " + GmtTxt(gTzDet) + ", but 'Broker server clock' gives " + GmtTxt(SrvGMT(TimeTradeServer())) +
+                 ": your days, hours, kill zones, news and force-close times are off. Choose 'Auto: read the broker's clock from MT5'.";
+      Print(m); Alert(m);
+   }
+}
 int      MinOfDay(datetime t) { MqlDateTime d; TimeToStruct(t, d); return d.hour * 60 + d.min; }
 int      DowOf(datetime t)    { MqlDateTime d; TimeToStruct(t, d); return d.day_of_week; }   // 0 = Sunday
 int      DayKey(datetime t)   { MqlDateTime d; TimeToStruct(t, d); return d.year * 1000 + d.day_of_year; }
@@ -523,15 +606,74 @@ void CancelPending()
    }
 }
 
-void CloseAll()
+void CloseAll(string why)
 {
    ulong tk; double v, op;
    int guard = 0;
-   while(HasPosition(tk, v, op) && guard++ < 5) { if(!trade.PositionClose(tk)) break; }
+   if(HasPosition(tk, v, op)) { gCloseWhy = why; gCloseId = PositionGetInteger(POSITION_IDENTIFIER); Print("Closing #", tk, " (", DoubleToString(v, 2), " lots): ", why); }
+   while(HasPosition(tk, v, op) && guard++ < 5)
+   {
+      gCloseId = PositionGetInteger(POSITION_IDENTIFIER);
+      if(!trade.PositionClose(tk)) { Print("Close of #", tk, " failed: ", trade.ResultRetcodeDescription()); break; }
+   }
 }
 
-// realised P&L of this EA's deals since the last call (profit + commission + swap + fee); closed = an exit deal was seen
-double NewDealsPnl(bool &closed)
+string DateTxt(datetime tm, bool withYear);            // defined below
+// a position this EA opened: a deal with its magic number for that position id in the selected history (n deals)
+bool OurPosId(long pid, int n)
+{
+   if(pid <= 0) return false;
+   for(int i = 0; i < n; i++)
+   {
+      ulong tk = HistoryDealGetTicket(i);
+      if(tk != 0 && HistoryDealGetInteger(tk, DEAL_POSITION_ID) == pid && HistoryDealGetInteger(tk, DEAL_MAGIC) == InpMagic && HistoryDealGetString(tk, DEAL_SYMBOL) == _Symbol) return true;
+   }
+   return false;
+}
+bool IsExitDeal(ulong tk) { long e = HistoryDealGetInteger(tk, DEAL_ENTRY); return e == DEAL_ENTRY_OUT || e == DEAL_ENTRY_INOUT || e == DEAL_ENTRY_OUT_BY; }
+// a deal of this EA: its magic number, or the exit of a trade it opened (closed by hand, from the phone app or by another EA)
+bool DealIsMine(ulong tk, int n)
+{
+   if(HistoryDealGetString(tk, DEAL_SYMBOL) != _Symbol) return false;
+   if(HistoryDealGetInteger(tk, DEAL_MAGIC) == InpMagic) return true;
+   return IsExitDeal(tk) && OurPosId(HistoryDealGetInteger(tk, DEAL_POSITION_ID), n);
+}
+// who closed a trade, from its exit deal
+string CloseBy(ulong tk)
+{
+   long rs = HistoryDealGetInteger(tk, DEAL_REASON), mg = HistoryDealGetInteger(tk, DEAL_MAGIC), pid = HistoryDealGetInteger(tk, DEAL_POSITION_ID);
+   if(rs == DEAL_REASON_SL) return "its stop loss";
+   if(rs == DEAL_REASON_TP) return "its take profit";
+   if(rs == DEAL_REASON_SO) return "a margin stop-out";
+   if(rs == DEAL_REASON_EXPERT)
+      return mg != InpMagic ? "ANOTHER EA OR SCRIPT (magic " + IntegerToString(mg) + ")" :
+             pid == gCloseId && gCloseWhy != "" ? "this EA: " + gCloseWhy : "an EA with this magic number (a second copy of this EA?)";
+   if(rs == DEAL_REASON_CLIENT) return "HAND (MetaTrader on the computer)";
+   if(rs == DEAL_REASON_MOBILE) return "HAND (the phone app)";
+   if(rs == DEAL_REASON_WEB) return "HAND (the web terminal)";
+   return "the broker (reason " + IntegerToString(rs) + ")";
+}
+// one line in the log (Experts tab) and the table for every closing deal of this EA's trades: the trade's P&L from all its deals (n = deals)
+void CloseReport(ulong tk, int n)
+{
+   long rs = HistoryDealGetInteger(tk, DEAL_REASON), pid = HistoryDealGetInteger(tk, DEAL_POSITION_ID);
+   string who = CloseBy(tk);
+   double p = 0;
+   for(int i = 0; i < n; i++)
+   {
+      ulong d = HistoryDealGetTicket(i);
+      if(d != 0 && HistoryDealGetInteger(d, DEAL_POSITION_ID) == pid && HistoryDealGetString(d, DEAL_SYMBOL) == _Symbol)
+         p += HistoryDealGetDouble(d, DEAL_PROFIT) + HistoryDealGetDouble(d, DEAL_COMMISSION) + HistoryDealGetDouble(d, DEAL_SWAP) + HistoryDealGetDouble(d, DEAL_FEE);
+   }
+   gLastCloseOut = !(rs == DEAL_REASON_SL || rs == DEAL_REASON_TP || (rs == DEAL_REASON_EXPERT && HistoryDealGetInteger(tk, DEAL_MAGIC) == InpMagic && pid == gCloseId));
+   gLastClose = (p >= 0 ? "+" : "") + DoubleToString(p, 2) + " | " + who + " | " + DateTxt(UserTime((datetime)HistoryDealGetInteger(tk, DEAL_TIME)), false);
+   Print("Trade #", pid, " closed: ", DoubleToString(HistoryDealGetDouble(tk, DEAL_VOLUME), 2), " lots at ", DoubleToString(HistoryDealGetDouble(tk, DEAL_PRICE), _Digits),
+         " | trade P&L ", (p >= 0 ? "+" : ""), DoubleToString(p, 2), " (costs included) | closed by ", who);
+   if(gLastCloseOut && rs != DEAL_REASON_SO) Print("This trade was closed outside this EA's rules. Its profit is booked, and the loss recovery goes on from it.");
+}
+// realised P&L of this EA's deals since the last call (profit + commission + swap + fee); closed = an exit deal was seen; quiet: no report
+// (skipping old history)
+double NewDealsPnl(bool &closed, bool quiet = false)
 {
    closed = false;
    double sum = 0;
@@ -543,10 +685,10 @@ double NewDealsPnl(bool &closed)
       ulong tk = HistoryDealGetTicket(i);
       if(tk == 0 || tk <= lastDeal) continue;
       if(tk > maxTk) maxTk = tk;
-      if(HistoryDealGetString(tk, DEAL_SYMBOL) != _Symbol || HistoryDealGetInteger(tk, DEAL_MAGIC) != InpMagic) continue;
-      sum += HistoryDealGetDouble(tk, DEAL_PROFIT) + HistoryDealGetDouble(tk, DEAL_COMMISSION) + HistoryDealGetDouble(tk, DEAL_SWAP) + HistoryDealGetDouble(tk, DEAL_FEE);
-      long entry = HistoryDealGetInteger(tk, DEAL_ENTRY);
-      if(entry == DEAL_ENTRY_OUT || entry == DEAL_ENTRY_INOUT || entry == DEAL_ENTRY_OUT_BY) { closed = true; gLastOutProfit = HistoryDealGetDouble(tk, DEAL_PROFIT); }
+      if(!DealIsMine(tk, n)) continue;                  // v4.4: also the exit of this EA's trade by hand, from the phone app or by another EA
+      double p = HistoryDealGetDouble(tk, DEAL_PROFIT) + HistoryDealGetDouble(tk, DEAL_COMMISSION) + HistoryDealGetDouble(tk, DEAL_SWAP) + HistoryDealGetDouble(tk, DEAL_FEE);
+      sum += p;
+      if(IsExitDeal(tk)) { closed = true; gLastOutProfit = HistoryDealGetDouble(tk, DEAL_PROFIT); if(!quiet) CloseReport(tk, n); }
    }
    lastDeal = maxTk;
    return sum;
@@ -932,7 +1074,7 @@ void MonthFromHistory()                               // after a restart: this m
    for(int i = 0; i < n; i++)
    {
       ulong tk = HistoryDealGetTicket(i);
-      if(tk == 0 || HistoryDealGetString(tk, DEAL_SYMBOL) != _Symbol || HistoryDealGetInteger(tk, DEAL_MAGIC) != InpMagic) continue;
+      if(tk == 0 || !DealIsMine(tk, n)) continue;      // v4.4: also an exit by hand, from the phone app or by another EA
       MqlDateTime dd; TimeToStruct(UserTime((datetime)HistoryDealGetInteger(tk, DEAL_TIME)), dd);
       if(dd.year * 100 + dd.mon != gMonKey) continue;  // only this month's deals (your time zone)
       long pid = HistoryDealGetInteger(tk, DEAL_POSITION_ID); bool isOpen = false;
@@ -998,6 +1140,27 @@ double NextRisk(double exitR, bool canTake = true)
       else r = InpHardCap / mul;
    }
    return r;
+}
+
+//--- the engine's events for the EA's own setup (arm bar exArm): ProcessBar plus which of its events are this trade's. A fill (step 2) is
+//--- always the setup armed before the bar; an exit is the live trade's (step 1) or a stop on its fill bar (step 2); a stop move is the
+//--- live trade's. ProcessBar itself is untouched (the same engine as the TradingView files)
+void EngStep(int s)
+{
+   long pa = armBar; int ps = st;
+   ProcessBar(s);
+   bool mine = exArm >= 0 && pa == exArm;
+   gOurFill = mine && evFill;
+   gOurExit = evExit && ((mine && MathAbs(ps) == 2) || gOurFill);
+   gOurWin  = gOurExit && evWin;
+   gOurMove = mine && MathAbs(ps) == 2 && evMove;
+}
+//--- open time of the bar with engine index idx (the last processed bar is shift 1: after OnNewBar, a start, a catch-up)
+datetime BarTimeOf(long idx)
+{
+   if(idx < 0) return 0;
+   int s = (int)(bi - idx) + 1;
+   return s >= 1 && s < Bars(_Symbol, _Period) ? iTime(_Symbol, _Period, s) : 0;
 }
 
 //--- lots for a $ risk and a stop distance --------------------------------
@@ -1076,6 +1239,16 @@ double T1Stop0Px(bool isL, double d)
 }
 
 double MinDist() { return MathMax((double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_STOPS_LEVEL), (double)SymbolInfoInteger(_Symbol, SYMBOL_TRADE_FREEZE_LEVEL)) * _Point; }
+//--- an entry order's stop loss and take profit (v4.4: the target goes to the broker with the order): the engine's levels for this setup, kept
+//--- outside the stops level from the order price (pending) and the price (market); SetExits re-sends the engine's levels once it has filled
+void OrderExits(bool isL, double ep, double &sl, double &tp)
+{
+   double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), minD = MinDist();
+   sl = exT1 ? exT1Stop : StopPx(isL);
+   tp = exT1 ? TgtPx(isL, exT1Tp2) : TgtPx(isL, tF);   // Crooks TP1 rule: the rest's TP2 (its TP1 part closes at market)
+   if(isL) { sl = MathMin(sl, FloorTick(MathMin(ep, bid) - minD)); tp = MathMax(tp, CeilTick(MathMax(ep, bid) + minD)); }
+   else    { sl = MathMax(sl, CeilTick(MathMax(ep, ask) + minD)); tp = MathMin(tp, FloorTick(MathMin(ep, ask) - minD)); }
+}
 //--- Crooks C hedge rule: a buy and a sell at the engine's entry level with the hedge stop loss and take profit
 //--- (bid-chart levels: the buy-side prices are shifted by the spread, like the normal orders)
 double HgDist(double x)                                 // at least the stops level + the spread + 1 tick, or the broker rejects the order
@@ -1100,7 +1273,7 @@ bool   HgMarket(double v)                                // both trades at marke
    if(!a) Print("Hedge buy failed: ", trade.ResultRetcodeDescription());
    bool b = trade.Sell(v, _Symbol, 0, slS, tpS, "HEDGE");
    if(!b) Print("Hedge sell failed: ", trade.ResultRetcodeDescription());
-   if(a != b) { CloseAll(); Print("Hedge: only one of the two trades opened, so it was closed again."); return false; }
+   if(a != b) { CloseAll("hedge pair: only one of the two trades opened"); return false; }
    return a && b;
 }
 bool   PlaceHedge(bool isL, double v)                    // the pair's orders: a limit in the signal's direction and a stop the other way, both at the entry level
@@ -1136,7 +1309,8 @@ void SetExits(bool withTarget)
    double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
    double minD = MinDist();
    // price is already through the engine's stop or target: the engine exits on this bar, so exit now
-   if(exL ? (bid <= sl || (tp > 0 && bid >= tp)) : (ask >= sl || (tp > 0 && ask <= tp))) { CloseAll(); return; }
+   if(exL ? (bid <= sl || (tp > 0 && bid >= tp)) : (ask >= sl || (tp > 0 && ask <= tp)))
+   { CloseAll((exL ? bid <= sl : ask >= sl) ? "the price is already past the stop" : "the price is already past the target"); return; }
    if(exL) { if(bid - sl < minD) sl = FloorTick(bid - minD); if(tp > 0 && tp - bid < minD) tp = CeilTick(bid + minD); }
    else    { if(sl - ask < minD) sl = CeilTick(ask + minD); if(tp > 0 && ask - tp < minD) tp = FloorTick(ask - minD); }
    bool same = MathAbs(PositionGetDouble(POSITION_SL) - sl) < TickSize() * 0.5 && MathAbs(PositionGetDouble(POSITION_TP) - tp) < TickSize() * 0.5;
@@ -1168,7 +1342,7 @@ void T1Half(ulong tk, double vol)
       if(trade.PositionClosePartial(tk, NormalizeDouble(cv, 8))) { exT1Half = true; SetExits(true); }
       else { Print("TP1 partial close failed (", trade.ResultRetcodeDescription(), "), retrying"); gT1Seen = true; }   // ticks retry while price is past TP1, the next bar close in any case
    }
-   else CloseAll();                                   // too small to split: close it all at TP1
+   else CloseAll("Crooks TP1 rule: TP1 reached, too small to split, all closed");   // too small to split: close it all at TP1
 }
 
 //--- text helpers (table and markings) ----------------------------------------
@@ -1286,7 +1460,8 @@ string StateText(bool newsBlk)
    string s = st != 0 && trGhost ? "SKIPPED (" + why + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" :
               capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : CrkPause() ? "CROOKS C PAUSE (" + IntegerToString(crkSkipLeft) + "d left)" : monStop ? "MONTHLY LOCK (until the 1st)" : dayBlock ? "STREAK STOP TODAY" :
               !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : CrkHedgeNow() ? "SCANNING (HEDGE PAIR ON THE NEXT SIGNAL)" : "SCANNING";
-   string ex = exState == 2 ? (exHg ? " (hedge pair open)" : " (in trade)") : (exState == 1 ? (gVirt ? " (waiting for the level)" : exHg ? " (hedge orders working)" : " (order working)") : "");
+   if(TfHold()) s = "CHART ON " + TfName((int)_Period) + ": NO NEW TRADES (EA TRADES " + TfName(gTfTrade) + ")";
+   string ex = exState == 2 ? (exHg ? " (hedge pair open)" : exArm < 0 ? " (in trade, own stop and target)" : " (in trade)") : (exState == 1 ? (gVirt ? " (waiting for the level)" : exHg ? " (hedge orders working)" : " (order working)") : "");
    return s + ex;
 }
 void TblAdd(string k, string v, color vc, color bg)
@@ -1337,7 +1512,7 @@ void UpdateTable()
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v4.3", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v4.4", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
@@ -1352,6 +1527,8 @@ void UpdateTable()
    if(InpNoChase || InpChopOn || InpEmaOn || InpMinVwOn || InpMaxVwOn || InpStopVwOn || InpTouchVwOn || InpEntVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
    TblAdd("DATA RANGE", gFirstT > 0 ? DateTxt(UserTime(gFirstT), true) + " -> " + DateTxt(UserTime(gLastDone), false) + " | " + IntegerToString(bi + 1) + " bars" : "-", white, cell);
    TblAdd("RESTART MEMORY", gPersist ? (gRestored ? "on | continued from " + DateTxt(UserTime(gSvT), true) : "on") : InpRemember ? "off in the Strategy Tester" : "off", white, cell);
+   TblAdd("LAST CLOSE", gLastClose, gLastCloseOut ? negC : white, cell);
+   TblAdd("BROKER CLOCK", MQLInfoInteger(MQL_TESTER) != 0 ? GmtTxt(SrvGMT(TimeCurrent())) + " (Strategy Tester)" : TzTxt(), StringFind(TzTxt(), "CHECK") >= 0 ? negC : white, cell);
    // column widths from the longest text in each column
    int  fs = (int)MathMax(6, InpTableFont), n = ArraySize(tblKey), kw = 0, vw = 0, th = 0;
    uint tw = 0, tht = 0;
@@ -1382,7 +1559,8 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    ulong pTk; double pVol, pOpen;
    bool posNow = HasPosition(pTk, pVol, pOpen);
    bool crkPs = CrkPause();
-   bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock || crkPs || monStop);   // the hard cap acts only on a signal that can be taken
+   bool tfHold = TfHold();                           // v4.4: the chart shows another timeframe than the one the EA trades
+   bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock || crkPs || monStop || tfHold);   // the hard cap acts only on a signal that can be taken
    double rAmt = NextRisk(ExitR(), canTake);
    bool   hg = CrkHedgeNow();                        // Crooks C hedge rule: a buy and a sell (after NextRisk: a hard-cap restart cancels it)
    double hgS = hg ? HgDist(InpCrkHgSl) : 0, hgT = hg ? HgDist(InpCrkHgTp) : 0;
@@ -1398,7 +1576,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
       while(v >= vmn && OrderCalcMargin(ORDER_TYPE_BUY, _Symbol, 2 * v, lim, mg) && mg > AccountInfoDouble(ACCOUNT_MARGIN_FREE)) v = NormalizeDouble(v - vst, 8);
       if(v < vmn) v = 0;
    }
-   skipWhy = (exState != 0 || posNow) ? "still in a trade" : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : crkPs ? "Crooks C pause" : monStop ? "monthly lock" : v <= 0 ? "size 0" : "";
+   skipWhy = (exState != 0 || posNow) ? "still in a trade" : tfHold ? "chart on " + TfName((int)_Period) + ", the EA trades " + TfName(gTfTrade) : (newsBlk || flatNow) ? "news / force-close" : capStop ? "hard cap stop" : paused ? "paused" : dayBlock ? "streak stop" : crkPs ? "Crooks C pause" : monStop ? "monthly lock" : v <= 0 ? "size 0" : "";
    if(skipWhy != "") { skipN++; return; }
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    double sprNow = CostSpr();
@@ -1406,32 +1584,31 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot);
    exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = exT1 ? T1Stop0Px(isL, t1d) : 0; exT1Tight = exT1 ? T1StopPx(isL, t1d) : 0; exT1Entry = lim;
    exT1Tp1 = t1; exT1Tp2 = t2; exKeepSl = 0; exHg = false; exHgS = hgS; exHgT = hgT; gLastOutProfit = 0;
+   exTpL[0] = t1; exTpL[1] = t2; exTpL[2] = t3; exLim = lim;   // the trade's own levels (partials, restart)
    for(int q = 0; q < 3; q++) pDone[q] = false;
    CancelPending();
    gVirt = false;
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   double ep = EntryPx(isL), sl = exT1 ? exT1Stop : StopPx(isL);
+   double ep = EntryPx(isL), sl, tp;
    double minD = MinDist();
-   // the order's SL must respect the stops level; SetExits re-sends the engine's stop once the engine has filled
-   if(isL) sl = MathMin(sl, FloorTick(MathMin(ep, bid) - minD));
-   else    sl = MathMax(sl, CeilTick(MathMax(ep, ask) + minD));
+   OrderExits(isL, ep, sl, tp);                        // v4.4: the stop loss and the take profit go with the order
    bool ok;
    if(hg) ok = PlaceHedge(isL, v);
    else if(InpEntryMode == ENTRY_MARKET)
-      ok = isL ? trade.Buy(v, _Symbol, 0, sl, 0, "ARM") : trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
+      ok = isL ? trade.Buy(v, _Symbol, 0, sl, tp, "ARM") : trade.Sell(v, _Symbol, 0, sl, tp, "ARM");
    else if(isL)
    {
-      if(ask - ep >= MathMax(minD, ts)) ok = trade.BuyLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM");
-      else if(ask <= ep)                ok = trade.Buy(v, _Symbol, 0, sl, 0, "ARM");   // at / through the level: the engine fills on this bar
-      else { ok = true; gVirt = true; }                                                 // inside the stops distance: wait for the level (VirtualEntry)
+      if(ask - ep >= MathMax(minD, ts)) ok = trade.BuyLimit(v, ep, _Symbol, sl, tp, ORDER_TIME_GTC, 0, "ARM");
+      else if(ask <= ep)                ok = trade.Buy(v, _Symbol, 0, sl, tp, "ARM");   // at / through the level: the engine fills on this bar
+      else { ok = true; gVirt = true; }                                                  // inside the stops distance: wait for the level (VirtualEntry)
    }
    else
    {
-      if(ep - bid >= MathMax(minD, ts)) ok = trade.SellLimit(v, ep, _Symbol, sl, 0, ORDER_TIME_GTC, 0, "ARM");
-      else if(bid >= ep)                ok = trade.Sell(v, _Symbol, 0, sl, 0, "ARM");
+      if(ep - bid >= MathMax(minD, ts)) ok = trade.SellLimit(v, ep, _Symbol, sl, tp, ORDER_TIME_GTC, 0, "ARM");
+      else if(bid >= ep)                ok = trade.Sell(v, _Symbol, 0, sl, tp, "ARM");
       else { ok = true; gVirt = true; }
    }
-   if(ok) { exState = 1; exArm = armBar; exSynced = false; takenN++; crkRec = CrkRecNext(); exHg = hg; }
+   if(ok) { exState = 1; exArm = armBar; exArmT = BarTimeOf(armBar); exSynced = false; takenN++; crkRec = CrkRecNext(); exHg = hg; }
    else { skipN++; skipWhy = "order rejected"; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
 }
 
@@ -1446,11 +1623,12 @@ void VirtualEntry()
       if(exL ? (ask <= EntryPx(true) || bid <= EntryPx(false)) : (bid >= EntryPx(false) || ask >= EntryPx(true))) { gVirt = false; HgMarket(exLots); }
       return;
    }
-   double ep = EntryPx(exL), sl = exT1 ? exT1Stop : StopPx(exL);
+   double ep = EntryPx(exL), sl, tp;
    if(exL ? ask <= ep : bid >= ep)
    {
       gVirt = false;
-      if(!(exL ? trade.Buy(exLots, _Symbol, 0, sl, 0, "ARM") : trade.Sell(exLots, _Symbol, 0, sl, 0, "ARM")))
+      OrderExits(exL, ep, sl, tp);                     // v4.4: the take profit goes with the order
+      if(!(exL ? trade.Buy(exLots, _Symbol, 0, sl, tp, "ARM") : trade.Sell(exLots, _Symbol, 0, sl, tp, "ARM")))
          Print("ARM entry failed: ", trade.ResultRetcodeDescription());
    }
 }
@@ -1512,6 +1690,7 @@ void BookClosed()
    crkW = exHg ? gLastOutProfit > 0 : win;             // hedge pair: the trade that closed last decides (a win -> the next trade is a recovery trade)
    crkRec = false; exT1 = false; exT1Half = false; exT1Be = false; exKeepSl = 0;
    exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false; exHg = false;
+   exArmT = 0; exLim = 0; for(int q = 0; q < 3; q++) exTpL[q] = 0;
    CancelPending();
 }
 
@@ -1527,13 +1706,18 @@ void DayStart(int nd)
 //=== EXECUTION: runs once per new bar, after the engine processed the bar that just closed ===
 void OnNewBar()
 {
-   ProcessBar(1);
+   EngStep(1);
+   if(gMissFill) gOurFill = true;                       // the engine's events for the EA's setup on bars caught up after a disconnect
+   if(gMissMove) gOurMove = true;
+   if(gMissExit && !gOurExit) { gOurExit = true; gOurWin = gMissWin; }
+   gMissFill = false; gMissExit = false; gMissWin = false; gMissMove = false;
    CrkDayTick(iTime(_Symbol, _Period, 1));              // Crooks C skip rule: a new day in your time zone counts before this bar's booking
    datetime bt = iTime(_Symbol, _Period, 1);
    datetime ut = UserTime(bt), utPrev = UserTime(gPrevT > 0 ? gPrevT : iTime(_Symbol, _Period, 2));
    MonthTick(ut);                                     // a new month (your time zone): its closed deals count from this bar on
 
    DayStart(gDayPendN + (gNewDay ? 1 : 0)); gDayPendN = 0;   // each new day since the last bar (several after a disconnect or a restart)
+   if(gNewDay) TzPick(false);                           // the broker's clock, once a day
 
    // 1. what the broker did since the last bar
    bool closedNew; double newPnl = NewDealsPnl(closedNew);
@@ -1541,12 +1725,20 @@ void OnNewBar()
    if(newPnl != 0 || closedNew) carried = MathMax(0.0, carried - newPnl);
    ulong pTk; double pVol, pOpen; bool pos = HasPosition(pTk, pVol, pOpen);
    if(exState == 1 && pos) exState = 2;
+   if(exState == 0 && pos && !exHg)                    // the order filled while it was being cancelled: a trade of this EA, kept on its own levels
+   {
+      exState = 2; exArm = -1; exSynced = false;
+      Print("Position #", pTk, " of this EA filled while its order was being cancelled: kept, it runs to its own stop loss and take profit.");
+   }
    bool exClosed = (exState == 1 && !pos && closedNew) || (exState == 2 && !pos);
 
    // 2. an executed trade has closed
    if(exClosed) BookClosed();
 
-   // 3. follow the engine (only the setup the EA took); state based, so it also covers bars caught up after a disconnect
+   // 3. follow the engine for the EA's own setup only (its arm bar exArm). The engine's fill confirms the trade (its levels are re-sent), a stop
+   //    move moves the broker's stop, and the engine's stop (or its final target without earn-back) on the bar chart closes it. v4.4: a trade
+   //    the engine is not in (filled before the engine on a narrower spread, its setup ended, new inputs, another timeframe) is never closed
+   //    early: it runs to its own stop loss and take profit, which went to the broker with the order
    bool exMine = exArm >= 0 && armBar == exArm;
    if(exState == 1 && !(MathAbs(st) == 1 && exMine))   // the engine no longer holds the EA's armed setup: expired, replaced or filled
    {
@@ -1554,32 +1746,33 @@ void OnNewBar()
       if(exMine && lastFill > exArm) missN++;          // engine filled, broker did not
       exState = 0; exArm = -1; gVirt = false; exHg = false;
    }
-   if(exState == 2 && exMine && MathAbs(st) == 2) exSynced = true;   // the engine is in the EA's setup (filled on this bar or a caught-up bar)
+   if(exState == 2 && exArm >= 0 && !exHg)
+   {
+      if(gOurFill || (exMine && MathAbs(st) == 2)) exSynced = true;   // the engine filled the EA's setup (this bar, a caught-up bar, or before)
+      if(!exSynced && !(exMine && MathAbs(st) == 1))   // filled at the broker first, and the engine's setup ended without its fill
+      {
+         Print("Trade #", pTk, " filled before the engine's fill (bid chart) and its setup ended: kept, it runs to its own stop loss and take profit.");
+         exArm = -1;
+      }
+   }
    // Crooks TP1 rule: TP1 was reached but no tick booked the TP1 part (missed tick, failed close, disconnect): book it now, before the
    // stop / target update below (exit TP1: the engine won on the bar that just closed; any exit: that bar, after the fill bar, reached
    // TP1; or a bar caught up after a disconnect did)
    bool t1Bar = exT1 && exSynced && lastFill >= 0 && lastFill < bi && (exL ? Hi(1) >= exT1Tp1 + exCostPx : Lo(1) <= exT1Tp1 - exCostPx);
-   bool t1Due = (((evExit && evWin) || t1Bar) && exMine) || gT1Seen;
+   bool t1Due = (gOurExit && gOurWin) || t1Bar || gT1Seen;
    gT1Seen = false;                                                  // a failed close below sets it again: retried at the next bar close
    if(t1Due && exState == 2 && exT1 && !exT1Half && pos) { T1Half(pTk, pVol); pos = HasPosition(pTk, pVol, pOpen); }
-   if(exState == 2 && exMine && !exHg && (evFill || evMove)) SetExits(true);
-   if(evExit && exState == 2 && exMine && !exHg && (!InpEarnBack || !evWin) && !(exT1 && (evWin || exT1Half))) CloseAll();   // engine exited: never stay in (earn-back and the Crooks TP1 rule only outlive a win)
+   if(exState == 2 && exMine && MathAbs(st) == 2 && !exHg && (gOurFill || gOurMove)) SetExits(true);   // the engine's levels are this trade's only while it is in it
+   if(gOurExit && exState == 2 && !exHg)
+   {
+      // the engine's trade ended: its stop, or its final target without earn-back, closes the trade (earn-back and the Crooks TP1 rule only outlive a win)
+      if((!InpEarnBack || !gOurWin) && !(exT1 && (gOurWin || exT1Half)))
+         CloseAll(gOurWin ? "the engine's final target was reached (bar close, bid chart)" : "the engine's stop was hit (bar close, bid chart)");
+      exArm = -1;                                       // the engine is done with this trade: a runner goes on to its own levels
+   }
    // Crooks TP1 rule: stop choices that move the stop at a bar close, before the TP1 half is booked
    if(exState == 2 && exT1 && !exT1Half && (InpCrkT1Stop == T1S_FILL || InpCrkT1Stop == T1S_PT || InpCrkT1Stop == T1S_PBE)) T1StopMove();
-   // engine wins: close a broker position the engine is not in (early fill on a spread spike, a fill racing a cancel,
-   // or an engine exit on a bar caught up after a disconnect); with earn-back a synced trade may outlive the engine exit
-   bool engHolds = (MathAbs(st) == 2 && exSynced && exMine) || (MathAbs(st) == 1 && !exSynced && exState == 2 && exMine);
-   if(pos && !exClosed && !evExit && !engHolds && !(InpEarnBack && exSynced) && !(exT1 && exSynced) && !exHg)
-   {
-      CloseAll(); exState = 2;   // booked on the next bar unless the exit deal is already visible
-      ulong cTk; double cVol, cOp;
-      if(!HasPosition(cTk, cVol, cOp))
-      {
-         bool cn; double np = NewDealsPnl(cn);
-         exPnl += np; totalNet += np; if(np != 0 || cn) carried = MathMax(0.0, carried - np);
-         if(cn) BookClosed();   // closed now: the engine's new setup on this bar can be taken
-      }
-   }
+   // v4.4: no "engine wins" close any more (v4.3 closed a trade the engine was not in at the next bar, at whatever price it was)
 
    // 4. force-close time / weekend start / news
    bool nStart; bool newsBlk = NewsBlock(ut, nStart, utPrev);
@@ -1587,7 +1780,7 @@ void OnNewBar()
    bool fcNow = InpFcOn && (curM >= prvM ? (prvM < fcM && curM >= fcM) : (fcM > prvM || fcM <= curM));
    bool wkndStart = InpWeekendOn && DowOf(ut) == 6 && DowOf(utPrev) != 6;
    bool flatNow = fcNow || wkndStart || nStart;
-   if(flatNow && pos) CloseAll();
+   if(flatNow && pos) CloseAll(fcNow ? "the daily force-close time" : wkndStart ? "the weekend starts (Saturday)" : "a news window starts");
    if(exHg && exState == 2 && (flatNow || newsBlk)) CancelPending();   // hedge pair: a trade still waiting is not opened after force-close, weekend or news
    if(exState == 1 && (flatNow || newsBlk)) { CancelPending(); exState = 0; exArm = -1; gVirt = false; exHg = false; }
 
@@ -1612,7 +1805,8 @@ void ManagePartials()
    if(!HasPosition(tk, vol, op)) return;
    double px = SymbolInfoDouble(_Symbol, SYMBOL_BID);   // the engine's levels are bid-chart levels for both directions
    double tp[3]; double pp[3];
-   tp[0] = t1; tp[1] = t2; tp[2] = t3;
+   bool eng = exArm >= 0 && armBar == exArm && MathAbs(st) == 2;   // the engine's levels are this trade's while it is in it
+   tp[0] = exTpL[0] > 0 ? exTpL[0] : eng ? t1 : 0; tp[1] = exTpL[1] > 0 ? exTpL[1] : eng ? t2 : 0; tp[2] = exTpL[2] > 0 ? exTpL[2] : eng ? t3 : 0;   // the trade's own levels (v4.4)
    pp[0] = InpP1; pp[1] = InpP2; pp[2] = InpP3;
    double step = InpLotStep > 0 ? InpLotStep : SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
    double vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
@@ -1626,7 +1820,7 @@ void ManagePartials()
    }
    for(int k = 0; k < 3; k++)
    {
-      if(k + 1 >= exitK || pp[k] <= 0 || pDone[k]) continue;
+      if(k + 1 >= exitK || pp[k] <= 0 || pDone[k] || tp[k] <= 0) continue;
       if(exL ? px >= tp[k] + exCostPx : px <= tp[k] - exCostPx)
       {
          double cv = MathFloor(exLots * pp[k] / 100.0 / step + 1e-9) * step;
@@ -1685,6 +1879,9 @@ void StateIO(bool save)
    // the trade the EA is in, or its working order: its type and what it booked so far; the broker deals already counted
    IoI("xs", exState); IoB("xl", exL); IoD("xv", exLots); IoD("xr", exRiskAmt); IoD("xc", exCostPx); IoD("xp", exPnl); IoD("xk", exKeepSl);
    IoB("kr", crkRec); IoB("xy", exSynced);
+   double xe = exLim, x1 = exTpL[0], x2 = exTpL[1], x3 = exTpL[2];   // v4.4: the trade's setup (arm bar time, entry) and its own TP1-TP3
+   IoT("xa", exArmT); IoD("xe", xe); IoD("x1", x1); IoD("x2", x2); IoD("x3", x3);
+   exLim = xe; exTpL[0] = x1; exTpL[1] = x2; exTpL[2] = x3;
    bool p0 = pDone[0], p1 = pDone[1], p2 = pDone[2];
    IoB("p0", p0); IoB("p1", p1); IoB("p2", p2);
    pDone[0] = p0; pDone[1] = p1; pDone[2] = p2;
@@ -1748,6 +1945,7 @@ void SvWipe() { GlobalVariablesDeleteAll(gSvBase); GlobalVariablesFlush(); gSvC 
 void TradeClear()
 {
    exState = 0; exPnl = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exKeepSl = 0; exArm = -1; exSynced = false; gVirt = false;
+   exArmT = 0; exLim = 0; for(int q = 0; q < 3; q++) exTpL[q] = 0;
    crkRec = false; exT1 = false; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0; exT1Tight = 0; exT1Entry = 0;
    exHg = false; exHgS = 0; exHgT = 0;
    for(int q = 0; q < 3; q++) pDone[q] = false;
@@ -1756,13 +1954,12 @@ void TradeClear()
 bool ExitDealAfter(ulong cursor)
 {
    if(!HistorySelect(0, TimeCurrent() + 86400)) return false;
-   for(int i = HistoryDealsTotal() - 1; i >= 0; i--)
+   int n = HistoryDealsTotal();
+   for(int i = n - 1; i >= 0; i--)
    {
       ulong tk = HistoryDealGetTicket(i);
       if(tk == 0 || tk <= cursor) continue;
-      if(HistoryDealGetString(tk, DEAL_SYMBOL) != _Symbol || HistoryDealGetInteger(tk, DEAL_MAGIC) != InpMagic) continue;
-      long e = HistoryDealGetInteger(tk, DEAL_ENTRY);
-      if(e == DEAL_ENTRY_OUT || e == DEAL_ENTRY_INOUT || e == DEAL_ENTRY_OUT_BY) return true;
+      if(IsExitDeal(tk) && DealIsMine(tk, n)) return true;   // v4.4: also closed by hand, from the phone app or by another EA
    }
    return false;
 }
@@ -1774,7 +1971,7 @@ void RestoreTrade()
    bool posNow = HasPosition(tk, v, op);
    if(sx == 2 || (sx == 1 && (posNow || ExitDealAfter(lastDeal)))) { exState = 2; return; }
    TradeClear();                                        // nothing filled: a waiting order is re-placed from the engine's setup (CancelPending, gRearm)
-   bool c; NewDealsPnl(c);                              // no trade of this EA was open: later deals are not its trades
+   bool c; NewDealsPnl(c, true);                        // no trade of this EA was open: later deals are not its trades
 }
 //--- OnNewBar's steps 1-2 at start-up: the deals since the saved state, and a trade that closed while the EA was off
 void BookBrokerDeals()
@@ -1824,6 +2021,8 @@ void ResetEngine()
    vxSide = 0; vxN = 0; tchL = 1000000; tchS = 1000000; hK = -1; hC = 0; hSum = 0; hNum = 0; ArrayInitialize(hE, 0.0);
    ArrayInitialize(tpHitN, 0); beN = 0; lkN = 0; gFirstT = 0;
    gDrawT = 0; ArrayResize(gDrawn, 0); gStateTxt = "SCANNING";
+   exArmT = 0; exLim = 0; ArrayInitialize(exTpL, 0.0);
+   gOurFill = false; gOurExit = false; gOurWin = false; gOurMove = false; gMissFill = false; gMissExit = false; gMissWin = false; gMissMove = false;
 }
 
 //--- events -----------------------------------------------------------------
@@ -1836,7 +2035,8 @@ void BrokerStart()
       Print("Restart memory: the saved state belongs to account ", gSvAcc, ", not ", nowAcc, ": starting fresh.");
       MemoryFresh();
    }
-   if(!gRestored) { bool c; NewDealsPnl(c); }            // do not count old history (restored: the deals since the saved state are booked below)
+   TzPick(false);                                        // the broker's clock, now that MT5 is connected
+   if(!gRestored) { bool c; NewDealsPnl(c, true); }      // do not count old history (restored: the deals since the saved state are booked below)
    if(!gRestored) MonthFromHistory();                    // this month's closed profit and the monthly locks from the deal history
    else
    {
@@ -1850,24 +2050,33 @@ void BrokerStart()
    else if(HasPosition(tk, vol, op) && PositionSelectByTicket(tk))
    {
       bool isL = PositionGetInteger(POSITION_TYPE) == POSITION_TYPE_BUY;
-      if((isL && st == 2) || (!isL && st == -2))
+      double pSl = PositionGetDouble(POSITION_SL), pTp = PositionGetDouble(POSITION_TP);
+      datetime aT = MathAbs(st) >= 1 && !trGhost ? BarTimeOf(armBar) : 0;
+      // v4.4: the engine's setup is this trade's when it is the saved setup (arm bar time and entry, restart memory); without a saved setup,
+      // when it has the trade's direction and was armed before the trade opened
+      bool same = aT > 0 && (st > 0) == isL &&
+                  (gRestored && exArmT > 0 ? aT == exArmT && (exLim <= 0 || MathAbs(lim - exLim) <= TickSize() * 2.5)
+                                           : (datetime)PositionGetInteger(POSITION_TIME) >= aT + PeriodSeconds(_Period));
+      exState = 2; exL = isL; if(!(gRestored && exLots > 0)) exLots = vol;   // a restored trade keeps its lots (partials)
+      if(same && MathAbs(st) == 2)
       {
-         double oldSl = PositionGetDouble(POSITION_SL);
-         exState = 2; exL = isL; if(!(gRestored && exLots > 0)) exLots = vol; exArm = armBar; exSynced = true;   // a restored trade keeps its lots (partials)
+         exArm = armBar; exArmT = aT; exLim = lim; exSynced = true;
          for(int q = 0; q < 3; q++) pDone[q] = pDone[q] || tpHit >= q + 1;
          Print("Adopted open position #", tk, " (engine is in the same trade).");
          // never widen the stop of an adopted position (a Crooks TP1-rule position is sized for its tighter stop): SetExits keeps it from now on
-         exKeepSl = oldSl > 0 && (isL ? oldSl > StopPx(isL) : oldSl < StopPx(isL)) ? oldSl : 0;
+         exKeepSl = pSl > 0 && (isL ? pSl > StopPx(isL) : pSl < StopPx(isL)) ? pSl : 0;
          SetExits(true);
+      }
+      else if(same)
+      {
+         exArm = armBar; exArmT = aT; exLim = lim; exSynced = false;
+         Print("Open position #", tk, " kept: it filled before the engine's fill (bid chart); the engine's setup is still armed.");
       }
       else
       {
-         exState = 2;
-         bool early = gRestored && MathAbs(st) == 1 && (st > 0) == isL;          // restored: the broker filled before the engine's fill bar
-         bool runner = gRestored && exSynced && (exT1 || InpEarnBack);           // restored: a Crooks TP1-rule rest or an earn-back trade outliving the engine's exit
-         if(early) { exL = isL; exArm = armBar; exSynced = false; }
-         Print("Open position #", tk, early ? " kept: it filled before the engine's fill bar (restored trade)." : runner ? " kept: the restored trade runs on after the engine's exit." :
-               " does not match the engine state; it will be closed on the next bar (the engine wins).");
+         exArm = -1; exSynced = gRestored && exSynced;
+         Print("Open position #", tk, " kept: the engine is not in it (its setup ended, new inputs or another timeframe). It runs to its own stop loss ",
+               DoubleToString(pSl, _Digits), " and take profit ", pTp > 0 ? DoubleToString(pTp, _Digits) : "(none)", ".");
       }
    }
    if(!(gRestored && exHg && exState == 2)) CancelPending();   // a pending order from before the restart has no tracked state (a restored hedge pair keeps its waiting trade)
@@ -1883,7 +2092,7 @@ void BrokerStart()
          }
       BookBrokerDeals();
       ulong rTk; double rVol, rOp;
-      if(gRestFlat && HasPosition(rTk, rVol, rOp)) { CloseAll(); BookBrokerDeals(); }   // a force-close, weekend start or news start passed while the EA was off
+      if(gRestFlat && HasPosition(rTk, rVol, rOp)) { CloseAll("a force-close, weekend start or news start passed while the EA was off"); BookBrokerDeals(); }
       if(gRestFlat && exHg && exState == 2) CancelPending();
       if(monRestPend && exState == 0 && !HasPosition(rTk, rVol, rOp)) { monRestPend = false; RecoveryRestart(); }
       MonthCheck();
@@ -1893,6 +2102,52 @@ void BrokerStart()
             capStop ? " | hard cap stop" : "", exState == 2 ? " | trade still open" : "");
    }
    gRearm = MathAbs(st) == 1 && !trGhost && exState == 0 && armBar != gPauseArm;   // re-place the engine's armed setup on the first tick (not one armed while paused)
+}
+
+//--- one copy per symbol + magic number: two copies cancel and close each other's trades and share one restart memory. A temporary global
+//--- variable (gone when MT5 closes) holds the chart of the copy that runs; a lock of a chart that no longer runs an EA is taken over
+bool LockTake()
+{
+   if(MQLInfoInteger(MQL_TESTER) != 0) return true;
+   gLockN = SvExtra("run");
+   gLockV = (double)(ChartID() & 0xFFFFFFFFFFFF) + 1.0;  // 48 bits of the chart id (exact in a double), never 0
+   if(!GlobalVariableCheck(gLockN)) GlobalVariableTemp(gLockN);
+   if(GlobalVariableSetOnCondition(gLockN, gLockV, 0)) return true;
+   double cur = GlobalVariableGet(gLockN);
+   if(cur == gLockV) return true;                        // this chart (new inputs, another timeframe)
+   for(long id = ChartFirst(); id >= 0; id = ChartNext(id))
+      if(id != ChartID() && (double)(id & 0xFFFFFFFFFFFF) + 1.0 == cur && ChartGetString(id, CHART_EXPERT_NAME) != "") return false;   // that chart still runs it
+   return GlobalVariableSetOnCondition(gLockN, gLockV, cur);   // that chart is gone: take over
+}
+void LockFree() { if(gLockN != "" && MQLInfoInteger(MQL_TESTER) == 0) GlobalVariableSetOnCondition(gLockN, 0, gLockV); }
+//--- a note on the other EAs in this MetaTrader: one that manages every trade of the account can close this EA's trades (the log then names
+//--- who closed each trade); an alert for an older copy of this EA on the same symbol (it has no lock and may use the same magic number)
+void OtherEAs()
+{
+   if(MQLInfoInteger(MQL_TESTER) != 0) return;
+   string lst = ""; bool twin = false;
+   for(long id = ChartFirst(); id >= 0; id = ChartNext(id))
+   {
+      if(id == ChartID()) continue;
+      string nm = ChartGetString(id, CHART_EXPERT_NAME);
+      if(nm == "") continue;
+      lst += (lst == "" ? "" : ", ") + nm + " (" + ChartSymbol(id) + " " + StringSubstr(EnumToString(ChartPeriod(id)), 7) + ")";
+      if(ChartSymbol(id) != _Symbol || StringFind(nm, "AuctionRetest") != 0) continue;
+      bool locked = false;                               // a v4.4+ copy holds a lock (its own magic number, else this start would have failed)
+      for(int q = GlobalVariablesTotal() - 1; q >= 0 && !locked; q--)
+      {
+         string g = GlobalVariableName(q);
+         if(StringFind(g, "ARX|") == 0 && StringFind(g, "|run") == StringLen(g) - 4 && GlobalVariableGet(g) == (double)(id & 0xFFFFFFFFFFFF) + 1.0) locked = true;
+      }
+      if(!locked) twin = true;
+   }
+   if(lst != "") Print("Other EAs running in this MetaTrader: ", lst, ". An EA that manages every trade of the account can close this EA's trades: the log names who closed each trade.");
+   if(twin)
+   {
+      string m = "Another chart on " + _Symbol + " runs an older AuctionRetestEA. If it uses the same magic number (" + IntegerToString(InpMagic) +
+                 "), the two copies cancel and close each other's trades: remove one, or give each its own magic number.";
+      Print(m); Alert(m);
+   }
 }
 
 int OnInit()
@@ -1905,8 +2160,39 @@ int OnInit()
    // restart memory: on a fresh start (MT5 or the EA restarted) continue from the saved state; switched off: forget it
    gPersist = InpRemember && MQLInfoInteger(MQL_TESTER) == 0 && MQLInfoInteger(MQL_OPTIMIZATION) == 0;
    gSvBase = SvBaseName(); gRestored = false;
+   if(!LockTake())
+   {
+      string m = "Another copy of this EA runs on " + _Symbol + " with magic number " + IntegerToString(InpMagic) + " (another chart). Two copies cancel and close " +
+                 "each other's trades: remove one, or give each its own magic number.";
+      Print(m); Alert(m);
+      return INIT_FAILED;
+   }
+   TzPick(true);                                         // the broker's clock (Auto), before the warm-up uses it
+   if(MQLInfoInteger(MQL_TESTER) == 0)                   // the timeframe the EA trades: the one it was attached to (also after a restart)
+   {
+      string tfN = SvExtra("tf");
+      if(gTfTrade == 0) gTfTrade = GlobalVariableCheck(tfN) ? (int)MathRound(GlobalVariableGet(tfN)) : (int)_Period;
+      GlobalVariableSet(tfN, gTfTrade);
+      if(TfHold())
+      {
+         string m = "The chart is on " + TfName((int)_Period) + ", but this EA trades " + TfName(gTfTrade) + " (the timeframe it was attached to): no new trades until the chart is back on " +
+                    TfName(gTfTrade) + ". The open trade keeps its stop loss and take profit. To trade " + TfName((int)_Period) + ", remove the EA and attach it again.";
+         Print(m); Alert(m);
+      }
+   }
    if(!InpRemember && MQLInfoInteger(MQL_TESTER) == 0) SvWipe();
    gRestFlat = false; gBrokerPend = false;
+   // Start fresh once: forget the money-management state (kept by MT5 on new inputs and by the restart memory); done once while it is on
+   string rsN = SvExtra("rsd");
+   if(MQLInfoInteger(MQL_TESTER) == 0)
+   {
+      if(!InpMemFresh) GlobalVariableDel(rsN);
+      else if(!GlobalVariableCheck(rsN))
+      {
+         SvWipe(); MemoryFresh(); GlobalVariableSet(rsN, 1);
+         Print("Started fresh: the loss recovery, streaks and pauses start again from the base risk. Set 'Start fresh once' back to false.");
+      }
+   }
    if(gPersist) gRestored = StateLoad();                 // a fresh start or new inputs: continue from the saved state (written at OnDeinit)
    if(gRestored && (gInitDone || !InpCapOn || InpCapAction != CAP_STOP)) capStop = false;   // a hard-cap Stop ends with new inputs (as before) or a cap that no longer stops
    if(gCrkPrPrev != (int)InpCrkPr || InpRec != REC_CRC) { crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; }
@@ -1957,6 +2243,7 @@ int OnInit()
    gStateTxt = StateText(false);
    UpdateTable();
    StateSave(true);                                      // restart memory: the state after this start
+   OtherEAs();
    gInitDone = true;
    return INIT_SUCCEEDED;
 }
@@ -1964,6 +2251,8 @@ int OnInit()
 void OnDeinit(const int reason)
 {
    StateSave(true);                                      // restart memory: the latest state on disk (MT5 closing, the EA removed, new inputs)
+   LockFree();
+   if((reason == REASON_REMOVE || reason == REASON_CHARTCLOSE) && MQLInfoInteger(MQL_TESTER) == 0) GlobalVariableDel(SvExtra("tf"));   // removed: attach it again on any timeframe
    Comment("");
    // after a Strategy Tester run the markings stay on the visual chart; everywhere else they are removed with the EA
    if(MQLInfoInteger(MQL_TESTER) == 0) ObjectsDeleteAll(0, "ARM_");
@@ -1994,7 +2283,10 @@ void OnTick()
       bool caught = false; long biBefore = bi;
       for(int s = sh - 1; s >= 2; s--)                                 // bars missed while offline: engine only
       {
-         ProcessBar(s); caught = true; if(gNewDay) gDayPendN++;
+         EngStep(s); caught = true; if(gNewDay) gDayPendN++;
+         if(gOurFill) gMissFill = true;                                  // this trade's fill, stop move or exit on a missed bar: handled by OnNewBar
+         if(gOurMove) gMissMove = true;
+         if(gOurExit) { gMissExit = true; gMissWin = gOurWin; }
          CrkDayTick(iTime(_Symbol, _Period, s));                          // Crooks C skip rule: count the missed days too
          if(evArm && CrkPause()) gPauseArm = armBar;                      // armed while paused: the strategy skips it, so it is not placed on reconnect
          // Crooks TP1 rule: a missed bar after the engine's fill of this setup reached TP1 and the TP1 part is not booked: book it on this bar

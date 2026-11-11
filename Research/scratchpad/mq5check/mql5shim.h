@@ -454,6 +454,7 @@ string TerminalInfoString(ENUM_TERMINAL_INFO_STRING property_id);
 bool GlobalVariableCheck(const string& name); double GlobalVariableGet(const string& name); datetime GlobalVariableSet(const string& name, double value);
 bool GlobalVariableDel(const string& name); bool GlobalVariableTemp(const string& name);
 void GlobalVariablesFlush(); int GlobalVariablesDeleteAll(const string& prefix_name, datetime limit_data = 0); int GlobalVariablesTotal();
+bool GlobalVariableSetOnCondition(const string& name, double value, double check_value); string GlobalVariableName(int index);
 
 // ---- strings ----
 int StringLen(const string& s); string StringSubstr(const string& s, int start_pos, int length = -1); int StringFind(const string& s, const string& match, int start_pos = 0);

@@ -505,6 +505,21 @@ Other gold findings:
       untouched); save the arm bar time `exArmT` so a restart / timeframe switch re-links or keeps the trade; book deals by position ID;
       report who closed every trade (DEAL_REASON); one-copy lock (temporary global variable); server clock Auto (detect); close reasons
       in the log. Then a broker simulator harness (`$S/sim/`), the old parity suites, a review, README, ship.
+    - **Done so far (2026-11-11 21:40):** patches `v44` (44 edits), `v44b` (timeframe hold: the EA trades the timeframe it was attached to;
+      a chart switched to another timeframe opens no new trades until it is back; `ARX|..|tf`, forgotten on REASON_REMOVE / CHARTCLOSE),
+      `v44c` (the close report shows the trade's whole P&L). Rebuild: copy `bak/v43_final/AuctionRetestEA_v43.mq5` to `build/safe/`, run
+      the three patches in order. mq5check 0/0. Harness additions: `GlobalVariableSetOnCondition`, `GlobalVariableName` (shim + rt_impl),
+      empty deal-history / chart stubs in `rt_impl.h`.
+    - **Broker simulator `$S/sim/`** (`build.sh EA NAME [v43]`, `sim_driver`, `sim_impl.h`, `analyze.py`, `run_all.sh` -> `results.txt`):
+      MT5 hedging broker (limit/stop orders, stops level, SL/TP at the tick, deals with reason / magic / position id, commission), ticks
+      from FxPro M1 bars (`export_m1.py`, 4 per minute, spread x (1 +- JIT)), M5 and M1 bars, restarts (fresh globals), new inputs, timeframe
+      switches, hand / other-EA closes, lock and clock tests. 0.9 s for 3 months.
+    - **Results (3 Aug - 2 Oct 2026, 13 scenarios):** v4.3 opens every trade without a TP; plain running gives no early closes, but timeframe
+      switches give 48 "engine wins" closes (avg +8.69) and input changes 9 (avg +6.76), the user's symptom; hand / other-EA closes are booked
+      as $0 (25 of 99 bookings wrong, Crooks C then skips the recovery trade). v4.4: 0 early closes, every trade has a TP from the open, all
+      bookings equal the broker P&L, restarts and same-input re-inits give identical trades, lock refuses a second copy and takes a stale lock,
+      clock read as GMT+3 / +2 / 0 / +5.5 / -4. (A commission-scenario mismatch was the analyzer missing the entry deal; fixed.)
+    - **Next:** re-run `sim/run_all.sh` and `v40/run_v44.sh v44final` on the final EA; independent review; README; ship.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
