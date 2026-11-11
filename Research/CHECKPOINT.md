@@ -482,6 +482,29 @@ Other gold findings:
       - Hedge and month scripted cases: unchanged.
       - Engine parity: ALL IDENTICAL x 3 shifts.
       - Independent review: Sonnet, high effort; its findings were verified, then fixed in v43e.
+27. **EA v4.4: live trades closed early (IN PROGRESS)** (asked 2026-11-11 with a phone screenshot: new broker, symbol `GOLD.i#`, commission
+    0; three trades closed at +4.86 / +4.97 / +6.48 instead of TP1 = 0.6R).
+    - **Trades** (server time): buy 0.06 05:05:03 -> 05:15:00 (4047.89 -> 4048.70, SL 4040.07, TP 4052.46); buy 0.07 09:11:14 -> 09:17:11
+      (4062.34 -> 4063.05, SL 4055.74, no TP); sell 0.09 14:40:05 -> 14:45:03 (4042.14 -> 4041.42, SL 4047.41, no TP). All have the comment ARM.
+    - **What v4.3 can close** (every CloseAll): the engine's exit (stop / target), "engine wins" (a position the engine is not in, at the next
+      bar), force-close / weekend / news start, SetExits' price-already-past check, the Crooks TP1-rule part (intrabar), a lone hedge leg,
+      `gRestFlat` at a restart. On M5 only the TP1 rule and a restart close mid-bar.
+    - **Reading the screenshot:** trade 2 closed mid-bar (09:17:11), so not by an M5 bar rule; trade 1 had its TP (the engine was in sync),
+      and with earn-back on v4.3 keeps such a trade; all three closed after only +0.71 to +0.81 in price. Most likely causes:
+      something outside the EA (another EA, a second copy of this EA with the same magic, a hand close), or "engine wins" after a
+      re-initialisation (timeframe switch, new inputs), which makes the engine lose track of the trade. Without the Experts/Journal log this
+      cannot be proven.
+    - **Bugs found in v4.3:** (1) a trade closed outside the EA (by hand, phone, another EA) has an exit deal with another magic, so
+      `NewDealsPnl` skips it and BookClosed books a winning trade as a $0 loss (recovery, streaks and pauses go wrong); `ExitDealAfter` has
+      the same blind spot after a restart. (2) No TP at the broker until the engine confirms the fill at the next bar close. (3) "Engine
+      wins" closes the EA's own filled order at a random price (early fill when the spread narrows on buys, setup expiry, timeframe switch,
+      new inputs, two copies). (4) Two copies with the same symbol + magic cancel and close each other's trades and share one restart state.
+      (5) The server clock defaults to FxPro's EET rule; a new broker may differ. (6) No log of why a trade closed.
+    - **Plan:** `build/patch_ea_v44.py`: TP from placement; keep own trades (no "engine wins" close; exits only by broker SL/TP, the engine's
+      stop/target for a synced trade, force-close / weekend / news); our-trade events via the arm bar (`EngStep` wrapper, ProcessBar
+      untouched); save the arm bar time `exArmT` so a restart / timeframe switch re-links or keeps the trade; book deals by position ID;
+      report who closed every trade (DEAL_REASON); one-copy lock (temporary global variable); server clock Auto (detect); close reasons
+      in the log. Then a broker simulator harness (`$S/sim/`), the old parity suites, a review, README, ship.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
