@@ -526,7 +526,17 @@ Other gold findings:
       price (market); a market entry past the target is skipped. Rebuild order: v44, v44b, v44c, v44d. All 13 scenarios + TP1 rule / hedge /
       partials / market entry (with restarts, switches, hand closes): 0 early closes, 0 duplicates, 0 rejects, every booking = broker P&L.
       A sell's TP moves by the live spread when re-sent after a restart (bid-chart shift by design).
-    - **Next:** independent review (Opus, high; running); `v40/run_v44.sh v44final` on the final EA; README (written); ship.
+    - **Review 1 (Opus, high) -> v44e** (all verified, then fixed): F1 BarTimeOf by iBarShift(gLastDone) (a start before MT5 connects ran
+      BrokerStart before the missed bars: restored trades were not re-linked; reproduced with the driver's DISC=1); F2 restart: the saved setup
+      is re-linked in the warm-up (arm bar time, direction, entry), bars after gSvLast run through EngStep -> gMiss*, BrokerStart closes a trade
+      whose engine stop / target was hit while off (reproduced with stop moves + RESTART=397 OFF=150); F3 daily rewrite of ARX rsd / tf
+      (ExtraRefresh); F4 CloseRule + gExitRetry ("xq") retries refused closes; F5 partial closes carry their reason, "partly closed"; F6 quiet
+      NewDealsPnl only moves the cursor; F7 exTpL on adoption; F8 tf deleted on INITFAILED / PROGRAM / TEMPLATE too; N netting: magic only.
+      Harness: rt_impl.h stubs PositionSelectByTicket / PositionGetInteger (sim build drops them). Rebuild order: v44, v44b, v44c, v44d, v44e.
+    - **Simulator on v44e:** 13 scenarios + 14 extra runs (TP1 rule, hedge, partials, market, Sep 2025 - Jan 2026 period, stop moves with
+      offline restarts): 0 trades without TP, 0 duplicates, 0 rejects, 0 failed starts, every booking = broker P&L.
+    - **Next:** review 2 (Opus, high, on v44c -> v44e; running); `v40/run_v44.sh v44final` (running, progress in `v40/final_v44.txt`);
+      then copy to `MetaTrader5/`, README done, ship.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

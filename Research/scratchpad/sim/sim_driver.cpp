@@ -25,6 +25,7 @@ void sim_set_tf(int m);
 void sim_gv_set(const char* n, double v);
 double sim_gv_get(const char* n);
 void sim_set_chart(long long me, int n, const long long* ids, int withEa);
+void sim_conn(int c);
 }
 static long long day(const char* s) { int y, m, d; std::sscanf(s, "%d-%d-%d", &y, &m, &d); y -= m <= 2; long long era = (y >= 0 ? y : y - 399) / 400; long long yoe = y - era * 400;
    long long doy = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1; long long doe = yoe * 365 + yoe / 4 - yoe / 100 + doy; return (era * 146097 + doe - 719468) * 86400; }
@@ -36,7 +37,7 @@ int main(int argc, char** argv)
    if(argc < 4) { std::fprintf(stderr, "usage: %s m1.csv START END [KEY=VALUE ...]\n", argv[0]); return 2; }
    long long t0 = day(argv[2]), t1 = day(argv[3]);
    std::string altName; double altVal = 0;              // ALT=InpName:value -> that input changes at every REINIT (new inputs that change the engine)
-   double jit = 0, comm = 0; int stops = 0; long long restart = 0, off = 0, reinit = 0, ext = 0, hold = 40, extMagic = -1, tfsw = 0, tflen = 60, tfAt = -1, lockTest = 0; double gmtFix = -99;
+   double jit = 0, comm = 0; int stops = 0; long long restart = 0, off = 0, reinit = 0, ext = 0, hold = 40, extMagic = -1, tfsw = 0, tflen = 60, tfAt = -1, lockTest = 0, disc = 0, discLeft = 0; double gmtFix = -99;
    std::vector<std::pair<std::string, double>> inp;
    inp.push_back({"InpDraw", 0}); inp.push_back({"InpShowTable", 0});
    for(int i = 4; i < argc; i++)
@@ -47,7 +48,7 @@ int main(int argc, char** argv)
       if(k == "JIT") jit = v; else if(k == "SEED") rng = 88172645463325252ULL + (unsigned long long)(v * 7919); else if(k == "STOPS") stops = (int)v;
       else if(k == "COMM") comm = v; else if(k == "RESTART") restart = (long long)v; else if(k == "OFF") off = (long long)v;
       else if(k == "REINIT") reinit = (long long)v; else if(k == "EXT") ext = (long long)v; else if(k == "HOLD") hold = (long long)v;
-      else if(k == "EXTMAGIC") extMagic = (long long)v; else if(k == "TFSW") tfsw = (long long)v; else if(k == "TFLEN") tflen = (long long)v; else if(k == "LOCKTEST") lockTest = (long long)v; else if(k == "GMTOFF") gmtFix = v;
+      else if(k == "EXTMAGIC") extMagic = (long long)v; else if(k == "TFSW") tfsw = (long long)v; else if(k == "TFLEN") tflen = (long long)v; else if(k == "LOCKTEST") lockTest = (long long)v; else if(k == "GMTOFF") gmtFix = v; else if(k == "DISC") disc = (long long)v;
       else if(k == "ALT") { size_t c = a.find(':'); altName = a.substr(p + 1, c - p - 1); altVal = std::atof(a.c_str() + c + 1); }
       else inp.push_back({k, v});
    }
@@ -87,6 +88,7 @@ int main(int argc, char** argv)
             }
             if(sim_init() != 0) { std::printf("INIT FAILED\n"); return 1; } on = true; inits++; continue;
          }
+         if(discLeft > 0) { if(--discLeft == 0) { sim_conn(1); std::printf("DRIVER connected at tick %lld\n", nTick); } continue; }   // MT5 started offline: no ticks reach the EA
          if(offLeft > 0) { if(--offLeft == 0) { rec_fresh(); if(sim_init() != 0) { std::printf("INIT FAILED (restart)\n"); return 1; } on = true; inits++; } continue; }
          nTick++;
          int live = sim_live();
@@ -101,6 +103,7 @@ int main(int argc, char** argv)
          {
             std::printf("DRIVER restart at tick %lld (off %lld ticks)\n", nTick, off);
             sim_deinit(9); on = false;
+            if(disc) { rec_fresh(); sim_conn(0); if(sim_init() != 0) { std::printf("INIT FAILED (offline start)\n"); return 1; } on = true; inits++; discLeft = off > 0 ? off : 1; continue; }   // MT5 starts before it connects: old history, then the missed bars
             if(off > 0) { offLeft = off; continue; }
             rec_fresh(); if(sim_init() != 0) { std::printf("INIT FAILED (restart)\n"); return 1; } on = true; inits++;
             continue;

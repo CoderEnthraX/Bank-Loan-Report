@@ -344,7 +344,9 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
 
 **What v4.4 changes:**
 - **The take profit goes to the broker with the order.** Every trade has its stop loss and take profit from the moment it opens, including
-  while the EA or MT5 is off.
+  while the EA or MT5 is off. The TradingView strategy still sets its target one candle after the fill, like the indicator's statistics. So
+  when the target is reached inside the entry candle, the EA takes TP1 there, while TradingView goes on to the next candles. Either side can
+  come out ahead: in two test periods of gold ticks (Aug - Oct 2026 and Sep 2025 - Jan 2026) the difference was +$106 and -$182.
 - **A trade of this EA is never closed early.** A trade the engine stops following runs to its own stop loss and take profit. This covers:
   - a fill a moment before the engine's, when the spread narrowed;
   - a setup that ended;
@@ -377,17 +379,34 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
 - **Restart memory:** the open trade's setup (its signal candle and entry level) is saved. After a restart, new inputs or a timeframe
   switch, the trade is re-linked to the engine only when it is the same setup; otherwise it keeps its own levels. Before, the engine's other
   setup's stop and target could be applied to it. A state saved by v4.3 loads unchanged.
+- **Also fixed:**
+  - After a restart, new inputs or a timeframe switch, v4.3 could place a signal it had already traded a second time, when the engine still
+    showed that setup armed. v4.4 saves the last signal it placed and never places it again. An order that was still waiting when the EA
+    stopped is placed again, as before.
+  - A buy or sell limit's take profit is checked against the order's own price, as MT5 does. A market entry is skipped when the price is
+    already past its target.
+  - After a restart, the engine's fill, stop moves and exit that happened while the EA was off now reach the open trade, as after a
+    disconnect. A trade whose engine stop (for example moved to break-even) was hit while the EA was off is closed at the restart. Before, it
+    kept its original stop. This also works when MT5 starts before it is connected.
+  - A close that MT5 refuses (off quotes, trading disabled, market closed) is tried again at every candle close. This covers the engine's
+    exit, the force-close, the weekend and news closes, and closes at a restart.
+  - The EA's own partial closes are logged as its own (`partly closed ... partial close at TP1`).
+- **Netting accounts** (one position per symbol, shared by every EA on it): deals are matched by magic number only, as before. On a netting
+  account a trade closed by hand still cannot be told apart.
 
 **How it was tested** (`Research/scratchpad/sim/`, results in `sim/results.txt`):
 - **Broker simulator.** v4.3 and v4.4 run on an MT5-like broker: hedging account, limit and stop orders, stops level, stop loss and take
   profit at the tick, deals with reason, magic number and position id, and commission. Ticks come from FxPro gold M1 bars, 3 Aug - 2 Oct
-  2026, with varying spreads. There are 13 scenarios: restarts with the EA off, new inputs, timeframe switches, hand and other-EA closes,
-  stops level, commission, and all of them combined.
+  2026 and 15 Sep 2025 - 20 Jan 2026 (across the clock change), with varying spreads. There are 13 scenarios: restarts with the EA off, new
+  inputs, timeframe switches, hand and other-EA closes, stops level, commission, and all of them combined. More runs cover the Crooks TP1
+  rule, the hedge rule, partial closes, market entries, stop moves with restarts, and MT5 starting before it connects, alone and combined.
+- **Two independent code reviews** (the second on the review fixes); every finding was checked against the code and the simulator first.
 - **v4.4 results:**
-  - 0 early closes;
+  - 0 early closes, 0 signals traded twice, 0 rejected orders;
   - a take profit on every order;
   - every booking equal to the broker's profit;
-  - restarts and same-input re-initialisations give exactly the same trades as no restart;
+  - restarts and same-input re-initialisations give the same trades as no restart (a sell's take profit can move by the live spread when it
+    is re-sent);
   - the copy lock and the clock detection work (GMT+3 / +2 / 0 / +5.5 / -4).
 - **Earlier checks:** compile check 0 errors / 0 warnings. The money-management parity suites (normal and with a restart after every step)
   and the engine parity are unchanged.

@@ -309,5 +309,7 @@ string ChartGetString(mql_long, ENUM_CHART_PROPERTY_STRING) { return string(); }
 string ChartSymbol(mql_long) { return _Symbol; }
 ENUM_TIMEFRAMES ChartPeriod(mql_long) { return _Period; }
 string EnumToString(int) { return string(); }
+bool PositionSelectByTicket(ulong) { return false; }
+mql_long PositionGetInteger(ENUM_POSITION_PROPERTY_INTEGER) { return 0; }
 extern "C" int rt_gv_count() { return rt_gvC; }
 ushort StringGetCharacter(const string& s, int pos) { return (s.s && pos >= 0 && pos < s.n) ? (ushort)(unsigned char)s.s[pos] : (ushort)0; }
