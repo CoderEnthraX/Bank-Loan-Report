@@ -19,6 +19,11 @@ text, so it fits whatever font the Mac uses.
 1. In MetaTrader 5 choose **File → Open Data Folder**, then open `MQL5/Experts` and copy the file there. On the standard Mac app the folder
    is `~/Library/Application Support/net.metaquotes.wine.metatrader5/drive_c/Program Files/MetaTrader 5/MQL5/Experts` (in Finder: Go → Go
    to Folder).
+   If the Mac will not copy it there, paste the code in MetaEditor instead. MetaTrader for Mac runs in a Windows layer: its folder is in
+   the hidden Library, macOS blocks changes inside the app, and its folder window may not accept files dragged from Finder.
+   1. Open the `.mq5` in TextEdit, then **Select All** and **Copy**.
+   2. In MetaEditor, open the old `AuctionRetestEA`, or create it with **File → New → Expert Advisor (template)**.
+   3. Use **Edit → Select All**, then **Edit → Paste**, then **Save**.
 2. Open it in MetaEditor and compile it: F7, or **Fn + F7** on a MacBook keyboard, or the **Compile** button.
 3. Keep the computer awake while it trades: a sleeping Mac stops MetaTrader. Open trades keep their stop loss and take profit at the
    broker, and the EA continues correctly when it wakes up.
