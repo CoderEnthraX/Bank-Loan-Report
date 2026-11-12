@@ -535,8 +535,24 @@ Other gold findings:
       Harness: rt_impl.h stubs PositionSelectByTicket / PositionGetInteger (sim build drops them). Rebuild order: v44, v44b, v44c, v44d, v44e.
     - **Simulator on v44e:** 13 scenarios + 14 extra runs (TP1 rule, hedge, partials, market, Sep 2025 - Jan 2026 period, stop moves with
       offline restarts): 0 trades without TP, 0 duplicates, 0 rejects, 0 failed starts, every booking = broker P&L.
-    - **Next:** review 2 (Opus, high, on v44c -> v44e; running); `v40/run_v44.sh v44final` (running, progress in `v40/final_v44.txt`);
-      then copy to `MetaTrader5/`, README done, ship.
+    - **Review 2 (Opus, high; resumed after a usage-limit stop) -> v44g**, verified first:
+      - R1 (high, reproduced in the simulator: a new trade closed at the first bar after a restart by the old trade's engine stop):
+        the warm-up's gMiss* are handled in BrokerStart and cleared there; TakeSetup(ok) and BookClosed clear gMiss* and gT1Seen;
+      - R2: netting books outside exits while exState != 0;
+      - R3: gRearm when gTakenT == 0;
+      - R4: gTakenT for every decided setup;
+      - R5: gCloseId saved ("xw"), "this EA (before a restart)";
+      - R6: gExitSeen / gGoneWait: a gone position is booked with its closing deal, else one bar later; BookBrokerDeals needs a closing
+        deal.
+    - **v44f** (own read-through): NoteClose / ClosedByUs ring of 8 ids (hedge pairs closed together), gHedgeOk re-read in BrokerStart.
+    - **v44h:** CloseAll prints one line per position.
+    - **Patch chain:** v4.3 -> v44, b, c, d, e, f, g, h reproduces the final file exactly (`build/chain/`).
+    - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 7cca737b1e33, 2384 lines. mq5check 0/0, ASCII, no harness markers.
+    - **Simulator, final file:** `sim/run_all.sh` has 17 scenarios (14-17 added: market + restarts off, stop moves + restarts off, offline
+      start, TP1 rule + offline + hand); `sim/final_summary.txt` covers 33 runs and 3,443 trades.
+      - v4.4: 0 without TP, 0 duplicates, 0 stale closes (new analyzer check), 0 rejects, 0 failed starts, all bookings = broker P&L.
+      - 17 scenarios, v4.3 vs v4.4: without TP 1659 / 0; engine-wins closes 67 / 0; wrong bookings 81 / 0.
+    - **Regression `v40/run_v44.sh v44h`:** the run on v44e died in the pause; re-run on the final file, results in `v40/final_v44.txt`.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

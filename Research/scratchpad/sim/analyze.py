@@ -10,12 +10,13 @@ REASON = {0: 'hand (PC)', 1: 'hand (phone)', 2: 'hand (web)', 3: 'EA', 4: 'SL', 
 
 def parse(path):
     pos, order, books, closes_ea, tags, drv, ea_lines = {}, [], [], {}, [], [], []
-    last_tag = None; early = {}
+    last_tag = None; early = {}; since_restart = False
     for ln in open(path):
         if ln.startswith('SIM OPEN'):
             m = re.match(r'SIM OPEN (\S+ \S+) pos=(\d+) (\w+) vol=([\d.]+) px=([\d.]+) sl=([\d.]+) tp=([\d.]+)', ln)
             p = dict(t=m.group(1), id=int(m.group(2)), side=m.group(3), vol=float(m.group(4)), px=float(m.group(5)), sl=float(m.group(6)),
                      tp=float(m.group(7)), pnl=early.pop(int(m.group(2)), 0.0), out=[], close_t=None, why=None)
+            p['after_restart'] = since_restart; since_restart = False
             pos[p['id']] = p; order.append(p['id'])
         elif ln.startswith('SIM DEAL'):
             m = re.match(r'SIM DEAL (\S+ \S+) tk=\d+ pos=(\d+) \w+ (IN|OUT) vol=([\d.]+) px=([\d.]+) profit=(-?[\d.]+) comm=(-?[\d.]+) magic=(-?\d+) reason=(\d+)', ln)
@@ -40,6 +41,7 @@ def parse(path):
             books.append((m.group(1), float(m.group(2)), int(m.group(3))))
         elif ln.startswith('DRIVER'):
             drv.append(ln.strip())
+            if ln.startswith('DRIVER restart') or ln.startswith('DRIVER connected'): since_restart = True
     return pos, order, books, drv, ea_lines
 
 
@@ -49,6 +51,11 @@ def report(path):
     print('== %s: %d trades opened, %d closed, %d bookings, driver events %d' % (path, len(order), len(closed), len(books), len(drv)))
     print('   opened without a take profit at the broker: %d' % sum(1 for i in order if pos[i]['tp'] == 0))
     dup = sum(1 for x, y in zip(order, order[1:]) if pos[x]['side'] == pos[y]['side'] and pos[x]['sl'] == pos[y]['sl'] and pos[x]['sl'] > 0)
+    # a close by an engine rule within 5 minutes of a trade that opened right after a restart (stale events of an earlier trade)
+    import datetime as _dt
+    def _t(v): return _dt.datetime.strptime(v, '%Y.%m.%d %H:%M:%S')
+    stale = sum(1 for p in closed if p.get('after_restart') and p['why'] and 'engine' in p['why'] and (_t(p['close_t']) - _t(p['t'])).total_seconds() <= 300)
+    print('   closed by an engine rule within 5 minutes of opening right after a restart: %d' % stale)
     print('   same signal traded twice (same side and stop as the trade before): %d' % dup)
     cat = collections.Counter(p['why'] for p in closed)
     for k, v in cat.most_common():

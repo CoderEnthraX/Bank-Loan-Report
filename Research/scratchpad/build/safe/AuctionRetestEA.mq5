@@ -449,6 +449,7 @@ datetime gSvFullT = 0; long gSvAcc = 0;                   //   the last full rew
 // v4.4
 int      gTzMode = SRV_EET; double gTzFix = 2.0, gTzDet = -99; bool gTzWarned = false;   // broker clock: the rule in use (Auto) and its fixed offset; the offset read now (-99 unknown)
 string   gCloseWhy = ""; long gCloseId = 0;                // why this EA closed a trade last, and that trade's position id
+long     gClosedIds[8]; int gClosedN = 0;                 // the last positions this EA closed (fully or partly): their reports say "this EA"
 string   gLastClose = "-"; bool gLastCloseOut = false;     // table: the last close; closed outside this EA (by hand, phone, another EA)
 datetime exArmT = 0; double exLim = 0;                    // the EA's trade: its setup's arm bar time and entry level (re-linked after a restart / new inputs)
 double   exTpL[3];                                        // the trade's own TP1-TP3 levels (partials)
@@ -458,6 +459,7 @@ string   gLockN = ""; double gLockV = 0;                  // one copy per symbol
 int      gTfTrade = 0;                                    // the timeframe the EA trades: the one it was attached to (0 = not known yet)
 datetime gTakenT = 0;                                     // arm bar time of the last setup the EA placed: never placed again (restart, new inputs)
 bool     gExitRetry = false; string gExitWhy = "";        // a close that failed: tried again at every bar close, and why it was due
+bool     gExitSeen = false, gGoneWait = false;            // a closing deal of the EA's trade was seen; its position is gone but no closing deal yet
 bool     exT1MvPend = false;                              // Crooks TP1 rule: a stop move before TP1 still has to reach the broker
 bool     exT1 = false, exT1Half = false, exT1Be = false;   // Crooks TP1 rule: this trade, its TP1 half is booked, the rest's stop is at the entry
 double   exT1Stop = 0, exT1Tp1 = 0, exT1Tp2 = 0;              // its stop and its own TP1 / TP2 (the engine's levels change with its next setup)
@@ -615,14 +617,16 @@ void CancelPending()
    }
 }
 
+void NoteClose(long pid) { gCloseId = pid; gClosedIds[gClosedN % 8] = pid; gClosedN++; }   // a position this EA closes now (fully or partly)
+bool ClosedByUs(long pid) { if(pid > 0 && pid == gCloseId) return true; for(int q = 0; q < 8; q++) if(gClosedIds[q] == pid && pid > 0) return true; return false; }
 void CloseAll(string why)
 {
    ulong tk; double v, op;
    int guard = 0;
-   if(HasPosition(tk, v, op)) { gCloseWhy = why; gCloseId = PositionGetInteger(POSITION_IDENTIFIER); Print("Closing #", tk, " (", DoubleToString(v, 2), " lots): ", why); }
    while(HasPosition(tk, v, op) && guard++ < 5)
    {
-      gCloseId = PositionGetInteger(POSITION_IDENTIFIER);
+      gCloseWhy = why; NoteClose(PositionGetInteger(POSITION_IDENTIFIER));
+      Print("Closing #", tk, " (", DoubleToString(v, 2), " lots): ", why);
       if(!trade.PositionClose(tk)) { Print("Close of #", tk, " failed: ", trade.ResultRetcodeDescription()); break; }
    }
 }
@@ -645,7 +649,7 @@ bool DealIsMine(ulong tk, int n)
 {
    if(HistoryDealGetString(tk, DEAL_SYMBOL) != _Symbol) return false;
    if(HistoryDealGetInteger(tk, DEAL_MAGIC) == InpMagic) return true;
-   return gHedgeOk && IsExitDeal(tk) && OurPosId(HistoryDealGetInteger(tk, DEAL_POSITION_ID), n);   // netting: one position per symbol is shared
+   return (gHedgeOk || exState != 0) && IsExitDeal(tk) && OurPosId(HistoryDealGetInteger(tk, DEAL_POSITION_ID), n);   // netting (one position per symbol): while the EA holds a trade
 }
 // who closed a trade, from its exit deal
 string CloseBy(ulong tk)
@@ -656,7 +660,7 @@ string CloseBy(ulong tk)
    if(rs == DEAL_REASON_SO) return "a margin stop-out";
    if(rs == DEAL_REASON_EXPERT)
       return mg != InpMagic ? "ANOTHER EA OR SCRIPT (magic " + IntegerToString(mg) + ")" :
-             pid == gCloseId && gCloseWhy != "" ? "this EA: " + gCloseWhy : "an EA with this magic number (a second copy of this EA?)";
+             ClosedByUs(pid) ? (gCloseWhy != "" ? "this EA: " + gCloseWhy : "this EA (before a restart)") : "an EA with this magic number (a second copy of this EA?)";
    if(rs == DEAL_REASON_CLIENT) return "HAND (MetaTrader on the computer)";
    if(rs == DEAL_REASON_MOBILE) return "HAND (the phone app)";
    if(rs == DEAL_REASON_WEB) return "HAND (the web terminal)";
@@ -674,7 +678,7 @@ void CloseReport(ulong tk, int n)
       if(d != 0 && HistoryDealGetInteger(d, DEAL_POSITION_ID) == pid && HistoryDealGetString(d, DEAL_SYMBOL) == _Symbol)
          p += HistoryDealGetDouble(d, DEAL_PROFIT) + HistoryDealGetDouble(d, DEAL_COMMISSION) + HistoryDealGetDouble(d, DEAL_SWAP) + HistoryDealGetDouble(d, DEAL_FEE);
    }
-   gLastCloseOut = !(rs == DEAL_REASON_SL || rs == DEAL_REASON_TP || (rs == DEAL_REASON_EXPERT && HistoryDealGetInteger(tk, DEAL_MAGIC) == InpMagic && pid == gCloseId));
+   gLastCloseOut = !(rs == DEAL_REASON_SL || rs == DEAL_REASON_TP || (rs == DEAL_REASON_EXPERT && HistoryDealGetInteger(tk, DEAL_MAGIC) == InpMagic && ClosedByUs(pid)));
    gLastClose = (p >= 0 ? "+" : "") + DoubleToString(p, 2) + " | " + who + " | " + DateTxt(UserTime((datetime)HistoryDealGetInteger(tk, DEAL_TIME)), false);
    bool still = false;                                  // part of the trade is still open (a partial close)
    for(int q = PositionsTotal() - 1; q >= 0 && !still; q--) { ulong pt = PositionGetTicket(q); if(pt != 0 && PositionGetInteger(POSITION_IDENTIFIER) == pid) still = true; }
@@ -700,7 +704,7 @@ double NewDealsPnl(bool &closed, bool quiet = false)
       if(!DealIsMine(tk, n)) continue;                  // v4.4: also the exit of this EA's trade by hand, from the phone app or by another EA
       double p = HistoryDealGetDouble(tk, DEAL_PROFIT) + HistoryDealGetDouble(tk, DEAL_COMMISSION) + HistoryDealGetDouble(tk, DEAL_SWAP) + HistoryDealGetDouble(tk, DEAL_FEE);
       sum += p;
-      if(IsExitDeal(tk)) { closed = true; gLastOutProfit = HistoryDealGetDouble(tk, DEAL_PROFIT); if(!quiet) CloseReport(tk, n); }
+      if(IsExitDeal(tk)) { closed = true; gExitSeen = true; gLastOutProfit = HistoryDealGetDouble(tk, DEAL_PROFIT); if(!quiet) CloseReport(tk, n); }
    }
    lastDeal = maxTk;
    return sum;
@@ -1357,7 +1361,7 @@ void T1Half(ulong tk, double vol)
    double cv = MathCeil(exLots * CrkT1P() / step - 1e-9) * step;
    if(cv >= vmin && vol - cv >= vmin - 1e-9)
    {
-      gCloseWhy = "Crooks TP1 rule: the TP1 part"; if(PositionSelectByTicket(tk)) gCloseId = PositionGetInteger(POSITION_IDENTIFIER);
+      gCloseWhy = "Crooks TP1 rule: the TP1 part"; if(PositionSelectByTicket(tk)) NoteClose(PositionGetInteger(POSITION_IDENTIFIER));
       if(trade.PositionClosePartial(tk, NormalizeDouble(cv, 8))) { exT1Half = true; SetExits(true); }
       else { Print("TP1 partial close failed (", trade.ResultRetcodeDescription(), "), retrying"); gT1Seen = true; }   // ticks retry while price is past TP1, the next bar close in any case
    }
@@ -1575,6 +1579,7 @@ void UpdateTable()
 void TakeSetup(bool isL, bool newsBlk, bool flatNow)
 {
    sigN++;
+   gTakenT = BarTimeOf(armBar);                       // decided on now (taken, skipped or rejected): a restart does not take it again
    ulong pTk; double pVol, pOpen;
    bool posNow = HasPosition(pTk, pVol, pOpen);
    bool crkPs = CrkPause();
@@ -1629,7 +1634,11 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
       else if(bid >= ep)                { past = !OrderExits(isL, ep, true, sl, tp); ok = !past && trade.Sell(v, _Symbol, 0, sl, tp, "ARM"); }
       else { ok = true; gVirt = true; }
    }
-   if(ok) { exState = 1; exArm = armBar; exArmT = BarTimeOf(armBar); gTakenT = exArmT; exSynced = false; takenN++; crkRec = CrkRecNext(); exHg = hg; }
+   if(ok)
+   {
+      exState = 1; exArm = armBar; exArmT = gTakenT; exSynced = false; takenN++; crkRec = CrkRecNext(); exHg = hg;
+      gMissFill = false; gMissExit = false; gMissWin = false; gMissMove = false; gT1Seen = false; gExitSeen = false; gGoneWait = false;   // no events of an earlier trade
+   }
    else if(past) { skipN++; skipWhy = "price already past the target"; }
    else { skipN++; skipWhy = "order rejected"; Print("ARM order failed: ", trade.ResultRetcodeDescription()); }
 }
@@ -1721,6 +1730,7 @@ void BookClosed()
    crkRec = false; exT1 = false; exT1Half = false; exT1Be = false; exKeepSl = 0;
    exState = 0; exPnl = 0; exArm = -1; exSynced = false; gVirt = false; exHg = false;
    exArmT = 0; exLim = 0; for(int q = 0; q < 3; q++) exTpL[q] = 0; gExitRetry = false;
+   gT1Seen = false; gExitSeen = false; gGoneWait = false; gMissFill = false; gMissExit = false; gMissWin = false; gMissMove = false;
    CancelPending();
 }
 
@@ -1760,7 +1770,9 @@ void OnNewBar()
       exState = 2; exArm = -1; exSynced = false;
       Print("Position #", pTk, " of this EA filled while its order was being cancelled: kept, it runs to its own stop loss and take profit.");
    }
-   bool exClosed = (exState == 1 && !pos && closedNew) || (exState == 2 && !pos);
+   bool gone = exState == 2 && !pos;
+   if(gone && !closedNew && !gExitSeen && !gGoneWait) { gGoneWait = true; gone = false; }   // no closing deal in the history yet: booked at the next bar, with it
+   bool exClosed = (exState == 1 && !pos && closedNew) || gone;
 
    // 2. an executed trade has closed
    if(exClosed) BookClosed();
@@ -1861,7 +1873,7 @@ void ManagePartials()
          double cv = MathFloor(exLots * pp[k] / 100.0 / step + 1e-9) * step;
          if(cv >= vmin && vol - cv >= vmin - 1e-9)
          {
-            gCloseWhy = "partial close at TP" + IntegerToString(k + 1); if(PositionSelectByTicket(tk)) gCloseId = PositionGetInteger(POSITION_IDENTIFIER);
+            gCloseWhy = "partial close at TP" + IntegerToString(k + 1); if(PositionSelectByTicket(tk)) NoteClose(PositionGetInteger(POSITION_IDENTIFIER));
             trade.PositionClosePartial(tk, NormalizeDouble(cv, 8));
          }
          pDone[k] = true;
@@ -1920,6 +1932,7 @@ void StateIO(bool save)
    IoB("kr", crkRec); IoB("xy", exSynced);
    double xe = exLim, x1 = exTpL[0], x2 = exTpL[1], x3 = exTpL[2];   // v4.4: the trade's setup (arm bar time, entry) and its own TP1-TP3
    IoT("xa", exArmT); IoD("xe", xe); IoD("x1", x1); IoD("x2", x2); IoD("x3", x3); IoT("xt", gTakenT); IoB("xq", gExitRetry);
+   ulong cw = (ulong)gCloseId; IoU("xw", cw); gCloseId = (long)cw;   // the last position this EA closed (its report after a restart)
    exLim = xe; exTpL[0] = x1; exTpL[1] = x2; exTpL[2] = x3;
    bool p0 = pDone[0], p1 = pDone[1], p2 = pDone[2];
    IoB("p0", p0); IoB("p1", p1); IoB("p2", p2);
@@ -1984,7 +1997,7 @@ void SvWipe() { GlobalVariablesDeleteAll(gSvBase); GlobalVariablesFlush(); gSvC 
 void TradeClear()
 {
    exState = 0; exPnl = 0; exLots = 0; exRiskAmt = 0; exCostPx = 0; exKeepSl = 0; exArm = -1; exSynced = false; gVirt = false;
-   exArmT = 0; exLim = 0; for(int q = 0; q < 3; q++) exTpL[q] = 0; gExitRetry = false;
+   exArmT = 0; exLim = 0; for(int q = 0; q < 3; q++) exTpL[q] = 0; gExitRetry = false; gExitSeen = false; gGoneWait = false;
    crkRec = false; exT1 = false; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = 0; exT1Tp1 = 0; exT1Tp2 = 0; exT1Tight = 0; exT1Entry = 0;
    exHg = false; exHgS = 0; exHgT = 0;
    for(int q = 0; q < 3; q++) pDone[q] = false;
@@ -2021,7 +2034,7 @@ void BookBrokerDeals()
    if(newPnl != 0 || closedNew) carried = MathMax(0.0, carried - newPnl);
    ulong pTk; double pVol, pOpen; bool pos = HasPosition(pTk, pVol, pOpen);
    if(exState == 1 && pos) exState = 2;
-   if((exState == 1 && !pos && closedNew) || (exState == 2 && !pos)) BookClosed();
+   if((exState == 1 && !pos && closedNew) || (exState == 2 && !pos && gExitSeen)) BookClosed();   // without a closing deal yet: the next bar books it
 }
 
 //--- the saved state was not this account's: the money-management state starts fresh (as without restart memory)
@@ -2061,7 +2074,7 @@ void ResetEngine()
    vxSide = 0; vxN = 0; tchL = 1000000; tchS = 1000000; hK = -1; hC = 0; hSum = 0; hNum = 0; ArrayInitialize(hE, 0.0);
    ArrayInitialize(tpHitN, 0); beN = 0; lkN = 0; gFirstT = 0;
    gDrawT = 0; ArrayResize(gDrawn, 0); gStateTxt = "SCANNING";
-   exArmT = 0; exLim = 0; ArrayInitialize(exTpL, 0.0); gExitRetry = false; gExitWhy = "";
+   exArmT = 0; exLim = 0; ArrayInitialize(exTpL, 0.0); gExitRetry = false; gExitWhy = ""; gExitSeen = false; gGoneWait = false;
    gOurFill = false; gOurExit = false; gOurWin = false; gOurMove = false; gMissFill = false; gMissExit = false; gMissWin = false; gMissMove = false;
 }
 
@@ -2076,6 +2089,7 @@ void BrokerStart()
       MemoryFresh();
    }
    TzPick(false);                                        // the broker's clock, now that MT5 is connected
+   gHedgeOk = (ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE) == ACCOUNT_MARGIN_MODE_RETAIL_HEDGING;   // known for sure once connected
    if(!gRestored) { bool c; NewDealsPnl(c, true); }      // do not count old history (restored: the deals since the saved state are booked below)
    if(!gRestored) MonthFromHistory();                    // this month's closed profit and the monthly locks from the deal history
    else
@@ -2147,7 +2161,8 @@ void BrokerStart()
             " | streak ", winRow, "W / ", lossRow, "L", (paused || pauseLeft > 0) ? " | paused" : "", CrkPause() ? " | Crooks C pause" : "",
             capStop ? " | hard cap stop" : "", exState == 2 ? " | trade still open" : "");
    }
-   gRearm = MathAbs(st) == 1 && !trGhost && exState == 0 && armBar != gPauseArm && BarTimeOf(armBar) != gTakenT;   // re-place the engine's armed setup on the first tick (not one armed while paused, not one already traded)
+   gMissFill = false; gMissExit = false; gMissWin = false; gMissMove = false;   // the warm-up's events for the saved trade are handled above
+   gRearm = MathAbs(st) == 1 && !trGhost && exState == 0 && armBar != gPauseArm && (gTakenT == 0 || BarTimeOf(armBar) != gTakenT);   // re-place the engine's armed setup on the first tick (not one armed while paused, not one already decided on)
 }
 
 //--- one copy per symbol + magic number: two copies cancel and close each other's trades and share one restart memory. A temporary global

@@ -9,7 +9,9 @@ declare -A SC=(
  [05_newinputs_same]="JIT=0.6 REINIT=3001" [06_newinputs_stress]="JIT=0.6 REINIT=23 InpDispAtr=1.0 ALT=InpDispAtr:0.8"
  [07_tfswitch]="JIT=0.6 TFSW=1999 TFLEN=60" [08_tfswitch_stress]="JIT=0.6 TFSW=37 TFLEN=11" [09_hand_close]="JIT=0.6 EXT=3 HOLD=40"
  [10_other_ea_close]="JIT=0.6 EXT=3 HOLD=40 EXTMAGIC=777" [11_stops_level]="JIT=0.6 STOPS=30" [12_commission]="JIT=0.6 COMM=3.5"
- [13_combined]="JIT=0.6 RESTART=4999 OFF=100 EXT=4 HOLD=30 TFSW=3001 TFLEN=40 REINIT=7001")
+ [13_combined]="JIT=0.6 RESTART=4999 OFF=100 EXT=4 HOLD=30 TFSW=3001 TFLEN=40 REINIT=7001"
+ [14_market_restart_off]="JIT=0.6 InpEntryMode=2 RESTART=397 OFF=150" [15_stopmove_restart_off]="JIT=0.6 InpExitAt=2 InpMv1On=1 InpMv1R=0 RESTART=331 OFF=120"
+ [16_offline_start]="JIT=0.6 RESTART=397 OFF=150 DISC=1" [17_tp1rule_offline_hand]="JIT=0.6 InpCrkT1=1 RESTART=397 OFF=150 DISC=1 EXT=6")
 for k in $(echo ${!SC[@]} | tr ' ' '\n' | sort); do
   for v in 43 44; do ./sim$v $A ${SC[$k]} > sc_${k}_$v.log 2>&1 & done
 done; wait
