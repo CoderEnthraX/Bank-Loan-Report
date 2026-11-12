@@ -13,6 +13,19 @@
 2. Paste the whole `.pine` file, then click **Save** and **Add to chart**.
 3. Use a 5-minute chart. Futures and FX with volume give a true VWAP. Symbols without volume (e.g. `NSE:NIFTY`) automatically use a time-weighted average instead.
 
+**The EA on Windows or Mac.** `AuctionRetestEA.mq5` is one file for both. MetaTrader 5 for Mac is the same terminal with the same MQL5
+compiler, and the EA uses nothing Windows-specific: no DLLs, no files or folder paths, and only the Arial font. Its table measures its
+text, so it fits whatever font the Mac uses.
+1. In MetaTrader 5 choose **File → Open Data Folder**, then open `MQL5/Experts` and copy the file there. On the standard Mac app the folder
+   is `~/Library/Application Support/net.metaquotes.wine.metatrader5/drive_c/Program Files/MetaTrader 5/MQL5/Experts` (in Finder: Go → Go
+   to Folder).
+2. Open it in MetaEditor and compile it: F7, or **Fn + F7** on a MacBook keyboard, or the **Compile** button.
+3. Keep the computer awake while it trades: a sleeping Mac stops MetaTrader. Open trades keep their stop loss and take profit at the
+   broker, and the EA continues correctly when it wakes up.
+4. Run the EA on one computer only. Two computers on the same account with the same magic number cannot see each other, so the copy
+   check cannot stop that. The **Broker server clock = Auto** setting uses the computer's clock, so keep the date, time and time zone set
+   automatically.
+
 ## Auction Retest Model: how a trade is built
 
 The rules below were fitted to **80 trades of the original indicator** read candle by candle from 53 screenshots, and then checked against
