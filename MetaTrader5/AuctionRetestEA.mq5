@@ -1445,14 +1445,20 @@ void VwDraw(datetime bt)
       ObjectSetInteger(0, nm, OBJPROP_WIDTH, (int)MathMax(1, MathMin(5, InpVwapWidth)));
       ObjectSetInteger(0, nm, OBJPROP_STYLE, STYLE_SOLID);
       ObjectSetInteger(0, nm, OBJPROP_RAY_RIGHT, false);
-      ObjectSetInteger(0, nm, OBJPROP_BACK, true);
+      ObjectSetInteger(0, nm, OBJPROP_BACK, false);           // over the candles, like the TradingView plot
       ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
       ObjectSetInteger(0, nm, OBJPROP_HIDDEN, true);
       ObjectSetString(0, nm, OBJPROP_TOOLTIP, "VWAP " + DoubleToString(v, _Digits));
-      if(gLive)
+      if(gLive)                                         // the bars that left the window since the last cutoff (several after a disconnect)
       {
-         datetime old = iTime(_Symbol, _Period, gVwN + 1);
-         if(old > 0) ObjectDelete(0, "ARM_VW" + IntegerToString((long)old));
+         for(int q = gVwN + 1; q < Bars(_Symbol, _Period); q++)
+         {
+            datetime ot = iTime(_Symbol, _Period, q);
+            if(ot <= 0 || ot < gVwCut) break;
+            ObjectDelete(0, "ARM_VW" + IntegerToString((long)ot));
+         }
+         datetime cut = iTime(_Symbol, _Period, gVwN);
+         if(cut > gVwCut) gVwCut = cut;
       }
    }
    gVwPrevT = bt; gVwPrev = v;
@@ -2349,6 +2355,7 @@ int OnInit()
    else BrokerStart();
    gStateTxt = StateText(false);
    UpdateTable();
+   if(gCanDraw) ChartRedraw(0);                          // the VWAP line and markings show at once (also with the market closed)
    StateSave(true);                                      // restart memory: the state after this start
    OtherEAs();
    gInitDone = true;

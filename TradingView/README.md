@@ -375,9 +375,11 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
   the broker's clock differs from it, because your days, hours, kill zones, news and force-close times would be off. The table row `BROKER
   CLOCK` shows the offset in use. In the Strategy Tester Auto means the EU rule, as before.
 - **VWAP line on the chart** (new, on by default). The EA draws the VWAP it trades on: the same anchor (session / week / month), source and
-  tick volume as its signals. It looks like the TradingView indicator's VWAP (#4DD0E1, width 2). The DISPLAY inputs are **Show the VWAP
-  line** (on), its colour, its width, and how many candles of VWAP are drawn (1,500; older parts are removed as new candles come). The line
-  is drawn on the chart and in the Strategy Tester's visual mode, and removed with the EA. Switch it off with **Show the VWAP line = false**.
+  tick volume as its signals. It looks like the TradingView indicator's VWAP (#4DD0E1, width 2, over the candles, a jump at each new
+  session). The DISPLAY inputs are **Show the VWAP line** (on), its colour, its width, and how many candles of VWAP are drawn (1,500; older
+  parts are removed as new candles come, also after a disconnect). The line shows as soon as the EA is attached, also with the market
+  closed. It is drawn on the chart and in the Strategy Tester's visual mode, and removed with the EA. Switch it off with **Show the VWAP
+  line = false**.
 - **Start fresh once** (`InpMemFresh`, restart memory group): forgets the loss recovery, streaks and pauses once. Set it to true and click
   OK; set it back to false later. Use it if trades closed outside v4.3 were booked as losses.
 - **Restart memory:** the open trade's setup (its signal candle and entry level) is saved. After a restart, new inputs or a timeframe
@@ -423,20 +425,24 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
   - **16 more runs** cover the Crooks TP1 rule, the hedge rule, partial closes and market entries, alone and with restarts or switches.
 - **Over the 17 scenarios:**
 
-  |                                   | v4.3  | v4.4  |
-  |-----------------------------------|-------|-------|
-  | Trades                            | 1,659 | 1,568 |
-  | Opened without a take profit      | 1,659 | 0     |
-  | Closed early by "engine wins"     | 67    | 0     |
-  | Booked wrong                      | 81    | 0     |
-- **v4.4 on all 33 runs (3,443 trades):**
+  |                                         | v4.3  | v4.4  |
+  |-----------------------------------------|-------|-------|
+  | Trades                                  | 1,659 | 1,571 |
+  | Opened without a take profit            | 1,659 | 0     |
+  | Closed early by "engine wins"           | 67    | 0     |
+  | Booked wrong                            | 81    | 0     |
+  | Same signal traded twice                | 3     | 0     |
+  | Opened while the chart showed M1        | 87    | 0     |
+- **v4.4 on all 33 runs (3,446 trades):**
   - 0 early closes, 0 signals traded twice, 0 rejected orders, 0 failed starts;
   - a take profit on every order;
   - every booking equal to the broker's profit;
   - the only closes by the EA were its rules: the engine's stop, a stop the price had already passed after a move, and a news start;
   - restarts and same-input re-initialisations give the same trades as no restart (a sell's take profit can move by the live spread when it
     is re-sent);
-  - the copy lock and the clock detection work (GMT+3 / +2 / 0 / +5.5 / -4).
+  - the copy lock and the clock detection work (GMT+3 / +2 / 0 / +5.5 / -4);
+  - the VWAP line: 1,500 candles with no gaps after restarts, disconnects, timeframe switches and new inputs, its last point equal to the
+    VWAP the EA trades on.
 - **Two independent code reviews** (Opus, high effort; the second on the fixes of the first). Every finding was checked against the code
   first, the serious ones were reproduced in the simulator, and all were fixed.
 - **Compile check:** 0 errors, 0 warnings. The money-management parity suites (normal, and with a restart after every step) and the engine

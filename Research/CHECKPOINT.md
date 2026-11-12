@@ -553,14 +553,23 @@ Other gold findings:
       (ARM_VW<time>) for the last InpVwapBars bars (1500; 50-20000). Live, the segment that leaves the window is deleted. Inputs (DISPLAY):
       InpVwapShow (true), InpVwapColor (#4DD0E1, like the TradingView indicator), InpVwapWidth (2), InpVwapBars. Simulator object store:
       `VWLINE` report, e.g. 1500 segments, 0 gaps, 0 backwards, last point = the engine's VWAP; off: 0 segments.
-    - **Patch chain:** v4.3 -> v44, b, c, d, e, f, g, h, i, j reproduces the final file exactly (`build/chain/`).
-    - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 a809225ee20b, 2422 lines. mq5check 0/0, ASCII, no harness markers.
-    - **Simulator, final file:** `sim/run_all.sh` has 17 scenarios (14-17 added: market + restarts off, stop moves + restarts off, offline
-      start, TP1 rule + offline + hand); `sim/final_summary.txt` covers 33 runs and 3,443 trades.
+    - **v44k (the v44j suite found it):** with an offline start (DISC, several caught-up bars in one tick) the live cleanup deleted one
+      segment per bar by index (iTime(gVwN + 1)), so the window grew to 1507 segments and a later delete opened a gap inside it. Now every
+      bar from index gVwN + 1 back to the last cutoff gVwCut is deleted, then gVwCut = iTime(gVwN). Also: the line is drawn over the candles
+      (OBJPROP_BACK false, like the TradingView plot; the markings stay behind), and OnInit ends with ChartRedraw when gCanDraw, so the line
+      shows at once with the market closed. Checked: base, DISC, DISC with 50 bars, 300 bars + restarts + TF switch: 0 gaps, exact window.
+    - **Patch chain:** v4.3 -> v44, b, c, d, e, f, g, h, i, j, k reproduces the final file exactly (`build/chain/`).
+    - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 e8ce2f425df3, 2429 lines. mq5check 0/0, ASCII, no CR, no harness markers,
+      no adjacent string literals (tokenizer scan).
+    - **Simulator, final file (`sim/run_final.sh`):** `sim/run_all.sh` has 17 scenarios (14-17 added: market + restarts off, stop moves +
+      restarts off, offline start, TP1 rule + offline + hand) plus 16 extra v4.4 runs; `sim/final_summary.txt` covers 33 runs and 3,446
+      trades.
       - v4.4: 0 without TP, 0 duplicates, 0 stale closes (new analyzer check), 0 rejects, 0 failed starts, all bookings = broker P&L.
-      - 17 scenarios, v4.3 vs v4.4: without TP 1659 / 0; engine-wins closes 67 / 0; wrong bookings 81 / 0.
-    - **Regression `v40/run_v44.sh v44j`:** the run on v44e died in the pause; those on v44h and v44i were stopped for the next fix.
-      Re-run on the final file; results in `v40/final_v44.txt`.
+      - VWAP line in all 33 runs: 1500 segments, 0 gaps, 0 backwards, last point = the engine's VWAP (sc_15 ends while the EA is off: 0).
+      - 17 scenarios, v4.3 vs v4.4: trades 1659 / 1571; without TP 1659 / 0; engine-wins closes 67 / 0; wrong bookings 81 / 0; same
+        signal twice 3 / 0; opened while the chart showed M1 87 / 0. Restart and same-input re-init runs = the run without them (99 / 99).
+    - **Regression `v40/run_v44.sh v44k`:** the run on v44e died in the pause; those on v44h, v44i and v44j were stopped for the next fix.
+      Running on the final file; results in `v40/final_v44.txt`.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

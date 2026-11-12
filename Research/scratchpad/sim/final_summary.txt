@@ -1,33 +1,33 @@
-sc_01_base_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 100 of 100 | rejects 0 | initfail 0 | EA closes: 
-sc_02_spread_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-sc_03_restart_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-sc_04_restart_off_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 90 of 90 | rejects 0 | initfail 0 | EA closes: 
-sc_05_newinputs_same_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-sc_06_newinputs_stress_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 94 of 94 | rejects 0 | initfail 0 | EA closes: 
-sc_07_tfswitch_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 94 of 94 | rejects 0 | initfail 0 | EA closes: 
-sc_08_tfswitch_stress_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 83 of 83 | rejects 0 | initfail 0 | EA closes: 
-sc_09_hand_close_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-sc_10_other_ea_close_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-sc_11_stops_level_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-sc_12_commission_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-sc_13_combined_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-sc_14_market_restart_off_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 92 of 92 | rejects 0 | initfail 0 | EA closes: 
-sc_15_stopmove_restart_off_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 65 of 65 | rejects 0 | initfail 0 | EA closes:  the price is already past the stop 1; the engine's stop was hit while the EA was off 1;
-sc_16_offline_start_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 79 of 79 | rejects 0 | initfail 0 | EA closes: 
-sc_17_tp1rule_offline_hand_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 79 of 79 | rejects 0 | initfail 0 | EA closes: 
-x_hg2_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  a news window starts 2;
-x_hg_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-x_hgr_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 98 of 98 | rejects 0 | initfail 0 | EA closes: 
-x_mkt_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 125 of 125 | rejects 0 | initfail 0 | EA closes:  the engine's stop was hit (bar close, bid chart) 2;
-x_mktr_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 125 of 125 | rejects 0 | initfail 0 | EA closes:  the engine's stop was hit (bar close, bid chart) 1;
-x_mkttf_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 123 of 123 | rejects 0 | initfail 0 | EA closes: 
-x_part_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 88 of 88 | rejects 0 | initfail 0 | EA closes: 
-x_partr_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 87 of 87 | rejects 0 | initfail 0 | EA closes: 
-x_t1_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes: 
-x_t1d_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 79 of 79 | rejects 0 | initfail 0 | EA closes: 
-x_t1r_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 98 of 98 | rejects 0 | initfail 0 | EA closes: 
-x_t1tf_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 87 of 87 | rejects 0 | initfail 0 | EA closes: 
-x_ybase_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 173 of 173 | rejects 0 | initfail 0 | EA closes: 
-x_ymix_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 165 of 165 | rejects 0 | initfail 0 | EA closes: 
-x_ymkt_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 173 of 173 | rejects 0 | initfail 0 | EA closes: 
-x_ymv_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 151 of 151 | rejects 0 | initfail 0 | EA closes:  the price is already past the stop 3;
+sc_01_base_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 100 of 100 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_02_spread_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_03_restart_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_04_restart_off_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 90 of 90 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_05_newinputs_same_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_06_newinputs_stress_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 94 of 94 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_07_tfswitch_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 94 of 94 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_08_tfswitch_stress_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 86 of 86 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.80021 | engine VWAP 4168.80021
+sc_09_hand_close_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_10_other_ea_close_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_11_stops_level_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_12_commission_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_13_combined_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_14_market_restart_off_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 92 of 92 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_15_stopmove_restart_off_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 65 of 65 | rejects 0 | initfail 0 | EA closes:  the price is already past the stop 1; the engine's stop was hit while the EA was off 1; | VWLINE segments 0 | gaps 0 | backwards 0 | last point 0.00000 | engine VWAP 4169.16397
+sc_16_offline_start_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 79 of 79 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+sc_17_tp1rule_offline_hand_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 79 of 79 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_hg2_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  a news window starts 2; | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_hg_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_hgr_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 98 of 98 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_mkt_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 125 of 125 | rejects 0 | initfail 0 | EA closes:  the engine's stop was hit (bar close, bid chart) 2; | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_mktr_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 125 of 125 | rejects 0 | initfail 0 | EA closes:  the engine's stop was hit (bar close, bid chart) 1; | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_mkttf_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 123 of 123 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_part_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 88 of 88 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_partr_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 87 of 87 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_t1_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 99 of 99 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_t1d_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 79 of 79 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_t1r_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 98 of 98 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_t1tf_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 87 of 87 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4168.93644 | engine VWAP 4168.93644
+x_ybase_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 173 of 173 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4668.11041 | engine VWAP 4668.11041
+x_ymix_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 165 of 165 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4668.11041 | engine VWAP 4668.11041
+x_ymkt_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 173 of 173 | rejects 0 | initfail 0 | EA closes:  | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4668.11041 | engine VWAP 4668.11041
+x_ymv_44.log | noTP 0 | dup 0 | stale 0 | bookings P&L: 151 of 151 | rejects 0 | initfail 0 | EA closes:  the price is already past the stop 3; | VWLINE segments 1500 | gaps 0 | backwards 0 | last point 4668.11041 | engine VWAP 4668.11041

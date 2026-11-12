@@ -1,4 +1,4 @@
-Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults; Thu Nov 12 08:19:51 UTC 2026
+Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults; Thu Nov 12 08:40:22 UTC 2026
 
 ################ 01_base: JIT=0
 == sc_01_base_43.log: 100 trades opened, 100 closed, 100 bookings, driver events 0
@@ -159,15 +159,15 @@ Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults
    closed by EA: price past the stop / target                                  1 trades, P&L     18.17 (avg   18.17)
    bookings equal to the broker P&L: 167 of 167
    total booked 2041.06, total broker P&L of closed trades 2041.06
-== sc_08_tfswitch_stress_44.log: 83 trades opened, 83 closed, 83 bookings, driver events 13379
+== sc_08_tfswitch_stress_44.log: 86 trades opened, 86 closed, 86 bookings, driver events 13379
    opened without a take profit at the broker: 0
    closed by an engine rule within 5 minutes of opening right after a restart: 0
    same signal traded twice (same side and stop as the trade before): 0
-   closed by TP                                                               51 trades, P&L   2232.12 (avg   43.77)
-   closed by SL                                                               32 trades, P&L  -1408.66 (avg  -44.02)
-   bookings equal to the broker P&L: 83 of 83
-   total booked 823.46, total broker P&L of closed trades 823.46
-== compare sc_08_tfswitch_stress_43.log vs sc_08_tfswitch_stress_44.log: trades 167 vs 83, identical in order 0, first difference at trade 0: ('2026.08.04 04:42:30', 'buy', 0.11, 37.18) vs ('2026.08.04 05:42:30', 'buy', 0.06, -42.54)
+   closed by TP                                                               54 trades, P&L   2433.95 (avg   45.07)
+   closed by SL                                                               32 trades, P&L  -1358.26 (avg  -42.45)
+   bookings equal to the broker P&L: 86 of 86
+   total booked 1075.69, total broker P&L of closed trades 1075.69
+== compare sc_08_tfswitch_stress_43.log vs sc_08_tfswitch_stress_44.log: trades 167 vs 86, identical in order 0, first difference at trade 0: ('2026.08.04 04:42:30', 'buy', 0.11, 37.18) vs ('2026.08.04 05:42:30', 'buy', 0.06, -42.54)
    v43 rejects: 0, early-close tags: 48, trades opened while on M1: 80, INIT FAILED: 0
    v44 rejects: 0, early-close tags: 0, trades opened while on M1: 0, INIT FAILED: 0
 
