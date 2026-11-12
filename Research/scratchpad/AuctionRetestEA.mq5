@@ -58,6 +58,8 @@
 //| app or another EA are booked with their real profit; the log     |
 //| says who closed each trade and why. One copy per symbol and      |
 //| magic number. The broker server clock is read from MT5 (Auto).   |
+//| The VWAP line the EA trades on is drawn on the chart (on by      |
+//| default; DISPLAY inputs).                                        |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
 #property version   "4.40"
@@ -349,6 +351,10 @@ input int    InpMaxDrawn  = 0;                 //   trades kept on the chart (0 
 input color  InpColTarget = clrMediumSeaGreen; //   target box and TP lines
 input color  InpColStop   = clrIndianRed;      //   stop box
 input color  InpColEntry  = clrDodgerBlue;     //   entry line and armed limit
+input bool   InpVwapShow  = true;              // Show the VWAP line (the one the EA trades on)
+input color  InpVwapColor = C'77,208,225';     //   VWAP color
+input int    InpVwapWidth = 2;                 //   VWAP line width (1-5)
+input int    InpVwapBars  = 1500;              //   bars of VWAP drawn (50-20000; older parts are removed)
 input bool   InpShowTable = true;              // Show the table
 input ENUM_TBL_POS InpTablePos = TBL_TOP_RIGHT;//   table position
 input int    InpTableFont = 8;                 //   table font size
@@ -458,6 +464,7 @@ bool     gMissFill = false, gMissExit = false, gMissWin = false, gMissMove = fal
 string   gLockN = ""; double gLockV = 0;                  // one copy per symbol + magic number (temporary global variable)
 int      gTfTrade = 0;                                    // the timeframe the EA trades: the one it was attached to (0 = not known yet)
 datetime gTakenT = 0;                                     // arm bar time of the last setup the EA placed: never placed again (restart, new inputs)
+datetime gVwPrevT = 0, gVwCut = 0; double gVwPrev = 0; int gVwN = 1500;   // VWAP line: the previous bar and its VWAP, the oldest bar drawn, bars kept
 bool     gExitRetry = false; string gExitWhy = "";        // a close that failed: tried again at every bar close, and why it was due
 bool     gExitSeen = false, gGoneWait = false;            // a closing deal of the EA's trade was seen; its position is gone but no closing deal yet
 bool     exT1MvPend = false;                              // Crooks TP1 rule: a stop move before TP1 still has to reach the broker
@@ -1424,9 +1431,37 @@ void MarkText(string nm, datetime ta, double pa, string txt, color clr, ENUM_ANC
    ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
    ObjectSetInteger(0, nm, OBJPROP_HIDDEN, true);
 }
+//--- the VWAP line: the engine's VWAP of this bar (vwHist[0], same anchor, source and volume as the signals), one segment from the previous
+//--- bar, for the last gVwN bars (live: the segment that falls out of the window is removed); like the TradingView indicator's VWAP plot
+void VwDraw(datetime bt)
+{
+   double v = ArraySize(vwHist) > 0 ? vwHist[0] : 0;
+   if(InpVwapShow && gCanDraw && gVwPrevT > 0 && v > 0 && gVwPrev > 0 && bt >= gVwCut)
+   {
+      string nm = "ARM_VW" + IntegerToString((long)bt);
+      if(ObjectFind(0, nm) < 0) ObjectCreate(0, nm, OBJ_TREND, 0, gVwPrevT, gVwPrev, bt, v);
+      else { ObjectMove(0, nm, 0, gVwPrevT, gVwPrev); ObjectMove(0, nm, 1, bt, v); }
+      ObjectSetInteger(0, nm, OBJPROP_COLOR, InpVwapColor);
+      ObjectSetInteger(0, nm, OBJPROP_WIDTH, (int)MathMax(1, MathMin(5, InpVwapWidth)));
+      ObjectSetInteger(0, nm, OBJPROP_STYLE, STYLE_SOLID);
+      ObjectSetInteger(0, nm, OBJPROP_RAY_RIGHT, false);
+      ObjectSetInteger(0, nm, OBJPROP_BACK, true);
+      ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
+      ObjectSetInteger(0, nm, OBJPROP_HIDDEN, true);
+      ObjectSetString(0, nm, OBJPROP_TOOLTIP, "VWAP " + DoubleToString(v, _Digits));
+      if(gLive)
+      {
+         datetime old = iTime(_Symbol, _Period, gVwN + 1);
+         if(old > 0) ObjectDelete(0, "ARM_VW" + IntegerToString((long)old));
+      }
+   }
+   gVwPrevT = bt; gVwPrev = v;
+}
+
 // one engine bar: armed limit, then a filled trade's boxes, entry / TP lines, fill arrow and price labels, then its result
 void DrawBar(datetime bt)
 {
+   VwDraw(bt);                                          // v4.4: the VWAP line (its own switch, also with the markings off)
    if(!InpDraw || !gCanDraw) return;
    if(evCancel != 0 || evFill) ObjectDelete(0, "ARM_limit");
    if(evArm) MarkLine("ARM_limit", bt, lim, bt + PeriodSeconds() * InpRetestBars, lim, InpColEntry, 1, STYLE_DASH);   // MT5 dashes only width-1 lines
@@ -2075,6 +2110,7 @@ void ResetEngine()
    ArrayInitialize(tpHitN, 0); beN = 0; lkN = 0; gFirstT = 0;
    gDrawT = 0; ArrayResize(gDrawn, 0); gStateTxt = "SCANNING";
    exArmT = 0; exLim = 0; ArrayInitialize(exTpL, 0.0); gExitRetry = false; gExitWhy = ""; gExitSeen = false; gGoneWait = false;
+   gVwPrevT = 0; gVwPrev = 0;
    gOurFill = false; gOurExit = false; gOurWin = false; gOurMove = false; gMissFill = false; gMissExit = false; gMissWin = false; gMissMove = false;
 }
 
@@ -2283,6 +2319,8 @@ int OnInit()
       int sh = iBarShift(_Symbol, _Period, gSvLast, false);
       if(sh < 0 || sh > start) start = (int)MathMin(sh < 0 ? 100000 : MathMin(sh, 100000), bars - look - 1);
    }
+   gVwN = (int)MathMax(50, MathMin(20000, InpVwapBars));   // the VWAP line: the last gVwN bars
+   gVwCut = iTime(_Symbol, _Period, (int)MathMin(gVwN, bars - 1));
    gLive = false;
    for(int s = start; s >= 1; s--)
    {

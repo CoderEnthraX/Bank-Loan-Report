@@ -317,7 +317,7 @@ The Journal prints `Restart memory: continued from <time> | loss to win back ...
 - **Starting fresh** (v4.4): use **Start fresh once** (below). Switching the setting off and on does not clear the values MT5 keeps in
   memory while the EA stays on the chart.
 
-### EA v4.4: no early closes; trades closed outside the EA are booked right (EA only)
+### EA v4.4: no early closes; trades closed outside the EA are booked right; VWAP line on the chart (EA only)
 
 **The report (11 Nov 2026, new broker, `GOLD.i#`):** three trades closed at +$4.86, +$4.97 and +$6.48 a few minutes after entry, instead of
 reaching TP1 (0.6R). Two of them had no take profit at the broker.
@@ -374,6 +374,10 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
   summer-time rule, or that fixed offset. A new broker no longer needs the clock set by hand. With any other choice, an alert appears when
   the broker's clock differs from it, because your days, hours, kill zones, news and force-close times would be off. The table row `BROKER
   CLOCK` shows the offset in use. In the Strategy Tester Auto means the EU rule, as before.
+- **VWAP line on the chart** (new, on by default). The EA draws the VWAP it trades on: the same anchor (session / week / month), source and
+  tick volume as its signals. It looks like the TradingView indicator's VWAP (#4DD0E1, width 2). The DISPLAY inputs are **Show the VWAP
+  line** (on), its colour, its width, and how many candles of VWAP are drawn (1,500; older parts are removed as new candles come). The line
+  is drawn on the chart and in the Strategy Tester's visual mode, and removed with the EA. Switch it off with **Show the VWAP line = false**.
 - **Start fresh once** (`InpMemFresh`, restart memory group): forgets the loss recovery, streaks and pauses once. Set it to true and click
   OK; set it back to false later. Use it if trades closed outside v4.3 were booked as losses.
 - **Restart memory:** the open trade's setup (its signal candle and entry level) is saved. After a restart, new inputs or a timeframe

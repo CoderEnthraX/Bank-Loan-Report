@@ -43,7 +43,7 @@ DROP = ['template<class... A> void Print(const A&...) {}', 'template<class... A>
         'ulong HistoryDealGetTicket(int) { return 0; }', 'mql_long HistoryDealGetInteger(ulong, ENUM_DEAL_PROPERTY_INTEGER) { return 0; }',
         'double HistoryDealGetDouble(ulong, ENUM_DEAL_PROPERTY_DOUBLE) { return 0; }', 'string HistoryDealGetString(ulong, ENUM_DEAL_PROPERTY_STRING) { return string(); }',
         'mql_long ChartFirst() { return -1; }', 'mql_long ChartNext(mql_long) { return -1; }', 'string ChartGetString(mql_long, ENUM_CHART_PROPERTY_STRING) { return string(); }',
-        'string ChartSymbol(mql_long) { return _Symbol; }', 'ENUM_TIMEFRAMES ChartPeriod(mql_long) { return _Period; }', 'string EnumToString(int) { return string(); }', 'int PeriodSeconds(ENUM_TIMEFRAMES p) { return 300; }', 'bool PositionSelectByTicket(ulong) { return false; }', 'mql_long PositionGetInteger(ENUM_POSITION_PROPERTY_INTEGER) { return 0; }']
+        'string ChartSymbol(mql_long) { return _Symbol; }', 'ENUM_TIMEFRAMES ChartPeriod(mql_long) { return _Period; }', 'string EnumToString(int) { return string(); }', 'int PeriodSeconds(ENUM_TIMEFRAMES p) { return 300; }', 'bool PositionSelectByTicket(ulong) { return false; }', 'mql_long PositionGetInteger(ENUM_POSITION_PROPERTY_INTEGER) { return 0; }', 'bool ObjectCreate(mql_long, const string&, ENUM_OBJECT, int, datetime, double, datetime, double, datetime, double) { return true; }', 'bool ObjectDelete(mql_long, const string&) { return true; }', 'int ObjectsDeleteAll(mql_long, const string&, int, int) { return 0; }', 'int ObjectFind(mql_long, const string&) { return -1; }', 'bool ObjectMove(mql_long, const string&, int, datetime, double) { return true; }']
 for d in DROP:
     assert h.count(d) == 1, d
     h = h.replace(d, '')
@@ -63,6 +63,7 @@ extern "C" void sim_ontick() { OnTick(); }
 extern "C" void sim_deinit(int r) { OnDeinit(r); }
 extern "C" int sim_exstate() { return exState; }
 extern "C" double sim_crkl() { return crkL; }
+extern "C" double sim_vwap() { return ArraySize(vwHist) > 0 ? vwHist[0] : 0.0; }
 '''
 open(cpp, 'w').write(c)
 EOP

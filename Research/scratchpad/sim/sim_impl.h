@@ -248,3 +248,42 @@ bool CTrade::PositionModify(ulong tk, double sl, double tp)
 string CTrade::ResultRetcodeDescription() const { return sim_ret; }
 // ---- the EA's bookings (hooked into BookClosed) ----
 static void sim_book(double pnl, int hg, double risk, double lots) { char tb[32]; sim_timestr(sim_now, tb); printf("BOOK %s pnl=%.2f hedge=%d risk=%.2f lots=%.2f\n", tb, pnl, hg, risk, lots); }
+// ---- chart objects: the VWAP line's segments (names ARM_VW...) are stored with their two points; every other object stays a no-op ----
+static const int SIM_OBJ_CAP = 1 << 16;
+static mqlstring* sim_obN = 0; static char* sim_obU = 0; static long long* sim_obT1 = 0; static long long* sim_obT2 = 0; static double* sim_obP1 = 0; static double* sim_obP2 = 0;
+static int sim_obLive = 0, sim_obMade = 0, sim_obDel = 0;
+static bool sim_isVw(const string& nm) { return nm.n >= 6 && nm.s[0] == 'A' && nm.s[1] == 'R' && nm.s[2] == 'M' && nm.s[3] == '_' && nm.s[4] == 'V' && nm.s[5] == 'W'; }
+static void sim_obInit() { if(!sim_obN) { sim_obN = new mqlstring[SIM_OBJ_CAP]; sim_obU = new char[SIM_OBJ_CAP]; sim_obT1 = new long long[SIM_OBJ_CAP]; sim_obT2 = new long long[SIM_OBJ_CAP]; sim_obP1 = new double[SIM_OBJ_CAP]; sim_obP2 = new double[SIM_OBJ_CAP]; for(int i = 0; i < SIM_OBJ_CAP; i++) sim_obU[i] = 0; } }
+static int sim_obFind(const string& nm)
+{
+   sim_obInit(); unsigned h = 2166136261u; for(int i = 0; i < nm.n; i++) { h ^= (unsigned char)nm.s[i]; h *= 16777619u; }
+   for(unsigned i = h & (SIM_OBJ_CAP - 1), k = 0; k < (unsigned)SIM_OBJ_CAP; i = (i + 1) & (SIM_OBJ_CAP - 1), k++) { if(sim_obU[i] == 0) return -1; if(sim_obU[i] == 1 && sim_obN[i] == nm) return (int)i; }
+   return -1;
+}
+bool ObjectCreate(mql_long, const string& nm, ENUM_OBJECT, int, datetime t1, double p1, datetime t2, double p2, datetime, double)
+{
+   if(!sim_isVw(nm)) return true;
+   if(sim_obFind(nm) >= 0) return false;                    // MT5: an object with this name exists
+   unsigned h = 2166136261u; for(int i = 0; i < nm.n; i++) { h ^= (unsigned char)nm.s[i]; h *= 16777619u; }
+   for(unsigned i = h & (SIM_OBJ_CAP - 1);; i = (i + 1) & (SIM_OBJ_CAP - 1))
+      if(sim_obU[i] != 1) { sim_obU[i] = 1; sim_obN[i] = nm; sim_obT1[i] = t1; sim_obP1[i] = p1; sim_obT2[i] = t2; sim_obP2[i] = p2; sim_obLive++; sim_obMade++; return true; }
+}
+int ObjectFind(mql_long, const string& nm) { return sim_isVw(nm) && sim_obFind(nm) >= 0 ? 0 : -1; }
+bool ObjectMove(mql_long, const string& nm, int pt, datetime t, double p)
+{ int i = sim_isVw(nm) ? sim_obFind(nm) : -1; if(i < 0) return true; if(pt == 0) { sim_obT1[i] = t; sim_obP1[i] = p; } else { sim_obT2[i] = t; sim_obP2[i] = p; } return true; }
+bool ObjectDelete(mql_long, const string& nm) { int i = sim_isVw(nm) ? sim_obFind(nm) : -1; if(i < 0) return false; sim_obU[i] = 2; sim_obLive--; sim_obDel++; return true; }
+int ObjectsDeleteAll(mql_long, const string& prefix, int, int)
+{ sim_obInit(); int k = 0; for(int i = 0; i < SIM_OBJ_CAP; i++) if(sim_obU[i] == 1 && StringFind(sim_obN[i], prefix) == 0) { sim_obU[i] = 2; sim_obLive--; k++; } return k; }
+// the VWAP line now: live segments, gaps (a segment whose start is not the previous segment's end), oldest / newest bar, the last point
+extern "C" void sim_vw_report(double vwapNow)
+{
+   sim_obInit(); int n = 0; long long* t2 = new long long[sim_obLive + 1]; int* ix = new int[sim_obLive + 1];
+   for(int i = 0; i < SIM_OBJ_CAP; i++) if(sim_obU[i] == 1) { ix[n] = i; t2[n] = sim_obT2[i]; n++; }
+   for(int a = 1; a < n; a++) { int b = a; while(b > 0 && t2[b - 1] > t2[b]) { long long tt = t2[b]; t2[b] = t2[b - 1]; t2[b - 1] = tt; int ii = ix[b]; ix[b] = ix[b - 1]; ix[b - 1] = ii; b--; } }
+   int gaps = 0, bad = 0;
+   for(int a = 1; a < n; a++) { int i = ix[a], j = ix[a - 1]; if(sim_obT1[i] != sim_obT2[j] || sim_obP1[i] != sim_obP2[j]) gaps++; if(sim_obT2[i] <= sim_obT1[i]) bad++; }
+   char t0[32] = "-", t9[32] = "-"; if(n) { sim_timestr((datetime)sim_obT2[ix[0]], t0); sim_timestr((datetime)sim_obT2[ix[n - 1]], t9); }
+   printf("VWLINE segments %d (created %d, deleted %d) | gaps %d | backwards %d | first %s | last %s | last point %.5f | engine VWAP %.5f\n",
+          n, sim_obMade, sim_obDel, gaps, bad, t0, t9, n ? sim_obP2[ix[n - 1]] : 0.0, vwapNow);
+   delete[] t2; delete[] ix;
+}

@@ -26,6 +26,8 @@ void sim_gv_set(const char* n, double v);
 double sim_gv_get(const char* n);
 void sim_set_chart(long long me, int n, const long long* ids, int withEa);
 void sim_conn(int c);
+void sim_vw_report(double vwapNow);
+double sim_vwap();
 }
 static long long day(const char* s) { int y, m, d; std::sscanf(s, "%d-%d-%d", &y, &m, &d); y -= m <= 2; long long era = (y >= 0 ? y : y - 399) / 400; long long yoe = y - era * 400;
    long long doy = (153 * (m + (m > 2 ? -3 : 9)) + 2) / 5 + d - 1; long long doe = yoe * 365 + yoe / 4 - yoe / 100 + doy; return (era * 146097 + doe - 719468) * 86400; }
@@ -128,6 +130,7 @@ int main(int argc, char** argv)
          sim_ontick();
       }
    }
+   sim_vw_report(sim_vwap());
    std::printf("END ticks %lld bars %d inits %lld trades opened %lld\n", nTick, sim_bars(), inits, nOpen);
    return 0;
 }
