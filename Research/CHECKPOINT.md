@@ -579,8 +579,10 @@ Other gold findings:
       - VWAP line in all 37 runs: 1500 segments, 0 gaps, 0 backwards, last point = the engine's VWAP (sc_15 ends while the EA is off: 0).
       - 17 scenarios, v4.3 vs v4.4: trades 1659 / 1571; without TP 1659 / 0; engine-wins closes 67 / 0; wrong bookings 81 / 0; same
         signal twice 3 / 0; opened while the chart showed M1 87 / 0. Restart and same-input re-init runs = the run without them (99 / 99).
-    - **Regression `v40/run_v44.sh v44l`:** the run on v44e died in the pause; those on v44h, v44i, v44j and v44k were stopped for the
-      next fix. Running on the final file; results in `v40/final_v44.txt`.
+    - **Regression `v40/run_v44.sh v44l` on the final file (08:51 - 09:40, `v40/final_v44.txt`):** scripted hedge + month identical to
+      v4.3; rec / tp1 / crkpr 0 mismatches, normal and REC_RESTART (2,150,319 / 3,870,319 / 7,429,684 compared); engine parity ALL
+      IDENTICAL (plain, +49, -189 days, data restored). Earlier runs: v44e died in the pause; v44h - v44k stopped for the next fix.
+    - **Delivered** to the user (SendUserFile) with the final summary; task closed.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

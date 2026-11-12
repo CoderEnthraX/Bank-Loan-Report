@@ -452,8 +452,11 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
     VWAP the EA trades on.
 - **Two independent code reviews** (Opus, high effort; the second on the fixes of the first). Every finding was checked against the code
   first, the serious ones were reproduced in the simulator, and all were fixed.
-- **Compile check:** 0 errors, 0 warnings. The money-management parity suites (normal, and with a restart after every step) and the engine
-  parity (three date shifts) were re-run on the final file (`Research/scratchpad/v40/final_v44.txt`).
+- **Compile check:** 0 errors, 0 warnings.
+- **Parity suites on the final file** (`Research/scratchpad/v40/final_v44.txt`): the money management matches its reference with 0
+  mismatches, both normally and with a restart after every step. That covers 2.15 million loss-recovery trades, 3.87 million TP1-rule
+  trades and 7.4 million Crooks C signals. The scripted hedge and month tests are identical to v4.3, and the engine is identical in all four
+  runs (three date shifts).
 
 **Upgrading from v4.3:**
 1. Replace the file and compile it in MetaEditor (F7).
