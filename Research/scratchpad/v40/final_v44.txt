@@ -40,3 +40,10 @@ scripted hedge + month vs v4.3: IDENTICAL 08:39:23
 normal rec runs 1680, trades compared 2150319, mismatches 0, worst relative difference 4.99e-12; runs where the account blew (compared up to that trade): 29 08:39:39
 normal tp1 p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 3360, trades compared 3870319 (TP1-rule trades 1127020), mismatches 0 08:40:41
 normal crkpr runs 5184, signals compared 7429684 (skipped by the pause 1050235), mismatches 0 08:41:35
+stopped v44k run (v44l: timeframe hold and memory-off re-init fixes) 08:48:05
+=== FINAL v4.4 (v44l: + no engine link on another timeframe, memory-off re-init booking) ===
+start v44l 08:51:01 EA md5 415a06f66db5
+scripted hedge + month vs v4.3: IDENTICAL 08:51:05
+normal rec runs 1680, trades compared 2150319, mismatches 0, worst relative difference 4.99e-12; runs where the account blew (compared up to that trade): 29 08:51:21
+normal tp1 p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 3360, trades compared 3870319 (TP1-rule trades 1127020), mismatches 0 08:52:26
+normal crkpr runs 5184, signals compared 7429684 (skipped by the pause 1050235), mismatches 0 08:53:24

@@ -2149,8 +2149,9 @@ void BrokerStart()
       double pSl = PositionGetDouble(POSITION_SL), pTp = PositionGetDouble(POSITION_TP);
       datetime aT = MathAbs(st) >= 1 && !trGhost ? BarTimeOf(armBar) : 0;
       // v4.4: the engine's setup is this trade's when it is the saved setup, re-linked in the warm-up (restart memory) and still the engine's;
-      // without a saved setup, when it has the trade's direction and was armed before the trade opened
-      bool same = MathAbs(st) >= 1 && !trGhost && (st > 0) == isL &&
+      // without a saved setup, when it has the trade's direction and was armed before the trade opened. Never on another timeframe than
+      // the one the EA trades: the trade keeps its own stop loss and take profit until the chart is back
+      bool same = !TfHold() && MathAbs(st) >= 1 && !trGhost && (st > 0) == isL &&
                   (gRestored && exArmT > 0 ? exArm >= 0 && armBar == exArm
                                            : aT > 0 && (datetime)PositionGetInteger(POSITION_TIME) >= aT + PeriodSeconds(_Period));
       exState = 2; exL = isL; if(!(gRestored && exLots > 0)) exLots = vol;   // a restored trade keeps its lots (partials)
@@ -2335,7 +2336,7 @@ int OnInit()
       // v4.4: the saved trade's setup is re-linked when the engine arms it again (its arm bar, direction and entry): its fill, stop moves and
       // exit on the bars since the saved state then reach the trade (gMiss*), like after a disconnect
       if(gRestored && exArmT > 0 && exState != 0 && !exHg && evArm && iTime(_Symbol, _Period, s) == exArmT && (st > 0) == exL &&
-         (exLim <= 0 || MathAbs(lim - exLim) <= TickSize() * 2.5)) exArm = armBar;
+         (exLim <= 0 || MathAbs(lim - exLim) <= TickSize() * 2.5) && !TfHold()) exArm = armBar;   // not on another timeframe
       if(offBar)
       {
          if(gOurFill) gMissFill = true;
@@ -2365,6 +2366,9 @@ int OnInit()
 void OnDeinit(const int reason)
 {
    StateSave(true);                                      // restart memory: the latest state on disk (MT5 closing, the EA removed, new inputs)
+   // restart memory off, new inputs or another timeframe: MT5 keeps the money management, but the start that follows skips earlier deals,
+   // so a trade that has just closed is booked now
+   if(!gPersist && (reason == REASON_PARAMETERS || reason == REASON_CHARTCHANGE) && exState != 0) BookBrokerDeals();
    LockFree();
    bool gone = reason == REASON_REMOVE || reason == REASON_CHARTCLOSE || reason == REASON_INITFAILED || reason == REASON_PROGRAM || reason == REASON_TEMPLATE;
    if(gone && gTfTrade > 0 && MQLInfoInteger(MQL_TESTER) == 0) GlobalVariableDel(SvExtra("tf"));   // left the chart: attach it again on any timeframe

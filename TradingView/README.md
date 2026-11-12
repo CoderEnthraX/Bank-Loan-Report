@@ -367,7 +367,8 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
   EA makes is also printed first: `Closing #... : <reason>`.
 - **The EA trades the timeframe it was attached to.** If you switch the chart to another timeframe to look at the candles, it opens no new
   trades until the chart is back (an alert says so, and the table shows `CHART ON M1: NO NEW TRADES`). The open trade keeps its stop loss and
-  take profit. To trade another timeframe, remove the EA and attach it again on that timeframe.
+  take profit: the other timeframe's engine never takes it over, and it is linked to its setup again when the chart is back. To trade
+  another timeframe, remove the EA and attach it again on that timeframe. To look at other timeframes, open a second chart.
 - **One copy per symbol and magic number.** A second copy with the same symbol and magic number does not start (alert). Two copies cancel
   and close each other's trades and share one restart memory. Another EA on the account is listed in the Experts tab at start.
 - **Broker server clock: Auto (new default).** The EA reads the broker's GMT offset from MT5 (server time minus GMT) and picks the EU or US
@@ -407,6 +408,9 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
   - A trade whose position is gone is booked with its closing deal. If that deal is not in the history yet, the booking waits one candle
     instead of booking the trade without its profit.
   - A close by the EA just before a restart is still reported as the EA's after the restart.
+  - With **Continue after a restart** off: a trade that closed in the seconds before new inputs or a timeframe switch was not counted in
+    the loss recovery (MT5 keeps the recovery in memory, but the new start skipped that deal). It is now booked first. A restart of MT5 or
+    of the EA still starts fresh, as that setting says.
 - **Netting accounts** (one position per symbol): a close by hand, from the phone or by another EA is booked while the EA holds a trade.
   Do not run another EA on the same symbol of a netting account: the position is shared, so the trades cannot be told apart.
 
@@ -423,6 +427,7 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
     - MT5 starting before it connects;
     - all of them combined.
   - **16 more runs** cover the Crooks TP1 rule, the hedge rule, partial closes and market entries, alone and with restarts or switches.
+  - **4 runs with Continue after a restart off** cover timeframe switches, new inputs, restarts and all of them combined.
 - **Over the 17 scenarios:**
 
   |                                         | v4.3  | v4.4  |
@@ -433,10 +438,12 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
   | Booked wrong                            | 81    | 0     |
   | Same signal traded twice                | 3     | 0     |
   | Opened while the chart showed M1        | 87    | 0     |
-- **v4.4 on all 33 runs (3,446 trades):**
+- **v4.4 on all 37 runs (3,767 trades):**
   - 0 early closes, 0 signals traded twice, 0 rejected orders, 0 failed starts;
   - a take profit on every order;
-  - every booking equal to the broker's profit;
+  - every trade booked once, with the broker's profit (a hedge pair as one booking). The only exceptions are 2 trades that closed while
+    the EA was off with Continue after a restart off: that setting forgets them on purpose;
+  - an open trade is never taken over by the engine of another timeframe;
   - the only closes by the EA were its rules: the engine's stop, a stop the price had already passed after a move, and a news start;
   - restarts and same-input re-initialisations give the same trades as no restart (a sell's take profit can move by the live spread when it
     is re-sent);

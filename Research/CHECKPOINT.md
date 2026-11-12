@@ -558,18 +558,29 @@ Other gold findings:
       bar from index gVwN + 1 back to the last cutoff gVwCut is deleted, then gVwCut = iTime(gVwN). Also: the line is drawn over the candles
       (OBJPROP_BACK false, like the TradingView plot; the markings stay behind), and OnInit ends with ChartRedraw when gCanDraw, so the line
       shows at once with the market closed. Checked: base, DISC, DISC with 50 bars, 300 bars + restarts + TF switch: 0 gaps, exact window.
-    - **Patch chain:** v4.3 -> v44, b, c, d, e, f, g, h, i, j, k reproduces the final file exactly (`build/chain/`).
-    - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 e8ce2f425df3, 2429 lines. mq5check 0/0, ASCII, no CR, no harness markers,
+    - **v44l (found with InpRemember = false in the simulator; the default checked too):**
+      - TfHold: the open trade is never linked to another timeframe's engine (warm-up re-link and BrokerStart `same` need !TfHold()); it
+        keeps its own SL / TP and is linked again on the trading timeframe. Memory off + TF stress: 12 adoptions + 2 early-fill links on M1
+        -> 0. Memory on: 0 on M1 before and after (sc_08 trades and bookings identical, 86 / 86).
+      - Memory off + new inputs / TF switch: OnInit skips every earlier deal (NewDealsPnl quiet), so a trade closed seconds before the
+        re-init was never booked (TF stress 45 of 68 booked, REINIT=23 stress 25 of 57). OnDeinit (REASON_PARAMETERS / CHARTCHANGE,
+        !gPersist, exState != 0) calls BookBrokerDeals first: 68 / 68 and 57 / 57. A restart with memory off still forgets a trade that
+        closed while the EA was off (by design: 1 per run).
+      - New checker `sim/unbooked.py` (bookings vs broker trades with gaps, hedge pairs as one booking, "closed while off");
+        `sim/summarize.sh` builds `final_summary.txt` from it.
+    - **Patch chain:** v4.3 -> v44, b, c, d, e, f, g, h, i, j, k, l reproduces the final file exactly (`build/chain/`).
+    - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 415a06f66db5, 2433 lines. mq5check 0/0, ASCII, no CR, no harness markers,
       no adjacent string literals (tokenizer scan).
     - **Simulator, final file (`sim/run_final.sh`):** `sim/run_all.sh` has 17 scenarios (14-17 added: market + restarts off, stop moves +
-      restarts off, offline start, TP1 rule + offline + hand) plus 16 extra v4.4 runs; `sim/final_summary.txt` covers 33 runs and 3,446
-      trades.
-      - v4.4: 0 without TP, 0 duplicates, 0 stale closes (new analyzer check), 0 rejects, 0 failed starts, all bookings = broker P&L.
-      - VWAP line in all 33 runs: 1500 segments, 0 gaps, 0 backwards, last point = the engine's VWAP (sc_15 ends while the EA is off: 0).
+      restarts off, offline start, TP1 rule + offline + hand) plus 16 extra v4.4 runs and 4 with the memory off (z_);
+      `sim/final_summary.txt` covers 37 runs and 3,767 trades (memory on: 33 runs, 3,446 trades).
+      - v4.4: 0 without TP, 0 duplicates, 0 stale closes (new analyzer check), 0 rejects, 0 failed starts, 0 M1 links; every trade booked
+        once with the broker P&L, except 2 that closed while the EA was off with the memory off (by design).
+      - VWAP line in all 37 runs: 1500 segments, 0 gaps, 0 backwards, last point = the engine's VWAP (sc_15 ends while the EA is off: 0).
       - 17 scenarios, v4.3 vs v4.4: trades 1659 / 1571; without TP 1659 / 0; engine-wins closes 67 / 0; wrong bookings 81 / 0; same
         signal twice 3 / 0; opened while the chart showed M1 87 / 0. Restart and same-input re-init runs = the run without them (99 / 99).
-    - **Regression `v40/run_v44.sh v44k`:** the run on v44e died in the pause; those on v44h, v44i and v44j were stopped for the next fix.
-      Running on the final file; results in `v40/final_v44.txt`.
+    - **Regression `v40/run_v44.sh v44l`:** the run on v44e died in the pause; those on v44h, v44i, v44j and v44k were stopped for the
+      next fix. Running on the final file; results in `v40/final_v44.txt`.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
