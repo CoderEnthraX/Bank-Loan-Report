@@ -1579,7 +1579,7 @@ void UpdateTable()
 void TakeSetup(bool isL, bool newsBlk, bool flatNow)
 {
    sigN++;
-   gTakenT = BarTimeOf(armBar);                       // decided on now (taken, skipped or rejected): a restart does not take it again
+   if(!TfHold()) gTakenT = BarTimeOf(armBar);         // decided on now (taken, skipped or rejected): a restart does not take it again (not on another timeframe)
    ulong pTk; double pVol, pOpen;
    bool posNow = HasPosition(pTk, pVol, pOpen);
    bool crkPs = CrkPause();

@@ -390,26 +390,61 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
     kept its original stop. This also works when MT5 starts before it is connected.
   - A close that MT5 refuses (off quotes, trading disabled, market closed) is tried again at every candle close. This covers the engine's
     exit, the force-close, the weekend and news closes, and closes at a restart.
-  - The EA's own partial closes are logged as its own (`partly closed ... partial close at TP1`).
-- **Netting accounts** (one position per symbol, shared by every EA on it): deals are matched by magic number only, as before. On a netting
-  account a trade closed by hand still cannot be told apart.
+  - The EA's own partial closes are logged as its own (`partly closed ... partial close at TP1`). Every position the EA closes gets its own
+    `Closing #...` line, both trades of a hedge pair included.
+  - After a restart, a new trade placed on the first tick could be closed at the next candle by an engine exit that belonged to the old,
+    already closed trade. The events from the time the EA was off now apply only to the trade they belong to (also the Crooks TP1-rule
+    catch-up).
+  - Every setup the EA decided on (taken, or skipped by news, a pause, a streak stop or being in a trade) is remembered, so a restart never
+    takes a setup the live run did not. Setups seen while the chart shows another timeframe are not counted, so the real one is placed
+    when the chart is back.
+  - A trade whose position is gone is booked with its closing deal. If that deal is not in the history yet, the booking waits one candle
+    instead of booking the trade without its profit.
+  - A close by the EA just before a restart is still reported as the EA's after the restart.
+- **Netting accounts** (one position per symbol): a close by hand, from the phone or by another EA is booked while the EA holds a trade.
+  Do not run another EA on the same symbol of a netting account: the position is shared, so the trades cannot be told apart.
 
 **How it was tested** (`Research/scratchpad/sim/`, results in `sim/results.txt`):
 - **Broker simulator.** v4.3 and v4.4 run on an MT5-like broker: hedging account, limit and stop orders, stops level, stop loss and take
   profit at the tick, deals with reason, magic number and position id, and commission. Ticks come from FxPro gold M1 bars, 3 Aug - 2 Oct
-  2026 and 15 Sep 2025 - 20 Jan 2026 (across the clock change), with varying spreads. There are 13 scenarios: restarts with the EA off, new
-  inputs, timeframe switches, hand and other-EA closes, stops level, commission, and all of them combined. More runs cover the Crooks TP1
-  rule, the hedge rule, partial closes, market entries, stop moves with restarts, and MT5 starting before it connects, alone and combined.
-- **Two independent code reviews** (the second on the review fixes); every finding was checked against the code and the simulator first.
-- **v4.4 results:**
-  - 0 early closes, 0 signals traded twice, 0 rejected orders;
+  2026 and 15 Sep 2025 - 20 Jan 2026 (across the clock change), with varying spreads.
+  - **17 scenarios:**
+    - restarts with the EA off;
+    - new inputs and timeframe switches;
+    - hand and other-EA closes;
+    - stops level and commission;
+    - market entries and stop moves with restarts;
+    - MT5 starting before it connects;
+    - all of them combined.
+  - **16 more runs** cover the Crooks TP1 rule, the hedge rule, partial closes and market entries, alone and with restarts or switches.
+- **Over the 17 scenarios:**
+
+  |                                   | v4.3  | v4.4  |
+  |-----------------------------------|-------|-------|
+  | Trades                            | 1,659 | 1,568 |
+  | Opened without a take profit      | 1,659 | 0     |
+  | Closed early by "engine wins"     | 67    | 0     |
+  | Booked wrong                      | 81    | 0     |
+- **v4.4 on all 33 runs (3,443 trades):**
+  - 0 early closes, 0 signals traded twice, 0 rejected orders, 0 failed starts;
   - a take profit on every order;
   - every booking equal to the broker's profit;
+  - the only closes by the EA were its rules: the engine's stop, a stop the price had already passed after a move, and a news start;
   - restarts and same-input re-initialisations give the same trades as no restart (a sell's take profit can move by the live spread when it
     is re-sent);
   - the copy lock and the clock detection work (GMT+3 / +2 / 0 / +5.5 / -4).
-- **Earlier checks:** compile check 0 errors / 0 warnings. The money-management parity suites (normal and with a restart after every step)
-  and the engine parity are unchanged.
+- **Two independent code reviews** (Opus, high effort; the second on the fixes of the first). Every finding was checked against the code
+  first, the serious ones were reproduced in the simulator, and all were fixed.
+- **Compile check:** 0 errors, 0 warnings. The money-management parity suites (normal, and with a restart after every step) and the engine
+  parity (three date shifts) were re-run on the final file (`Research/scratchpad/v40/final_v44.txt`).
+
+**Upgrading from v4.3:**
+1. Replace the file and compile it in MetaEditor (F7).
+2. Inputs: MT5 keeps your chart's input values, so new defaults do not apply by themselves.
+   - Set **Broker server clock** to **Auto**.
+   - On a broker without commission, set **Commission per lot** to 0. It is used for the lot size and the earn-back target.
+3. The saved loss recovery and streaks continue. If trades closed outside v4.3 were counted as losses, use **Start fresh once**.
+4. Run one copy per symbol and magic number. Remove an old copy from other charts.
 
 **What to look at on the chart:** the Experts tab shows who closed each trade. If it says HAND or ANOTHER EA OR SCRIPT, look for another EA
 or trade manager on the account, a second MT5 or VPS logged in to the same account, or the phone app. If it says this EA, the reason is

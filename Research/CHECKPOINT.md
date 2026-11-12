@@ -546,13 +546,16 @@ Other gold findings:
         deal.
     - **v44f** (own read-through): NoteClose / ClosedByUs ring of 8 ids (hedge pairs closed together), gHedgeOk re-read in BrokerStart.
     - **v44h:** CloseAll prints one line per position.
-    - **Patch chain:** v4.3 -> v44, b, c, d, e, f, g, h reproduces the final file exactly (`build/chain/`).
-    - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 7cca737b1e33, 2384 lines. mq5check 0/0, ASCII, no harness markers.
+    - **v44i:** a setup seen while the chart shows another timeframe (TfHold) is not recorded in gTakenT. M5 bar times are also M1 bar times,
+      so a skipped M1 setup at 09:05 blocked the M5 setup armed at 09:05 back on M5. With heavy switching, 3 trades were restored (86 vs 83).
+    - **Patch chain:** v4.3 -> v44, b, c, d, e, f, g, h, i reproduces the final file exactly (`build/chain/`).
+    - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 df5e91c4c3cb, 2384 lines. mq5check 0/0, ASCII, no harness markers.
     - **Simulator, final file:** `sim/run_all.sh` has 17 scenarios (14-17 added: market + restarts off, stop moves + restarts off, offline
       start, TP1 rule + offline + hand); `sim/final_summary.txt` covers 33 runs and 3,443 trades.
       - v4.4: 0 without TP, 0 duplicates, 0 stale closes (new analyzer check), 0 rejects, 0 failed starts, all bookings = broker P&L.
       - 17 scenarios, v4.3 vs v4.4: without TP 1659 / 0; engine-wins closes 67 / 0; wrong bookings 81 / 0.
-    - **Regression `v40/run_v44.sh v44h`:** the run on v44e died in the pause; re-run on the final file, results in `v40/final_v44.txt`.
+    - **Regression `v40/run_v44.sh v44i`:** the run on v44e died in the pause and the one on v44h was stopped for v44i; re-run on the final
+      file, results in `v40/final_v44.txt`.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
