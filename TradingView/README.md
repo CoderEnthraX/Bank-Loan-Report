@@ -488,6 +488,80 @@ reaching TP1 (0.6R). Two of them had no take profit at the broker.
 or trade manager on the account, a second MT5 or VPS logged in to the same account, or the phone app. If it says this EA, the reason is
 printed with it.
 
+### v4.5: Crooks E - J: loss recovery that loses less in a long losing run (strategy and EA)
+
+Six new choices in **Loss Recovery**. Each is Crooks C with one change, and every Crooks C setting also works with them: win the loss back
+over N wins, the rule after N losing recovery trades (and the hedge rule in the EA), the Crooks TP1 rule, and the hard cap.
+
+- **Crooks E (your rule).** As in Crooks C, after a loss the EA waits for a win, and the trade right after the win is the recovery trade.
+  While it waits, every trade is **0.01 lot** whatever the stop, or the normal size if that is smaller. If the recovery trade loses, the
+  trades go back to 0.01 lot until the next win. For example, on the broker simulator with a $50 base:
+  1. a 0.06-lot trade lost $42.54;
+  2. the next trade was 0.01 lot and lost $13.87;
+  3. the next was 0.01 lot and won $3.39;
+  4. the recovery trade (0.13 lot) won $57.20, so everything was back;
+  5. the trades after that were the normal size again.
+- **Five more rules**, each with a limit on the recovery trade so that it cannot keep growing:
+
+  | Rule | What it does | Setting (default) |
+  |---|---|---|
+  | **Crooks F** | A recovery trade risks at most K x base. If the loss is bigger, the rest is won back after the next wins. | K = 3 ($150 at a $50 base) |
+  | **Crooks G** | The loss to win back is never more than X x base; anything above is accepted as lost. | X = 10 ($500) |
+  | **Crooks H** | A recovery trade risks at most this % of the equity. | 1% |
+  | **Crooks I** | Crooks E (0.01 lot while waiting) plus the Crooks F limit. | 0.01 lot, K = 3 |
+  | **Crooks J** | The deeper the drawdown of the closed profit, the smaller the recovery trade: x (1 - drawdown / (X x base)), never below the base. | X = 20 (half size at a $500 drawdown, base at $1,000) |
+
+  The limits of F, H and I count the real stop-out loss, so they also hold with the Crooks TP1 rule's wider stop.
+- **Settings:**
+  - EA: `InpCrkELot` (E / I), `InpCrkFK` (F / I), `InpCrkGX`, `InpCrkHPct` and `InpCrkJX`.
+  - Strategy: the same five settings in the LOSS RECOVERY group.
+  - Existing input titles did not change, so TradingView and MT5 keep your saved settings.
+
+**Gold 2021-2026** (`Research/scratchpad/gold/crooks_e1.py`, `crooks_e2.py`):
+- 19 profitable strategies, $50 base, $10,000 start, no hard cap.
+- "Shuffled" means the same trades in 200 random orders per strategy (3,800 runs per rule). "Blown" means the account went to zero.
+
+| Rule | Profit, 19 strategies | Average / worst drawdown | Worst losing run (average) | Blown, shuffled | Drawdown in the worst 5% of shuffles |
+|---|---|---|---|---|---|
+| Crooks C | +$225k | 40% / 92% | $2,086 | 20.0% | 115% |
+| **Crooks E** | +$145k | 28% / 59% | $1,152 | 15.8% | 110% |
+| **Crooks F** | +$130k | 21% / 40% | $709 | 0% | 32% |
+| **Crooks G** | +$115k | 15% / 29% | $687 | 0% | 29% |
+| **Crooks H** | +$123k | 16% / 29% | $702 | 0% | 26% |
+| **Crooks I** | +$89k | 20% / 36% | $381 | 0% | 37% |
+| **Crooks J** | +$95k | 13% / 21% | $696 | 0% | 20% |
+| Off ($50 every trade) | +$91k | 11% / 18% | $679 | 0% | 18% |
+
+What the table shows:
+- **Crooks E alone** cuts the losses while waiting (its losing runs are about half of Crooks C's). But the recovery trade can still keep
+  growing, and in shuffled orders it still blew the account 16% of the time. If you want the 0.01-lot idea with protection, use **Crooks I**.
+- **F, G, H, I and J never blew an account** in any shuffled order. They keep 40-58% of Crooks C's profit with half its drawdown or less:
+  - **J** has the smallest drawdown;
+  - **I** has the smallest losing runs;
+  - **F** keeps the most profit.
+- Rejected after testing:
+  - halving the next recovery after a lost one;
+  - waiting for 2 wins in a row before the recovery;
+  - shrinking every trade (not only the recovery) in a drawdown;
+  - recovering only from profit already made.
+
+  They lost more, or blew accounts.
+
+**How it was tested:**
+- **EA money management against the Python reference** (`gold/recovery.py`, `gold/crooks_tp1.py`), trade by trade:
+  - every rule: 2,928 runs, 4.07 million trades;
+  - with the Crooks C rule after N losing recoveries: 10,944 runs, 16.5 million signals;
+  - with the Crooks TP1 rule: 12,684 runs, 18.7 million trades.
+
+  All showed 0 differences, also with a restart after every step (`Research/scratchpad/v40/final_v45.txt`). The 22 older rules give exactly
+  the same results as before.
+- **Broker simulator** (3 months of gold ticks), each new rule run plainly and with restarts, new inputs and timeframe switches:
+  - every trade was booked with its broker profit, with no rejected order;
+  - in E and I, every waiting trade was exactly 0.01 lot, and the recovery trade came right after each win;
+  - the 37-run suite of v4.4 gives identical results.
+- **Compile check:** 0 errors, 0 warnings.
+- **Strategy:** 0 inline-title warnings, the Pine parse passes, and the shared engine blocks are byte-identical with the indicator.
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.
@@ -547,7 +621,7 @@ Signals and trades are the indicator's. Strategy-only settings never change them
 | Costs | Spread (price units) and commission per lot are counted in the sizing; the table shows the Properties commission per contract to enter (it includes the spread). Earn-back pushes the strategy's targets out by the costs (then the strategy can exit later than the indicator). |
 | Streaks | Stop for the day after N losses / N wins in a row; pause 1-3 days after N losses in a row. |
 | Force-close, weekend, news | Daily force-close time; close trades when Saturday starts; a daily news window and 5 one-off news events (no new trades from N minutes before, close at the start). |
-| Loss recovery | 21 modes (all, over N, %, martingale, exact at final TP, step-up, Fibonacci, D'Alembert, Rule C, Rule C split, Labouchère, Grand Martingale, Paroli, Reverse D'Alembert, delayed, % of equity, Oscar's Grind, Crooks A, Crooks B, Crooks C, Crooks D). **Crooks A**: trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (3, 5, 7 ...) is a recovery trade risking max(base, loss to win back ÷ final target R), e.g. $250 with TP4 (2R) as the final target → $125; the trades between risk the base; losses add to the loss to win back, wins reduce it, and a winning recovery trade starts a new cycle. **Crooks B**: the same alternation, recovery risk = max(base, loss ÷ split ÷ final target R) with the Rule C split setting, and a new cycle only when the whole loss is won back. **Crooks C**: every trade risks the base until a trade wins; the trade after a win is a recovery trade (same size as Crooks A), and if it loses the rule waits for the next win again. E.g. four $50 losses = $200 to win back, trade 5 wins $50 → $150, trade 6 is the recovery trade for $150. Crooks C starts a new cycle only when the whole loss is won back: if a recovery trade wins but leaves part of the loss (leverage limit, hard cap Clamp, costs), the next trade is a recovery trade again for the rest. **Crooks D**: two base trades between recovery trades: base, base, recovery (trades 3, 6, 9 ...), same size as Crooks A; a winning recovery trade, or a loss fully won back, starts a new cycle. Keep the hard cap on with them (e.g. $500, Start again). **Crooks C: After N Losing Recovery Trades In A Row** (v3.9) can forget the loss, go for a part of it, wait for M wins in a row or skip D trading days after N losing recovery trades. The table row CROOKS: LOSS TO WIN BACK shows the amount, the trade number in the cycle and whether it is a base or recovery trade (Crooks C: base, waiting for a win). **Crooks At Exit TP1** (off by default from v4.0; EA `InpCrkT1`): with Final Exit At TP1 (any final exit with *Works With Any Final Exit*), a recovery trade is made bigger: the part set in *% Closed At TP1* (default half) closes at TP1 and banks the whole recovery amount, the stop of the rest moves to the entry and it closes at TP2; the default stop sits where a stop-out loses exactly the recovery amount (% × TP1 − (1 + %) × costs: 0.3R with half, TP1 = 0.6R and no costs; *Stop Before TP1* can widen it, e.g. to the normal stop). While that half runs on, new signals are skipped. On gold 2021–2026 the tight stop was hit on 75% of these trades, so it lost money: see the workbook before using it. **Gold 2021–2026, 25 profitable settings, $500 cap with Start again**: Crooks C made more than fixed $50 on 18 and Crooks D on 21 (Crooks A on 20), but the profit per $ of drawdown was better on only 5 (C) and 6 (D) (A: 10); without a cap Crooks D blew the account on 5 settings (M1, M5, M15). |
+| Loss recovery | 27 modes (all, over N, %, martingale, exact at final TP, step-up, Fibonacci, D'Alembert, Rule C, Rule C split, Labouchère, Grand Martingale, Paroli, Reverse D'Alembert, delayed, % of equity, Oscar's Grind, Crooks A, Crooks B, Crooks C, Crooks D, and from v4.5 Crooks E - J, see v4.5 above). **Crooks A**: trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (3, 5, 7 ...) is a recovery trade risking max(base, loss to win back ÷ final target R), e.g. $250 with TP4 (2R) as the final target → $125; the trades between risk the base; losses add to the loss to win back, wins reduce it, and a winning recovery trade starts a new cycle. **Crooks B**: the same alternation, recovery risk = max(base, loss ÷ split ÷ final target R) with the Rule C split setting, and a new cycle only when the whole loss is won back. **Crooks C**: every trade risks the base until a trade wins; the trade after a win is a recovery trade (same size as Crooks A), and if it loses the rule waits for the next win again. E.g. four $50 losses = $200 to win back, trade 5 wins $50 → $150, trade 6 is the recovery trade for $150. Crooks C starts a new cycle only when the whole loss is won back: if a recovery trade wins but leaves part of the loss (leverage limit, hard cap Clamp, costs), the next trade is a recovery trade again for the rest. **Crooks D**: two base trades between recovery trades: base, base, recovery (trades 3, 6, 9 ...), same size as Crooks A; a winning recovery trade, or a loss fully won back, starts a new cycle. Keep the hard cap on with them (e.g. $500, Start again). **Crooks C: After N Losing Recovery Trades In A Row** (v3.9) can forget the loss, go for a part of it, wait for M wins in a row or skip D trading days after N losing recovery trades. The table row CROOKS: LOSS TO WIN BACK shows the amount, the trade number in the cycle and whether it is a base or recovery trade (Crooks C: base, waiting for a win). **Crooks At Exit TP1** (off by default from v4.0; EA `InpCrkT1`): with Final Exit At TP1 (any final exit with *Works With Any Final Exit*), a recovery trade is made bigger: the part set in *% Closed At TP1* (default half) closes at TP1 and banks the whole recovery amount, the stop of the rest moves to the entry and it closes at TP2; the default stop sits where a stop-out loses exactly the recovery amount (% × TP1 − (1 + %) × costs: 0.3R with half, TP1 = 0.6R and no costs; *Stop Before TP1* can widen it, e.g. to the normal stop). While that half runs on, new signals are skipped. On gold 2021–2026 the tight stop was hit on 75% of these trades, so it lost money: see the workbook before using it. **Gold 2021–2026, 25 profitable settings, $500 cap with Start again**: Crooks C made more than fixed $50 on 18 and Crooks D on 21 (Crooks A on 20), but the profit per $ of drawdown was better on only 5 (C) and 6 (D) (A: 10); without a cap Crooks D blew the account on 5 settings (M1, M5, M15). |
 
 The table shows SIGNALS · TAKEN · SKIPPED, so any signal that an execution setting blocked is visible. With every execution setting off every signal is taken; the v4.0 defaults skip the signals in the news window, and earn-back can keep a trade open past the indicator's exit.
 Below it the same accuracy rows as the indicator: SIGNAL TRADES · WIN % · R, TP HIT, BREAKEVEN (when a stop move is on), SKIPPED BY FILTERS

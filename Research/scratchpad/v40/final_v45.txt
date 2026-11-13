@@ -1,0 +1,22 @@
+=== FINAL v4.5 (Crooks E - J) ===
+start v45a 16:57:13 EA md5 620d07491f5f
+scripted hedge + month vs v4.3: IDENTICAL 16:57:17
+normal rec runs 2928, trades compared 4071037, mismatches 0, worst relative difference 4.99e-12; runs where the account blew (compared up to that trade): 79 16:57:52
+normal tp1 p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 8064, trades compared 10321985 (TP1-rule trades 3656913), mismatches 0 17:00:10
+normal crkpr runs 10944, signals compared 16455500 (skipped by the pause 2171242), mismatches 0 17:02:25
+restart rec runs 2928, trades compared 4071037, mismatches 48, worst relative difference 1.16e-01; runs where the account blew (compared up to that trade): 79 17:17:28
+stopped v45a (restart rec: Crooks J peak raised by a restart in mid-trade; fix v45c) 17:18:05
+=== FINAL v4.5 (v45c: Crooks E - J; the J peak moves only when a trade is booked) ===
+start v45c 17:33:45 EA md5 c8af9a1b7b27
+scripted hedge + month vs v4.3: IDENTICAL 17:33:48
+normal rec runs 2928, trades compared 4071037, mismatches 0, worst relative difference 4.99e-12; runs where the account blew (compared up to that trade): 79 17:34:24
+normal tp1 p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 8064, trades compared 10321985 (TP1-rule trades 3656913), mismatches 0 17:36:34
+normal crkpr runs 10944, signals compared 16455500 (skipped by the pause 2171242), mismatches 0 17:38:55
+restart rec runs 2928, trades compared 4071037, mismatches 0, worst relative difference 4.99e-12; runs where the account blew (compared up to that trade): 79 17:53:50
+restart tp1 p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 8064, trades compared 10321985 (TP1-rule trades 3656913), mismatches 0 18:23:35
+restart crkpr runs 10944, signals compared 16455500 (skipped by the pause 2171242), mismatches 0 19:23:51
+engine ALL IDENTICAL 19:24:15
+engine +49 ALL IDENTICAL 19:24:36
+engine -189 ALL IDENTICAL 19:24:57
+engine (data files restored) ALL IDENTICAL 19:25:18
+done v45c 19:25:18

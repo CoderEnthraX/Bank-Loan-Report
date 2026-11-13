@@ -584,6 +584,55 @@ Other gold findings:
       IDENTICAL (plain, +49, -189 days, data restored). Earlier runs: v44e died in the pause; v44h - v44k stopped for the next fix.
     - **Delivered** to the user (SendUserFile) with the final summary; task closed.
 
+28. **v4.5: Crooks E - J (asked 2026-11-13)** (strategy + EA; tasks #48-#51).
+    - **The ask:** Crooks E: like Crooks C, but while a loss waits for a win every trade is 0.01 lot (confirmed: the 0.01-lot trades count;
+      a losing recovery trade goes back to 0.01 lot; the lot is a setting, the normal size if smaller; all Crooks C extras apply). Plus 5
+      more rules that lose less in a long losing run and keep the drawdown small.
+    - **Study** (`gold/crooks_e.py` round 1 = `crooks_e_round1_rawmin.txt` with the raw 0.01-lot risk; `crooks_e1.py` = round 1 with min(base,
+      0.01 lot); `crooks_e2.py` round 2): 19 profitable gold strategies, $50 base, $10k, no cap, 200 shuffled orders each.
+      - The 0.01-lot risk needs each trade's stop distance: x[5] of the trade record (x[4] = cost) -> 1 oz x (stop + cost). On wide H1 stops
+        0.01 lot is more than the $50 base, hence min(base, 0.01-lot risk).
+      - Results: C +$225k, fall 40% / 92%, 20% blown when shuffled. E +$145k, 28% / 59%, 15.8% blown (the recovery still grows).
+        F (cap 3x) +$130k 21% / 40%; G (owed 10x) +$115k 15% / 29%; H (1% equity) +$123k 16% / 29%; I (E + cap 3x) +$89k 20% / 36%,
+        losing runs $381 (C $2,086); J (recovery x (1 - DD / 20 base)) +$95k 13% / 21%. F - J: 0 blown in shuffles.
+      - Rejected: halve after a lost recovery (blown 5-6), 2 wins first (blown 6), brake on every trade (worse than Off), house money, decay,
+        base = % of equity.
+    - **Code:** `build/patch_ea_v45.py` (26 edits) and `build/patch_strat_v45.py` (14 edits).
+      - ENUM_REC 22-27 / L_CRE..L_CRJ; CrkCFam() / crkCFam replaces every `== REC_CRC` that means Crooks C behaviour.
+      - EA: CrkRecLimit (F / I: K x base / CrkT1Mult; H: max(base, equity x %) / mult; J: max(base, r x (1 - max(0, crkPk - totalNet) /
+        (X x base)))). NextRisk(exitR, canTake, minRisk): E / I waiting = min(base, minRisk). MinLotRisk(sd) = lots x LotsFor's per-lot loss
+        (LotsFor gives back exactly that lot). BookClosed: G cap after the subtraction; crkPk = max(crkPk, totalNet) for every rule.
+        StateIO "pk"; StateLoad: crkPk = max(crkPk, totalNet) (a v4.4 state has no peak). MemoryFresh: crkPk = 0. Inputs InpCrkELot, InpCrkFK,
+        InpCrkGX, InpCrkHPct, InpCrkJX + OnInit checks. Table shows the rule's limit / the 0.01 lot.
+      - Pine: the same, with strategy.equity (H), strategy.netprofit and its peak at booking (J), and E's lot x unitsPer x (rp x pointvalue
+        x fx + costUnit). Input titles unchanged (only tooltips and options); `pinecheck/inputs_cmp.py`: 5 added, 0 titles changed.
+    - **Reference:** `gold/recovery.py` MODES 22-27 + CFAM; the 6th trade element is the E / I lot's $ risk.
+      - J uses peakNet - net: the parity's 1e12 start lost precision with peak - eq (276 tiny mismatches, now 0).
+      - The old reference vs the new on the 22 old rules: 3,168 runs identical. Study sim() vs recovery.py: 161 runs identical.
+      - `gold/crooks_tp1.py`: E - J (limits x m).
+    - **Harness:** `rec_driver.cpp`: REC_MIN (each line carries the 0.01-lot risk after the cost) and REC_START (equity = start + P&L so far).
+      `build.sh`: rec_next_m / rec_next_t1 (T1 mode uses the EA's own MinLotRisk); rec_restart mirrors OnInit with CrkCFam().
+    - **Parity:**
+      - `parity_rec.py` (+ E - J with variants and over 2 wins): 2,928 runs, 4.07 M trades, 0;
+      - `parity_crkpr.py` (+ E - J with forget / % / wait / skip, N 1-2): 10,944 runs, 16.5 M signals, 0;
+      - `parity_tp1.py` (+ E - J): 12,684 runs, 18.7 M trades, 0.
+    - **Simulator:** `sim/n_rec22..27*.log`. All trades booked, 0 rejects. E / I: 62 / 62 waiting trades exactly 0.01 lot, the recovery
+      trade after each win. The 37-run suite on v4.5 is identical to v4.4 (`final_summary.txt`, `results.txt`).
+    - **v45b (Pine only):** the Loss Recovery tooltip's new lines were shortened (3,623 -> 3,138 characters; v4.4 had 2,764).
+    - **v45c (the restart parity of run v45a found it: 48 runs, Crooks J only):** StateLoad set crkPk = max(crkPk, totalNet) on every load.
+      A v4.5 state saved in mid-trade after a partial close already counted that profit, so the peak moved before the trade was booked.
+      Now only a state without "pk" (saved before v4.5) does this. Restart parity rec after the fix: 2,928 runs, 0. Simulator: J and I with
+      partial closes + restarts (+ outside closes) book every trade.
+    - **Checks:** mq5check 0/0; ASCII, no CR, no markers, no adjacent strings; patch chain v4.3 -> v44 ... v44l -> v45 -> v45c identical; Pine
+      inline lint 0, parse ok (618), shared blocks identical, indicator unchanged.
+    - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 c8af9a1b7b27, 2,493 lines.
+    - **Regression `v40/run_v45.sh v45c` (17:33 - 19:25, `v40/final_v45.txt`; run v45a was stopped after the restart finding):**
+      - scripted hedge + month identical to v4.3;
+      - rec 2,928 runs / 4.07 M trades, tp1 4,620 + 8,064 runs / 18.7 M trades, crkpr 10,944 runs / 16.5 M signals: 0 mismatches, both
+        normal and REC_RESTART;
+      - engine parity ALL IDENTICAL (plain, +49, -189 days, data restored).
+    - **Delivered** to the user (SendUserFile: the EA and the strategy) with the final summary; tasks #48-#51 closed.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
