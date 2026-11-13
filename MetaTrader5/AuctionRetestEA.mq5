@@ -2079,8 +2079,9 @@ bool StateLoad()
       Print("Restart memory: the saved state belongs to account ", (long)svAcc, ", not ", (long)nowAcc, ": starting fresh.");
       return false;
    }
+   bool pkSaved = GlobalVariableCheck(gSvBase + "pk");  // v4.5: Crooks J's peak (a state saved before v4.5 has none)
    StateIO(false);
-   crkPk = MathMax(crkPk, totalNet);                    // a state saved before v4.5 has no peak: the closed profit itself
+   if(!pkSaved) crkPk = MathMax(crkPk, totalNet);      // ... then the closed profit itself is the peak
    gSvAcc = (long)MathRound(svAcc);
    for(int q = ArraySize(labSeq); q < 100000 && GlobalVariableCheck(gSvBase + "L" + IntegerToString(q)); q++) GlobalVariableDel(gSvBase + "L" + IntegerToString(q));   // a longer old list
    gSvC = 0;                                            // the next save writes every value again
