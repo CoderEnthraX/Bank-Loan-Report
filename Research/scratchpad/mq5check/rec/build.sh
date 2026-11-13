@@ -29,6 +29,9 @@ cat >> "$HERE/ea_rt.cpp" <<'EOW'
 // what TakeSetup / the per-bar P&L update / BookClosed do with the money-management state (no broker calls)
 extern "C" void rec_init() { LabReset(); gCrkPrPrev = (int)InpCrkPr; }   // as after the first OnInit
 extern "C" double rec_next(double exitR) { return NextRisk(exitR); }
+// v4.5: the $ risk with the Crooks E / I small-lot risk of this trade and the equity (Crooks H); T1 mode: the EA's own MinLotRisk() of the set stop
+extern "C" double rec_next_m(double exitR, double minRisk, double eq) { rec_eq = eq; return NextRisk(exitR, true, minRisk); }
+extern "C" double rec_next_t1(double exitR, double eq) { rec_eq = eq; return NextRisk(exitR, true, (InpRec == REC_CRE || InpRec == REC_CRI) ? MinLotRisk(trRisk) : 0); }
 extern "C" void rec_take() { crkRec = CrkRecNext(); }
 extern "C" void rec_part(double np) { exPnl += np; totalNet += np; if(np != 0) carried = MathMax(0.0, carried - np); }
 extern "C" void rec_close() { BookClosed(); }
@@ -64,7 +67,7 @@ extern "C" void rec_restart()
    gPersist = true; gSvBase = "T|"; gHedgeOk = hgOk;
    if(ArraySize(labSeq) == 0) LabReset();
    if(!StateLoad()) Print("restart memory: nothing saved");
-   if(gCrkPrPrev != (int)InpCrkPr || InpRec != REC_CRC) { crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; }
+   if(gCrkPrPrev != (int)InpCrkPr || !CrkCFam()) { crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; }
    gCrkPrPrev = (int)InpCrkPr;
 }
 EOW

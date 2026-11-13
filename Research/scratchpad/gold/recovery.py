@@ -1,12 +1,15 @@
-"""The strategy's 21 loss-recovery rules (port of Auction_Retest_Strategy.pine, section 2 + the risk formula in section 5).
+"""The strategy's 27 loss-recovery rules (port of Auction_Retest_Strategy.pine, section 2 + the risk formula in section 5).
 Every trade is sized so that a stop-out loses exactly the computed $ risk INCLUDING the spread (like the strategy):
 pnl = risk$ x (R - c) / (1 + c), c = spread / stop distance. Fractional sizes, no leverage limit, $10,000 start."""
 import math
 MODES = ['Off', 'Recover all losses on the next trade', 'Recover losses over N trades', 'Recover a % of losses per trade', 'Martingale (multiply after each loss)',
          'Exact recovery at final TP', 'Step-up (+$ per loss in a row)', 'Fibonacci', "D'Alembert", 'Rule C: carry the losses', 'Rule C split', 'Labouchere',
-         'Grand Martingale', 'Paroli', "Reverse D'Alembert", 'Delayed recovery', '% of equity', "Oscar's Grind", 'Crooks A', 'Crooks B', 'Crooks C', 'Crooks D']
+         'Grand Martingale', 'Paroli', "Reverse D'Alembert", 'Delayed recovery', '% of equity', "Oscar's Grind", 'Crooks A', 'Crooks B', 'Crooks C', 'Crooks D',
+         'Crooks E', 'Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J']
+# v4.5: Crooks C and the rules built on it (everything of Crooks C applies to them: over N wins, the rule after N losing recovery trades)
+CFAM = ('Crooks C', 'Crooks E', 'Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J')
 def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0, trace=None, cN=1,
-             crkPr='off', crkPrN=2, crkPrPct=50.0, crkPrM=2, crkPrD=3, crkPrForget=False):
+             crkPr='off', crkPrN=2, crkPrPct=50.0, crkPrM=2, crkPrD=3, crkPrForget=False, fK=3.0, gX=10.0, hPct=1.0, jX=20.0):
     """trades: iterable of (R result, spread cost in R) or (R result, spread cost in R, parts) or (R, cost, parts, day events). parts = [(R of the part,
     share of the position)] for a trade with a partial close: Rule C's carried losses are then updated after each part, like the strategy (once per candle).
     v3.9 Crooks C rule after crkPrN losing recovery trades in a row (Crooks C only): crkPr 'forget' (new cycle), 'pct' (every recovery trade goes for
@@ -14,14 +17,23 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
     first one needs a loss, then a win), 'skip' (no trades for the rest of the day and crkPrD counted days; crkPrForget = forget the loss). Day events: the
     new days (True = counted) that start before the trade, as the strategy / EA see them; a skipped trade adds 'SKIP' to the trace. The day events can
     also be a pair (since the previous signal's day, since the previous taken trade's exit day): the second is used after a taken trade.
-    A 5th element (optional) is the leverage limit: the largest risk per $1 of equity (leverage x stop distance x (1 + cost) / entry price)."""
-    eq = start; peak = start; maxDD = 0.0; maxDDp = 0.0; net = 0.0
+    A 5th element (optional) is the leverage limit: the largest risk per $1 of equity (leverage x stop distance x (1 + cost) / entry price).
+    v4.5 (Crooks C plus one change each; a 6th element (optional) is the $ risk of the Crooks E / I lot on this trade, e.g. 0.01 lot = 1 oz of
+    gold: 1 x (stop distance + cost); without it those trades risk the base):
+      Crooks E  while a loss is owed, a trade that is not the recovery trade is that lot, or the base if that is smaller
+      Crooks F  a recovery trade risks at most fK x base (the rest of the loss is won back after the next wins, as Crooks C keeps a leftover)
+      Crooks G  the loss to win back is at most gX x base (the rest is accepted as lost)
+      Crooks H  a recovery trade risks at most hPct % of the equity (at least the base)
+      Crooks I  Crooks E + Crooks F
+      Crooks J  a recovery trade's risk x (1 - drawdown / (jX x base)), at least the base; drawdown = equity peak - equity (closed trades)"""
+    eq = start; peak = start; maxDD = 0.0; maxDDp = 0.0; net = 0.0; peakNet = 0.0      # peakNet: Crooks J (the drawdown of the closed profit)
     recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
     capStop = False; n = 0; maxRisk = 0.0; maxRiskPct = 0.0; ruined = False; ruinAt = None; gp = gl = 0.0
     lossRun = 0.0; worstRun = 0.0; sumRisk = 0.0
     crL = 0.0; crN = 0; crW = False      # Crooks: $ loss to win back, closed trades in the cycle, the last trade won (Crooks C)
     crP = cN                             # Crooks C over N wins: parts of the loss still to win back (each recovery trade wins loss / parts)
-    prOn = mode == MODES[20] and crkPr != 'off'                  # v3.9 Crooks C rule after N losing recovery trades in a row
+    cfam = mode in CFAM
+    prOn = cfam and crkPr != 'off'                               # v3.9 Crooks C rule after N losing recovery trades in a row
     crF = 0; crWait = False; crWW = 0; crNeedL = False; crSkip = False; crSkipLeft = 0; prevTaken = False
     for k, tr in enumerate(trades):
         res, c = tr[0], tr[1]; parts = tr[2] if len(tr) > 2 else None
@@ -48,7 +60,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         labU = lab[0] + lab[-1] if len(lab) > 1 else lab[0]
         oscNeed = int(max(1, math.ceil((base - oscP) / (base * exitR))))
         # Crooks recovery trade: A / B trades 3, 5, 7 ... of a cycle; C the trade right after a win while a loss is owed; D trades 3, 6, 9 ...
-        crRec = ((mode in (MODES[18], MODES[19]) and crN >= 2 and crN % 2 == 0) or (mode == MODES[20] and crW and crL > 0)
+        crRec = ((mode in (MODES[18], MODES[19]) and crN >= 2 and crN % 2 == 0) or (cfam and crW and crL > 0)
                  or (mode == MODES[21] and crN >= 2 and (crN - 2) % 3 == 0))
         if crRec and prOn and crkPr == 'wait' and (crWait or crNeedL): crRec = False
         r = {MODES[11]: base * labU, MODES[12]: base * mult ** min(recLosses, 200) + base * recLosses, MODES[13]: base * 2 ** parWins, MODES[14]: base * rdUnits,
@@ -58,6 +70,13 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
              MODES[18]: max(base, crL / exitR) if crRec else base, MODES[19]: max(base, crL / cSplit / exitR) if crRec else base,
              MODES[20]: max(base, crL / crP * (crkPrPct / 100.0 if prOn and crkPr == 'pct' else 1.0) / exitR) if crRec else base,
              MODES[21]: max(base, crL / exitR) if crRec else base}.get(mode, base + add)
+        if cfam:                                                     # v4.5: Crooks C, and E - J built on it
+            r = max(base, crL / crP * (crkPrPct / 100.0 if prOn and crkPr == 'pct' else 1.0) / exitR) if crRec else base
+            if crRec:
+                if mode in ('Crooks F', 'Crooks I'): r = min(r, fK * base)
+                elif mode == 'Crooks H': r = min(r, max(base, eq * hPct / 100.0))
+                elif mode == 'Crooks J': r = max(base, r * max(0.0, 1.0 - (peakNet - net) / (jX * base)))   # = peak - equity, exact at any start
+            elif crL > 0 and mode in ('Crooks E', 'Crooks I') and len(tr) > 5 and tr[5] is not None: r = min(base, tr[5])
         if cap > 0 and r > cap:
             if capAction == 'stop': capStop = True; break
             elif capAction == 'reset':
@@ -74,7 +93,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         if pnl > 0: gp += pnl
         else: gl -= pnl
         lossRun = lossRun + pnl if pnl < 0 else 0.0; worstRun = min(worstRun, lossRun)
-        peak = max(peak, eq); dd = peak - eq; maxDD = max(maxDD, dd); maxDDp = max(maxDDp, dd / peak)
+        peak = max(peak, eq); dd = peak - eq; maxDD = max(maxDD, dd); maxDDp = max(maxDDp, dd / peak); peakNet = max(peakNet, net)
         if eq <= 0: ruined = True; ruinAt = k
         win = pnl > 0
         if parts:
@@ -96,6 +115,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         # C keeps a leftover: a recovery trade that wins without winning everything back is followed by another recovery trade)
         lastPart = crP == 1                                            # this recovery trade went for the last part of the loss
         crL = max(0.0, crL - pnl)
+        if mode == 'Crooks G': crL = min(crL, gX * base)              # v4.5: never more than gX x base to win back
         if crL < 0.01 or (mode in (MODES[18], MODES[21]) and win and crRec):      # less than a cent left = all won back
             crL = 0.0; crN = 0; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False
         else:

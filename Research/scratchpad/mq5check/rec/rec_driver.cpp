@@ -8,6 +8,8 @@
 extern "C" {
 int rt_SetInput(const char* name, double v);
 double rec_next(double exitR);
+double rec_next_m(double exitR, double minRisk, double eq);
+double rec_next_t1(double exitR, double eq);
 void rec_take();
 void rec_part(double np);
 void rec_close();
@@ -19,6 +21,9 @@ void rec_day(int counted);
 int rec_paused();
 void rec_restart();
 }
+// v4.5 REC_MIN=1: every trade line has the Crooks E / I small-lot $ risk right after the cost ("res c rmin k ..."); REC_START=x: the equity the
+// EA sees (Crooks H) is x + the P&L so far (default 1e12, like the simulator's start in the parity scripts)
+static bool rm_on = false; static double eq0 = 1e12, net = 0.0;
 // REC_RESTART=k: a restart (save, fresh load, reload) at every k-th point between the steps of the trades (0 / unset = never)
 static long rs_k = 0, rs_c = 0;
 static void rp() { if(rs_k > 0 && ++rs_c % rs_k == 0) rec_restart(); }
@@ -33,6 +38,7 @@ int main(int argc, char** argv)
    }
    rec_init();
    if(std::getenv("REC_RESTART")) rs_k = std::atol(std::getenv("REC_RESTART"));
+   rm_on = std::getenv("REC_MIN") != nullptr; if(std::getenv("REC_START")) eq0 = std::atof(std::getenv("REC_START"));
    FILE* f = std::fopen(argv[1], "r");
    if(!f) return 2;
    if(std::getenv("REC_DAYS"))
@@ -43,16 +49,18 @@ int main(int argc, char** argv)
       while(std::fscanf(f, "%d", &nd) == 1)
       {
          for(int j = 0; j < nd; j++) { int dv; if(std::fscanf(f, "%d", &dv) != 1) return 3; rec_day(dv); rp(); }
-         double res, c; int k;
-         if(std::fscanf(f, "%lf %lf %d", &res, &c, &k) != 3) return 3;
+         double res, c, rmin = 0; int k;
+         if(std::fscanf(f, "%lf %lf", &res, &c) != 2) return 3;
+         if(rm_on && std::fscanf(f, "%lf", &rmin) != 1) return 3;
+         if(std::fscanf(f, "%d", &k) != 1) return 3;
          std::vector<double> pr(k), pw(k);
          for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
          if(rec_paused()) { std::printf("SKIP\n"); continue; }
-         double r = rec_next(exitR);
+         double r = rec_next_m(exitR, rmin, eq0 + net);
          if(rec_capstop()) { std::printf("STOP\n"); break; }
          rp(); rec_take(); rp();
-         if(k == 0) { rec_part(r * (res - c) / (1.0 + c)); rp(); }
-         else for(int j = 0; j < k; j++) { rec_part(r * (pr[j] - pw[j] * c) / (1.0 + c)); rp(); }
+         if(k == 0) { double np = r * (res - c) / (1.0 + c); net += np; rec_part(np); rp(); }
+         else for(int j = 0; j < k; j++) { double np = r * (pr[j] - pw[j] * c) / (1.0 + c); net += np; rec_part(np); rp(); }
          rec_close(); rp();
          std::printf("R %.12g\n", r);
       }
@@ -66,11 +74,11 @@ int main(int argc, char** argv)
       while(std::fscanf(f, "%lf %lf %lf", &risk, &spr, &u) == 3)
       {
          rec_setup(risk, spr);
-         double r = rec_next(exitR);
+         double r = rec_next_t1(exitR, eq0 + net);
          if(rec_capstop()) { std::printf("STOP\n"); break; }
          int t1 = rec_t1();
          rec_take(); rp();
-         rec_part(r * u); rp();
+         net += r * u; rec_part(r * u); rp();
          rec_close(); rp();
          std::printf("R %.12g %d\n", r, t1);
       }
@@ -78,15 +86,18 @@ int main(int argc, char** argv)
       return 0;
    }
    double res, c; int k;
-   while(std::fscanf(f, "%lf %lf %d", &res, &c, &k) == 3)
+   while(std::fscanf(f, "%lf %lf", &res, &c) == 2)
    {
+      double rmin = 0;
+      if(rm_on && std::fscanf(f, "%lf", &rmin) != 1) return 3;
+      if(std::fscanf(f, "%d", &k) != 1) return 3;
       std::vector<double> pr(k), pw(k);
       for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
-      double r = rec_next(exitR);
+      double r = rec_next_m(exitR, rmin, eq0 + net);
       if(rec_capstop()) { std::printf("STOP\n"); break; }
       rp(); rec_take(); rp();
-      if(k == 0) { rec_part(r * (res - c) / (1.0 + c)); rp(); }
-      else for(int j = 0; j < k; j++) { rec_part(r * (pr[j] - pw[j] * c) / (1.0 + c)); rp(); }
+      if(k == 0) { double np = r * (res - c) / (1.0 + c); net += np; rec_part(np); rp(); }
+      else for(int j = 0; j < k; j++) { double np = r * (pr[j] - pw[j] * c) / (1.0 + c); net += np; rec_part(np); rp(); }
       rec_close(); rp();
       std::printf("R %.12g\n", r);
    }
