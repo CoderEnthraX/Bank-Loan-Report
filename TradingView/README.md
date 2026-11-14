@@ -562,6 +562,76 @@ What the table shows:
 - **Compile check:** 0 errors, 0 warnings.
 - **Strategy:** 0 inline-title warnings, the Pine parse passes, and the shared engine blocks are byte-identical with the indicator.
 
+### v4.6: Profit ladder: more risk after a first profit, paid only from that profit (strategy and EA, Crooks F - J)
+
+New settings in LOSS RECOVERY:
+- **Profit Ladder (Crooks F-J): Risk Appetite** (Off, Low, Medium, High, Extra high, Max). EA: `InpLadder`.
+- **Profit target before the risk goes up** ($1,000). EA: `InpLadT`.
+
+The ladder works with Crooks F, G, H, I and J; with any other rule it stays off. How it works:
+1. **Until your closed profit first reaches the target**, the rule trades exactly as without the ladder.
+2. **Then part of your best profit is locked.** Low keeps 80% of it, Max keeps 40%. The profit above the lock is the **cushion**.
+3. **The trades grow with the cushion.** The base risk becomes the base plus a share of the cushion, up to 2x the base at Low and 12x at
+   Max. The rule's recovery trade and limits then work with that bigger base.
+4. **The extra risk is paid only from the cushion.** A trade never risks less than the plain rule, and never more than the plain rule plus
+   a share of the cushion. If losses use up the cushion, the trades are back to the plain rule.
+5. **If the profit falls back to the start**, every trade is the 0.01 lot (`InpCrkELot`) until it is in profit again.
+
+| Level | Keeps of the best profit | Base grows up to | Share of the cushion added to the base | Most extra loss per trade |
+|---|---|---|---|---|
+| Low | 80% | 2x | 10% | 25% of the cushion |
+| Medium | 70% | 3x | 15% | 30% |
+| High | 60% | 5x | 20% | 35% |
+| Extra high | 50% | 8x | 25% | 40% |
+| Max | 40% | 12x | 30% | 50% |
+
+The table on the chart shows the ladder: the best profit so far against the target, then the lock, the cushion and the base in use, or "back
+at the start".
+
+**Gold 2021-2026** (`Research/scratchpad/gold/crooks_ladder3.py`): 19 profitable strategies, $50 base, $10,000 start, the 1:100 leverage
+limit, the 0.01-lot minimum and a $1,000 target. Each cell is the profit of the 19 strategies, then the average / worst drawdown:
+
+| Rule | No ladder | Low | Medium | High | Extra high | Max |
+|---|---|---|---|---|---|---|
+| Crooks F | +$134k, 21% / 40% | +$144k, 19% / 40% | +$181k, 20% / 40% | +$242k, 24% / 40% | +$256k, 26% / 46% | +$291k, 29% / 48% |
+| Crooks G | +$119k, 15% / 29% | +$107k, 16% / 29% | +$144k, 17% / 29% | +$185k, 20% / 29% | +$231k, 23% / 36% | +$271k, 25% / 43% |
+| Crooks H | +$127k, 16% / 29% | +$127k, 15% / 29% | +$158k, 17% / 29% | +$173k, 19% / 33% | +$213k, 22% / 36% | +$247k, 26% / 48% |
+| Crooks I | +$92k, 20% / 36% | +$100k, 19% / 36% | +$129k, 21% / 36% | +$155k, 22% / 37% | +$198k, 24% / 38% | +$269k, 27% / 48% |
+| Crooks J | +$99k, 13% / 21% | +$94k, 14% / 21% | +$115k, 15% / 21% | +$141k, 17% / 24% | +$194k, 20% / 32% | +$268k, 23% / 43% |
+
+What the results show:
+- **Never blown.** No account blew in any of the 3,800 shuffled orders (200 per strategy) for any rule and level, nor in the real order.
+- **After the first $1,000, the dips below the start are much smaller.** In the worst 5% of shuffles, the lowest profit was:
+  - without the ladder: -$417 (J) to -$2,008 (I);
+  - with the ladder: -$191 (J, Low) to -$603 (I, Max).
+- **What cannot be promised is "never below the start".** Even without any ladder, after first reaching +$1,000 the rules fell back below
+  the start in 18-33% of the shuffles: a normal losing run at a $50 base is bigger than $1,000.
+- **A strict lock** was tested first: the trades shrink to keep the locked profit. It cut the profit in half and still went below the start
+  through the 0.01-lot trades. The ladder keeps such dips small instead.
+- **Why a $1,000 target:** with $500 the results were lower and did not rise steadily from Low to Max. A $500 profit is gone in a normal
+  losing run, so the 0.01-lot guard acted too often.
+- The no-ladder numbers here use the 0.01-lot minimum and the leverage limit, so they differ a little from the v4.5 table.
+
+**How it was tested:**
+- **Reference:** `gold/recovery.py` and `gold/crooks_tp1.py` give the same results as the study with the ladder. With the ladder off they
+  are identical to v4.5.
+- **EA money management against the reference** (every level, targets $500 and $1,000), with 0 differences:
+  - every rule: 7,728 runs, 11.4 million trades;
+  - with the Crooks C rules: 20,544 runs, 31.3 million signals;
+  - with the Crooks TP1 rule: 22,484 runs, 34 million trades.
+
+  The restart parity (a restart after every step) is in `Research/scratchpad/v40/final_v46.txt`.
+- **Broker simulator:**
+  - 14 runs with the ladder (Medium and Max, targets $100 / $300 / $1,000, restarts, new inputs, the TP1 rule): every trade was booked
+    with its broker profit, with no rejected order;
+  - with Medium and $1,000, the trades were about 3x bigger after the target (0.053 -> 0.157 lot on average);
+  - back at the start, every trade was exactly 0.01 lot;
+  - with the ladder off, the 37-run suite is identical to v4.5.
+- **Checks:**
+  - compile check: 0 errors, 0 warnings;
+  - strategy: 0 inline-title warnings, the parse passes, only the two new inputs were added and no existing title changed (saved settings
+    are kept).
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.

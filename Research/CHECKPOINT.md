@@ -633,6 +633,48 @@ Other gold findings:
       - engine parity ALL IDENTICAL (plain, +49, -189 days, data restored).
     - **Delivered** to the user (SendUserFile: the EA and the strategy) with the final summary; tasks #48-#51 closed.
 
+29. **v4.6: profit ladder (asked 2026-11-14)** (strategy + EA; tasks #52-#54).
+    - **The ask:** first make a profit ($500 or $1,000), then raise the risk, like an effort slider (Low / Medium / High / Extra high / Max),
+      without going back into loss and never blowing the account; built on Crooks F - J.
+    - **Study** (19 profitable gold strategies, $50 base, $10k, 1:100 leverage from the H1 price, the 0.01-lot minimum, 200 shuffles):
+      - `gold/crooks_ladder.py` (round 1, `crooks_ladder_v1_strictfloor.txt`): a strict floor with trades clamped to a share of the cushion.
+        It cut profit about in half and still went below the start in 20-50% of the shuffles (0.01-lot trades leak).
+      - `crooks_ladder2.py`: v2 "house money" (extra risk only from the cushion above a lock) and v3 (0.01 lot below the lock). v2 adds a lot
+        of profit; v3 freezes the account.
+      - `crooks_ladder3.py`: v2 + start guard g0 (0.01 lot at closed profit <= 0) or g1 (half). Also measured without a ladder: after the
+        first +$500 the rules go back below the start in 39-50% of the shuffles, after +$1,000 in 18-33%.
+      - Picked v2 + g0, target $1,000 ($500 was lower and not monotone by level). Results (profit, fall avg / worst):
+        - F: none 134k 21 / 40; Low 144k; Medium 181k; High 242k; Extra high 256k; Max 291k (29 / 48);
+        - J: none 99k 13 / 21; Low 94k; Medium 115k; High 141k; Extra high 194k; Max 268k (23 / 43).
+        - 0 blown anywhere. The 5% lowest profit after the target: none -$417 to -$2,008, ladder -$191 to -$603.
+    - **Rule:** once crkPk >= InpLadT, lock = lam x crkPk, C = max(0, totalNet - lock), B = base + min((bmax - 1) base, phi C).
+      r = min(rule(B), rule(base) + gam C / CrkT1Mult()). Guard (totalNet <= 0): r = min(base, 0.01-lot risk), TP1 rule off (CrkT1Dist 0).
+      Crooks G's limit is gX x B after the trade (crkPk is updated before it).
+      Levels (lam, phi, bmax, gam): Low 0.8 / 0.10 / 2 / 0.25; Medium 0.7 / 0.15 / 3 / 0.30; High 0.6 / 0.20 / 5 / 0.35;
+      Extra high 0.5 / 0.25 / 8 / 0.40; Max 0.4 / 0.30 / 12 / 0.50.
+    - **Code:**
+      - EA `build/patch_ea_v46.py` (14 edits): ENUM_LADDER, InpLadder, InpLadT, LadFam / LadOn / LadGuard / LadPar / LadBase / LadTxt,
+        CrkRule(base) (the old Crooks case body). NextRisk uses the ladder; minRisk is also passed when LadOn. BookClosed: crkPk before
+        G's cap. Table row PROFIT LADDER; OnInit checks.
+      - Pine `build/patch_strat_v46.py` (10 edits): ladMode / ladT, f_lad(), f_crkRule(); t1Ok needs not ladGuard; a table row.
+      - No new saved state (totalNet, crkPk).
+    - **Reference:**
+      - `gold/recovery.py`: LADDER, LADFAM, lad_state(); simulate(lad=, ladT=). With the ladder off it is identical to v4.5 (2,016 runs).
+        With it on it equals the study's sim (1,150 runs).
+      - `gold/crooks_tp1.py`: the same with m; the guard turns sp off. Off: identical to v4.5 (198 runs).
+    - **Harness:** `rec/build.sh` rec_next_t1 passes MinLotRisk when LadOn. The parity scripts take a lad and pass
+      InpLadder / InpLadT: rec (F - J x 5 levels x $500 / $1,000 x over 1 / 2 wins), crkpr (Medium / Max x the rules), tp1 (Medium / Max).
+      - Normal: rec 7,728 runs / 11.4 M trades, crkpr 20,544 / 31.3 M, tp1 7,700 + 14,784 / 34 M: 0 mismatches.
+    - **Simulator:** `sim/l_*.log`, 14 runs, every trade booked, 0 rejects. Medium $1,000: 0.053 -> 0.157 lot after the target. Guard
+      trades all 0.01 lot. The 37-run suite with the ladder off is identical to v4.5.
+    - **v46b** (`build/patch_ea_v46b.py`, 5 edits): every local variable of the ladder code starts with a value (split declarations), so
+      MetaEditor cannot report "possible use of uninitialized variable". No change in behaviour: the 14 ladder simulator runs are trade for
+      trade identical to v46, and the 37-run suite (ladder off) is identical to v4.5.
+    - **Checks:** mq5check 0/0; ASCII, no CR, no markers, no adjacent strings; patch chain v4.3 -> ... -> v45c -> v46 -> v46b identical. Pine:
+      inline lint 0, parse ok (633), shared blocks identical, indicator unchanged; inputs_cmp: 7 added since v4.4, 0 titles changed.
+    - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 be1cd268ece8, 2,555 lines. Strategy .txt: `Research/scratchpad/Auction_Retest_Strategy.txt`.
+    - **Regression `v40/run_v46.sh v46b`** (the suites side by side; the v46 run was stopped for v46b): results in `v40/final_v46.txt`.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
