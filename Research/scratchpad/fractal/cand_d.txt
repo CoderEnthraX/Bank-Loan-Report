@@ -1,0 +1,14 @@
+=== M5 right 30 left 100 offset -0.030 | TP 1.00 SL 0.15 BE 0.05 SALV 0.30
+  M1 path rule   trades 1496 win   7.4% PF  1.84 |  +334.9R ( +50.24%) avg +0.224R | DD  22.0R streak  54 | TP 111 SL 302 BE 1083 SALV 0 | years +26.7 +69.0 +67.5 +42.9 +103.2 +25.6
+  M1 low first   trades 1497 win   7.4% PF  1.82 |  +330.8R ( +49.62%) avg +0.221R | DD  22.0R streak  54 | TP 111 SL 306 BE 1080 SALV 0 | years +26.7 +67.0 +67.5 +42.8 +102.2 +24.6
+  M1 high first  trades 1536 win   3.6% PF  0.86 |   -59.2R (  -8.89%) avg -0.039R | DD  62.1R streak 120 | TP 56 SL 327 BE 1153 SALV 0 | years -15.9 -11.0 -3.4 +0.9 +2.0 -31.8
+  M1 costs 0.40  trades 1496 win   7.4% PF  1.56 |  +261.6R ( +39.24%) avg +0.175R | DD  24.3R streak  54 | TP 111 SL 302 BE 1083 SALV 0 | years +10.8 +53.3 +52.8 +29.7 +94.3 +20.7
+  chart M5       trades 1487 win   8.0% PF  2.02 |  +396.2R ( +59.43%) avg +0.266R | DD  22.0R streak  54 | TP 119 SL 295 BE 1073 SALV 0 | years +40.1 +84.8 +74.2 +43.9 +118.7 +34.3
+  random entries (1622 entries, 20 seeds, same exits): mean   -29.7R | years -24.0 -20.6 -15.3 +11.4 +17.0 +1.9
+=== M5 right 60 left 150 offset -0.010 | TP 2.00 SL 0.15 BE 0.05 SALV 0.10
+  M1 path rule   trades  800 win   4.6% PF  2.96 |  +325.8R ( +48.87%) avg +0.407R | DD  16.5R streak  75 | TP 37 SL 115 BE 591 SALV 57 | years +53.9 +50.1 +72.3 +34.4 +88.8 +26.2
+  M1 low first   trades  800 win   4.6% PF  2.92 |  +323.8R ( +48.57%) avg +0.405R | DD  15.5R streak  75 | TP 37 SL 117 BE 586 SALV 60 | years +53.9 +48.1 +72.3 +34.4 +89.8 +25.2
+  M1 high first  trades  856 win   1.5% PF  0.91 |   -16.3R (  -2.44%) avg -0.019R | DD  59.2R streak 161 | TP 13 SL 133 BE 626 SALV 84 | years +10.8 -5.4 -30.3 -5.7 +31.9 -17.5
+  M1 costs 0.40  trades  800 win   4.6% PF  2.41 |  +286.7R ( +43.00%) avg +0.358R | DD  19.1R streak  75 | TP 37 SL 115 BE 591 SALV 57 | years +45.6 +41.4 +64.7 +27.7 +83.5 +23.7
+  chart M5       trades  790 win   5.1% PF  3.24 |  +367.5R ( +55.13%) avg +0.465R | DD  17.5R streak  74 | TP 40 SL 114 BE 585 SALV 51 | years +70.6 +50.1 +72.5 +47.8 +100.2 +26.3
+  random entries (891 entries, 20 seeds, same exits): mean   +16.9R | years -14.6 -10.6 +3.1 +12.4 +28.0 -1.3

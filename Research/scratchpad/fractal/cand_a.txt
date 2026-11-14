@@ -1,0 +1,16 @@
+=== M15 right 20 left 50 offset -0.010 | TP 2.00 SL 0.15 BE 0.05 SALV 0.10
+  M1 path rule   trades  792 win   4.8% PF  3.11 |  +342.6R ( +51.39%) avg +0.433R | DD  16.4R streak  75 | TP 38 SL 112 BE 585 SALV 57 | years +53.9 +50.1 +74.7 +34.5 +89.9 +39.6
+  M1 low first   trades  792 win   4.8% PF  3.07 |  +340.6R ( +51.09%) avg +0.430R | DD  15.4R streak  75 | TP 38 SL 114 BE 580 SALV 60 | years +53.9 +48.1 +74.7 +34.5 +90.9 +38.6
+  M1 high first  trades  847 win   1.5% PF  0.93 |   -12.7R (  -1.90%) avg -0.015R | DD  56.8R streak 156 | TP 13 SL 130 BE 619 SALV 85 | years +10.8 -5.4 -27.9 -5.6 +33.0 -17.5
+  M1 costs 0.40  trades  792 win   4.8% PF  2.52 |  +303.9R ( +45.58%) avg +0.384R | DD  19.0R streak  75 | TP 38 SL 112 BE 585 SALV 57 | years +45.6 +41.4 +67.3 +27.9 +84.7 +37.1
+  chart M5       trades  782 win   5.2% PF  3.41 |  +385.4R ( +57.81%) avg +0.493R | DD  17.4R streak  74 | TP 41 SL 110 BE 579 SALV 52 | years +71.6 +50.1 +74.8 +47.9 +101.3 +39.6
+  chart M15      trades  765 win   6.0% PF  4.04 |  +460.0R ( +69.00%) avg +0.601R | DD  12.1R streak  74 | TP 46 SL 103 BE 569 SALV 47 | years +72.6 +49.1 +78.2 +62.5 +144.6 +53.0
+  random entries (881 entries, 20 seeds, same exits): mean   +16.8R | years -19.4 -3.3 +5.0 +12.6 +25.2 -3.3
+=== M15 right 20 left 50 offset -0.010 | TP 2.00 SL 0.30 BE 0.05 SALV 0.10
+  M1 path rule   trades  792 win   4.8% PF  3.00 |  +168.3R ( +50.49%) avg +0.213R | DD   8.7R streak  75 | TP 38 SL 59 BE 585 SALV 110 | years +26.4 +26.1 +32.3 +18.8 +43.5 +21.3
+  M1 low first   trades  792 win   4.8% PF  3.00 |  +168.3R ( +50.49%) avg +0.213R | DD   8.7R streak  75 | TP 38 SL 59 BE 580 SALV 115 | years +26.4 +26.1 +32.3 +18.8 +43.5 +21.3
+  M1 high first  trades  847 win   1.5% PF  0.88 |   -11.3R (  -3.40%) avg -0.013R | DD  35.4R streak 156 | TP 13 SL 70 BE 619 SALV 145 | years +4.9 -2.7 -21.0 -1.3 +15.5 -6.8
+  M1 costs 0.40  trades  792 win   4.8% PF  2.45 |  +148.9R ( +44.68%) avg +0.188R | DD  10.0R streak  75 | TP 38 SL 59 BE 585 SALV 110 | years +22.3 +21.7 +28.6 +15.5 +40.8 +20.0
+  chart M5       trades  782 win   5.2% PF  3.17 |  +186.7R ( +56.01%) avg +0.239R | DD   9.7R streak  74 | TP 41 SL 61 BE 579 SALV 101 | years +34.3 +26.1 +32.4 +25.5 +48.1 +20.3
+  chart M15      trades  765 win   6.0% PF  3.81 |  +225.5R ( +67.65%) avg +0.295R | DD   7.0R streak  74 | TP 46 SL 56 BE 569 SALV 94 | years +35.3 +25.1 +34.6 +33.2 +69.3 +28.0
+  random entries (881 entries, 20 seeds, same exits): mean   +10.0R | years -8.5 -2.5 +2.6 +6.4 +13.7 -1.7

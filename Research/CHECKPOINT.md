@@ -678,6 +678,24 @@ Other gold findings:
       tp1 7,700 + 14,784 runs / 34 M trades, crkpr 20,544 runs / 31.3 M signals: 0 mismatches each; engine parity (as is, +49, -189, data
       files restored) ALL IDENTICAL. Done 12:30. Task #54 complete.
 
+30. **Fractal Breakout Grid indicator (asked 2026-11-14)** (TradingView indicator only; tasks #55-#60). Work dir `$S/fractal`, mirrored in
+    `Research/scratchpad/fractal` (no .npz: rebuild with `bars.py`, `search.py`).
+    - **The ask:** an indicator with the user's 9 fractal-breakout strategies (image: fractal TF, Right / Left, buy entry offset, SL, TP,
+      BE trigger, salvage trigger), each selectable or all at once, plus strategies 10 (M5) and 11 (M15) found on gold; .pine + .txt.
+    - **Reading (SPEC.md):** Right / Left as the header (first = right candles); swing high strictly above both sides; active from the TF
+      candle after the confirming one; buy stop at high x (1 + offset%), the newest swing high replaces the older; used up by its first
+      breakout (skipped while a trade is open); SL / TP % from the fill; BE: SL to the entry once up BE%; salvage: TP to the entry once down
+      salvage%; candle path open -> nearer of high / low (tie: low) -> other -> close; gaps fill at the open; costs 0.23 per trade.
+      Checks of the reading: Right / Left as read +282R vs swapped +173R; BE as read cuts the drawdowns 2-3x; salvage barely matters.
+    - **Code:** `bars.py` (NY+7 clock: D1 at 17:00 NY, H4 from 17:00 NY), `engine.py` (exact numba engine; pm = path mode), `fast.py`
+      (first-passage evaluator; equal to engine.sim trade for trade: `fast_check.py`, 0 mismatches incl. path modes), `search.py`
+      (STAGE 1 coarse / 2 refined, PM 0 / 2), `ana1-4.py`, `cand.py` (robustness: path modes, costs 0.40, M5 / M15 chart, random entries).
+      Independent re-implementation from SPEC.md only (`indep/`, Sonnet sub-agent): 2,359 / 2,360 trades, 0 mismatches (checked by me).
+    - **The 9 strategies, gold M1 2021-01 .. 2026-10:** all profitable (+5R .. +104R, DD 1-7R); still profitable when every candle goes
+      high first (the path most against a long).
+    - **M5 / M15 search:** stage 1 (1.36 M combos per TF) and stage 2 (0.89 M) on M1. Tight BE triggers (0.03-0.05%) look best but
+      collapse to about 0 when candles go high first (the BE happens inside one M1 candle), so the final pick must also hold with PM 2.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
