@@ -255,7 +255,7 @@ class Strat:
                 if s.be > 0 and not s.beOn and not s.svOn and o >= s.BEl: s.doBE()
                 elif s.sv > 0 and not s.svOn and not s.beOn and o <= s.SVl: s.doSV()
                 if o > s.hi: s.hi = o
-        if (not p.entClose) and s.lvlOn and not lvlNew and not math.isnan(pc) and pc < s.E and o >= s.E:
+        if (not p.entClose) and s.lvlOn and not math.isnan(pc) and pc < s.E and o >= s.E:
             if s.canEnter(okb): s.openAt(o, True, bar, T)
             s.useLvl()
         hf = (h - o) < (o - l); a = h if hf else l; b = l if hf else h

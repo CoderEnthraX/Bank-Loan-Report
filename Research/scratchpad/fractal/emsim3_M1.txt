@@ -1,0 +1,4 @@
+chart M1 S12 model 1256 trades, TradingView 1256, identical (entry and exit bar and price) 1207 =  96.1% | model $    +14983 (book    +14983) | TradingView $    +14904 (-0.5%)
+chart M1 S10 model 1192 trades, TradingView 1192, identical (entry and exit bar and price) 1168 =  98.0% | model $     +9834 (book     +9834) | TradingView $     +9679 (-1.6%)
+chart M1 S4  model  144 trades, TradingView  144, identical (entry and exit bar and price)  143 =  99.3% | model $    +11977 (book    +11977) | TradingView $    +11975 (-0.0%)
+chart M1 S9  model  999 trades, TradingView 1000, identical (entry and exit bar and price)  951 =  95.2% | model $      +933 (book      +933) | TradingView $      +890 (-4.6%)

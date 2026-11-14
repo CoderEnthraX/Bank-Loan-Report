@@ -1,0 +1,12 @@
+R60 L200 off -0.01 TP 1.50 SL 0.40 BE 0.00 SV 0.00 | 1156 tr PF 1.24 | +214.2R DD 48.6 | high-first +213.2R | random +116.7R | edge  +97.6R (train +64.0R) | edge/DD 2.0
+R60 L120 off -0.01 TP 1.50 SL 0.40 BE 0.00 SV 0.00 | 1273 tr PF 1.25 | +241.9R DD 38.9 | high-first +236.1R | random +114.4R | edge +127.5R (train +71.5R) | edge/DD 3.3
+R60 L200 off +0.00 TP 1.50 SL 0.40 BE 0.00 SV 0.00 | 1153 tr PF 1.24 | +210.6R DD 46.5 | high-first +209.6R | random +117.9R | edge  +92.8R (train +49.2R) | edge/DD 2.0
+R45 L 50 off +0.02 TP 1.50 SL 0.40 BE 0.00 SV 0.30 | 1741 tr PF 1.23 | +246.9R DD 41.6 | high-first +240.4R | random +117.8R | edge +129.1R (train +58.3R) | edge/DD 3.1
+R60 L200 off -0.05 TP 0.75 SL 0.50 BE 0.00 SV 0.00 | 1574 tr PF 1.16 | +143.3R DD 25.1 | high-first +143.3R | random  +60.3R | edge  +83.0R (train +46.6R) | edge/DD 3.3
+R60 L120 off +0.00 TP 1.50 SL 0.50 BE 0.00 SV 0.00 | 1096 tr PF 1.26 | +206.6R DD 31.3 | high-first +202.6R | random +100.1R | edge +106.5R (train +46.5R) | edge/DD 3.4
+R45 L200 off +0.00 TP 3.00 SL 0.40 BE 0.00 SV 0.00 |  772 tr PF 1.37 | +245.5R DD 44.7 | high-first +244.5R | random +172.1R | edge  +73.4R (train +32.2R) | edge/DD 1.6
+R45 L120 off +0.00 TP 1.50 SL 0.30 BE 0.00 SV 0.30 | 1573 tr PF 1.24 | +309.5R DD 44.2 | high-first +303.5R | random +166.7R | edge +142.8R (train +74.4R) | edge/DD 3.2
+R12 L 80 off +0.00 TP 3.00 SL 0.75 BE 0.00 SV 0.30 | 1118 tr PF 1.42 | +159.0R DD 30.9 | high-first +158.0R | random +109.7R | edge  +49.3R (train +20.8R) | edge/DD 1.6
+R30 L200 off -0.03 TP 3.00 SL 0.50 BE 0.30 SV 0.00 | 1210 tr PF 1.41 | +177.0R DD 31.8 | high-first +161.7R | random +115.6R | edge  +61.4R (train +53.0R) | edge/DD 1.9
+R45 L120 off +0.02 TP 3.00 SL 0.40 BE 0.00 SV 0.00 |  811 tr PF 1.42 | +290.7R DD 48.4 | high-first +281.2R | random +186.9R | edge +103.9R (train +33.7R) | edge/DD 2.1
+R20 L200 off -0.03 TP 2.00 SL 0.50 BE 0.00 SV 0.00 |  931 tr PF 1.28 | +203.6R DD 41.8 | high-first +203.6R | random +138.7R | edge  +64.8R (train +36.1R) | edge/DD 1.6

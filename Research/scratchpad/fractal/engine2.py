@@ -59,7 +59,7 @@ def sim2(O, H, L, C, T, kk, ph, off, sl, tp, be, sv, allow, wk, dayid, kexp, trA
                     svOn = True; TPp = F
                 if o > hi:
                     hi = o
-        if emode == 0 and lvlOn and not lvlNew and prevC < E and o >= E:
+        if emode == 0 and lvlOn and prevC < E and o >= E:
             if not pos and allow[i] and (maxDay <= 0 or dCnt < maxDay):
                 pos = True; F = o; SLp = F * (1.0 - sl / 100.0); TPp = F * (1.0 + tp / 100.0)
                 BEl = F * (1.0 + be / 100.0); SVl = F * (1.0 - sv / 100.0); beOn = False; svOn = False; trOn = False; hi = o

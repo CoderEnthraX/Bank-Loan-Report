@@ -734,6 +734,26 @@ Other gold findings:
       Defaults: options off; Money on, Crooks F + ladder Medium, $50 base, $10,000 each, $500 cap clamp (gold M5 chart: +$42,653 over
       the 11 strategies, worst drawdown 6.2 %).
 
+32. **Fractal Breakout Grid v3: strategy 12 (M1) and the STRATEGY version (asked 2026-11-15)** (tasks #64-#66).
+    - **Rule change (v3, everywhere):** the gap rule also applies on the activation candle (a buy stop placed at the confirming close fills on
+      a gap at the next open); needed for the strategy's pre-placed buy stops. Gold: only S9 (+3 trades, +0.4R) and S11 (+1) changed.
+      Hours: parsed "HHMM-HHMM" (f_inSess), the same test for this candle and (strategy) the next. v2 copies: `fractal/v2_frozen/`.
+    - **Strategy 12:** `search_m1.py` (STAGE M1, PM 0 / 2; files searchM1_M1.npz / searchM1h_M1.npz, 907k combos), `pick_m1.py`,
+      `m1_edge.py` (edge over random entries; the R / DD winners mostly ride gold's drift), `m1_final.py`:
+      M1 R45 L200 off -0.05 SL 0.75 TP 3.00 BE 0.20 salvage 0: 1,256 trades, PF 1.50, +130.7R, DD 13.9, high-first +113.4R, costs 0.40
+      +119.3R, random +64.7R (edge +66R, train +34R), every year positive; neighbours all profitable; 32 % near S1-11 entries.
+    - **Generator:** `pine3/build_fbg3.py OUT pick_10_12.json indicator|strategy` (shared model code; strategy-only table code between
+      //@@S / //@@E markers, removed from the indicator). f_piv returns also the swing high confirmed BY the current fractal candle
+      (pq / pu) and its time_close (tc): the strategy places that buy stop at the candle's last chart candle (time_close >= tc).
+    - **Strategy order layer:** at every close for the next candle: open trade -> strategy.exit at the model's SL / TP (or strategy.close
+      for a time / weekend exit due at the next open); model in / TradingView out -> market "sync" entry; model out / TradingView in ->
+      market "sync" close; both flat -> buy stop (only if close < E, filters predicted for the next candle) with the exit attached, else
+      cancel. Properties: commission 0.115 per contract per order, capital 120,000, pyramiding 12, close_entries_rule ANY, margin 0.
+    - **Checks:** v3 engine = fast (`fast_check.py`) = twin (`parity3_trades.py`: 48 option combos, 5,193 trades; `twin3_s12.py`: M1, S12 /
+      4 / 9 / 10, 3,591 trades): all identical. `emsim3.py` (TradingView broker model executing the strategy's orders): M5 S1-11 93.5 %
+      identical trades, $ -2.6 %; M1 S12 / 10 / 4 / 9 96.6 %, $ -0.7 %; trade counts equal within 1. Both Pine files parse, 0 inline
+      warnings, `namecheck.py` clean (the first strategy draft had strategy-only table code in the indicator: fixed with the markers).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |

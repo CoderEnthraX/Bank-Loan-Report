@@ -1,0 +1,12 @@
+R60 L200 off -0.01 TP 1.50 SL 0.50 BE 0.00 SV 0.00 | 1011 tr PF 1.27 | +191.6R DD 32.0 | high-first +191.6R | random +105.4R | edge  +86.2R (train +42.3R) | edge/DD 2.7
+R60 L120 off +0.00 TP 1.50 SL 0.40 BE 0.00 SV 0.00 | 1257 tr PF 1.25 | +242.0R DD 35.9 | high-first +236.2R | random +123.2R | edge +118.8R (train +69.0R) | edge/DD 3.3
+R60 L200 off -0.05 TP 3.00 SL 0.75 BE 0.20 SV 0.00 | 1186 tr PF 1.59 | +141.9R DD 18.1 | high-first +125.6R | random  +74.5R | edge  +67.4R (train +37.8R) | edge/DD 3.7
+R60 L200 off -0.03 TP 3.00 SL 0.50 BE 0.00 SV 0.00 |  638 tr PF 1.37 | +194.9R DD 38.7 | high-first +194.9R | random +157.9R | edge  +37.0R (train +28.9R) | edge/DD 1.0
+R45 L200 off -0.01 TP 3.00 SL 0.40 BE 0.00 SV 0.00 |  783 tr PF 1.37 | +248.5R DD 44.8 | high-first +247.5R | random +183.1R | edge  +65.4R (train +31.8R) | edge/DD 1.5
+R60 L120 off -0.01 TP 1.50 SL 0.50 BE 0.00 SV 0.00 | 1111 tr PF 1.26 | +205.3R DD 31.3 | high-first +201.3R | random +105.1R | edge +100.2R (train +42.3R) | edge/DD 3.2
+R45 L200 off -0.03 TP 3.00 SL 0.50 BE 0.30 SV 0.00 | 1148 tr PF 1.43 | +176.8R DD 30.6 | high-first +156.6R | random +109.4R | edge  +67.4R (train +56.7R) | edge/DD 2.2
+R45 L200 off -0.01 TP 3.00 SL 0.75 BE 0.00 SV 0.30 |  915 tr PF 1.42 | +133.6R DD 27.6 | high-first +130.6R | random  +93.0R | edge  +40.6R (train +20.1R) | edge/DD 1.5
+R60 L 10 off +0.00 TP 3.00 SL 0.50 BE 0.00 SV 0.30 | 1153 tr PF 1.33 | +209.9R DD 39.9 | high-first +197.9R | random +153.4R | edge  +56.5R (train +23.3R) | edge/DD 1.4
+R45 L 80 off +0.02 TP 3.00 SL 0.30 BE 0.00 SV 0.30 | 1063 tr PF 1.37 | +356.4R DD 58.7 | high-first +341.3R | random +267.8R | edge  +88.6R (train +28.9R) | edge/DD 1.5
+R45 L200 off -0.01 TP 3.00 SL 0.50 BE 0.00 SV 0.30 |  940 tr PF 1.35 | +178.9R DD 35.2 | high-first +171.9R | random +146.0R | edge  +32.9R (train +21.1R) | edge/DD 0.9
+R45 L120 off -0.01 TP 1.50 SL 0.40 BE 0.00 SV 0.30 | 1568 tr PF 1.24 | +230.5R DD 36.4 | high-first +223.8R | random +127.6R | edge +102.9R (train +53.3R) | edge/DD 2.8

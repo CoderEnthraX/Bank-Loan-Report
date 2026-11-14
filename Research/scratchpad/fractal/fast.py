@@ -113,7 +113,7 @@ def events(O, H, L, C, kk, ph, off, pm=0):
             if not np.isnan(v):
                 lvlOn = True; lvlH = v; E = v * (1.0 + off / 100.0); lvlNew = True
         o = O[i]
-        if lvlOn and not lvlNew and prevC < E and o >= E:
+        if lvlOn and prevC < E and o >= E:
             ej[m] = i; es[m] = 0; eF[m] = o; eH[m] = lvlH; m += 1; lvlOn = False
         if lvlOn:
             for s in range(1, 4):

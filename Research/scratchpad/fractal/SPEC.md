@@ -41,7 +41,8 @@ Step 1. The open (o):
        else if o <= SL price: exit at o  (reason SL, or BE when the BE moved the SL)
        else: if BE is on, neither BE nor salvage happened yet and o >= BE trigger price: BE happens (SL price = entry price)
              else if salvage is on, neither happened yet and o <= salvage trigger price: salvage happens (TP price = entry price)
-  b. If a level is pending, this is NOT its activation bar, the previous bar's close < E and o >= E: breakout at the open.
+  b. If a level is pending, the previous bar's close < E and o >= E: breakout at the open (v3: also on its activation bar - a buy stop
+     placed at the confirming candle's close is filled by a gap at the next open).
        If no trade is open (also when one just closed in 1a): open a trade at fill price o. The level is used up either way.
 
 Step 2. The three segments in order. For each segment from x to y:

@@ -109,7 +109,7 @@ class Strat:
                 s.doBE()
             elif s.sv > 0 and not s.svOn and not s.beOn and o <= s.SVl:
                 s.doSV()
-        if s.lvlOn and not lvlNew and not math.isnan(pc) and pc < s.E and o >= s.E:
+        if s.lvlOn and not math.isnan(pc) and pc < s.E and o >= s.E:
             if not s.pos:
                 s.openAt(o, True, bar)
             s.useLvl()

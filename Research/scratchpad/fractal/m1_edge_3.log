@@ -1,0 +1,12 @@
+R60 L200 off -0.05 TP 3.00 SL 0.50 BE 0.20 SV 0.00 | 1317 tr PF 1.49 | +180.8R DD 22.3 | high-first +164.4R | random +108.2R | edge  +72.6R (train +57.1R) | edge/DD 3.3
+R45 L200 off -0.05 TP 3.00 SL 0.75 BE 0.20 SV 0.00 | 1256 tr PF 1.50 | +130.7R DD 13.9 | high-first +113.4R | random  +64.7R | edge  +66.0R (train +33.7R) | edge/DD 4.8
+R45 L 50 off +0.02 TP 1.50 SL 0.50 BE 0.00 SV 0.30 | 1711 tr PF 1.23 | +194.2R DD 34.0 | high-first +191.2R | random +100.5R | edge  +93.7R (train +46.1R) | edge/DD 2.8
+R30 L200 off +0.00 TP 3.00 SL 0.50 BE 0.30 SV 0.00 | 1193 tr PF 1.44 | +187.6R DD 25.6 | high-first +169.0R | random +133.5R | edge  +54.1R (train +41.0R) | edge/DD 2.1
+R60 L200 off -0.03 TP 1.50 SL 0.50 BE 0.00 SV 0.00 | 1029 tr PF 1.26 | +188.3R DD 30.0 | high-first +188.3R | random +103.3R | edge  +85.0R (train +36.5R) | edge/DD 2.8
+R45 L120 off -0.01 TP 1.50 SL 0.40 BE 0.00 SV 0.00 | 1334 tr PF 1.24 | +249.9R DD 40.0 | high-first +244.2R | random +140.7R | edge +109.2R (train +58.4R) | edge/DD 2.7
+R60 L200 off -0.01 TP 3.00 SL 0.50 BE 0.00 SV 0.00 |  631 tr PF 1.37 | +195.3R DD 39.7 | high-first +195.3R | random +146.9R | edge  +48.4R (train +26.0R) | edge/DD 1.2
+R30 L200 off +0.00 TP 3.00 SL 0.40 BE 0.00 SV 0.00 |  800 tr PF 1.35 | +242.1R DD 48.6 | high-first +240.1R | random +198.4R | edge  +43.7R (train +29.8R) | edge/DD 0.9
+R30 L 80 off +0.02 TP 3.00 SL 0.25 BE 0.00 SV 0.30 | 1224 tr PF 1.38 | +431.2R DD 74.9 | high-first +409.1R | random +297.5R | edge +133.8R (train +62.1R) | edge/DD 1.8
+R60 L200 off -0.01 TP 0.75 SL 0.50 BE 0.00 SV 0.00 | 1502 tr PF 1.17 | +144.3R DD 20.7 | high-first +144.3R | random  +55.6R | edge  +88.7R (train +37.2R) | edge/DD 4.3
+R20 L 50 off -0.01 TP 3.00 SL 1.00 BE 0.00 SV 0.20 | 1505 tr PF 1.34 |  +96.6R DD 27.1 | high-first  +98.4R | random  +76.8R | edge  +19.8R (train +13.8R) | edge/DD 0.7
+R60 L200 off +0.02 TP 1.50 SL 0.50 BE 0.00 SV 0.00 |  989 tr PF 1.22 | +156.1R DD 34.9 | high-first +156.1R | random +116.6R | edge  +39.5R (train +19.5R) | edge/DD 1.1

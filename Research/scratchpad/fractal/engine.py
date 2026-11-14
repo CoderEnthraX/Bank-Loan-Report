@@ -59,7 +59,7 @@ def sim(O, H, L, C, kk, ph, off, sl, tp, be, sv, out, pm=0):
                     beOn = True; SLp = F
                 elif svAct and not svOn and not beOn and o <= SVl:
                     svOn = True; TPp = F
-        if lvlOn and not lvlNew and prevC < E and o >= E:
+        if lvlOn and prevC < E and o >= E:
             if not pos:
                 pos = True; F = o; SLp = F * (1.0 - sl / 100.0); TPp = F * (1.0 + tp / 100.0)
                 BEl = F * (1.0 + be / 100.0); SVl = F * (1.0 - sv / 100.0); beOn = False; svOn = False; ei = i; ek = 1; eH = lvlH

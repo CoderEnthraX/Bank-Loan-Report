@@ -4,6 +4,8 @@ sys.path.insert(0, '/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1
 import engine as EN
 from run9 import T9
 P11 = [('M5', 30, 65, -0.05, 1.0, 1.0, 0.2, 0.0), ('M15', 20, 40, -0.01, 1.0, 3.0, 0.2, 0.1)]
+P12 = [('M1', 45, 200, -0.05, 0.75, 3.0, 0.2, 0.0)]
+ALL12 = T9 + P11 + P12
 ALL = T9 + P11
 json.dump([list(p) for p in P11], open('pick_10_11.json', 'w'))
 
