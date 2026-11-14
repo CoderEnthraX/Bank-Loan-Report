@@ -620,7 +620,8 @@ What the results show:
   - with the Crooks C rules: 20,544 runs, 31.3 million signals;
   - with the Crooks TP1 rule: 22,484 runs, 34 million trades.
 
-  The restart parity (a restart after every step) is in `Research/scratchpad/v40/final_v46.txt`.
+  The same three suites again with a restart (the state saved and reloaded) before every trade: 0 differences. The engine parity is
+  identical too. Results: `Research/scratchpad/v40/final_v46.txt`.
 - **Broker simulator:**
   - 14 runs with the ladder (Medium and Max, targets $100 / $300 / $1,000, restarts, new inputs, the TP1 rule): every trade was booked
     with its broker profit, with no rejected order;

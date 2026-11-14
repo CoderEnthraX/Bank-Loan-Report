@@ -1,0 +1,18 @@
+=== FINAL v4.6 (profit ladder) ===
+start v46 10:38:22 EA md5 75bdc3dfaff3
+scripted hedge + month vs v4.3: IDENTICAL 10:38:26
+stopped v46 (v46b: every new local starts with a value, so MetaEditor cannot warn) 10:40:16
+=== FINAL v4.6 (v46b: profit ladder, every new local initialized) ===
+start v46b 10:40:26 EA md5 be1cd268ece8
+scripted hedge + month vs v4.3: IDENTICAL 10:40:29
+normal rec runs 7728, trades compared 11449048, mismatches 0, worst relative difference 5.00e-12; runs where the account blew (compared up to that trade): 279 10:45:24
+normal tp1 p = 50%, exit TP1: runs 7700, trades compared 14436528 (TP1-rule trades 4802862), mismatches 0 | p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 14784, trades compared 19639267 (TP1-rule trades 6679318), mismatches 0 10:45:24
+normal crkpr runs 20544, signals compared 31277261 (skipped by the pause 4056539), mismatches 0 10:45:24
+restart rec runs 7728, trades compared 11449048, mismatches 0, worst relative difference 5.00e-12; runs where the account blew (compared up to that trade): 279 12:29:13
+restart tp1 p = 50%, exit TP1: runs 7700, trades compared 14436528 (TP1-rule trades 4802862), mismatches 0 | p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 14784, trades compared 19639267 (TP1-rule trades 6679318), mismatches 0 12:29:13
+restart crkpr runs 20544, signals compared 31277261 (skipped by the pause 4056539), mismatches 0 12:29:13
+engine ALL IDENTICAL 12:29:34
+engine +49 ALL IDENTICAL 12:29:52
+engine -189 ALL IDENTICAL 12:30:10
+engine (data files restored) ALL IDENTICAL 12:30:28
+done v46b 12:30:28

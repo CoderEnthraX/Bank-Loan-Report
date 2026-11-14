@@ -673,7 +673,10 @@ Other gold findings:
     - **Checks:** mq5check 0/0; ASCII, no CR, no markers, no adjacent strings; patch chain v4.3 -> ... -> v45c -> v46 -> v46b identical. Pine:
       inline lint 0, parse ok (633), shared blocks identical, indicator unchanged; inputs_cmp: 7 added since v4.4, 0 titles changed.
     - **Final file:** `MetaTrader5/AuctionRetestEA.mq5`, md5 be1cd268ece8, 2,555 lines. Strategy .txt: `Research/scratchpad/Auction_Retest_Strategy.txt`.
-    - **Regression `v40/run_v46.sh v46b`** (the suites side by side; the v46 run was stopped for v46b): results in `v40/final_v46.txt`.
+    - **Regression `v40/run_v46.sh v46b`** (the suites side by side; the v46 run was stopped for v46b; `v40/final_v46.txt`), all passed:
+      scripted hedge + month vs v4.3 IDENTICAL; normal and restart (state saved and reloaded before every trade) rec 7,728 runs / 11.4 M trades,
+      tp1 7,700 + 14,784 runs / 34 M trades, crkpr 20,544 runs / 31.3 M signals: 0 mismatches each; engine parity (as is, +49, -189, data
+      files restored) ALL IDENTICAL. Done 12:30. Task #54 complete.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
