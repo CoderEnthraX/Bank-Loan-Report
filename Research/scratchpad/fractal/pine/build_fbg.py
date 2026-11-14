@@ -17,7 +17,7 @@ def block(i, p):
     g = 'GRP_%d' % i
     return '''{g} = "STRATEGY {i}"
 s{i}On  = input.bool(true, "On", inline = "s{i}a", group = {g})
-s{i}Col = input.color(color.new({col}, 0), "", inline = "s{i}a", group = {g})
+s{i}Col = input.color({col}, "", inline = "s{i}a", group = {g})
 s{i}Tf  = input.timeframe("{tfv}", "Fractal TF / Buy Entry Offset %", inline = "s{i}b", group = {g})
 s{i}Off = input.float({off}, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s{i}b", group = {g}, tooltip = TT_TF)
 s{i}R   = input.int({r}, "Right / Left Candles", minval = 1, maxval = 200, inline = "s{i}c", group = {g})
@@ -96,6 +96,10 @@ f_piv(int lft, int rgt) =>
     bool  ok = not na(lh) and not na(rh) and not na(p) and p > lh and p > rh
     [ok ? p : na, ok ? time[rgt + 1] : na]
 
+// a strategy runs only when its timeframe is not below the chart's; otherwise it requests the chart's own timeframe (unused)
+f_fits(string tf) =>
+    timeframe.in_seconds(tf) >= timeframe.in_seconds(timeframe.period)
+
 {SEC}
 // ---------------------------------------------------------------- one strategy
 C_TP   = color.new(#26A69A, 0)
@@ -154,8 +158,11 @@ type Strat
 f_px(float x) =>
     str.tostring(x, format.mintick)
 
-f_sg(float x, string f) =>
+f_num(float x, string f) =>
     str.tostring(x, f)
+
+f_sgn(float x, string f) =>
+    (x >= 0 ? "+" : "") + str.tostring(x, f)
 
 method openAt(Strat s, float px, bool gap) =>
     s.pos   := true
@@ -175,6 +182,7 @@ method openAt(Strat s, float px, bool gap) =>
         label.new(bar_index, px, str.tostring(s.id) + (gap ? " BUY (gap)" : " BUY"), color = s.col, textcolor = color.white, style = label.style_label_up, size = size.tiny)
     if alEnt
         s.msg += "FBG S" + str.tostring(s.id) + " BUY " + f_px(px) + (gap ? " (gap open)" : "") + " | SL " + f_px(s.SLp) + " | TP " + f_px(s.TPp) + "\\n"
+    true
 
 method closeAt(Strat s, float px, int rsn) =>
     float pnl = px - s.F - costIn
@@ -187,11 +195,13 @@ method closeAt(Strat s, float px, int rsn) =>
         if pnl > 0
             s.nW += 1
             s.gw += rr
-            s.st := 0
         else
             s.gl -= rr
-            s.st += 1
+        if rsn == 2
+            s.st  += 1
             s.mst := math.max(s.mst, s.st)
+        else if rsn == 1
+            s.st := 0
         s.cum += rr
         s.pk  := math.max(s.pk, s.cum)
         s.dd  := math.max(s.dd, s.pk - s.cum)
@@ -214,10 +224,11 @@ method closeAt(Strat s, float px, int rsn) =>
     s.lnSL := na
     s.lnTP := na
     if showLbl
-        label.new(bar_index, px, str.tostring(s.id) + " " + rs + " " + f_sg(pct, "+0.00;-0.00") + "%", color = pnl > 0 ? C_WIN : C_LOSS, textcolor = color.white, style = label.style_label_down, size = size.tiny)
+        label.new(bar_index, px, str.tostring(s.id) + " " + rs + " " + f_sgn(pct, "0.00") + "%", color = pnl > 0 ? C_WIN : C_LOSS, textcolor = color.white, style = label.style_label_down, size = size.tiny)
     if alExt
-        s.msg += "FBG S" + str.tostring(s.id) + " EXIT " + rs + " " + f_px(px) + " (" + f_sg(pct, "+0.00;-0.00") + "% after costs, " + f_sg(rr, "+0.00;-0.00") + "R)\\n"
+        s.msg += "FBG S" + str.tostring(s.id) + " EXIT " + rs + " " + f_px(px) + " (" + f_sgn(pct, "0.00") + "% after costs, " + f_sgn(rr, "0.00") + "R)\\n"
     s.pos := false
+    true
 
 // BE trigger reached: the SL moves to the entry
 method doBE(Strat s) =>
@@ -226,6 +237,7 @@ method doBE(Strat s) =>
     if not na(s.lnSL)
         s.lnSL.set_x2(bar_index)
         s.lnSL := line.new(bar_index, s.F, bar_index, s.F, color = C_MOVE, style = line.style_dotted, width = 2)
+    true
 
 // salvage trigger reached: the TP moves to the entry
 method doSV(Strat s) =>
@@ -234,6 +246,7 @@ method doSV(Strat s) =>
     if not na(s.lnTP)
         s.lnTP.set_x2(bar_index)
         s.lnTP := line.new(bar_index, s.F, bar_index, s.F, color = C_MOVE, style = line.style_dotted, width = 2)
+    true
 
 // the waiting buy stop is used up (filled, or skipped while a trade is open)
 method useLvl(Strat s) =>
@@ -241,6 +254,7 @@ method useLvl(Strat s) =>
     if not na(s.lnLvl)
         s.lnLvl.set_x2(bar_index)
     s.lnLvl := na
+    true
 
 // the price moves up from x to y: TP, BE trigger and the buy stop, lowest first (equal: TP, BE, buy stop)
 method up(Strat s, float x, float y) =>
@@ -267,6 +281,7 @@ method up(Strat s, float x, float y) =>
             if not s.pos
                 s.openAt(s.E, false)
             s.useLvl()
+    true
 
 // the price moves down from x to y: SL and salvage trigger, highest first (equal: SL)
 method dn(Strat s, float x, float y) =>
@@ -286,12 +301,14 @@ method dn(Strat s, float x, float y) =>
             s.closeAt(s.SLp, s.beOn ? 3 : 2)
         else
             s.doSV()
+    true
 
 method seg(Strat s, float x, float y) =>
     if y > x
         s.up(x, y)
     else if y < x
         s.dn(x, y)
+    true
 
 // one chart candle: a new swing high, the open (exits, then a gap fill), then open -> a -> b -> close
 method onBar(Strat s, float ph, int pt, float pc) =>
@@ -307,7 +324,7 @@ method onBar(Strat s, float ph, int pt, float pc) =>
         lvlNew  := true
         s.lnLvl := showLvl ? line.new(bar_index, s.E, bar_index, s.E, color = s.col, style = line.style_dashed) : na
         if alLvl
-            s.msg += "FBG S" + str.tostring(s.id) + " BUY STOP " + f_px(s.E) + " (swing high " + f_px(ph) + ", " + s.tf + " " + str.tostring(s.r) + "/" + str.tostring(s.l) + ") | SL " + f_sg(s.sl, "0.0##") + "% | TP " + f_sg(s.tp, "0.0##") + "%\\n"
+            s.msg += "FBG S" + str.tostring(s.id) + " BUY STOP " + f_px(s.E) + " (swing high " + f_px(ph) + ", " + s.tf + " " + str.tostring(s.r) + "/" + str.tostring(s.l) + ") | SL " + f_num(s.sl, "0.0##") + "% | TP " + f_num(s.tp, "0.0##") + "%\\n"
     if s.pos
         if open >= s.TPp
             s.closeAt(open, s.svOn ? 4 : 1)
@@ -336,12 +353,10 @@ method onBar(Strat s, float ph, int pt, float pc) =>
             s.lnSL.set_x2(bar_index)
         if not na(s.lnTP)
             s.lnTP.set_x2(bar_index)
+    true
 
 f_run(int i, bool ticked) =>
     runMode == RUN_ALL ? true : runMode == RUN_TCK ? ticked : runMode == "Strategy " + str.tostring(i)
-
-f_fits(string tf) =>
-    timeframe.in_seconds(tf) >= timeframe.in_seconds(timeframe.period)
 
 var array<Strat> S = array.new<Strat>()
 if barstate.isfirst
@@ -381,27 +396,28 @@ if barstate.islast and showTbl
     color tx = color.new(#D1D4DC, 0)
     T.cell(0, 0, "FRACTAL BREAKOUT GRID · " + syminfo.ticker + " · chart " + timeframe.period + " · trades since " + str.format_time(math.max(statsFrom, firstT), "yyyy-MM-dd", syminfo.timezone) + " · costs " + str.tostring(costIn) + " per trade", text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
     T.merge_cells(0, 0, 11, 0)
-    array<string> H = array.from("#", "TF", "R / L", "Trades", "Win %", "Net %", "Net R", "PF", "Max DD R", "Losses in a row", "TP · SL · BE · SALV", "Now")
+    array<string> H  = array.from("#", "TF", "R / L", "Trades", "Win %", "Net %", "Net R", "PF", "Max DD R", "SL in a row", "TP · SL · BE · SALV", "Now")
+    array<string> HT = array.from("Strategy number (its colour on the chart).", "Fractal timeframe of the swing highs.", "Right / Left candles of the swing high.", "Closed trades counted (opened at or after the start date, within the loaded history).", "Trades that closed with a profit after costs. BE and salvage exits close at the entry, so the costs make them small losses.", "Sum of the trades' % results after costs (the same money in every trade).", "Sum of the trades' results in R after costs (R = 1 x the trade's SL: the same risk in every trade).", "Profit factor: R won / R lost.", "Largest fall of the running R total from its high.", "Most stop-loss exits in a row (BE and salvage exits are not counted; a TP resets it).", "Exits by reason: take profit, stop loss, break-even stop after the BE trigger, break-even exit after the salvage trigger.", "Now: open trade (entry, % from the entry), waiting buy stop, or waiting for the next swing high.")
     for [c, h] in H
-        T.cell(c, 1, h, text_color = tx, bgcolor = hd, text_size = f_tsz())
+        T.cell(c, 1, h, text_color = tx, bgcolor = hd, text_size = f_tsz(), tooltip = HT.get(c))
     int   row  = 2
     int   tN   = 0
     float tPct = 0.0
     float tR   = 0.0
     for s in S
         if s.sel
-            string now = not s.ok ? "needs a chart of " + f_tfs(s.tf) + " or lower" : s.pos ? "LONG " + f_px(s.F) + " · " + f_sg((close - s.F) / s.F * 100.0, "+0.00;-0.00") + "%" : s.lvlOn ? "BUY STOP " + f_px(s.E) : "waiting for a swing high"
+            string now = not s.ok ? "needs a chart of " + f_tfs(s.tf) + " or lower" : s.pos ? "LONG " + f_px(s.F) + " · " + f_sgn((close - s.F) / s.F * 100.0, "0.00") + "%" : s.lvlOn ? "BUY STOP " + f_px(s.E) : "waiting for a swing high"
             color  nc  = not s.ok ? color.new(#787B86, 0) : s.pos ? (close >= s.F ? C_TP : C_SL) : tx
             float  pf  = s.gl > 0 ? s.gw / s.gl : na
             T.cell(0, row, str.tostring(s.id), text_color = color.white, bgcolor = s.col, text_size = f_tsz())
             T.cell(1, row, f_tfs(s.tf), text_color = tx, text_size = f_tsz())
             T.cell(2, row, str.tostring(s.r) + " / " + str.tostring(s.l), text_color = tx, text_size = f_tsz())
             T.cell(3, row, str.tostring(s.n), text_color = tx, text_size = f_tsz())
-            T.cell(4, row, s.n > 0 ? f_sg(s.nW * 100.0 / s.n, "0.0") : "-", text_color = tx, text_size = f_tsz())
-            T.cell(5, row, f_sg(s.sumPct, "+0.00;-0.00"), text_color = s.sumPct >= 0 ? C_TP : C_SL, text_size = f_tsz())
-            T.cell(6, row, f_sg(s.sumR, "+0.0;-0.0"), text_color = s.sumR >= 0 ? C_TP : C_SL, text_size = f_tsz())
-            T.cell(7, row, na(pf) ? (s.n > 0 ? "all wins" : "-") : f_sg(pf, "0.00"), text_color = tx, text_size = f_tsz())
-            T.cell(8, row, f_sg(s.dd, "0.0"), text_color = tx, text_size = f_tsz())
+            T.cell(4, row, s.n > 0 ? f_num(s.nW * 100.0 / s.n, "0.0") : "-", text_color = tx, text_size = f_tsz())
+            T.cell(5, row, f_sgn(s.sumPct, "0.00"), text_color = s.sumPct >= 0 ? C_TP : C_SL, text_size = f_tsz())
+            T.cell(6, row, f_sgn(s.sumR, "0.0"), text_color = s.sumR >= 0 ? C_TP : C_SL, text_size = f_tsz())
+            T.cell(7, row, na(pf) ? (s.n > 0 ? "all wins" : "-") : f_num(pf, "0.00"), text_color = tx, text_size = f_tsz())
+            T.cell(8, row, f_num(s.dd, "0.0"), text_color = tx, text_size = f_tsz())
             T.cell(9, row, str.tostring(s.mst), text_color = tx, text_size = f_tsz())
             T.cell(10, row, str.tostring(s.nTP) + " · " + str.tostring(s.nSL) + " · " + str.tostring(s.nBE) + " · " + str.tostring(s.nSV), text_color = tx, text_size = f_tsz())
             T.cell(11, row, now, text_color = nc, text_size = f_tsz(), text_halign = text.align_left)
@@ -411,15 +427,15 @@ if barstate.islast and showTbl
             row  += 1
     T.cell(0, row, "ALL", text_color = tx, bgcolor = hd, text_size = f_tsz())
     T.cell(3, row, str.tostring(tN), text_color = tx, bgcolor = hd, text_size = f_tsz())
-    T.cell(5, row, f_sg(tPct, "+0.00;-0.00"), text_color = tPct >= 0 ? C_TP : C_SL, bgcolor = hd, text_size = f_tsz())
-    T.cell(6, row, f_sg(tR, "+0.0;-0.0"), text_color = tR >= 0 ? C_TP : C_SL, bgcolor = hd, text_size = f_tsz())
+    T.cell(5, row, f_sgn(tPct, "0.00"), text_color = tPct >= 0 ? C_TP : C_SL, bgcolor = hd, text_size = f_tsz())
+    T.cell(6, row, f_sgn(tR, "0.0"), text_color = tR >= 0 ? C_TP : C_SL, bgcolor = hd, text_size = f_tsz())
     T.cell(11, row, "Net % and R after costs; R = 1 x the trade's SL", text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
 '''
 
 
 def build(strats):
     blocks = '\n'.join(block(i + 1, p) for i, p in enumerate(strats))
-    sec = '\n'.join('[ph%d, pt%d] = request.security(syminfo.tickerid, s%dTf, f_piv(s%dL, s%dR), lookahead = barmerge.lookahead_on)' % (i, i, i, i, i) for i in range(1, 12))
+    sec = '\n'.join('[ph%d, pt%d] = request.security(syminfo.tickerid, f_fits(s%dTf) ? s%dTf : timeframe.period, f_piv(s%dL, s%dR), lookahead = barmerge.lookahead_on)' % (i, i, i, i, i, i) for i in range(1, 12))
     new = '\n'.join('    S.push(Strat.new(%d, f_run(%d, s%dOn), f_run(%d, s%dOn) and f_fits(s%dTf), s%dTf, s%dR, s%dL, s%dOff, s%dSl, s%dTp, s%dBe, s%dSv, s%dCol))' % ((i,) * 15) for i in range(1, 12))
     body = BODY.replace('{SEC}', sec).replace('{NEW}', new).replace('{PHS}', ', '.join('ph%d' % i for i in range(1, 12))).replace('{PTS}', ', '.join('pt%d' % i for i in range(1, 12)))
     return HEAD + blocks + body

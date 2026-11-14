@@ -6,6 +6,7 @@
 | [`Auction_Retest_Strategy.pine`](Auction_Retest_Strategy.pine) | The same engine as a **strategy** for backtesting (identical signals and trades), with money-management settings (from v4.0 the defaults are the gold / FxPro settings, see v4.0 below). |
 | [`../MetaTrader5/AuctionRetestEA.mq5`](../MetaTrader5/AuctionRetestEA.mq5) | MetaTrader 5 Expert Advisor: a port of the same engine plus the strategy's money management. |
 | [`VWAP_Orderflow_Sniper.pine`](VWAP_Orderflow_Sniper.pine) | The earlier VWAP + absorption/aggression orderflow indicator. |
+| [`Fractal_Breakout_Grid.pine`](Fractal_Breakout_Grid.pine) | **Fractal Breakout Grid**: 11 long breakout strategies on swing highs (your 9 + an M5 and an M15 one), each on its own timeframe, all at once or one by one, with a results table. See below. |
 
 ## Install
 
@@ -30,6 +31,112 @@ text, so it fits whatever font the Mac uses.
 4. Run the EA on one computer only. Two computers on the same account with the same magic number cannot see each other, so the copy
    check cannot stop that. The **Broker server clock = Auto** setting uses the computer's clock, so keep the date, time and time zone set
    automatically.
+
+## Fractal Breakout Grid (indicator)
+
+File: [`Fractal_Breakout_Grid.pine`](Fractal_Breakout_Grid.pine). The same code as text is in `Research/scratchpad/Fractal_Breakout_Grid.txt`.
+Add it like any indicator (see Install). A 5-minute or 1-minute chart runs all 11 strategies; a 15-minute chart runs all but strategy 10.
+
+**What it does.** 11 long-only breakout strategies, each on the swing highs (fractals) of its own timeframe.
+1. A swing high is a candle whose high is strictly above the *Left* candles before it and the *Right* candles after it. It is confirmed
+   when the last Right candle closes. Only completed candles are used, so nothing repaints.
+2. A buy stop goes at swing high x (1 + offset / 100). A newer swing high replaces it.
+   - A trade opens when the price rises through the buy stop.
+   - One trade at a time per strategy: a breakout while a trade is open is skipped.
+   - Either way that buy stop is used up.
+3. Exits are measured from the fill:
+   - **SL % and TP %.**
+   - **BE trigger:** once the price is up this %, the SL moves to the entry.
+   - **Salvage trigger:** once the price is down this %, the TP moves to the entry, so the trade closes at break-even if the price comes
+     back.
+   - Only the first of BE and salvage happens in a trade, and 0 turns either one off.
+4. The trades are worked out on the chart's candles, along open -> the nearer of high / low -> the other -> close. Gaps fill at the open.
+
+**Settings.**
+- **Run:** all strategies, only the ticked ones, or a single one.
+- **Per strategy:** On and colour, Fractal TF / Buy entry offset %, Right / Left candles, SL % / TP %, and BE / Salvage trigger %.
+- **Costs per trade:** default 0.23, which is gold's 0.16 spread plus $7 per lot.
+- **The date the table counts from.**
+- **Display switches:** waiting buy stops, trade lines and labels.
+- **Alerts:** create one alert with "Any alert() function call". It sends new buy stops (price, SL, TP), entries and exits at the candle
+  close.
+
+**Table.** One row per strategy:
+- trades and win %;
+- net % and net R after costs;
+- profit factor and max drawdown in R;
+- stop-losses in a row;
+- exits by reason (TP · SL · BE · SALV);
+- what the strategy is doing now: an open trade, a waiting buy stop, or waiting for a swing high.
+
+Hover over a header to see what it means.
+
+**How your table was read.** Every point below is also a setting.
+- **Right / Left:** the first number is the right candles, as the column header says (strategy 3: 2 right, 7 left). Read this way, the 9
+  strategies make +282R together; read the other way round, +173R.
+- **Buy entry offset:** the buy stop sits that % below the swing high.
+- **BE trigger:** the SL moves to the entry. Without it, the drawdowns are 2 to 3 times bigger.
+- **Salvage trigger:** the TP moves to the entry once the trade is that % down. It rarely changes strategies 1 to 9.
+
+**Gold results, 2021-01 to 2026-10.**
+- **Data:** FxPro M1 data, costs 0.23 per trade, one trade at a time per strategy.
+- **R:** 1 R = the trade's SL distance.
+- **Win %:** BE and salvage exits close at the entry, so the costs make them small losses.
+- **Last column:** the result if every 1-minute candle went to its high first. That is the order least favourable to a long: the BE stop
+  is hit right after the BE trigger.
+
+| # | TF | Right / Left | offset % | SL / TP % | BE / salvage % | trades | win % | TP · SL · BE · SALV | net R | PF | max DD R | SL in a row | worst year R | R, high first |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 1 | D1 | 3 / 25 | -0.14 | 3.00 / 0.75 | 0.45 / 0.80 | 43 | 70 | 29 · 1 · 6 · 7 | +6.2 | 6.95 | 1.0 | 1 | -0.0 | +5.9 |
+| 2 | D1 | 3 / 15 | -0.085 | 0.50 / 2.00 | 0.25 / 0.80 | 49 | 22 | 11 · 7 · 31 · 0 | +36.0 | 5.63 | 2.1 | 2 | -1.2 | +36.0 |
+| 3 | D1 | 2 / 7 | -0.065 | 0.30 / 1.65 | 0.20 / 0.50 | 79 | 15 | 12 · 19 · 48 · 0 | +44.4 | 3.09 | 7.3 | 6 | -3.5 | +25.9 |
+| 4 | H4 | 8 / 12 | -0.025 | 0.44 / 3.10 | 0.33 / 0.90 | 144 | 15 | 21 · 41 · 82 · 0 | +103.7 | 3.37 | 4.4 | 4 | +4.3 | +102.7 |
+| 5 | H1 | 19 / 30 | -0.045 | 2.00 / 0.35 | 0.10 / 0.70 | 274 | 41 | 112 · 7 · 139 · 16 | +11.2 | 2.44 | 2.0 | 2 | -0.2 | +5.5 |
+| 6 | H1 | 25 / 25 | -0.06 | 4.20 / 0.33 | 0.15 / 0.80 | 225 | 51 | 113 · 3 · 84 · 25 | +5.4 | 2.65 | 1.9 | 1 | -0.5 | +3.8 |
+| 7 | H1 | 23 / 25 | -0.055 | 0.87 / 0.56 | 0.13 / 1.10 | 255 | 30 | 76 · 25 · 154 · 0 | +21.0 | 1.78 | 3.4 | 3 | +0.8 | +12.0 |
+| 8 | H1 | 20 / 25 | -0.06 | 0.68 / 0.43 | 0.10 / 0.70 | 294 | 35 | 102 · 23 · 169 · 0 | +37.1 | 2.44 | 2.4 | 2 | +2.8 | +18.8 |
+| 9 | H1 | 5 / 5 | -0.08 | 2.00 / 0.70 | 0.10 / 1.00 | 996 | 17 | 165 · 36 · 754 · 41 | +16.6 | 1.41 | 5.2 | 3 | -0.9 | +4.0 |
+| 10 | M5 | 30 / 65 | -0.05 | 1.00 / 1.00 | 0.20 / 0.00 | 1192 | 22 | 264 · 161 · 767 · 0 | +91.4 | 1.54 | 7.7 | 6 | +6.8 | +75.3 |
+| 11 | M15 | 20 / 40 | -0.01 | 1.00 / 3.00 | 0.20 / 0.10 | 740 | 5 | 38 · 39 · 270 · 393 | +67.6 | 2.47 | 4.8 | 4 | +2.7 | +55.6 |
+
+All 11 strategies are profitable over the whole period, and they stay profitable when every candle goes to its high first.
+
+**Strategies 10 (M5) and 11 (M15): how they were picked.**
+- **Search:** about 2.2 million settings per timeframe (Right, Left, offset, SL, TP, BE, salvage) on M1 data, each tested under two
+  candle-path assumptions.
+- **Train / test split:** the settings were chosen on 2021 to 2023 only, when gold was harder for long trades, and then checked on
+  2024 to 2026.
+- **Required:**
+  - profitable in every year 2021 to 2026, also when every candle goes to its high first;
+  - SL at least 0.15 %;
+  - BE off, or at least 0.10 %;
+  - Right at most 30 candles.
+- **Why Right is capped:** without the cap, the M5 and the M15 searches both ended on the same 5 to 15 hour swing highs, which repeat the
+  1-hour strategies 5 to 8.
+- **Checks on the two picks:**
+  - every neighbouring setting (one step on each setting) is profitable too;
+  - with costs of 0.40 instead of 0.23 they still make +83R and +62R;
+  - buying at random times with the same exits makes only +11R and +12R.
+- **Left out on purpose:** the tightest BE triggers (0.03 to 0.05 %) looked best on paper, but fell to about zero when the candles go to
+  their high first. There the BE happens inside one 1-minute candle, and the data cannot show what really happened.
+
+**What to know.**
+- **History:** TradingView loads a limited history (an M5 chart reaches a few months back), so the table covers that period, not
+  2021 to 2026.
+- **Chart timeframe:** the closer the chart's timeframe is to 1 minute, the closer the table is to the results above.
+- **Scope:** long only. The results are from one symbol and one period, and they do not promise the future.
+- **Tuning:** if strategies 1 to 9 were tuned on this same history, their past results flatter them. Strategies 10 and 11 were checked on
+  years they were not chosen on.
+
+**Tests.** The research code is in `Research/scratchpad/fractal`.
+- **Independent re-implementation:** a separate agent wrote one from the written rules only. It matched the reference engine (exact,
+  1-minute paths) on 2,359 trades, with 0 differences.
+- **Search evaluator vs the engine:** 0 differences on about 750,000 trades from random settings, under all three candle-path
+  assumptions.
+- **Indicator code vs the engine:** the indicator's code, translated line by line to Python, matched the engine on M5 and M15 chart
+  candles for all 11 strategies (4,284 and 3,086 trades).
+- **Pine checks:** it parses, has 0 inline-title warnings, and passed an adversarial review (no compile, runtime or repainting problem
+  found; its suggestions were taken).
 
 ## Auction Retest Model: how a trade is built
 

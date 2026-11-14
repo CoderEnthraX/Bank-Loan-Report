@@ -1,0 +1,11 @@
+M15: 19583 settings pass the filters (right <= 30)
+R20 L  5 off +0.00 TP 3.00 SL 2.00 BE 0.00 SV 0.10 |  939 trades win  5.6% PF 2.02 |  +37.9R ( +75.9%) DD  3.3 | high-first  +34.4R DD  3.7 | random  +15.5R | near S1-9  44% | years +7 +7 +8 +3 +12 +1
+R20 L  8 off +0.00 TP 3.00 SL 1.50 BE 0.00 SV 0.10 |  927 trades win  5.6% PF 1.86 |  +46.1R ( +69.2%) DD  4.4 | high-first  +43.1R DD  4.3 | random  +19.9R | near S1-9  50% | years +11 +4 +8 +5 +14 +4
+R30 L 30 off -0.01 TP 3.00 SL 1.00 BE 0.20 SV 0.10 |  617 trades win  4.9% PF 2.30 |  +50.7R ( +50.7%) DD  3.8 | high-first  +40.6R DD  4.3 | random  +16.7R | near S1-9  67% | years +3 +5 +12 +5 +15 +11
+R30 L 40 off -0.01 TP 3.00 SL 1.00 BE 0.20 SV 0.10 |  582 trades win  5.2% PF 2.59 |  +55.0R ( +55.0%) DD  4.4 | high-first  +44.0R DD  4.3 | random  +16.1R | near S1-9  69% | years +3 +9 +11 +5 +16 +12
+R20 L 40 off -0.01 TP 3.00 SL 1.00 BE 0.20 SV 0.10 |  740 trades win  5.1% PF 2.47 |  +67.6R ( +67.6%) DD  4.8 | high-first  +55.6R DD  4.9 | random  +11.9R | near S1-9  69% | years +4 +12 +13 +3 +21 +14
+R20 L  5 off +0.00 TP 3.00 SL 1.50 BE 0.00 SV 0.10 |  956 trades win  5.6% PF 1.74 |  +43.5R ( +65.2%) DD  5.5 | high-first  +43.4R DD  4.5 | random  +19.5R | near S1-9  44% | years +11 +7 +6 +3 +15 +2
+R30 L 80 off +0.00 TP 0.20 SL 1.00 BE 0.15 SV 0.10 |  591 trades win 42.0% PF 1.66 |  +18.7R ( +18.7%) DD  2.8 | high-first  +13.9R DD  2.9 | random   -2.0R | near S1-9  71% | years +2 +5 +3 +3 +1 +4
+R20 L 30 off +0.00 TP 3.00 SL 1.00 BE 0.00 SV 0.10 |  733 trades win  5.9% PF 1.83 |  +57.0R ( +57.0%) DD  5.9 | high-first  +56.8R DD  6.5 | random  +27.7R | near S1-9  66% | years +3 +8 +14 +5 +24 +2
+R20 L 50 off -0.01 TP 3.00 SL 2.00 BE 0.20 SV 0.10 |  679 trades win  5.4% PF 2.54 |  +32.7R ( +65.4%) DD  4.2 | high-first  +27.7R DD  4.2 | random   +9.8R | near S1-9  69% | years +3 +6 +6 +2 +13 +3
+R30 L 50 off -0.01 TP 3.00 SL 1.00 BE 0.20 SV 0.10 |  548 trades win  5.3% PF 2.52 |  +52.3R ( +52.3%) DD  4.4 | high-first  +44.2R DD  4.3 | random  +12.6R | near S1-9  69% | years +3 +9 +8 +8 +16 +9

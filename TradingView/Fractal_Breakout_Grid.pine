@@ -1,0 +1,550 @@
+//@version=6
+// =======================================================================================================
+//  FRACTAL BREAKOUT GRID: 11 long breakout strategies on swing highs (fractals)
+// =======================================================================================================
+//  Each strategy finds swing highs on its own timeframe: a candle whose high is strictly above the Left
+//  candles before it and the Right candles after it. When the last Right candle closes, the swing high
+//  sets a buy stop at high x (1 + offset / 100), replacing that strategy's older buy stop. A trade opens
+//  when the price rises through it; one trade at a time per strategy (a breakout while a trade is open
+//  is skipped); either way that buy stop is then used up.
+//  Exits from the fill price: SL % and TP %. BE trigger: once the price is up this %, the SL moves to
+//  the entry. Salvage trigger: once the price is down this %, the TP moves to the entry (out at
+//  break-even if the price comes back). Only the first of the two happens in a trade; 0 = off.
+//  Strategies 1-9: your table. 10 (5 min swing highs) and 11 (15 min): picked on gold 2021-2026.
+//  The trades are worked out on the chart's candles, along open -> the nearer of high / low -> the other
+//  -> close (gaps fill at the open). Use a chart timeframe at or below each strategy's timeframe (5 min
+//  or 1 min runs all 11). Swing highs come from completed candles only, so nothing repaints.
+//  Alerts: create one alert with "Any alert() function call" (sent at the candle close).
+// =======================================================================================================
+indicator("Fractal Breakout Grid", shorttitle = "FBG", overlay = true, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
+
+// ---------------------------------------------------------------- GRID
+GRP_G   = "GRID"
+RUN_ALL = "All strategies"
+RUN_TCK = "Ticked strategies"
+runMode = input.string(RUN_ALL, "Run", options = [RUN_ALL, RUN_TCK, "Strategy 1", "Strategy 2", "Strategy 3", "Strategy 4", "Strategy 5", "Strategy 6", "Strategy 7", "Strategy 8", "Strategy 9", "Strategy 10", "Strategy 11"], group = GRP_G, tooltip = "All strategies: all 11 run. Ticked strategies: only those with On ticked below. Strategy N: that one alone.")
+costIn  = input.float(0.23, "Costs Per Trade (price units)", minval = 0.0, step = 0.01, group = GRP_G, tooltip = "Spread + commission of one trade in price units, taken off every trade in the table (the levels do not move). Gold: spread 0.16 + $7 per lot of 100 oz (0.07) = 0.23.")
+statsFrom = input.time(timestamp("01 Jan 2021 00:00 +0000"), "Table Counts Trades From", group = GRP_G, tooltip = "The table counts the trades that opened at or after this time (and within the chart's loaded history).")
+
+GRP_D   = "DISPLAY"
+P_TR = "Top Right"
+P_BR = "Bottom Right"
+P_BL = "Bottom Left"
+P_TL = "Top Left"
+P_MR = "Middle Right"
+T_TI = "Tiny"
+T_SM = "Small"
+T_NO = "Normal"
+showLvl = input.bool(true, "Waiting Buy Stops", group = GRP_D, tooltip = "A dashed line at each strategy's waiting buy stop, from the candle it is set until it fills, is skipped or a newer swing high replaces it.")
+showTr  = input.bool(true, "Trades: Entry, SL And TP Lines", group = GRP_D, tooltip = "Entry line in the strategy's colour, TP green, SL red. After the BE trigger the SL line continues at the entry (orange); after the salvage trigger the TP line continues at the entry (orange).")
+showLbl = input.bool(true, "Entry And Exit Labels", group = GRP_D)
+showTbl = input.bool(true, "Table", inline = "tb", group = GRP_D)
+tblPos  = input.string(P_TR, "", options = [P_TR, P_BR, P_BL, P_TL, P_MR], inline = "tb", group = GRP_D)
+tblTxt  = input.string(T_SM, "", options = [T_TI, T_SM, T_NO], inline = "tb", group = GRP_D)
+
+GRP_A = "ALERTS (one alert: Any alert() function call)"
+alLvl = input.bool(true, "New Buy Stop", group = GRP_A, tooltip = "When a swing high is confirmed: the strategy, the buy stop price, its SL and TP. Sent at the close of the candle where it is set.")
+alEnt = input.bool(true, "Entry", group = GRP_A)
+alExt = input.bool(true, "Exit", group = GRP_A)
+
+TT_TF = "Fractal TF: the timeframe of the swing highs (D = daily, 240 = 4 hours, 60 = 1 hour, 15, 5); not below the chart's timeframe.\nBuy entry offset %: the buy stop is at swing high x (1 + offset / 100); -0.14 = 0.14 % below the swing high."
+TT_RL = "Right: candles after the swing high (it is confirmed when the last of them closes). Left: candles before it. The swing high must be strictly higher than all of them."
+TT_ST = "SL % and TP % from the fill price."
+TT_BS = "BE trigger %: once the price is up this % from the fill, the SL moves to the fill (break-even).\nSalvage trigger %: once the price is down this % from the fill, the TP moves to the fill (out at break-even if the price comes back).\nOnly the first of the two happens in a trade. 0 = off."
+
+GRP_1 = "STRATEGY 1"
+s1On  = input.bool(true, "On", inline = "s1a", group = GRP_1)
+s1Col = input.color(#2962FF, "", inline = "s1a", group = GRP_1)
+s1Tf  = input.timeframe("D", "Fractal TF / Buy Entry Offset %", inline = "s1b", group = GRP_1)
+s1Off = input.float(-0.14, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s1b", group = GRP_1, tooltip = TT_TF)
+s1R   = input.int(3, "Right / Left Candles", minval = 1, maxval = 200, inline = "s1c", group = GRP_1)
+s1L   = input.int(25, "", minval = 1, maxval = 200, inline = "s1c", group = GRP_1, tooltip = TT_RL)
+s1Sl  = input.float(3.0, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s1d", group = GRP_1)
+s1Tp  = input.float(0.75, "", minval = 0.001, step = 0.01, inline = "s1d", group = GRP_1, tooltip = TT_ST)
+s1Be  = input.float(0.45, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s1e", group = GRP_1)
+s1Sv  = input.float(0.8, "", minval = 0.0, step = 0.01, inline = "s1e", group = GRP_1, tooltip = TT_BS)
+
+GRP_2 = "STRATEGY 2"
+s2On  = input.bool(true, "On", inline = "s2a", group = GRP_2)
+s2Col = input.color(#FF6D00, "", inline = "s2a", group = GRP_2)
+s2Tf  = input.timeframe("D", "Fractal TF / Buy Entry Offset %", inline = "s2b", group = GRP_2)
+s2Off = input.float(-0.085, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s2b", group = GRP_2, tooltip = TT_TF)
+s2R   = input.int(3, "Right / Left Candles", minval = 1, maxval = 200, inline = "s2c", group = GRP_2)
+s2L   = input.int(15, "", minval = 1, maxval = 200, inline = "s2c", group = GRP_2, tooltip = TT_RL)
+s2Sl  = input.float(0.5, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s2d", group = GRP_2)
+s2Tp  = input.float(2.0, "", minval = 0.001, step = 0.01, inline = "s2d", group = GRP_2, tooltip = TT_ST)
+s2Be  = input.float(0.25, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s2e", group = GRP_2)
+s2Sv  = input.float(0.8, "", minval = 0.0, step = 0.01, inline = "s2e", group = GRP_2, tooltip = TT_BS)
+
+GRP_3 = "STRATEGY 3"
+s3On  = input.bool(true, "On", inline = "s3a", group = GRP_3)
+s3Col = input.color(#AA00FF, "", inline = "s3a", group = GRP_3)
+s3Tf  = input.timeframe("D", "Fractal TF / Buy Entry Offset %", inline = "s3b", group = GRP_3)
+s3Off = input.float(-0.065, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s3b", group = GRP_3, tooltip = TT_TF)
+s3R   = input.int(2, "Right / Left Candles", minval = 1, maxval = 200, inline = "s3c", group = GRP_3)
+s3L   = input.int(7, "", minval = 1, maxval = 200, inline = "s3c", group = GRP_3, tooltip = TT_RL)
+s3Sl  = input.float(0.3, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s3d", group = GRP_3)
+s3Tp  = input.float(1.65, "", minval = 0.001, step = 0.01, inline = "s3d", group = GRP_3, tooltip = TT_ST)
+s3Be  = input.float(0.2, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s3e", group = GRP_3)
+s3Sv  = input.float(0.5, "", minval = 0.0, step = 0.01, inline = "s3e", group = GRP_3, tooltip = TT_BS)
+
+GRP_4 = "STRATEGY 4"
+s4On  = input.bool(true, "On", inline = "s4a", group = GRP_4)
+s4Col = input.color(#00BFA5, "", inline = "s4a", group = GRP_4)
+s4Tf  = input.timeframe("240", "Fractal TF / Buy Entry Offset %", inline = "s4b", group = GRP_4)
+s4Off = input.float(-0.025, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s4b", group = GRP_4, tooltip = TT_TF)
+s4R   = input.int(8, "Right / Left Candles", minval = 1, maxval = 200, inline = "s4c", group = GRP_4)
+s4L   = input.int(12, "", minval = 1, maxval = 200, inline = "s4c", group = GRP_4, tooltip = TT_RL)
+s4Sl  = input.float(0.44, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s4d", group = GRP_4)
+s4Tp  = input.float(3.1, "", minval = 0.001, step = 0.01, inline = "s4d", group = GRP_4, tooltip = TT_ST)
+s4Be  = input.float(0.33, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s4e", group = GRP_4)
+s4Sv  = input.float(0.9, "", minval = 0.0, step = 0.01, inline = "s4e", group = GRP_4, tooltip = TT_BS)
+
+GRP_5 = "STRATEGY 5"
+s5On  = input.bool(true, "On", inline = "s5a", group = GRP_5)
+s5Col = input.color(#F50057, "", inline = "s5a", group = GRP_5)
+s5Tf  = input.timeframe("60", "Fractal TF / Buy Entry Offset %", inline = "s5b", group = GRP_5)
+s5Off = input.float(-0.045, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s5b", group = GRP_5, tooltip = TT_TF)
+s5R   = input.int(19, "Right / Left Candles", minval = 1, maxval = 200, inline = "s5c", group = GRP_5)
+s5L   = input.int(30, "", minval = 1, maxval = 200, inline = "s5c", group = GRP_5, tooltip = TT_RL)
+s5Sl  = input.float(2.0, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s5d", group = GRP_5)
+s5Tp  = input.float(0.35, "", minval = 0.001, step = 0.01, inline = "s5d", group = GRP_5, tooltip = TT_ST)
+s5Be  = input.float(0.1, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s5e", group = GRP_5)
+s5Sv  = input.float(0.7, "", minval = 0.0, step = 0.01, inline = "s5e", group = GRP_5, tooltip = TT_BS)
+
+GRP_6 = "STRATEGY 6"
+s6On  = input.bool(true, "On", inline = "s6a", group = GRP_6)
+s6Col = input.color(#00B8D4, "", inline = "s6a", group = GRP_6)
+s6Tf  = input.timeframe("60", "Fractal TF / Buy Entry Offset %", inline = "s6b", group = GRP_6)
+s6Off = input.float(-0.06, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s6b", group = GRP_6, tooltip = TT_TF)
+s6R   = input.int(25, "Right / Left Candles", minval = 1, maxval = 200, inline = "s6c", group = GRP_6)
+s6L   = input.int(25, "", minval = 1, maxval = 200, inline = "s6c", group = GRP_6, tooltip = TT_RL)
+s6Sl  = input.float(4.2, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s6d", group = GRP_6)
+s6Tp  = input.float(0.33, "", minval = 0.001, step = 0.01, inline = "s6d", group = GRP_6, tooltip = TT_ST)
+s6Be  = input.float(0.15, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s6e", group = GRP_6)
+s6Sv  = input.float(0.8, "", minval = 0.0, step = 0.01, inline = "s6e", group = GRP_6, tooltip = TT_BS)
+
+GRP_7 = "STRATEGY 7"
+s7On  = input.bool(true, "On", inline = "s7a", group = GRP_7)
+s7Col = input.color(#FFAB00, "", inline = "s7a", group = GRP_7)
+s7Tf  = input.timeframe("60", "Fractal TF / Buy Entry Offset %", inline = "s7b", group = GRP_7)
+s7Off = input.float(-0.055, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s7b", group = GRP_7, tooltip = TT_TF)
+s7R   = input.int(23, "Right / Left Candles", minval = 1, maxval = 200, inline = "s7c", group = GRP_7)
+s7L   = input.int(25, "", minval = 1, maxval = 200, inline = "s7c", group = GRP_7, tooltip = TT_RL)
+s7Sl  = input.float(0.87, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s7d", group = GRP_7)
+s7Tp  = input.float(0.56, "", minval = 0.001, step = 0.01, inline = "s7d", group = GRP_7, tooltip = TT_ST)
+s7Be  = input.float(0.13, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s7e", group = GRP_7)
+s7Sv  = input.float(1.1, "", minval = 0.0, step = 0.01, inline = "s7e", group = GRP_7, tooltip = TT_BS)
+
+GRP_8 = "STRATEGY 8"
+s8On  = input.bool(true, "On", inline = "s8a", group = GRP_8)
+s8Col = input.color(#8D6E63, "", inline = "s8a", group = GRP_8)
+s8Tf  = input.timeframe("60", "Fractal TF / Buy Entry Offset %", inline = "s8b", group = GRP_8)
+s8Off = input.float(-0.06, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s8b", group = GRP_8, tooltip = TT_TF)
+s8R   = input.int(20, "Right / Left Candles", minval = 1, maxval = 200, inline = "s8c", group = GRP_8)
+s8L   = input.int(25, "", minval = 1, maxval = 200, inline = "s8c", group = GRP_8, tooltip = TT_RL)
+s8Sl  = input.float(0.68, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s8d", group = GRP_8)
+s8Tp  = input.float(0.43, "", minval = 0.001, step = 0.01, inline = "s8d", group = GRP_8, tooltip = TT_ST)
+s8Be  = input.float(0.1, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s8e", group = GRP_8)
+s8Sv  = input.float(0.7, "", minval = 0.0, step = 0.01, inline = "s8e", group = GRP_8, tooltip = TT_BS)
+
+GRP_9 = "STRATEGY 9"
+s9On  = input.bool(true, "On", inline = "s9a", group = GRP_9)
+s9Col = input.color(#3D5AFE, "", inline = "s9a", group = GRP_9)
+s9Tf  = input.timeframe("60", "Fractal TF / Buy Entry Offset %", inline = "s9b", group = GRP_9)
+s9Off = input.float(-0.08, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s9b", group = GRP_9, tooltip = TT_TF)
+s9R   = input.int(5, "Right / Left Candles", minval = 1, maxval = 200, inline = "s9c", group = GRP_9)
+s9L   = input.int(5, "", minval = 1, maxval = 200, inline = "s9c", group = GRP_9, tooltip = TT_RL)
+s9Sl  = input.float(2.0, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s9d", group = GRP_9)
+s9Tp  = input.float(0.7, "", minval = 0.001, step = 0.01, inline = "s9d", group = GRP_9, tooltip = TT_ST)
+s9Be  = input.float(0.1, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s9e", group = GRP_9)
+s9Sv  = input.float(1.0, "", minval = 0.0, step = 0.01, inline = "s9e", group = GRP_9, tooltip = TT_BS)
+
+GRP_10 = "STRATEGY 10"
+s10On  = input.bool(true, "On", inline = "s10a", group = GRP_10)
+s10Col = input.color(#C6FF00, "", inline = "s10a", group = GRP_10)
+s10Tf  = input.timeframe("5", "Fractal TF / Buy Entry Offset %", inline = "s10b", group = GRP_10)
+s10Off = input.float(-0.05, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s10b", group = GRP_10, tooltip = TT_TF)
+s10R   = input.int(30, "Right / Left Candles", minval = 1, maxval = 200, inline = "s10c", group = GRP_10)
+s10L   = input.int(65, "", minval = 1, maxval = 200, inline = "s10c", group = GRP_10, tooltip = TT_RL)
+s10Sl  = input.float(1.0, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s10d", group = GRP_10)
+s10Tp  = input.float(1.0, "", minval = 0.001, step = 0.01, inline = "s10d", group = GRP_10, tooltip = TT_ST)
+s10Be  = input.float(0.2, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s10e", group = GRP_10)
+s10Sv  = input.float(0.0, "", minval = 0.0, step = 0.01, inline = "s10e", group = GRP_10, tooltip = TT_BS)
+
+GRP_11 = "STRATEGY 11"
+s11On  = input.bool(true, "On", inline = "s11a", group = GRP_11)
+s11Col = input.color(#FF3D00, "", inline = "s11a", group = GRP_11)
+s11Tf  = input.timeframe("15", "Fractal TF / Buy Entry Offset %", inline = "s11b", group = GRP_11)
+s11Off = input.float(-0.01, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s11b", group = GRP_11, tooltip = TT_TF)
+s11R   = input.int(20, "Right / Left Candles", minval = 1, maxval = 200, inline = "s11c", group = GRP_11)
+s11L   = input.int(40, "", minval = 1, maxval = 200, inline = "s11c", group = GRP_11, tooltip = TT_RL)
+s11Sl  = input.float(1.0, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s11d", group = GRP_11)
+s11Tp  = input.float(3.0, "", minval = 0.001, step = 0.01, inline = "s11d", group = GRP_11, tooltip = TT_ST)
+s11Be  = input.float(0.2, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s11e", group = GRP_11)
+s11Sv  = input.float(0.1, "", minval = 0.0, step = 0.01, inline = "s11e", group = GRP_11, tooltip = TT_BS)
+
+// ---------------------------------------------------------------- swing highs (completed candles only)
+// on fractal candle k: the swing high of candle p = k - 1 - right, confirmed when candle k - 1 (= p + right) closed:
+// high[p] above the highest of the left candles before it and of the right candles after it
+f_piv(int lft, int rgt) =>
+    float lh = ta.highest(high, lft)[rgt + 2]
+    float rh = ta.highest(high, rgt)[1]
+    float p  = high[rgt + 1]
+    bool  ok = not na(lh) and not na(rh) and not na(p) and p > lh and p > rh
+    [ok ? p : na, ok ? time[rgt + 1] : na]
+
+// a strategy runs only when its timeframe is not below the chart's; otherwise it requests the chart's own timeframe (unused)
+f_fits(string tf) =>
+    timeframe.in_seconds(tf) >= timeframe.in_seconds(timeframe.period)
+
+[ph1, pt1] = request.security(syminfo.tickerid, f_fits(s1Tf) ? s1Tf : timeframe.period, f_piv(s1L, s1R), lookahead = barmerge.lookahead_on)
+[ph2, pt2] = request.security(syminfo.tickerid, f_fits(s2Tf) ? s2Tf : timeframe.period, f_piv(s2L, s2R), lookahead = barmerge.lookahead_on)
+[ph3, pt3] = request.security(syminfo.tickerid, f_fits(s3Tf) ? s3Tf : timeframe.period, f_piv(s3L, s3R), lookahead = barmerge.lookahead_on)
+[ph4, pt4] = request.security(syminfo.tickerid, f_fits(s4Tf) ? s4Tf : timeframe.period, f_piv(s4L, s4R), lookahead = barmerge.lookahead_on)
+[ph5, pt5] = request.security(syminfo.tickerid, f_fits(s5Tf) ? s5Tf : timeframe.period, f_piv(s5L, s5R), lookahead = barmerge.lookahead_on)
+[ph6, pt6] = request.security(syminfo.tickerid, f_fits(s6Tf) ? s6Tf : timeframe.period, f_piv(s6L, s6R), lookahead = barmerge.lookahead_on)
+[ph7, pt7] = request.security(syminfo.tickerid, f_fits(s7Tf) ? s7Tf : timeframe.period, f_piv(s7L, s7R), lookahead = barmerge.lookahead_on)
+[ph8, pt8] = request.security(syminfo.tickerid, f_fits(s8Tf) ? s8Tf : timeframe.period, f_piv(s8L, s8R), lookahead = barmerge.lookahead_on)
+[ph9, pt9] = request.security(syminfo.tickerid, f_fits(s9Tf) ? s9Tf : timeframe.period, f_piv(s9L, s9R), lookahead = barmerge.lookahead_on)
+[ph10, pt10] = request.security(syminfo.tickerid, f_fits(s10Tf) ? s10Tf : timeframe.period, f_piv(s10L, s10R), lookahead = barmerge.lookahead_on)
+[ph11, pt11] = request.security(syminfo.tickerid, f_fits(s11Tf) ? s11Tf : timeframe.period, f_piv(s11L, s11R), lookahead = barmerge.lookahead_on)
+// ---------------------------------------------------------------- one strategy
+C_TP   = color.new(#26A69A, 0)
+C_SL   = color.new(#EF5350, 0)
+C_MOVE = color.new(#FF9800, 0)
+C_WIN  = color.new(#26A69A, 10)
+C_LOSS = color.new(#EF5350, 10)
+
+type Strat
+    int    id
+    bool   sel
+    bool   ok
+    string tf
+    int    r
+    int    l
+    float  off
+    float  sl
+    float  tp
+    float  be
+    float  sv
+    color  col
+    bool   lvlOn  = false
+    float  lvlH   = na
+    float  E      = na
+    int    lvlT   = na
+    bool   pos    = false
+    float  F      = na
+    float  SLp    = na
+    float  TPp    = na
+    float  BEl    = na
+    float  SVl    = na
+    bool   beOn   = false
+    bool   svOn   = false
+    int    eTime  = na
+    int    n      = 0
+    int    nW     = 0
+    int    nTP    = 0
+    int    nSL    = 0
+    int    nBE    = 0
+    int    nSV    = 0
+    float  sumPct = 0.0
+    float  sumR   = 0.0
+    float  gw     = 0.0
+    float  gl     = 0.0
+    float  cum    = 0.0
+    float  pk     = 0.0
+    float  dd     = 0.0
+    int    st     = 0
+    int    mst    = 0
+    line   lnLvl  = na
+    line   lnE    = na
+    line   lnSL   = na
+    line   lnTP   = na
+    string msg    = ""
+
+f_px(float x) =>
+    str.tostring(x, format.mintick)
+
+f_num(float x, string f) =>
+    str.tostring(x, f)
+
+f_sgn(float x, string f) =>
+    (x >= 0 ? "+" : "") + str.tostring(x, f)
+
+method openAt(Strat s, float px, bool gap) =>
+    s.pos   := true
+    s.F     := px
+    s.SLp   := px * (1.0 - s.sl / 100.0)
+    s.TPp   := px * (1.0 + s.tp / 100.0)
+    s.BEl   := px * (1.0 + s.be / 100.0)
+    s.SVl   := px * (1.0 - s.sv / 100.0)
+    s.beOn  := false
+    s.svOn  := false
+    s.eTime := time
+    if showTr
+        s.lnE  := line.new(bar_index, px, bar_index, px, color = s.col, width = 2)
+        s.lnTP := line.new(bar_index, s.TPp, bar_index, s.TPp, color = C_TP)
+        s.lnSL := line.new(bar_index, s.SLp, bar_index, s.SLp, color = C_SL)
+    if showLbl
+        label.new(bar_index, px, str.tostring(s.id) + (gap ? " BUY (gap)" : " BUY"), color = s.col, textcolor = color.white, style = label.style_label_up, size = size.tiny)
+    if alEnt
+        s.msg += "FBG S" + str.tostring(s.id) + " BUY " + f_px(px) + (gap ? " (gap open)" : "") + " | SL " + f_px(s.SLp) + " | TP " + f_px(s.TPp) + "\n"
+    true
+
+method closeAt(Strat s, float px, int rsn) =>
+    float pnl = px - s.F - costIn
+    float pct = pnl / s.F * 100.0
+    float rr  = pnl / (s.F * s.sl / 100.0)
+    if s.eTime >= statsFrom
+        s.n      += 1
+        s.sumPct += pct
+        s.sumR   += rr
+        if pnl > 0
+            s.nW += 1
+            s.gw += rr
+        else
+            s.gl -= rr
+        if rsn == 2
+            s.st  += 1
+            s.mst := math.max(s.mst, s.st)
+        else if rsn == 1
+            s.st := 0
+        s.cum += rr
+        s.pk  := math.max(s.pk, s.cum)
+        s.dd  := math.max(s.dd, s.pk - s.cum)
+        if rsn == 1
+            s.nTP += 1
+        else if rsn == 2
+            s.nSL += 1
+        else if rsn == 3
+            s.nBE += 1
+        else
+            s.nSV += 1
+    string rs = rsn == 1 ? "TP" : rsn == 2 ? "SL" : rsn == 3 ? "BE" : "SALV"
+    if not na(s.lnE)
+        s.lnE.set_x2(bar_index)
+    if not na(s.lnSL)
+        s.lnSL.set_x2(bar_index)
+    if not na(s.lnTP)
+        s.lnTP.set_x2(bar_index)
+    s.lnE  := na
+    s.lnSL := na
+    s.lnTP := na
+    if showLbl
+        label.new(bar_index, px, str.tostring(s.id) + " " + rs + " " + f_sgn(pct, "0.00") + "%", color = pnl > 0 ? C_WIN : C_LOSS, textcolor = color.white, style = label.style_label_down, size = size.tiny)
+    if alExt
+        s.msg += "FBG S" + str.tostring(s.id) + " EXIT " + rs + " " + f_px(px) + " (" + f_sgn(pct, "0.00") + "% after costs, " + f_sgn(rr, "0.00") + "R)\n"
+    s.pos := false
+    true
+
+// BE trigger reached: the SL moves to the entry
+method doBE(Strat s) =>
+    s.beOn := true
+    s.SLp  := s.F
+    if not na(s.lnSL)
+        s.lnSL.set_x2(bar_index)
+        s.lnSL := line.new(bar_index, s.F, bar_index, s.F, color = C_MOVE, style = line.style_dotted, width = 2)
+    true
+
+// salvage trigger reached: the TP moves to the entry
+method doSV(Strat s) =>
+    s.svOn := true
+    s.TPp  := s.F
+    if not na(s.lnTP)
+        s.lnTP.set_x2(bar_index)
+        s.lnTP := line.new(bar_index, s.F, bar_index, s.F, color = C_MOVE, style = line.style_dotted, width = 2)
+    true
+
+// the waiting buy stop is used up (filled, or skipped while a trade is open)
+method useLvl(Strat s) =>
+    s.lvlOn := false
+    if not na(s.lnLvl)
+        s.lnLvl.set_x2(bar_index)
+    s.lnLvl := na
+    true
+
+// the price moves up from x to y: TP, BE trigger and the buy stop, lowest first (equal: TP, BE, buy stop)
+method up(Strat s, float x, float y) =>
+    for _i = 0 to 7
+        float best = na
+        int   ev   = 0
+        if s.pos
+            if x < s.TPp and s.TPp <= y
+                best := s.TPp
+                ev   := 1
+            if s.be > 0 and not s.beOn and not s.svOn and x < s.BEl and s.BEl <= y and (na(best) or s.BEl < best)
+                best := s.BEl
+                ev   := 2
+        if s.lvlOn and x < s.E and s.E <= y and (na(best) or s.E < best)
+            best := s.E
+            ev   := 3
+        if ev == 0
+            break
+        if ev == 1
+            s.closeAt(s.TPp, s.svOn ? 4 : 1)
+        else if ev == 2
+            s.doBE()
+        else
+            if not s.pos
+                s.openAt(s.E, false)
+            s.useLvl()
+    true
+
+// the price moves down from x to y: SL and salvage trigger, highest first (equal: SL)
+method dn(Strat s, float x, float y) =>
+    for _i = 0 to 7
+        float best = na
+        int   ev   = 0
+        if s.pos
+            if y <= s.SLp and s.SLp < x
+                best := s.SLp
+                ev   := 1
+            if s.sv > 0 and not s.svOn and not s.beOn and y <= s.SVl and s.SVl < x and (na(best) or s.SVl > best)
+                best := s.SVl
+                ev   := 2
+        if ev == 0
+            break
+        if ev == 1
+            s.closeAt(s.SLp, s.beOn ? 3 : 2)
+        else
+            s.doSV()
+    true
+
+method seg(Strat s, float x, float y) =>
+    if y > x
+        s.up(x, y)
+    else if y < x
+        s.dn(x, y)
+    true
+
+// one chart candle: a new swing high, the open (exits, then a gap fill), then open -> a -> b -> close
+method onBar(Strat s, float ph, int pt, float pc) =>
+    s.msg := ""
+    bool lvlNew = false
+    if not na(ph) and not na(pt) and (na(s.lvlT) or pt != s.lvlT)
+        if not na(s.lnLvl)
+            s.lnLvl.set_x2(bar_index)
+        s.lvlT  := pt
+        s.lvlOn := true
+        s.lvlH  := ph
+        s.E     := ph * (1.0 + s.off / 100.0)
+        lvlNew  := true
+        s.lnLvl := showLvl ? line.new(bar_index, s.E, bar_index, s.E, color = s.col, style = line.style_dashed) : na
+        if alLvl
+            s.msg += "FBG S" + str.tostring(s.id) + " BUY STOP " + f_px(s.E) + " (swing high " + f_px(ph) + ", " + s.tf + " " + str.tostring(s.r) + "/" + str.tostring(s.l) + ") | SL " + f_num(s.sl, "0.0##") + "% | TP " + f_num(s.tp, "0.0##") + "%\n"
+    if s.pos
+        if open >= s.TPp
+            s.closeAt(open, s.svOn ? 4 : 1)
+        else if open <= s.SLp
+            s.closeAt(open, s.beOn ? 3 : 2)
+        else if s.be > 0 and not s.beOn and not s.svOn and open >= s.BEl
+            s.doBE()
+        else if s.sv > 0 and not s.svOn and not s.beOn and open <= s.SVl
+            s.doSV()
+    if s.lvlOn and not lvlNew and not na(pc) and pc < s.E and open >= s.E
+        if not s.pos
+            s.openAt(open, true)
+        s.useLvl()
+    bool  hf = (high - open) < (open - low)
+    float a  = hf ? high : low
+    float b  = hf ? low : high
+    s.seg(open, a)
+    s.seg(a, b)
+    s.seg(b, close)
+    if s.lvlOn and not na(s.lnLvl)
+        s.lnLvl.set_x2(bar_index)
+    if s.pos
+        if not na(s.lnE)
+            s.lnE.set_x2(bar_index)
+        if not na(s.lnSL)
+            s.lnSL.set_x2(bar_index)
+        if not na(s.lnTP)
+            s.lnTP.set_x2(bar_index)
+    true
+
+f_run(int i, bool ticked) =>
+    runMode == RUN_ALL ? true : runMode == RUN_TCK ? ticked : runMode == "Strategy " + str.tostring(i)
+
+var array<Strat> S = array.new<Strat>()
+if barstate.isfirst
+    S.push(Strat.new(1, f_run(1, s1On), f_run(1, s1On) and f_fits(s1Tf), s1Tf, s1R, s1L, s1Off, s1Sl, s1Tp, s1Be, s1Sv, s1Col))
+    S.push(Strat.new(2, f_run(2, s2On), f_run(2, s2On) and f_fits(s2Tf), s2Tf, s2R, s2L, s2Off, s2Sl, s2Tp, s2Be, s2Sv, s2Col))
+    S.push(Strat.new(3, f_run(3, s3On), f_run(3, s3On) and f_fits(s3Tf), s3Tf, s3R, s3L, s3Off, s3Sl, s3Tp, s3Be, s3Sv, s3Col))
+    S.push(Strat.new(4, f_run(4, s4On), f_run(4, s4On) and f_fits(s4Tf), s4Tf, s4R, s4L, s4Off, s4Sl, s4Tp, s4Be, s4Sv, s4Col))
+    S.push(Strat.new(5, f_run(5, s5On), f_run(5, s5On) and f_fits(s5Tf), s5Tf, s5R, s5L, s5Off, s5Sl, s5Tp, s5Be, s5Sv, s5Col))
+    S.push(Strat.new(6, f_run(6, s6On), f_run(6, s6On) and f_fits(s6Tf), s6Tf, s6R, s6L, s6Off, s6Sl, s6Tp, s6Be, s6Sv, s6Col))
+    S.push(Strat.new(7, f_run(7, s7On), f_run(7, s7On) and f_fits(s7Tf), s7Tf, s7R, s7L, s7Off, s7Sl, s7Tp, s7Be, s7Sv, s7Col))
+    S.push(Strat.new(8, f_run(8, s8On), f_run(8, s8On) and f_fits(s8Tf), s8Tf, s8R, s8L, s8Off, s8Sl, s8Tp, s8Be, s8Sv, s8Col))
+    S.push(Strat.new(9, f_run(9, s9On), f_run(9, s9On) and f_fits(s9Tf), s9Tf, s9R, s9L, s9Off, s9Sl, s9Tp, s9Be, s9Sv, s9Col))
+    S.push(Strat.new(10, f_run(10, s10On), f_run(10, s10On) and f_fits(s10Tf), s10Tf, s10R, s10L, s10Off, s10Sl, s10Tp, s10Be, s10Sv, s10Col))
+    S.push(Strat.new(11, f_run(11, s11On), f_run(11, s11On) and f_fits(s11Tf), s11Tf, s11R, s11L, s11Off, s11Sl, s11Tp, s11Be, s11Sv, s11Col))
+// ---------------------------------------------------------------- every candle
+array<float> PH = array.from(ph1, ph2, ph3, ph4, ph5, ph6, ph7, ph8, ph9, ph10, ph11)
+array<int>   PT = array.from(pt1, pt2, pt3, pt4, pt5, pt6, pt7, pt8, pt9, pt10, pt11)
+string alertMsg = ""
+for [i, s] in S
+    if s.ok
+        s.onBar(PH.get(i), PT.get(i), close[1])
+        alertMsg += s.msg
+if alertMsg != ""
+    alert(alertMsg, alert.freq_once_per_bar_close)
+
+// ---------------------------------------------------------------- table
+var int firstT = time
+f_tsz() =>
+    tblTxt == T_TI ? size.tiny : tblTxt == T_NO ? size.normal : size.small
+
+f_tpos() =>
+    tblPos == P_BR ? position.bottom_right : tblPos == P_BL ? position.bottom_left : tblPos == P_TL ? position.top_left : tblPos == P_MR ? position.middle_right : position.top_right
+
+f_tfs(string tf) =>
+    tf == "D" or tf == "1D" ? "D1" : tf == "240" ? "H4" : tf == "60" ? "H1" : tf == "15" ? "M15" : tf == "5" ? "M5" : tf == "1" ? "M1" : tf
+
+var table T = na
+if barstate.islast and showTbl
+    if not na(T)
+        T.delete()
+    int nRow = 0
+    for s in S
+        if s.sel
+            nRow += 1
+    T := table.new(f_tpos(), 12, nRow + 3, bgcolor = color.new(#131722, 10), border_color = color.new(#434651, 0), border_width = 1, frame_color = color.new(#434651, 0), frame_width = 1)
+    color hd = color.new(#2A2E39, 0)
+    color tx = color.new(#D1D4DC, 0)
+    T.cell(0, 0, "FRACTAL BREAKOUT GRID · " + syminfo.ticker + " · chart " + timeframe.period + " · trades since " + str.format_time(math.max(statsFrom, firstT), "yyyy-MM-dd", syminfo.timezone) + " · costs " + str.tostring(costIn) + " per trade", text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
+    T.merge_cells(0, 0, 11, 0)
+    array<string> H  = array.from("#", "TF", "R / L", "Trades", "Win %", "Net %", "Net R", "PF", "Max DD R", "SL in a row", "TP · SL · BE · SALV", "Now")
+    array<string> HT = array.from("Strategy number (its colour on the chart).", "Fractal timeframe of the swing highs.", "Right / Left candles of the swing high.", "Closed trades counted (opened at or after the start date, within the loaded history).", "Trades that closed with a profit after costs. BE and salvage exits close at the entry, so the costs make them small losses.", "Sum of the trades' % results after costs (the same money in every trade).", "Sum of the trades' results in R after costs (R = 1 x the trade's SL: the same risk in every trade).", "Profit factor: R won / R lost.", "Largest fall of the running R total from its high.", "Most stop-loss exits in a row (BE and salvage exits are not counted; a TP resets it).", "Exits by reason: take profit, stop loss, break-even stop after the BE trigger, break-even exit after the salvage trigger.", "Now: open trade (entry, % from the entry), waiting buy stop, or waiting for the next swing high.")
+    for [c, h] in H
+        T.cell(c, 1, h, text_color = tx, bgcolor = hd, text_size = f_tsz(), tooltip = HT.get(c))
+    int   row  = 2
+    int   tN   = 0
+    float tPct = 0.0
+    float tR   = 0.0
+    for s in S
+        if s.sel
+            string now = not s.ok ? "needs a chart of " + f_tfs(s.tf) + " or lower" : s.pos ? "LONG " + f_px(s.F) + " · " + f_sgn((close - s.F) / s.F * 100.0, "0.00") + "%" : s.lvlOn ? "BUY STOP " + f_px(s.E) : "waiting for a swing high"
+            color  nc  = not s.ok ? color.new(#787B86, 0) : s.pos ? (close >= s.F ? C_TP : C_SL) : tx
+            float  pf  = s.gl > 0 ? s.gw / s.gl : na
+            T.cell(0, row, str.tostring(s.id), text_color = color.white, bgcolor = s.col, text_size = f_tsz())
+            T.cell(1, row, f_tfs(s.tf), text_color = tx, text_size = f_tsz())
+            T.cell(2, row, str.tostring(s.r) + " / " + str.tostring(s.l), text_color = tx, text_size = f_tsz())
+            T.cell(3, row, str.tostring(s.n), text_color = tx, text_size = f_tsz())
+            T.cell(4, row, s.n > 0 ? f_num(s.nW * 100.0 / s.n, "0.0") : "-", text_color = tx, text_size = f_tsz())
+            T.cell(5, row, f_sgn(s.sumPct, "0.00"), text_color = s.sumPct >= 0 ? C_TP : C_SL, text_size = f_tsz())
+            T.cell(6, row, f_sgn(s.sumR, "0.0"), text_color = s.sumR >= 0 ? C_TP : C_SL, text_size = f_tsz())
+            T.cell(7, row, na(pf) ? (s.n > 0 ? "all wins" : "-") : f_num(pf, "0.00"), text_color = tx, text_size = f_tsz())
+            T.cell(8, row, f_num(s.dd, "0.0"), text_color = tx, text_size = f_tsz())
+            T.cell(9, row, str.tostring(s.mst), text_color = tx, text_size = f_tsz())
+            T.cell(10, row, str.tostring(s.nTP) + " · " + str.tostring(s.nSL) + " · " + str.tostring(s.nBE) + " · " + str.tostring(s.nSV), text_color = tx, text_size = f_tsz())
+            T.cell(11, row, now, text_color = nc, text_size = f_tsz(), text_halign = text.align_left)
+            tN   += s.n
+            tPct += s.sumPct
+            tR   += s.sumR
+            row  += 1
+    T.cell(0, row, "ALL", text_color = tx, bgcolor = hd, text_size = f_tsz())
+    T.cell(3, row, str.tostring(tN), text_color = tx, bgcolor = hd, text_size = f_tsz())
+    T.cell(5, row, f_sgn(tPct, "0.00"), text_color = tPct >= 0 ? C_TP : C_SL, bgcolor = hd, text_size = f_tsz())
+    T.cell(6, row, f_sgn(tR, "0.0"), text_color = tR >= 0 ? C_TP : C_SL, bgcolor = hd, text_size = f_tsz())
+    T.cell(11, row, "Net % and R after costs; R = 1 x the trade's SL", text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)

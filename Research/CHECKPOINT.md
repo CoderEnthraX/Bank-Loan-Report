@@ -693,8 +693,23 @@ Other gold findings:
       Independent re-implementation from SPEC.md only (`indep/`, Sonnet sub-agent): 2,359 / 2,360 trades, 0 mismatches (checked by me).
     - **The 9 strategies, gold M1 2021-01 .. 2026-10:** all profitable (+5R .. +104R, DD 1-7R); still profitable when every candle goes
       high first (the path most against a long).
-    - **M5 / M15 search:** stage 1 (1.36 M combos per TF) and stage 2 (0.89 M) on M1. Tight BE triggers (0.03-0.05%) look best but
-      collapse to about 0 when candles go high first (the BE happens inside one M1 candle), so the final pick must also hold with PM 2.
+    - **M5 / M15 search:** stage 1 (1.36 M combos per TF) and stage 2 (0.89 M) on M1, each with PM 0 and PM 2. Tight BE triggers
+      (0.03-0.05%) look best but collapse to about 0 when candles go high first (the BE happens inside one M1 candle).
+      `pick.py`: every year 2021-26 positive under PM 0 and PM 2, >= 150 / 100 trades train / test, SL >= 0.15, BE off or >= 0.10,
+      right <= 30 (without it M5 and M15 both converge on 5-15 h swing highs, i.e. the H1 strategies); ranked by PM 2 train R / DD.
+      - **10 = M5 R30 L65 off -0.05 SL 1.00 TP 1.00 BE 0.20 salvage 0:** 1,192 trades, PF 1.54, +91.4R, DD 7.7, high-first +75.3R,
+        costs 0.40 +82.9R, random entries +10.8R, every year positive.
+      - **11 = M15 R20 L40 off -0.01 SL 1.00 TP 3.00 BE 0.20 salvage 0.10:** 740 trades, PF 2.47, +67.6R, DD 4.8, high-first +55.6R,
+        costs 0.40 +62.2R, random +11.9R, every year positive.
+      - `neigh.py`: every one-step neighbour profitable (salvage on for 10 hurts: +27R). Results: `cand_final.txt`, `final11_M1.md`.
+    - **Indicator:** `pine/build_fbg.py` -> `TradingView/Fractal_Breakout_Grid.pine` (550 lines; .txt copy
+      `Research/scratchpad/Fractal_Breakout_Grid.txt`). Per strategy: request.security(tf if not below the chart else the chart's,
+      f_piv(L, R), lookahead_on) with f_piv using only completed candles ([1] offsets); UDT Strat with methods openAt / closeAt / doBE /
+      doSV / useLvl / up / dn / seg / onBar (all end with `true`); table with header tooltips; alert() at candle close.
+    - **Checks:** `pine_twin.py` (the Pine code line by line in Python) = engine on M5 (11 strategies, 4,284 trades) and M15 (3,086):
+      ALL IDENTICAL. pynescript parse ok, 0 inline-title warnings. Adversarial review (Sonnet sub-agent): no compile / runtime / repaint
+      issue; taken: no ';' format sub-patterns (sign added like the Auction Retest indicator), explicit `true` returns, no lower-TF
+      request. Not taken: "first chart bar does not arm a stale swing high" (arming it matches the engine).
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

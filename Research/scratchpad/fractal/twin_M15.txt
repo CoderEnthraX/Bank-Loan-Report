@@ -1,0 +1,11 @@
+S1  D1  twin   43 engine   43 IDENTICAL
+S2  D1  twin   49 engine   49 IDENTICAL
+S3  D1  twin   79 engine   79 IDENTICAL
+S4  H4  twin  144 engine  144 IDENTICAL
+S5  H1  twin  274 engine  274 IDENTICAL
+S6  H1  twin  225 engine  225 IDENTICAL
+S7  H1  twin  255 engine  255 IDENTICAL
+S8  H1  twin  294 engine  294 IDENTICAL
+S9  H1  twin  998 engine  998 IDENTICAL
+S11 M15 twin  725 engine  725 IDENTICAL
+chart M15: 11 strategies, 3086 trades, ALL IDENTICAL

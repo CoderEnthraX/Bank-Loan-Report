@@ -1,0 +1,9 @@
+M5: 9719 settings pass the filters (right <= 60)
+R60 L100 off -0.01 TP 3.00 SL 1.00 BE 0.20 SV 0.10 |  774 trades win  4.8% PF 2.24 |  +61.3R ( +61.3%) DD  4.9 | high-first  +53.2R DD  6.5 | random  +14.6R | near S1-9  68% | years +4 +9 +12 +3 +24 +9
+R60 L 20 off +0.01 TP 2.50 SL 1.00 BE 0.00 SV 0.10 | 1062 trades win  6.5% PF 1.63 |  +63.9R ( +63.9%) DD  6.8 | high-first  +59.2R DD  9.4 | random  +22.4R | near S1-9  46% | years +7 +15 +7 +6 +27 +1
+R60 L150 off -0.01 TP 3.00 SL 1.00 BE 0.20 SV 0.10 |  696 trades win  5.0% PF 2.29 |  +59.0R ( +59.0%) DD  4.5 | high-first  +51.9R DD  5.4 | random  +21.8R | near S1-9  68% | years +5 +9 +11 +6 +21 +7
+R60 L100 off -0.01 TP 3.00 SL 1.00 BE 0.15 SV 0.10 |  779 trades win  4.6% PF 2.46 |  +64.0R ( +64.0%) DD  5.7 | high-first  +47.8R DD  4.5 | random  +11.5R | near S1-9  68% | years +5 +10 +9 +4 +24 +10
+R60 L150 off -0.01 TP 3.00 SL 1.00 BE 0.00 SV 0.10 |  649 trades win  6.5% PF 1.96 |  +61.6R ( +61.6%) DD  7.2 | high-first  +53.3R DD  5.4 | random  +29.9R | near S1-9  68% | years +5 +11 +7 +3 +26 +11
+R60 L150 off -0.03 TP 3.00 SL 0.50 BE 0.20 SV 0.00 |  576 trades win 10.6% PF 2.65 | +227.4R (+113.7%) DD  9.8 | high-first +188.2R DD  9.8 | random  +64.7R | near S1-9  70% | years +9 +20 +30 +38 +93 +38
+R60 L100 off -0.01 TP 3.00 SL 0.75 BE 0.20 SV 0.10 |  782 trades win  4.7% PF 2.11 |  +77.6R ( +58.2%) DD  6.9 | high-first  +68.5R DD  6.9 | random  +19.3R | near S1-9  68% | years +4 +10 +15 +5 +34 +10
+R25 L 40 off -0.03 TP 0.75 SL 0.40 BE 0.00 SV 0.00 | 1390 trades win 40.3% PF 1.22 | +186.6R ( +74.6%) DD 17.9 | high-first +183.7R DD 17.9 | random  +39.8R | near S1-9  32% | years +4 +39 +21 +46 +67 +9

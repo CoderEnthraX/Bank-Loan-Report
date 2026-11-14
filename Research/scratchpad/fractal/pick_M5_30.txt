@@ -1,0 +1,11 @@
+M5: 6616 settings pass the filters (right <= 30)
+R25 L 40 off -0.03 TP 0.75 SL 0.40 BE 0.00 SV 0.00 | 1390 trades win 40.3% PF 1.22 | +186.6R ( +74.6%) DD 17.9 | high-first +183.7R DD 17.9 | random  +39.8R | near S1-9  32% | years +4 +39 +21 +46 +67 +9
+R30 L 65 off -0.05 TP 1.00 SL 1.00 BE 0.20 SV 0.00 | 1192 trades win 22.1% PF 1.54 |  +91.4R ( +91.4%) DD  7.7 | high-first  +75.3R DD  7.7 | random  +10.8R | near S1-9  44% | years +13 +12 +7 +17 +31 +11
+R25 L100 off -0.01 TP 3.00 SL 0.50 BE 0.00 SV 0.00 |  479 trades win 21.1% PF 1.57 | +218.4R (+109.2%) DD 24.1 | high-first +218.4R DD 24.1 | random +131.6R | near S1-9  39% | years +12 +28 +34 +46 +81 +18
+R25 L100 off -0.03 TP 3.00 SL 0.50 BE 0.00 SV 0.00 |  492 trades win 20.3% PF 1.50 | +198.3R ( +99.2%) DD 27.4 | high-first +198.3R DD 27.4 | random +138.5R | near S1-9  38% | years +10 +30 +33 +39 +75 +12
+R25 L100 off +0.00 TP 3.00 SL 0.50 BE 0.00 SV 0.00 |  474 trades win 21.3% PF 1.59 | +223.4R (+111.7%) DD 25.2 | high-first +223.4R DD 25.2 | random +138.5R | near S1-9  40% | years +14 +27 +34 +46 +84 +19
+R25 L 40 off -0.02 TP 0.75 SL 0.40 BE 0.00 SV 0.00 | 1376 trades win 40.0% PF 1.20 | +172.1R ( +68.9%) DD 18.9 | high-first +169.3R DD 18.9 | random  +51.1R | near S1-9  32% | years +6 +35 +15 +43 +65 +8
+R25 L 80 off +0.01 TP 3.00 SL 0.50 BE 0.00 SV 0.00 |  503 trades win 20.9% PF 1.55 | +221.9R (+111.0%) DD 25.1 | high-first +221.9R DD 25.1 | random +136.0R | near S1-9  40% | years +12 +29 +31 +47 +70 +33
+R25 L100 off -0.02 TP 3.00 SL 0.50 BE 0.00 SV 0.00 |  484 trades win 20.7% PF 1.53 | +206.4R (+103.2%) DD 25.3 | high-first +206.4R DD 25.3 | random +131.1R | near S1-9  38% | years +11 +28 +33 +42 +80 +13
+R30 L100 off -0.03 TP 3.00 SL 0.50 BE 0.00 SV 0.00 |  471 trades win 20.8% PF 1.54 | +205.6R (+102.8%) DD 24.2 | high-first +205.6R DD 24.2 | random +126.1R | near S1-9  42% | years +13 +29 +26 +42 +81 +15
+R25 L100 off +0.01 TP 3.00 SL 0.50 BE 0.00 SV 0.00 |  474 trades win 21.3% PF 1.59 | +223.4R (+111.7%) DD 25.2 | high-first +223.4R DD 25.2 | random +130.2R | near S1-9  40% | years +14 +27 +29 +52 +78 +24
