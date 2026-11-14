@@ -1,0 +1,12 @@
+S1  trades   43 IDENTICAL | Crooks F + Medium on M5: net      +333 $, max DD 0.5 %, stopped False
+S2  trades   49 IDENTICAL | Crooks F + Medium on M5: net     +2322 $, max DD 1.7 %, stopped False
+S3  trades   79 IDENTICAL | Crooks F + Medium on M5: net     +3852 $, max DD 3.4 %, stopped False
+S4  trades  144 IDENTICAL | Crooks F + Medium on M5: net    +11977 $, max DD 4.1 %, stopped False
+S5  trades  274 IDENTICAL | Crooks F + Medium on M5: net      +703 $, max DD 0.9 %, stopped False
+S6  trades  225 IDENTICAL | Crooks F + Medium on M5: net      +288 $, max DD 1.9 %, stopped False
+S7  trades  255 IDENTICAL | Crooks F + Medium on M5: net     +1586 $, max DD 1.4 %, stopped False
+S8  trades  294 IDENTICAL | Crooks F + Medium on M5: net     +3830 $, max DD 2.8 %, stopped False
+S9  trades  997 IDENTICAL | Crooks F + Medium on M5: net     +1042 $, max DD 3.1 %, stopped False
+S10 trades 1194 IDENTICAL | Crooks F + Medium on M5: net     +9751 $, max DD 6.2 %, stopped False
+S11 trades  730 IDENTICAL | Crooks F + Medium on M5: net     +6968 $, max DD 4.3 %, stopped False
+v2 defaults vs v1: ALL IDENTICAL | total net +42653 $

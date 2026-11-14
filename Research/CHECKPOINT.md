@@ -723,8 +723,16 @@ Other gold findings:
       `recovery_tol.py` = recovery.py with the same tolerance, used by the tests only).
     - **Checks:** `pine_twin2.py` (the Pine v2 code in Python) vs engine2 with independently computed masks (`parity2_trades.py`):
       75 settings M15 + 12 M5, 13,519 trades ALL IDENTICAL (a London-mask bug in the test itself was fixed: pandas datetime64[s]);
-      money (`parity2_money.py`): 2,600 random settings, ~880k trades, 0 mismatches; end to end with Money on (`parity2_e2e.py`): ALL
-      IDENTICAL. Pine review (Sonnet sub-agent) running.
+      money (`parity2_money.py`): 2,600 random settings, ~880k trades, 0 mismatches; end to end with Money on (`parity2_e2e.py`): 34
+      settings, 7,908 trades ALL IDENTICAL. More trade batches: 125 settings in all (M15 + M5), 20,394 trades identical.
+      v2 defaults = v1 trades (`v2_defaults_check.py`: M5, all 11, 4,284 trades; `v2_m1_check.py`: M1, strategies 4 / 10 / 11).
+      `namecheck.py`: every identifier and every s.field defined.
+    - **Review (Sonnet sub-agent, checked by me):** no compile / runtime error, no deviation from SPEC / SPEC2 / recovery.simulate.
+      Taken: no line getter (slX / tpX kept, moveSL / moveTP), session / New York calls out of and / or, the rule's risk as a switch,
+      a header note on the live candle. Not taken: renaming unused tuple names to `_` (Pine does not warn on unused names).
+    - **Final file:** `TradingView/Fractal_Breakout_Grid.pine` (v2, 1,066 lines; .txt copy `Research/scratchpad/Fractal_Breakout_Grid.txt`).
+      Defaults: options off; Money on, Crooks F + ladder Medium, $50 base, $10,000 each, $500 cap clamp (gold M5 chart: +$42,653 over
+      the 11 strategies, worst drawdown 6.2 %).
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

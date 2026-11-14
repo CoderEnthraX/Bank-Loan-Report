@@ -43,7 +43,8 @@ HEAD = r'''//@version=6
 //  strategy, with the profit ladder, a hard cap and the leverage limit; the next trade's lots are shown.
 //  The trades are worked out on the chart's candles, along open -> the nearer of high / low -> the other
 //  -> close (gaps fill at the open). Use a chart timeframe at or below each strategy's timeframe (5 min
-//  or 1 min runs all 11). Swing highs come from completed candles only, so nothing repaints.
+//  or 1 min runs all 11). Swing highs come from completed candles only, so they never repaint; on the
+//  live candle the trade marks can still change until it closes (alerts are sent at the close).
 //  Alerts: create one alert with "Any alert() function call" (sent at the candle close).
 // =======================================================================================================
 indicator("Fractal Breakout Grid", shorttitle = "FBG", overlay = true, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
@@ -220,9 +221,12 @@ f_trend(int len) =>
 string tzUse   = tzIn == "Exchange" ? syminfo.timezone : tzIn
 int    dowUse  = dayofweek(time, tzUse)
 bool   dayOk   = not dayOn or (dowUse == dayofweek.monday and dMon) or (dowUse == dayofweek.tuesday and dTue) or (dowUse == dayofweek.wednesday and dWed) or (dowUse == dayofweek.thursday and dThu) or (dowUse == dayofweek.friday and dFri) or (dowUse == dayofweek.saturday and dSat) or (dowUse == dayofweek.sunday and dSun)
-bool   hourOk  = not hoursOn or not na(time(timeframe.period, hoursSess, tzUse))
+bool   inSess  = not na(time(timeframe.period, hoursSess, tzUse))
+bool   hourOk  = not hoursOn or inSess
 bool   trendOk = not trnOn or not f_fits(trnTf) or (not na(trE) and not na(trC) and trC > trE)
-bool   wkNow   = wkOn and dayofweek(time, "America/New_York") == dayofweek.friday and hour(time, "America/New_York") >= wkH
+int    nyDow   = dayofweek(time, "America/New_York")
+int    nyHour  = hour(time, "America/New_York")
+bool   wkNow   = wkOn and nyDow == dayofweek.friday and nyHour >= wkH
 bool   okBar   = dayOk and hourOk and trendOk and not wkNow
 int    dayNo   = year(time, tzUse) * 10000 + month(time, tzUse) * 100 + dayofmonth(time, tzUse)
 
@@ -325,6 +329,8 @@ type Strat
     line   lnE    = na
     line   lnSL   = na
     line   lnTP   = na
+    int    slX    = na
+    int    tpX    = na
     string msg    = ""
 
 f_px(float x) =>
@@ -390,7 +396,24 @@ f_raw(Strat s, float sd) =>
     if rec and prOn and crkPr == CPR_WAIT and (s.crWait or s.crNeedL)
         rec := false
     float pf = prOn and crkPr == CPR_PCT ? crkPrPct / 100.0 : 1.0
-    float r = recMode == L_LAB ? baseR * labU : recMode == L_GMART ? baseR * math.pow(recMult, math.min(s.recLosses, 200)) + baseR * s.recLosses : recMode == L_PAR ? baseR * math.pow(2.0, s.parWins) : recMode == L_RDALE ? baseR * s.rdUnits : recMode == L_DELAY ? (s.recLosses >= delayN ? baseR + s.recPool / recN : baseR) : recMode == L_EQPCT ? s.eq * eqPct / 100.0 : recMode == L_OSC ? baseR * math.min(s.oscU, oscNd) : recMode == L_MART ? baseR * math.pow(recMult, math.min(s.recLosses, 200)) : recMode == L_FIB ? baseR * (s.recLosses == 0 ? 1.0 : fb) : recMode == L_DALE ? baseR * s.dUnits : (recMode == L_C or recMode == L_CS) ? math.max(baseC, s.carried / cSplit) : recMode == L_CRA ? (rec ? math.max(baseR, s.crL / xr) : baseR) : recMode == L_CRB ? (rec ? math.max(baseR, s.crL / cSplit / xr) : baseR) : recMode == L_CRC ? (rec ? math.max(baseR, s.crL / s.crP * pf / xr) : baseR) : recMode == L_CRD ? (rec ? math.max(baseR, s.crL / xr) : baseR) : baseR + add
+    float r = switch recMode
+        L_LAB   => baseR * labU
+        L_GMART => baseR * math.pow(recMult, math.min(s.recLosses, 200)) + baseR * s.recLosses
+        L_PAR   => baseR * math.pow(2.0, s.parWins)
+        L_RDALE => baseR * s.rdUnits
+        L_DELAY => s.recLosses >= delayN ? baseR + s.recPool / recN : baseR
+        L_EQPCT => s.eq * eqPct / 100.0
+        L_OSC   => baseR * math.min(s.oscU, oscNd)
+        L_MART  => baseR * math.pow(recMult, math.min(s.recLosses, 200))
+        L_FIB   => baseR * (s.recLosses == 0 ? 1.0 : fb)
+        L_DALE  => baseR * s.dUnits
+        L_C     => math.max(baseC, s.carried / cSplit)
+        L_CS    => math.max(baseC, s.carried / cSplit)
+        L_CRA   => rec ? math.max(baseR, s.crL / xr) : baseR
+        L_CRB   => rec ? math.max(baseR, s.crL / cSplit / xr) : baseR
+        L_CRC   => rec ? math.max(baseR, s.crL / s.crP * pf / xr) : baseR
+        L_CRD   => rec ? math.max(baseR, s.crL / xr) : baseR
+        => baseR + add
     if crkFam
         r := f_crk(s, baseR, rec, rmin, pf, xr)
         [lOn, lGuard, lB, lC] = f_lad(s)
@@ -565,6 +588,8 @@ method openAt(Strat s, float px, bool gap) =>
             s.lnE  := line.new(bar_index, px, bar_index, px, color = s.col, width = 2)
             s.lnTP := line.new(bar_index, s.TPp, bar_index, s.TPp, color = C_TP)
             s.lnSL := line.new(bar_index, s.SLp, bar_index, s.SLp, color = C_SL)
+            s.slX  := bar_index
+            s.tpX  := bar_index
         string mTxt = s.cnt ? " | " + f_num(f_lots(s.units), "0.00##") + " lot, risk " + f_usd(s.risk) : ""
         if showLbl
             label.new(bar_index, px, str.tostring(s.id) + (gap ? " BUY (gap)" : " BUY") + (s.cnt ? " " + f_num(f_lots(s.units), "0.00##") : ""), color = s.col, textcolor = color.white, style = label.style_label_up, size = size.tiny)
@@ -624,31 +649,42 @@ method closeAt(Strat s, float px, int rsn) =>
     s.cnt := false
     true
 
-// the SL / TP line continues at a new level (one new line per candle at most)
-method moveLine(Strat s, line ln, float lvl) =>
-    line out = ln
-    if not na(ln)
-        if bar_index > ln.get_x1()
-            ln.set_x2(bar_index)
-            out := line.new(bar_index, lvl, bar_index, lvl, color = C_MOVE, style = line.style_dotted, width = 2)
+// the SL / TP line continues at a new level (one new line per candle at most; the candle where each line starts is kept)
+method moveSL(Strat s, float lvl) =>
+    if not na(s.lnSL)
+        if na(s.slX) or bar_index > s.slX
+            s.lnSL.set_x2(bar_index)
+            s.lnSL := line.new(bar_index, lvl, bar_index, lvl, color = C_MOVE, style = line.style_dotted, width = 2)
+            s.slX  := bar_index
         else
-            ln.set_y1(lvl)
-            ln.set_y2(lvl)
-    out
+            s.lnSL.set_y1(lvl)
+            s.lnSL.set_y2(lvl)
+    true
+
+method moveTP(Strat s, float lvl) =>
+    if not na(s.lnTP)
+        if na(s.tpX) or bar_index > s.tpX
+            s.lnTP.set_x2(bar_index)
+            s.lnTP := line.new(bar_index, lvl, bar_index, lvl, color = C_MOVE, style = line.style_dotted, width = 2)
+            s.tpX  := bar_index
+        else
+            s.lnTP.set_y1(lvl)
+            s.lnTP.set_y2(lvl)
+    true
 
 // BE trigger reached: the SL moves to the entry (never down)
 method doBE(Strat s) =>
     s.beOn := true
     if s.F > s.SLp
         s.SLp  := s.F
-        s.lnSL := s.moveLine(s.lnSL, s.F)
+        s.moveSL(s.F)
     true
 
 // salvage trigger reached: the TP moves to the entry
 method doSV(Strat s) =>
     s.svOn := true
     s.TPp  := s.F
-    s.lnTP := s.moveLine(s.lnTP, s.F)
+    s.moveTP(s.F)
     true
 
 // trailing stop: once the highest price is the start % above the fill, the SL follows it at the distance %
@@ -658,7 +694,7 @@ method trail(Strat s) =>
         if tl > s.SLp
             s.SLp  := tl
             s.trOn := true
-            s.lnSL := s.moveLine(s.lnSL, tl)
+            s.moveSL(tl)
     true
 
 // the waiting buy stop is used up (filled, skipped or expired)
