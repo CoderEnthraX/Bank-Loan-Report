@@ -31,7 +31,7 @@ extern "C" void rec_init() { LabReset(); gCrkPrPrev = (int)InpCrkPr; }   // as a
 extern "C" double rec_next(double exitR) { return NextRisk(exitR); }
 // v4.5: the $ risk with the Crooks E / I small-lot risk of this trade and the equity (Crooks H); T1 mode: the EA's own MinLotRisk() of the set stop
 extern "C" double rec_next_m(double exitR, double minRisk, double eq) { rec_eq = eq; return NextRisk(exitR, true, minRisk); }
-extern "C" double rec_next_t1(double exitR, double eq) { rec_eq = eq; return NextRisk(exitR, true, (InpRec == REC_CRE || InpRec == REC_CRI) ? MinLotRisk(trRisk) : 0); }
+extern "C" double rec_next_t1(double exitR, double eq) { rec_eq = eq; return NextRisk(exitR, true, (InpRec == REC_CRE || InpRec == REC_CRI || LadOn()) ? MinLotRisk(trRisk) : 0); }
 extern "C" void rec_take() { crkRec = CrkRecNext(); }
 extern "C" void rec_part(double np) { exPnl += np; totalNet += np; if(np != 0) carried = MathMax(0.0, carried - np); }
 extern "C" void rec_close() { BookClosed(); }

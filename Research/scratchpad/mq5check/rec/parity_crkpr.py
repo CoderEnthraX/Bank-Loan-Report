@@ -2,7 +2,8 @@
 (compiled, REC_DAYS mode of rec_driver) vs gold/recovery.py, trade for trade, on real gold sequences with their day changes.
 Every rule (forget; % 50 / 75; wait M 1-3; skip D 1-3 with forget on / off and counted days Mon-Fri / every day) x N 1-3 x cap none / $500 Clamp /
 Start again / Stop x Crooks C over 1 / 2 wins. Per signal: SKIP (paused) or the $ risk; STOP where the hard cap stops trading.
-v4.5: the same for Crooks E - J (built on Crooks C) with N 1 / 2 and forget, % 50, wait M 2, skip D 2 (forget off / on, Mon-Fri)."""
+v4.5: the same for Crooks E - J (built on Crooks C) with N 1 / 2 and forget, % 50, wait M 2, skip D 2 (forget off / on, Mon-Fri).
+v4.6: and Crooks F - J with the profit ladder at Medium and Max (target $1,000) with the same rules."""
 import sys, os, subprocess, tempfile, datetime
 S = '/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad'
 sys.path.insert(0, S + '/gold')
@@ -29,6 +30,7 @@ def rules():
             for fg in (False, True):
                 for al in (False, True): yield dict(crkPr='skip', crkPrN=N, crkPrD=D, crkPrForget=fg, _all=al)
 NEWM = {'Crooks E': {}, 'Crooks F': dict(fK=3.0), 'Crooks G': dict(gX=10.0), 'Crooks H': dict(hPct=1.0), 'Crooks I': dict(fK=3.0), 'Crooks J': dict(jX=20.0)}
+LADN = {'Low': 1, 'Medium': 2, 'High': 3, 'Extra high': 4, 'Max': 5}            # v4.6 ENUM_LADDER
 RECN = {'Crooks C': 20, 'Crooks E': 22, 'Crooks F': 23, 'Crooks G': 24, 'Crooks H': 25, 'Crooks I': 26, 'Crooks J': 27}
 def rules_new():
     for N in (1, 2):
@@ -51,6 +53,7 @@ def main():
                     f.write('%d%s %r %r %r %d%s\n' % (len(e), ''.join(' %d' % v for v in e), res, c, rm, len(parts or []), ''.join(' %r %r' % x for x in (parts or []))))
             trs = [(res, c, parts, e, None, rm) for (t, res, c, parts), e, rm in zip(seq, ev, rmin)]
             jobs = [('Crooks C', rl, {}) for rl in rules()] + [(m, rl, mk) for m, mk in NEWM.items() for rl in rules_new()]
+            jobs += [(m, rl, dict(mk, lad=lv, ladT=1000.0)) for m, mk in NEWM.items() if m in RC.LADFAM for lv in ('Medium', 'Max') for rl in rules_new()]
             for mode, rl, mk in jobs:
                 if rl.get('_all', False) != al: continue
                 kw = {k: v for k, v in rl.items() if not k.startswith('_')}
@@ -62,7 +65,8 @@ def main():
                                 'InpBaseRisk=50', 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpCrkPr=%d' % PR[kw['crkPr']], 'InpCrkPrN=%d' % kw['crkPrN'],
                                 'InpCrkPrPct=%r' % kw.get('crkPrPct', 50.0), 'InpCrkPrM=%d' % kw.get('crkPrM', 2), 'InpCrkPrD=%d' % kw.get('crkPrD', 3),
                                 'InpCrkPrForget=%d' % (1 if kw.get('crkPrForget') else 0), 'InpCrkPrAll=%d' % (1 if al else 0), 'InpCommLot=0', 'InpSpread=0', 'InpCrkT1=0',   # v4.0: the v3.9 cost defaults
-                                'InpCrkFK=%r' % mk.get('fK', 3.0), 'InpCrkGX=%r' % mk.get('gX', 10.0), 'InpCrkHPct=%r' % mk.get('hPct', 1.0), 'InpCrkJX=%r' % mk.get('jX', 20.0)]
+                                'InpCrkFK=%r' % mk.get('fK', 3.0), 'InpCrkGX=%r' % mk.get('gX', 10.0), 'InpCrkHPct=%r' % mk.get('hPct', 1.0), 'InpCrkJX=%r' % mk.get('jX', 20.0),
+                                'InpLadder=%d' % LADN.get(mk.get('lad'), 0), 'InpLadT=%r' % mk.get('ladT', 1000.0)]
                         out = subprocess.run(args, capture_output=True, text=True, check=True, env=dict(os.environ, REC_DAYS='1', REC_MIN='1', REC_START=repr(start))).stdout.split('\n')
                         ea = [('SKIP' if l == 'SKIP' else float(l.split()[1])) for l in out if l.startswith('R ') or l == 'SKIP']
                         stop = any(l == 'STOP' for l in out); runs += 1

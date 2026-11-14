@@ -1,4 +1,4 @@
-Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults; Fri Nov 13 16:58:57 UTC 2026
+Broker simulator, FxPro gold ticks from M1 bars, 3 Aug - 2 Oct 2026, EA defaults; Sat Nov 14 10:36:57 UTC 2026
 
 ################ 01_base: JIT=0
 == sc_01_base_43.log: 100 trades opened, 100 closed, 100 bookings, driver events 0

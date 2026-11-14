@@ -1,7 +1,8 @@
 """EA money management (its own NextRisk / BookClosed, compiled) vs the Python simulator (gold/recovery.py), trade for trade:
 every loss-recovery mode except % of equity, no cap / $500 clamp / start again / stop, Crooks B and Rule C split 1-5, on real gold sequences.
 v4.5: Crooks E - J too (E / I with the 0.01-lot risk of each trade = 1 oz x (stop + cost); F / I limit 2 / 3 / 5 x base; G 6 / 10 x base;
-H 1 / 2 % of a $10,000 start; J 10 / 20 / 40 x base), each also with Crooks C over 2 wins."""
+H 1 / 2 % of a $10,000 start; J 10 / 20 / 40 x base), each also with Crooks C over 2 wins.
+v4.6: the profit ladder on Crooks F - J (defaults) at every level, profit target $500 and $1,000, over 1 / 2 wins."""
 import sys, os, subprocess, tempfile
 S = '/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad'
 sys.path.insert(0, S + '/gold')
@@ -9,13 +10,16 @@ import recovery as RC, crooks
 H = S + '/mq5check/rec/rec_harness'
 EA_REC = {m: i for i, m in enumerate(RC.MODES)}          # MODES order == ENUM_REC order (0..27)
 CAPS = {'clamp': 0, 'stop': 1, 'reset': 2}
+LADN = {'Low': 1, 'Medium': 2, 'High': 3, 'Extra high': 4, 'Max': 5}            # v4.6 ENUM_LADDER
+
 NEW = {'Crooks E': [{}], 'Crooks F': [dict(fK=2.0), dict(fK=3.0), dict(fK=5.0)], 'Crooks G': [dict(gX=6.0), dict(gX=10.0)],
        'Crooks H': [dict(hPct=1.0), dict(hPct=2.0)], 'Crooks I': [dict(fK=2.0), dict(fK=3.0)], 'Crooks J': [dict(jX=10.0), dict(jX=20.0), dict(jX=40.0)]}
 def ea(path, exitR, mode, cap, act, split, n, cn=1, kw=None, start=1e12):
     kw = kw or {}
     args = [H, path, repr(exitR), 'InpRec=%d' % EA_REC[mode], 'InpCapOn=%d' % (1 if cap > 0 else 0), 'InpHardCap=%r' % (cap if cap > 0 else 500.0),
             'InpCapAction=%d' % CAPS[act], 'InpCSplit=%d' % split, 'InpBaseRisk=50', 'InpRecN=3', 'InpRecPct=50', 'InpRecMult=2', 'InpRecStep=25', 'InpParN=3', 'InpDelayN=2', 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpCommLot=0', 'InpSpread=0', 'InpCrkT1=0',   # v4.0: the v3.9 cost defaults
-            'InpCrkFK=%r' % kw.get('fK', 3.0), 'InpCrkGX=%r' % kw.get('gX', 10.0), 'InpCrkHPct=%r' % kw.get('hPct', 1.0), 'InpCrkJX=%r' % kw.get('jX', 20.0)]
+            'InpCrkFK=%r' % kw.get('fK', 3.0), 'InpCrkGX=%r' % kw.get('gX', 10.0), 'InpCrkHPct=%r' % kw.get('hPct', 1.0), 'InpCrkJX=%r' % kw.get('jX', 20.0),
+            'InpLadder=%d' % LADN.get(kw.get('lad'), 0), 'InpLadT=%r' % kw.get('ladT', 1000.0)]
     out = subprocess.run(args, capture_output=True, text=True, check=True, env=dict(os.environ, REC_MIN='1', REC_START=repr(start))).stdout.split('\n')
     rs = [float(l.split()[1]) for l in out if l.startswith('R ')]
     return rs, any(l == 'STOP' for l in out)
@@ -43,6 +47,10 @@ def main():
             for kw in NEW.get(mode, [{}]):
                 for split, cn in [(s_, c_) for s_ in splits for c_ in cns]:
                     jobs.append((mode, split, cn, kw, 1e4 if mode == 'Crooks H' else 1e12))
+            if mode in RC.LADFAM:                                          # v4.6 profit ladder
+                for lv in RC.LADDER:
+                    for T in (500.0, 1000.0):
+                        for cn in (1, 2): jobs.append((mode, 3, cn, dict(lad=lv, ladT=T), 1e4 if mode == 'Crooks H' else 1e12))
         for mode, split, cn, kw, start in jobs:
             for cap, act in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'), (500.0, 'stop')):
                 tr = []; r = RC.simulate(trs, mode, cap=cap, capAction=act, cSplit=split, exitR=xr, start=start, trace=tr, cN=cn, **kw)   # no ruin stop in the EA harness

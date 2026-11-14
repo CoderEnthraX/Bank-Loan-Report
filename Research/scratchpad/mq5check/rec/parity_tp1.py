@@ -11,6 +11,8 @@ H = S + '/mq5check/rec/rec_harness'
 REC = {'Crooks A': 18, 'Crooks B': 19, 'Crooks C': 20, 'Crooks D': 21, 'Crooks E': 22, 'Crooks F': 23, 'Crooks G': 24, 'Crooks H': 25, 'Crooks I': 26,
        'Crooks J': 27}; ACT = {'clamp': 0, 'stop': 1, 'reset': 2}
 NEW = (('Crooks E', 3, 1), ('Crooks F', 3, 1), ('Crooks F', 3, 2), ('Crooks G', 3, 1), ('Crooks H', 3, 1), ('Crooks I', 3, 1), ('Crooks J', 3, 1))   # v4.5 (defaults)
+LADN = {'Low': 1, 'Medium': 2, 'High': 3, 'Extra high': 4, 'Max': 5}            # v4.6 ENUM_LADDER
+NEWL = tuple((m, 3, 1, lv) for m in ('Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J') for lv in ('Medium', 'Max'))   # v4.6 ladder, target $1,000
 def rmin(x):
     """v4.5 Crooks E / I: the EA's MinLotRisk() of this setup in the harness (0.01 lot, tick 0.01, tick value 1, no commission) = 1 x (stop + spread)"""
     return x['R1'] + max(0.0, (1000.0 + x['spx']) - 1000.0)
@@ -28,17 +30,18 @@ def mult(x, tp1R, k):
 for (tf, name), d in D.items():
     tr = d['trades']
     trm = {k: [dict(x, m=mult(x, d['tp1R'], k), rmin=rmin(x)) for x in tr] for k in range(7)}
-    for mode, split, cn in (('Crooks A', 3, 1), ('Crooks B', 2, 1), ('Crooks B', 3, 1), ('Crooks B', 5, 1), ('Crooks C', 3, 1), ('Crooks C', 3, 2), ('Crooks C', 3, 3), ('Crooks D', 3, 1)) + NEW:
+    for mode, split, cn, lad in tuple(x + (None,) for x in (('Crooks A', 3, 1), ('Crooks B', 2, 1), ('Crooks B', 3, 1), ('Crooks B', 5, 1), ('Crooks C', 3, 1), ('Crooks C', 3, 2), ('Crooks C', 3, 3), ('Crooks D', 3, 1)) + NEW) + NEWL:
       for cap, act in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'), (500.0, 'stop')):
         for k in (range(7) if cap else (0,)):                           # the stop choice matters only through the hard cap
             st0 = 1e4 if mode == 'Crooks H' else 1e12
-            trace = []; r = K.simulate(trm[k], mode, cap=cap, capAction=act, cSplit=split, tp1rule=True, exitR=d['tp1R'], start=st0, trace=trace, cN=cn)
+            trace = []; r = K.simulate(trm[k], mode, cap=cap, capAction=act, cSplit=split, tp1rule=True, exitR=d['tp1R'], start=st0, trace=trace, cN=cn, lad=lad, ladT=1000.0)
             path = os.path.join(tdir.name, 'seq.txt')
             with open(path, 'w') as f:
                 for x, risk, pnl, sp in trace: f.write('%r %r %r\n' % (x['R1'], x['spx'], 0.0 if pnl is None else pnl / risk))
             args = [H, path, repr(d['tp1R']), 'InpRec=%d' % REC[mode], 'InpExitAt=1', 'InpTp1R=%r' % d['tp1R'], 'InpCrkT1=1', 'InpCommLot=0', 'InpBaseRisk=50',
                     'InpCSplit=%d' % split, 'InpCapOn=%d' % (1 if cap else 0), 'InpHardCap=%r' % (cap or 500.0), 'InpCapAction=%d' % ACT[act],
-                    'InpCrkT1Stop=%d' % k, 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpSpread=0']   # v4.0: the live spread, as the harness sets it
+                    'InpCrkT1Stop=%d' % k, 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpSpread=0',   # v4.0: the live spread, as the harness sets it
+                    'InpLadder=%d' % LADN.get(lad, 0), 'InpLadT=1000']
             out = subprocess.run(args, capture_output=True, text=True, check=True, env=dict(os.environ, REC_T1='1', REC_START=repr(st0))).stdout.split('\n')
             ea = [(float(l.split()[1]), int(l.split()[2])) for l in out if l.startswith('R ')]
             if trace and trace[-1][2] is None: trace = trace[:-1]          # the stopping signal: the EA must print STOP there
@@ -67,17 +70,17 @@ for (tf, name, ex), d in sorted(P2.items(), key=lambda kv: (kv[0][0], kv[0][1], 
     for pt in (0.3, 0.5, 0.7):
         for var, k in (('tight', 0), ('wide', 3)):
             trs = [dict(x, sp=x['v'][(pt, var)], m=mult_p(x, d['tp1R'], pt, var), rmin=rmin(x)) for x in d['trades'][:2500]]
-            for mode, split, cn in (('Crooks A', 3, 1), ('Crooks B', 3, 1), ('Crooks C', 3, 1), ('Crooks C', 3, 2), ('Crooks D', 3, 1)) + NEW:
+            for mode, split, cn, lad in tuple(x + (None,) for x in (('Crooks A', 3, 1), ('Crooks B', 3, 1), ('Crooks C', 3, 1), ('Crooks C', 3, 2), ('Crooks D', 3, 1)) + NEW) + NEWL:
                 for cap, act in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'), (500.0, 'stop')):
                     st0 = 1e4 if mode == 'Crooks H' else 1e12
-                    trace = []; r = K.simulate(trs, mode, cap=cap, capAction=act, cSplit=split, tp1rule=True, exitR=d['exitR'], start=st0, trace=trace, cN=cn)
+                    trace = []; r = K.simulate(trs, mode, cap=cap, capAction=act, cSplit=split, tp1rule=True, exitR=d['exitR'], start=st0, trace=trace, cN=cn, lad=lad, ladT=1000.0)
                     path = os.path.join(tdir.name, 'seq.txt')
                     with open(path, 'w') as f:
                         for x, risk, pnl, sp in trace: f.write('%r %r %r\n' % (x['R1'], x['spx'], 0.0 if pnl is None else pnl / risk))
                     args = [H, path, repr(d['exitR']), 'InpRec=%d' % REC[mode], 'InpExitAt=%d' % ex, 'InpCrkT1Any=%d' % (1 if ex != 1 else 0), 'InpCrkT1Pct=%r' % (100.0 * pt),
                             'InpTp1R=%r' % d['tp1R'], 'InpTp2R=%r' % d['tp2R'], 'InpCrkT1=1', 'InpCommLot=0', 'InpBaseRisk=50', 'InpCSplit=%d' % split,
                             'InpCapOn=%d' % (1 if cap else 0), 'InpHardCap=%r' % (cap or 500.0), 'InpCapAction=%d' % ACT[act], 'InpCrkT1Stop=%d' % k,
-                            'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpSpread=0']
+                            'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpSpread=0', 'InpLadder=%d' % LADN.get(lad, 0), 'InpLadT=1000']
                     out = subprocess.run(args, capture_output=True, text=True, check=True, env=dict(os.environ, REC_T1='1', REC_START=repr(st0))).stdout.split('\n')
                     ea = [(float(l.split()[1]), int(l.split()[2])) for l in out if l.startswith('R ')]
                     if trace and trace[-1][2] is None: trace = trace[:-1]

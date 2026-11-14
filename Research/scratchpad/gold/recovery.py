@@ -8,8 +8,20 @@ MODES = ['Off', 'Recover all losses on the next trade', 'Recover losses over N t
          'Crooks E', 'Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J']
 # v4.5: Crooks C and the rules built on it (everything of Crooks C applies to them: over N wins, the rule after N losing recovery trades)
 CFAM = ('Crooks C', 'Crooks E', 'Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J')
+# v4.6 profit ladder (Crooks F - J): level -> (lock share of the highest profit, share of the cushion added to the base, most base x, most extra
+# stop-out loss as a share of the cushion); the EA's ENUM_LADDER order (0 = off)
+LADDER = {'Low': (0.8, 0.10, 2.0, 0.25), 'Medium': (0.7, 0.15, 3.0, 0.30), 'High': (0.6, 0.20, 5.0, 0.35), 'Extra high': (0.5, 0.25, 8.0, 0.40),
+          'Max': (0.4, 0.30, 12.0, 0.50)}
+LADFAM = ('Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J')
+def lad_state(lad, ladT, net, peakNet, base):
+    """the profit ladder: (on, guard, B, C). on once the highest closed profit reached ladT; guard = on and the closed profit at or below 0
+    (every trade 0.01 lot); B = base + min((most - 1) x base, share x C); C = max(0, closed profit - lock x highest closed profit)"""
+    if lad is None or peakNet < ladT: return False, False, base, 0.0
+    lam, phi, bmax, gam = LADDER[lad]
+    C = max(0.0, net - lam * peakNet)
+    return True, net <= 0, base + min((bmax - 1.0) * base, phi * C), C
 def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0, trace=None, cN=1,
-             crkPr='off', crkPrN=2, crkPrPct=50.0, crkPrM=2, crkPrD=3, crkPrForget=False, fK=3.0, gX=10.0, hPct=1.0, jX=20.0):
+             crkPr='off', crkPrN=2, crkPrPct=50.0, crkPrM=2, crkPrD=3, crkPrForget=False, fK=3.0, gX=10.0, hPct=1.0, jX=20.0, lad=None, ladT=1000.0):
     """trades: iterable of (R result, spread cost in R) or (R result, spread cost in R, parts) or (R, cost, parts, day events). parts = [(R of the part,
     share of the position)] for a trade with a partial close: Rule C's carried losses are then updated after each part, like the strategy (once per candle).
     v3.9 Crooks C rule after crkPrN losing recovery trades in a row (Crooks C only): crkPr 'forget' (new cycle), 'pct' (every recovery trade goes for
@@ -25,7 +37,11 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
       Crooks G  the loss to win back is at most gX x base (the rest is accepted as lost)
       Crooks H  a recovery trade risks at most hPct % of the equity (at least the base)
       Crooks I  Crooks E + Crooks F
-      Crooks J  a recovery trade's risk x (1 - drawdown / (jX x base)), at least the base; drawdown = equity peak - equity (closed trades)"""
+      Crooks J  a recovery trade's risk x (1 - drawdown / (jX x base)), at least the base; drawdown = equity peak - equity (closed trades)
+    v4.6 PROFIT LADDER (lad = 'Low' .. 'Max', Crooks F - J only; see lad_state): once the highest closed profit reached ladT, the rule works with
+    the ladder base B; a trade risks at most the plain rule's risk + gam x C (the extra risk is paid from the cushion, never less than the plain
+    rule); while the closed profit is at or below 0 every trade risks the 0.01 lot (the 6th element), or the base if that is smaller. Crooks G's
+    limit is gX x the ladder base after the trade."""
     eq = start; peak = start; maxDD = 0.0; maxDDp = 0.0; net = 0.0; peakNet = 0.0      # peakNet: Crooks J (the drawdown of the closed profit)
     recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
     capStop = False; n = 0; maxRisk = 0.0; maxRiskPct = 0.0; ruined = False; ruinAt = None; gp = gl = 0.0
@@ -71,12 +87,20 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
              MODES[20]: max(base, crL / crP * (crkPrPct / 100.0 if prOn and crkPr == 'pct' else 1.0) / exitR) if crRec else base,
              MODES[21]: max(base, crL / exitR) if crRec else base}.get(mode, base + add)
         if cfam:                                                     # v4.5: Crooks C, and E - J built on it
-            r = max(base, crL / crP * (crkPrPct / 100.0 if prOn and crkPr == 'pct' else 1.0) / exitR) if crRec else base
-            if crRec:
-                if mode in ('Crooks F', 'Crooks I'): r = min(r, fK * base)
-                elif mode == 'Crooks H': r = min(r, max(base, eq * hPct / 100.0))
-                elif mode == 'Crooks J': r = max(base, r * max(0.0, 1.0 - (peakNet - net) / (jX * base)))   # = peak - equity, exact at any start
-            elif crL > 0 and mode in ('Crooks E', 'Crooks I') and len(tr) > 5 and tr[5] is not None: r = min(base, tr[5])
+            rmin = tr[5] if len(tr) > 5 else None
+            def crk(B):
+                x = max(B, crL / crP * (crkPrPct / 100.0 if prOn and crkPr == 'pct' else 1.0) / exitR) if crRec else B
+                if crRec:
+                    if mode in ('Crooks F', 'Crooks I'): x = min(x, fK * B)
+                    elif mode == 'Crooks H': x = min(x, max(B, eq * hPct / 100.0))
+                    elif mode == 'Crooks J': x = max(B, x * max(0.0, 1.0 - (peakNet - net) / (jX * B)))   # = peak - equity, exact at any start
+                elif crL > 0 and mode in ('Crooks E', 'Crooks I') and rmin is not None: x = min(B, rmin)
+                return x
+            r = crk(base)
+            lon, lguard, lB, lC = lad_state(lad if mode in LADFAM else None, ladT, net, peakNet, base)
+            if lon:                                                  # v4.6 profit ladder
+                r = min(crk(lB), r + LADDER[lad][3] * lC)
+                if lguard: r = min(base, rmin) if rmin is not None else base
         if cap > 0 and r > cap:
             if capAction == 'stop': capStop = True; break
             elif capAction == 'reset':
@@ -115,7 +139,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         # C keeps a leftover: a recovery trade that wins without winning everything back is followed by another recovery trade)
         lastPart = crP == 1                                            # this recovery trade went for the last part of the loss
         crL = max(0.0, crL - pnl)
-        if mode == 'Crooks G': crL = min(crL, gX * base)              # v4.5: never more than gX x base to win back
+        if mode == 'Crooks G': crL = min(crL, gX * lad_state(lad, ladT, net, peakNet, base)[2])   # v4.5: never more than gX x base (v4.6: the ladder base)
         if crL < 0.01 or (mode in (MODES[18], MODES[21]) and win and crRec):      # less than a cent left = all won back
             crL = 0.0; crN = 0; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False
         else:
