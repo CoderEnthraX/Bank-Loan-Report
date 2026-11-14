@@ -1053,7 +1053,7 @@ double LadBase(double &cush)
 {
    cush = 0;
    if(!LadOn()) return InpBaseRisk;
-   double lam, phi, bmax, gam; LadPar(lam, phi, bmax, gam);
+   double lam = 0, phi = 0, bmax = 0, gam = 0; LadPar(lam, phi, bmax, gam);
    cush = MathMax(0.0, totalNet - lam * crkPk);
    return InpBaseRisk + MathMin((bmax - 1.0) * InpBaseRisk, phi * cush);
 }
@@ -1063,7 +1063,8 @@ string LadTxt()
    if(!LadFam()) return lv + " | only with Crooks F, G, H, I or J";
    if(!LadOn()) return lv + " | best profit " + DoubleToString(MathMax(0.0, crkPk), 2) + " of " + DoubleToString(InpLadT, 0) + " to start";
    if(LadGuard()) return lv + " | back at the start: 0.01 lot until in profit";
-   double cush, b = LadBase(cush), lam, phi, bmax, gam; LadPar(lam, phi, bmax, gam);
+   double cush = 0, lam = 0, phi = 0, bmax = 0, gam = 0;
+   double b = LadBase(cush); LadPar(lam, phi, bmax, gam);
    return lv + " | lock " + DoubleToString(lam * crkPk, 2) + " | cushion " + DoubleToString(cush, 2) + " | base " + DoubleToString(b, 2);
 }
 
@@ -1234,7 +1235,8 @@ double NextRisk(double exitR, bool canTake = true, double minRisk = 0)
          r = CrkRule(base, exitR, minRisk);
          if(LadOn())                                                       // v4.6 profit ladder: the rule at the ladder's base, the extra paid from the cushion
          {
-            double cush, lb = LadBase(cush), lam, phi, bmax, gam; LadPar(lam, phi, bmax, gam);
+            double cush = 0, lam = 0, phi = 0, bmax = 0, gam = 0;
+            double lb = LadBase(cush); LadPar(lam, phi, bmax, gam);
             r = LadGuard() ? (minRisk > 0 ? MathMin(base, minRisk) : base) : MathMin(CrkRule(lb, exitR, minRisk), r + gam * cush / CrkT1Mult());
          }
          break;
@@ -1685,7 +1687,7 @@ void UpdateTable()
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
-   double lCu;
+   double lCu = 0;
    TblAdd("RISK | LOTS", exState != 0 ? DoubleToString(exRiskAmt, 2) + " | " + DoubleToString(exLots, 2) : "base " + DoubleToString(LadBase(lCu), 2), white, cell);
    TblAdd(isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", rec, (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white, cell);
    if(InpLadder != LAD_OFF) TblAdd("PROFIT LADDER", LadTxt(), LadGuard() ? negC : LadOn() ? posC : white, cell);
@@ -1852,7 +1854,7 @@ void BookClosed()
    bool lastPart = CrkParts() == 1;                     // this recovery trade went for the last part of the loss (Crooks C over N wins)
    crkL = MathMax(0.0, crkL - exPnl);
    crkPk = MathMax(crkPk, totalNet);                    // v4.5 Crooks J, v4.6 ladder: the highest closed profit (whatever the rule, so a switch knows it)
-   double gCush;
+   double gCush = 0;
    if(InpRec == REC_CRG && InpCrkGX > 0) crkL = MathMin(crkL, InpCrkGX * LadBase(gCush));   // v4.5 Crooks G: never more than X x base (v4.6: the ladder's base)
    if(exHg)                                             // the hedge pair closed (exPnl = both trades): forget the loss, or Crooks C goes on from the trade that closed last
    {
