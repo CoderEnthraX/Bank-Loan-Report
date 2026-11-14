@@ -711,6 +711,21 @@ Other gold findings:
       issue; taken: no ';' format sub-patterns (sign added like the Auction Retest indicator), explicit `true` returns, no lower-TF
       request. Not taken: "first chart bar does not arm a stale swing high" (arming it matches the engine).
 
+31. **Fractal Breakout Grid v2 (asked 2026-11-15: "all the settings ... different recovery rules")** (tasks #61-#63).
+    - **Research:** `rec11.py` (all 28 recovery rules + caps + ladder on the 11 strategies' gold trades, 200 shuffles; `rec11.txt`):
+      fixed $50 +$21.7k (worst DD 3.4 %); Crooks F + ladder Medium +$41.9k (6.2 %) = the default; % equity +$59.8k (7.4 %); Rule C split
+      $500 clamp +$108k (14.5 %); D'Alembert / Labouchere $500 clamp ~+$210k (27-29 %); without a cap Martingale-type rules blow 8-28 %
+      of the shuffles. `study2.py` (`study2.txt`): hours, days, EMA trend, expiry, trailing, time exit, weekend close, candle-close entry,
+      max per day, each alone on the 11: none raised the total (plain +440.7R) -> all off by default.
+    - **Spec:** `SPEC2.md`. Engine: `engine2.sim2` (= engine.sim with everything off: `check2.py`, 0 differences).
+    - **Pine:** `pine2/build_fbg2.py` -> v2 (money per strategy, 28 rules ported from recovery.simulate, ladder, cap, leverage, next
+      trade's lots; entry / exit options; days and hours). Oscar's Grind needs ceil(x - 1e-9) (float knife-edge with zero costs;
+      `recovery_tol.py` = recovery.py with the same tolerance, used by the tests only).
+    - **Checks:** `pine_twin2.py` (the Pine v2 code in Python) vs engine2 with independently computed masks (`parity2_trades.py`):
+      75 settings M15 + 12 M5, 13,519 trades ALL IDENTICAL (a London-mask bug in the test itself was fixed: pandas datetime64[s]);
+      money (`parity2_money.py`): 2,600 random settings, ~880k trades, 0 mismatches; end to end with Money on (`parity2_e2e.py`): ALL
+      IDENTICAL. Pine review (Sonnet sub-agent) running.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
