@@ -264,6 +264,8 @@ BarCtx gC;
 bool   gSim = false;             // test harness: no broker, the model's result is booked
 bool   gNoEntry = false;         // replay (warm-up, catch-up): buy stops and exits only, no new trade
 bool   gDirty = false;           // something to save in the restart memory
+bool   gReady = false;           // the start is done (history read, memory or warm-up): the rules run
+datetime gStartAt = 0;
 double gSimLog[]; int gSimN = 0; // test harness only: the closed trades (strategy, entry time, entry, exit time, exit, reason, $ risk)
 double gSimContract = 100.0;     // test harness only: units per lot
 CTrade trade;
@@ -344,8 +346,8 @@ void PushTrend(double c)
 //--- your time and the filters of a 1-minute bar
 double RuleGMT(int md, datetime server);
 double SrvGMT(datetime server);
-datetime UtcOf(datetime server) { return server - (datetime)MathRound(SrvGMT(server) * 3600.0); }
-datetime UserOf(datetime server) { return UtcOf(server) + (datetime)MathRound(InpUserGMT * 3600.0); }
+datetime UtcOf(datetime server) { return (datetime)((long)server - (long)MathRound(SrvGMT(server) * 3600.0)); }
+datetime UserOf(datetime server) { return (datetime)((long)UtcOf(server) + (long)MathRound(InpUserGMT * 3600.0)); }
 int NthSunday(int y, int mon, int k)
 {
    MqlDateTime d; ZeroMemory(d); d.year = y; d.mon = mon; d.day = 1;
@@ -363,13 +365,13 @@ bool InSess(int mins)
 }
 void Filters(datetime T, bool &okb, bool &wk, int &dno)
 {
-   datetime utc = UtcOf(T), u = utc + (datetime)MathRound(InpUserGMT * 3600.0);
+   datetime utc = UtcOf(T), u = UserOf(T);
    MqlDateTime lz; TimeToStruct(u, lz);
    bool dOk = !InpDayOn || (lz.day_of_week == 1 ? InpMon : lz.day_of_week == 2 ? InpTue : lz.day_of_week == 3 ? InpWed : lz.day_of_week == 4 ? InpThu :
                             lz.day_of_week == 5 ? InpFri : lz.day_of_week == 6 ? InpSat : InpSun);
    bool hOk = !InpHoursOn || InSess(lz.hour * 60 + lz.min);
    bool tOk = !InpTrnOn || gTrUp;
-   MqlDateTime ny; TimeToStruct(utc - (datetime)((NySummer(utc) ? 4 : 5) * 3600), ny);
+   MqlDateTime ny; TimeToStruct((datetime)((long)utc - (NySummer(utc) ? 4 : 5) * 3600), ny);
    wk = InpWkOn && ny.day_of_week == 5 && ny.hour >= InpWkH;
    okb = dOk && hOk && tOk && !wk;
    dno = lz.year * 10000 + lz.mon * 100 + lz.day;
@@ -665,7 +667,7 @@ void BarOpen(Strat &s, double o, double pc, bool okb, bool wk, int dno, datetime
       int xr = 0;
       if(o >= s.TPp) xr = s.svOn ? 4 : 1;
       else if(o <= s.SLp) xr = s.trOn ? 5 : (s.beOn ? 3 : 2);
-      else if(InpTExitH > 0 && T >= s.eTime + (datetime)MathRound(InpTExitH * 3600.0)) xr = 6;
+      else if(InpTExitH > 0 && (long)UtcOf(T) >= (long)UtcOf(s.eTime) + (long)MathRound(InpTExitH * 3600.0)) xr = 6;   // real hours (UTC): not shifted by the broker clock's summer time
       else if(wk) xr = 7;
       if(xr > 0) CloseAt(s, o, xr, T);
       else
@@ -717,6 +719,7 @@ bool LockTake()
 }
 void LockFree() { if(gLockN != "" && MQLInfoInteger(MQL_TESTER) == 0) GlobalVariableSetOnCondition(gLockN, 0, gLockV); }
 
+void TryStart();
 int OnInit()
 {
    if(AccountInfoInteger(ACCOUNT_MARGIN_MODE) != ACCOUNT_MARGIN_MODE_RETAIL_HEDGING)
@@ -751,6 +754,29 @@ int OnInit()
    trade.SetDeviationInPoints(50);
    trade.SetTypeFillingBySymbol(_Symbol);
    TzPick();
+   gReady = false; gStartAt = TimeLocal();
+   TryStart();
+   EventSetTimer(2);
+   return INIT_SUCCEEDED;
+}
+//--- MT5 has the history the start needs (1-minute bars, every strategy's timeframe, the trend timeframe)
+bool SeriesOk()
+{
+   if(MQLInfoInteger(MQL_TESTER) != 0) return true;
+   bool ok = SeriesInfoInteger(_Symbol, PERIOD_M1, SERIES_SYNCHRONIZED) != 0 && iTime(_Symbol, PERIOD_M1, 0) > 0;
+   for(int i = 0; i < 12; i++) if(S[i].ok && (SeriesInfoInteger(_Symbol, S[i].tf, SERIES_SYNCHRONIZED) == 0 || iTime(_Symbol, S[i].tf, 0) <= 0)) ok = false;
+   if(InpTrnOn && (SeriesInfoInteger(_Symbol, InpTrnTf, SERIES_SYNCHRONIZED) == 0 || iTime(_Symbol, InpTrnTf, 0) <= 0)) ok = false;
+   return ok;
+}
+//--- the start: the memory (restart) or the warm-up (fresh), positions closed while the EA was off, positions it does not know
+void TryStart()
+{
+   if(gReady) return;
+   if(!SeriesOk())
+   {
+      if(TimeLocal() - gStartAt < 60) return;           // again in 2 seconds (OnTimer)
+      Print("Fractal Breakout Grid EA: MT5 has not loaded all the history after 60 seconds: starting with what it has.");
+   }
    TrendLoad();
    datetime now = TimeCurrent(); now = now - now % 60;
    gC.T = 0; gC.last = 0; gC.prevC = 0; gC.okb = false; gC.wk = false; gC.dno = 0;
@@ -766,28 +792,29 @@ int OnInit()
          if(S[i].ok) { WarmStrat(S[i], now, c); if(c.T > 0) gC = c; }
       }
    }
+   gReady = true;
+   Reconcile();
+   for(int i = 0; i < 12; i++) if(S[i].ok && !S[i].pos) Adopt(S[i]);
    for(int i = 0; i < 12; i++)
       if(S[i].ok) Print("FBG S", i + 1, " ", TfTxt(S[i].tf), " ", S[i].r, "/", S[i].l, ": ", NowTxt(S[i]));
-   Reconcile();
    gDirty = true;
-   EventSetTimer(2);
    Draw(true);
-   return INIT_SUCCEEDED;
 }
 void OnDeinit(const int reason)
 {
-   StateSave(true);
+   if(gReady) StateSave(true);
    EventKillTimer();
    ObjectsDeleteAll(0, "FBG_");
    LockFree();
 }
 void OnTick()
 {
+   if(!gReady) { TryStart(); if(!gReady) return; }
    MqlTick tk;
    if(!SymbolInfoTick(_Symbol, tk) || tk.bid <= 0) return;
    Reconcile();
    datetime m = tk.time - tk.time % 60;
-   if(m != gC.T)
+   if(m > gC.T)
    {
       for(int i = 0; i < 12; i++) if(S[i].ok) BarEnd(S[i], gC);
       for(int i = 0; i < 12; i++) if(S[i].ok) PushLive(S[i]);
@@ -807,6 +834,7 @@ void OnTick()
 }
 void OnTimer()
 {
+   if(!gReady) { TryStart(); if(!gReady) return; }
    Reconcile();
    if(gDirty) { StateSave(false); gDirty = false; }
    Draw(false);

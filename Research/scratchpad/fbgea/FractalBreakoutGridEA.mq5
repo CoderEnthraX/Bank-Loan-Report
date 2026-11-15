@@ -365,6 +365,8 @@ BarCtx gC;
 bool   gSim = false;             // test harness: no broker, the model's result is booked
 bool   gNoEntry = false;         // replay (warm-up, catch-up): buy stops and exits only, no new trade
 bool   gDirty = false;           // something to save in the restart memory
+bool   gReady = false;           // the start is done (history read, memory or warm-up): the rules run
+datetime gStartAt = 0;
 double gSimLog[]; int gSimN = 0; // test harness only: the closed trades (strategy, entry time, entry, exit time, exit, reason, $ risk)
 double gSimContract = 100.0;     // test harness only: units per lot
 CTrade trade;
@@ -445,8 +447,8 @@ void PushTrend(double c)
 //--- your time and the filters of a 1-minute bar
 double RuleGMT(int md, datetime server);
 double SrvGMT(datetime server);
-datetime UtcOf(datetime server) { return server - (datetime)MathRound(SrvGMT(server) * 3600.0); }
-datetime UserOf(datetime server) { return UtcOf(server) + (datetime)MathRound(InpUserGMT * 3600.0); }
+datetime UtcOf(datetime server) { return (datetime)((long)server - (long)MathRound(SrvGMT(server) * 3600.0)); }
+datetime UserOf(datetime server) { return (datetime)((long)UtcOf(server) + (long)MathRound(InpUserGMT * 3600.0)); }
 int NthSunday(int y, int mon, int k)
 {
    MqlDateTime d; ZeroMemory(d); d.year = y; d.mon = mon; d.day = 1;
@@ -464,13 +466,13 @@ bool InSess(int mins)
 }
 void Filters(datetime T, bool &okb, bool &wk, int &dno)
 {
-   datetime utc = UtcOf(T), u = utc + (datetime)MathRound(InpUserGMT * 3600.0);
+   datetime utc = UtcOf(T), u = UserOf(T);
    MqlDateTime lz; TimeToStruct(u, lz);
    bool dOk = !InpDayOn || (lz.day_of_week == 1 ? InpMon : lz.day_of_week == 2 ? InpTue : lz.day_of_week == 3 ? InpWed : lz.day_of_week == 4 ? InpThu :
                             lz.day_of_week == 5 ? InpFri : lz.day_of_week == 6 ? InpSat : InpSun);
    bool hOk = !InpHoursOn || InSess(lz.hour * 60 + lz.min);
    bool tOk = !InpTrnOn || gTrUp;
-   MqlDateTime ny; TimeToStruct(utc - (datetime)((NySummer(utc) ? 4 : 5) * 3600), ny);
+   MqlDateTime ny; TimeToStruct((datetime)((long)utc - (NySummer(utc) ? 4 : 5) * 3600), ny);
    wk = InpWkOn && ny.day_of_week == 5 && ny.hour >= InpWkH;
    okb = dOk && hOk && tOk && !wk;
    dno = lz.year * 10000 + lz.mon * 100 + lz.day;
@@ -766,7 +768,7 @@ void BarOpen(Strat &s, double o, double pc, bool okb, bool wk, int dno, datetime
       int xr = 0;
       if(o >= s.TPp) xr = s.svOn ? 4 : 1;
       else if(o <= s.SLp) xr = s.trOn ? 5 : (s.beOn ? 3 : 2);
-      else if(InpTExitH > 0 && T >= s.eTime + (datetime)MathRound(InpTExitH * 3600.0)) xr = 6;
+      else if(InpTExitH > 0 && (long)UtcOf(T) >= (long)UtcOf(s.eTime) + (long)MathRound(InpTExitH * 3600.0)) xr = 6;   // real hours (UTC): not shifted by the broker clock's summer time
       else if(wk) xr = 7;
       if(xr > 0) CloseAt(s, o, xr, T);
       else
@@ -838,8 +840,12 @@ bool BrokerOpen(Strat &s)
    if(gNoEntry) return false;
    double v = LotsOf(s.units), st = LotStep(), vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), mg = 0;
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
-   while(v >= vmin && OrderCalcMargin(ORDER_TYPE_BUY, _Symbol, v, ask, mg) && mg > AccountInfoDouble(ACCOUNT_MARGIN_FREE)) v = NormalizeDouble(v - st, 8);
-   if(v < vmin) { Print("FBG S", s.id, ": not enough free margin for the minimum lot: trade skipped."); return false; }
+   double lossLot = (s.F - s.SLp + Costs()) * Vpu() * Contract();          // the stop-out loss of 1 lot
+   if(InpCapOn && lossLot > 0 && v * lossLot > InpHardCap + 1e-9) v = MathFloor(InpHardCap / lossLot / st + 1e-9) * st;   // rounding never past the cap
+   if(OrderCalcMargin(ORDER_TYPE_BUY, _Symbol, 1.0, ask, mg) && mg > 0)
+      v = MathMin(v, MathFloor(AccountInfoDouble(ACCOUNT_MARGIN_FREE) / mg / st + 1e-9) * st);           // what the free margin carries
+   v = NormalizeDouble(v, 8);
+   if(v < vmin) { Print("FBG S", s.id, ": the size is below the minimum lot (hard cap or free margin): trade skipped."); return false; }
    double md = MinDist() + TickSize();
    double sl = NormP(s.SLp), tp = NormP(s.TPp);
    if(sl > bid - md) sl = 0;
@@ -887,25 +893,37 @@ bool BrokerClose(Strat &s, double model, double &usd)
    if(PositionSelectByTicket(s.ticket))
    {
       trade.SetExpertMagicNumber((ulong)(InpMagic + s.id));
-      if(!trade.PositionClose(s.ticket) && PositionSelectByTicket(s.ticket))
+      bool sent = trade.PositionClose(s.ticket);
+      uint rc = trade.ResultRetcode();
+      bool done = sent && (rc == TRADE_RETCODE_DONE || rc == TRADE_RETCODE_DONE_PARTIAL || rc == TRADE_RETCODE_PLACED);
+      if(!done && PositionSelectByTicket(s.ticket))           // refused (requote, market closed, ...): the trade stays, retried
       {
-         Print("FBG S", s.id, ": close failed (", trade.ResultRetcodeDescription(), "): retried on the next ticks.");
+         Print("FBG S", s.id, ": close refused (", trade.ResultRetcodeDescription(), "): retried in a few seconds.");
          return false;
       }
    }
    double px = 0; int why = -1;
    bool got = PosResult(s.ticket, usd, px, why);
    for(int tries = 0; !got && tries < 3; tries++) { Sleep(50); got = PosResult(s.ticket, usd, px, why); }
-   if(!got) usd = model;
+   if(!got)
+   {
+      if(PositionSelectByTicket(s.ticket)) return false;      // still open (a partial close): the rest on the next try
+      usd = model;                                            // gone, its deals not readable yet: the rules' result
+   }
    return true;
 }
 //--- the broker closed a position itself (its SL / TP, a stop-out, by hand): book it as the rules' exit of that kind
+datetime gExAt[12];
 void Reconcile()
 {
    if(gSim) return;
    for(int i = 0; i < 12; i++)
    {
-      if(S[i].pos && S[i].exitDue > 0) { CloseAt(S[i], S[i].exitPx, S[i].exitDue, TimeCurrent()); continue; }   // a refused close: again
+      if(S[i].pos && S[i].exitDue > 0)                       // a refused close: again, every 5 seconds
+      {
+         if(TimeLocal() - gExAt[i] >= 5) { gExAt[i] = TimeLocal(); CloseAt(S[i], S[i].exitPx, S[i].exitDue, TimeCurrent()); }
+         continue;
+      }
       if(!S[i].pos || S[i].ticket == 0 || PositionSelectByTicket(S[i].ticket)) continue;
       double usd = 0, px = 0; int why = -1;
       if(!PosResult(S[i].ticket, usd, px, why)) continue;     // the deals are not in the history yet: next tick
@@ -1038,7 +1056,9 @@ void WarmStrat(Strat &s, datetime now, BarCtx &c)
    datetime from = MathMax(act, now - (datetime)(MathMax(1, InpWarmDays) * 86400));
    from = from - from % 60;
    int k0 = 0;
+   bool ne = gNoEntry; gNoEntry = true;                  // quiet (no notes for old swing highs)
    for(; k0 < nt && tf[k0].time + ps <= from; k0++) PushTf(s, tf[k0].high, tf[k0].time, tf[k0].time + (datetime)ps, true);
+   gNoEntry = ne;
    if(act > 0 && act < from && s.lvlOn)
    {
       double hm = 0;
@@ -1068,6 +1088,7 @@ void TrendLive()
    if(gTrLast > 0)
    {
       MqlRates r[]; int n = CopyRates(_Symbol, InpTrnTf, gTrLast, (datetime)(t0 - 1), r);
+      if(n <= 0) return;
       for(int i = 0; i < n; i++) if(r[i].time >= gTrLast && r[i].time < t0) PushTrend(r[i].close);
    }
    gTrLast = t0;
@@ -1080,6 +1101,7 @@ void PushLive(Strat &s)
    if(s.tfLast > 0)
    {
       MqlRates r[]; int n = CopyRates(_Symbol, s.tf, s.tfLast, (datetime)(t0 - 1), r);
+      if(n <= 0) return;                                  // not read yet (history loading): again on the next tick
       for(int i = 0; i < n; i++) if(r[i].time >= s.tfLast && r[i].time < t0) PushTf(s, r[i].high, r[i].time, t0, true);
    }
    s.tfLast = t0;
@@ -1092,6 +1114,7 @@ bool     gIoSave = false;
 string   gIoN[]; double gIoV[]; int gIoC = 0;
 string   gSvN[]; double gSvV[]; int gSvC = 0;
 datetime gSvT = 0;
+double   gSvLast = 0;                      // the last price of the bar the EA was in when it stopped
 bool     gRestored = false;
 int SvVer() { return 1; }
 void IoD(string n, double &x)
@@ -1144,6 +1167,8 @@ void StateIO(bool save)
    gIoSave = save; gIoC = 0;
    int ver = SvVer(); IoI("ver", ver);
    datetime lt = gC.T, sv = TimeCurrent(); IoT("lt", lt); IoT("sv", sv);
+   double cl = gC.last; IoD("cl", cl);
+   if(!save) gSvLast = cl;
    double acc = (double)AccountInfoInteger(ACCOUNT_LOGIN); IoD("acc", acc);
    if(!save) { gSvT = lt; }
    for(int i = 0; i < 12; i++) StratIO(S[i]);
@@ -1187,15 +1212,41 @@ void Restore(datetime now)
       S[i].kAct = kA;
    }
    BarCtx c;
+   MqlRates b[];
+   double bc = CopyRates(_Symbol, PERIOD_M1, gSvT, 1, b) == 1 && b[0].time == gSvT ? b[0].close : 0;   // that bar's close
    for(int i = 0; i < 12; i++)
    {
-      c.T = 0; c.last = 0; c.prevC = 0; c.okb = false; c.wk = false; c.dno = 0;
-      if(S[i].ok) ReplayStrat(S[i], gSvT + 60, now, gSvT, c, true);
+      c.T = gSvT; c.last = gSvLast; c.prevC = 0; Filters(c.T, c.okb, c.wk, c.dno);   // the bar the EA was in when it stopped
+      if(S[i].ok)
+      {
+         if(bc > 0 && c.last > 0 && gSvT + 60 <= now)     // its rest: from the last price to its close (not its high / low: they may be older)
+         {
+            bool ne = gNoEntry; gNoEntry = true;
+            Move(S[i], c, bc); c.last = bc;
+            gNoEntry = ne;
+         }
+         ReplayStrat(S[i], gSvT + 60, now, gSvT, c, true);
+      }
       TfMark(S[i], c.T > 0 ? c.T : gSvT);
       if(c.T > 0) gC = c;
    }
 }
 
+//--- a strategy's position the EA does not know (a crash between the buy and the save, memory off): managed from now on with its
+//--- own SL / TP (the rules' levels from its open price where it has none); booked with its real result when it closes
+void Adopt(Strat &s)
+{
+   ulong tk = FindPos(s);
+   if(tk == 0 || !PositionSelectByTicket(tk)) return;
+   double op = PositionGetDouble(POSITION_PRICE_OPEN), psl = PositionGetDouble(POSITION_SL), ptp = PositionGetDouble(POSITION_TP);
+   s.pos = true; s.F = op; s.SLp = psl > 0 ? psl : op * (1.0 - s.sl / 100.0); s.TPp = ptp > 0 ? ptp : op * (1.0 + s.tp / 100.0);
+   s.BEl = op * (1.0 + s.be / 100.0); s.SVl = op * (1.0 - s.sv / 100.0);
+   s.beOn = s.SLp >= op; s.svOn = s.TPp <= op; s.trOn = false; s.hi = MathMax(op, SymbolInfoDouble(_Symbol, SYMBOL_BID));
+   s.eTime = (datetime)PositionGetInteger(POSITION_TIME); s.ticket = tk; s.lots = PositionGetDouble(POSITION_VOLUME);
+   s.units = s.lots * Contract(); s.bR = FBase(s, op * s.sl / 100.0); s.risk = s.units * (op - s.SLp + Costs()) * Vpu(); s.cnt = true; s.exitDue = 0;
+   Print("FBG S", s.id, ": adopted its open position #", tk, " (", DoubleToString(s.lots, 2), " lot at ", DoubleToString(op, _Digits), ").");
+   gDirty = true;
+}
 //--- table and lines -----------------------------------------------------------------------------------------------------------------
 color  gCol[12] = { C'41,98,255', C'0,188,212', C'76,175,80', C'255,152,0', C'156,39,176', C'233,30,99', C'0,150,136', C'205,220,57', C'121,85,72', C'96,125,139', C'255,82,82', C'255,235,59' };
 string gRows[]; color gRowC[];
@@ -1325,6 +1376,7 @@ bool LockTake()
 }
 void LockFree() { if(gLockN != "" && MQLInfoInteger(MQL_TESTER) == 0) GlobalVariableSetOnCondition(gLockN, 0, gLockV); }
 
+void TryStart();
 int OnInit()
 {
    if(AccountInfoInteger(ACCOUNT_MARGIN_MODE) != ACCOUNT_MARGIN_MODE_RETAIL_HEDGING)
@@ -1359,6 +1411,29 @@ int OnInit()
    trade.SetDeviationInPoints(50);
    trade.SetTypeFillingBySymbol(_Symbol);
    TzPick();
+   gReady = false; gStartAt = TimeLocal();
+   TryStart();
+   EventSetTimer(2);
+   return INIT_SUCCEEDED;
+}
+//--- MT5 has the history the start needs (1-minute bars, every strategy's timeframe, the trend timeframe)
+bool SeriesOk()
+{
+   if(MQLInfoInteger(MQL_TESTER) != 0) return true;
+   bool ok = SeriesInfoInteger(_Symbol, PERIOD_M1, SERIES_SYNCHRONIZED) != 0 && iTime(_Symbol, PERIOD_M1, 0) > 0;
+   for(int i = 0; i < 12; i++) if(S[i].ok && (SeriesInfoInteger(_Symbol, S[i].tf, SERIES_SYNCHRONIZED) == 0 || iTime(_Symbol, S[i].tf, 0) <= 0)) ok = false;
+   if(InpTrnOn && (SeriesInfoInteger(_Symbol, InpTrnTf, SERIES_SYNCHRONIZED) == 0 || iTime(_Symbol, InpTrnTf, 0) <= 0)) ok = false;
+   return ok;
+}
+//--- the start: the memory (restart) or the warm-up (fresh), positions closed while the EA was off, positions it does not know
+void TryStart()
+{
+   if(gReady) return;
+   if(!SeriesOk())
+   {
+      if(TimeLocal() - gStartAt < 60) return;           // again in 2 seconds (OnTimer)
+      Print("Fractal Breakout Grid EA: MT5 has not loaded all the history after 60 seconds: starting with what it has.");
+   }
    TrendLoad();
    datetime now = TimeCurrent(); now = now - now % 60;
    gC.T = 0; gC.last = 0; gC.prevC = 0; gC.okb = false; gC.wk = false; gC.dno = 0;
@@ -1374,28 +1449,29 @@ int OnInit()
          if(S[i].ok) { WarmStrat(S[i], now, c); if(c.T > 0) gC = c; }
       }
    }
+   gReady = true;
+   Reconcile();
+   for(int i = 0; i < 12; i++) if(S[i].ok && !S[i].pos) Adopt(S[i]);
    for(int i = 0; i < 12; i++)
       if(S[i].ok) Print("FBG S", i + 1, " ", TfTxt(S[i].tf), " ", S[i].r, "/", S[i].l, ": ", NowTxt(S[i]));
-   Reconcile();
    gDirty = true;
-   EventSetTimer(2);
    Draw(true);
-   return INIT_SUCCEEDED;
 }
 void OnDeinit(const int reason)
 {
-   StateSave(true);
+   if(gReady) StateSave(true);
    EventKillTimer();
    ObjectsDeleteAll(0, "FBG_");
    LockFree();
 }
 void OnTick()
 {
+   if(!gReady) { TryStart(); if(!gReady) return; }
    MqlTick tk;
    if(!SymbolInfoTick(_Symbol, tk) || tk.bid <= 0) return;
    Reconcile();
    datetime m = tk.time - tk.time % 60;
-   if(m != gC.T)
+   if(m > gC.T)
    {
       for(int i = 0; i < 12; i++) if(S[i].ok) BarEnd(S[i], gC);
       for(int i = 0; i < 12; i++) if(S[i].ok) PushLive(S[i]);
@@ -1415,6 +1491,7 @@ void OnTick()
 }
 void OnTimer()
 {
+   if(!gReady) { TryStart(); if(!gReady) return; }
    Reconcile();
    if(gDirty) { StateSave(false); gDirty = false; }
    Draw(false);

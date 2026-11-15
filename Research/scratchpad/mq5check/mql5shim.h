@@ -481,6 +481,9 @@ mql_long iTickVolume(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift)
 int iSpread(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift);
 int iHighest(const string& symbol, ENUM_TIMEFRAMES timeframe, ENUM_SERIESMODE type, int count = -1, int start = 0);
 int iLowest(const string& symbol, ENUM_TIMEFRAMES timeframe, ENUM_SERIESMODE type, int count = -1, int start = 0);
+enum ENUM_SERIES_INFO_INTEGER { SERIES_BARS_COUNT, SERIES_FIRSTDATE, SERIES_LASTBAR_DATE, SERIES_SERVER_FIRSTDATE, SERIES_TERMINAL_FIRSTDATE, SERIES_SYNCHRONIZED };
+mql_long SeriesInfoInteger(const string& symbol, ENUM_TIMEFRAMES tf, ENUM_SERIES_INFO_INTEGER prop);
+bool SeriesInfoInteger(const string& symbol, ENUM_TIMEFRAMES tf, ENUM_SERIES_INFO_INTEGER prop, mql_long& value);
 int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<MqlRates> rates_array);
 int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, datetime start_time, int count, ArrayView<MqlRates> rates_array);
 int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, datetime start_time, datetime stop_time, ArrayView<MqlRates> rates_array);   // by start and stop time (MQL5 has all three)

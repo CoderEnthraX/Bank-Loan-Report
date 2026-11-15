@@ -31,11 +31,13 @@ extern "C" void h_log(int k, double* o) { for(int q = 0; q < 7; q++) o[q] = gSim
 // runtime functions the rules never call in the harness (gSim): stubs so it links
 int CopyRates(const string&, ENUM_TIMEFRAMES, int, int, ArrayView<MqlRates>) { return 0; }
 int CopyRates(const string&, ENUM_TIMEFRAMES, datetime, datetime, ArrayView<MqlRates>) { return 0; }
+int CopyRates(const string&, ENUM_TIMEFRAMES, datetime, int, ArrayView<MqlRates>) { return 0; }
 void EventKillTimer() {}
 bool HistorySelectByPosition(mql_long) { return false; }
 bool OrderCalcMargin(ENUM_ORDER_TYPE, const string&, double, double, double& m) { m = 0; return true; }
 void Sleep(int) {}
 bool SymbolInfoTick(const string&, MqlTick&) { return false; }
+mql_long SeriesInfoInteger(const string&, ENUM_TIMEFRAMES, ENUM_SERIES_INFO_INTEGER) { return 1; }
 // restart memory test: save every strategy (StateIO, as StateSave), a fresh program (Setup), load it back (StateIO); the driver then
 // rebuilds the candles (no swing-high search, kAct from the buy stop's start) and the trend EMA, as Restore / TrendLoad do
 extern "C" void h_restart()

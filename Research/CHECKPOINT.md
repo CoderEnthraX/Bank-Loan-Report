@@ -896,11 +896,28 @@ Other gold findings:
       - `parity.py` compares against `pine_twin2.twin2(B, 'M1', ...)` trade for trade, with the $ risk.
     - **Results:**
       - Defaults: 5,551 trades identical, $ risk within 9e-13.
-      - Random option / money sets: still running at this commit (all identical so far).
+      - Random option / money sets: the final rerun on the fixed EA is running at this commit (the first run: 23 of 24 sets identical, the 24th led to the time-exit fix below).
+      - The first run found 3 differing trades: time exits over a summer-time switch, because the EA used server-clock hours. Fixed: the
+        time exit now compares UtcOf times. Time exits of 4 / 24 / 72 h on all 12 strategies are identical (`harness/dst_exit.py`).
       - Restart test (`FBG_RESTART`): defaults with 55 restarts, and 5 option sets with 70 restarts each, all identical.
       - mq5check: 0 / 0. The shim got the missing `CopyRates(symbol, tf, datetime start, datetime stop, rates)` overload (VWAP EA still
         0 / 0, run_tests 17 / 17).
-    - **Review (Sonnet high, checked by me):** still running at this commit.
+    - **Review (Sonnet high, checked by me):** 13 findings, all verified, and the restart tests were run again (all identical).
+      - Fixed:
+        - 1, blocker: BrokerClose trusted a true return from PositionClose. It now books only when the position is gone and retries
+          every 5 s (gExAt).
+        - 2: tfLast after the replay, done with TfMark.
+        - 3 / 4: Restore is seeded from the saved last price (StateIO "cl"). The rest of bar lt is processed only as last -> close,
+          because its high / low may come before the entry.
+        - 5: PushLive / TrendLive only move on after a read. TryStart waits for SERIES_SYNCHRONIZED for up to 60 s; the shim got
+          SeriesInfoInteger.
+        - 6: m > gC.T.
+        - 7: Adopt.
+        - 9: quiet warm-up.
+        - 11: long time arithmetic.
+        - 12: the lots are limited by the cap and the margin directly.
+      - Not fixed: 10 (a breakout seconds before the start is taken at the first tick, a next-open style late entry) and 13 (the warm-up
+        approximation when the buy stop is older than the history read).
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

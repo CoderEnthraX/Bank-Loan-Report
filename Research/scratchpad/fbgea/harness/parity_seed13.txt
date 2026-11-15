@@ -1,0 +1,13 @@
+defaults                     strategies 12, trades compared   5551, mismatching strategies 0, worst $ risk difference 9.3e-13
+random set 1                 strategies 12, trades compared   4194, mismatching strategies 0, worst $ risk difference 1.8e-13
+random set 2                 strategies 12, trades compared   2037, mismatching strategies 0, worst $ risk difference 1.4e-12
+random set 3                 strategies 12, trades compared   8526, mismatching strategies 0, worst $ risk difference 1.9e-12
+random set 4                 strategies 12, trades compared   6572, mismatching strategies 0, worst $ risk difference 5.0e-11
+  MISMATCH random set 5 S2: ('trade', 8, (1636139940, np.float64(1812.1083975000001), 1636395540, np.float64(1822.65), 6), (1636139940, 1812.1083975, 1636399140, 1823.54, 6))
+  MISMATCH random set 5 S4: ('trade', 21, (1636137480, np.float64(1809.887415), 1636393080, np.float64(1822.69), 6), (1636137480, 1809.887415, 1636396680, 1823.05, 6))
+  MISMATCH random set 5 S12: ('trade', 29, (1615578300, np.float64(1719.369885), 1615841100, np.float64(1729.92), 6), (1615578300, 1719.369885, 1615837500, 1729.08, 6))
+random set 5                 strategies 12, trades compared   4469, mismatching strategies 3, worst $ risk difference 2.6e-12
+random set 6                 strategies 12, trades compared   5222, mismatching strategies 0, worst $ risk difference 0.0e+00
+random set 7                 strategies 12, trades compared   1108, mismatching strategies 0, worst $ risk difference 5.8e-13
+random set 8                 strategies 12, trades compared     18, mismatching strategies 0, worst $ risk difference 2.6e-16
+PARITY: 1 sets with mismatches

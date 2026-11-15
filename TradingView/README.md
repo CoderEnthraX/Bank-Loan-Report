@@ -476,11 +476,25 @@ path (open, nearer extreme, other extreme, close).
   - Defaults: 5,551 trades (S1 ... S12: 43 / 49 / 79 / 144 / 274 / 225 / 255 / 294 / 999 / 1,192 / 741 / 1,256), all identical; $ risk
     within 1e-12.
   - Random option and money sets (candle-close entry, expiry, max per day, trailing, time / weekend exits, the EMA filter, days /
-    hours, all 28 recovery rules, the ladder, caps, the three position sizes): still running at this commit (all identical so far).
+    hours, all 28 recovery rules, the ladder, caps, the three position sizes): the final rerun on the fixed EA is running at this commit (the first run: 23 of 24 sets identical, the 24th led to the time-exit fix below).
+  - **A bug the comparison found, now fixed:** "Close a trade after N hours" counted hours on the broker's clock, which jumps an hour at
+    the US summer-time switches. Trades open over a switch closed an hour early or late. It now counts real hours (UTC). Time exits of
+    4 / 24 / 72 h on all 12 strategies are identical (8,758 / 6,660 / 6,003 trades).
 - **Restart memory:** a save, a fresh program and a reload every 26-29 days of data gives the same trades and accounts as a run without
   restarts. That holds for the defaults (55 restarts) and for five option sets (70 restarts each).
 - **Compile:** 0 errors and 0 warnings in the offline MQL5 check (MetaEditor itself is not available here).
-- **Review:** an independent review of the live parts (orders, catch-up, memory), checked by me: still running at this commit.
+- **Review:** an independent review of the live parts (orders, catch-up, memory), checked by me. Its findings were fixed, and the
+  restart tests were run again:
+  - **A refused close:** a close the broker refuses (MT5's trade library still returns true for it) could have been booked as closed
+    while the position stayed open. Now a trade is only booked when its position is gone. Refused closes are tried again every
+    5 seconds.
+  - **A restart in the same minute:** the minute the EA was in when it stopped is finished from its last price, so a gap through a buy
+    stop at the next open is not missed.
+  - **History still loading:** the EA waits (up to 60 s) until MT5 has loaded the history it needs. Candles not read yet are read on the
+    next tick, not skipped.
+  - **A position without memory:** after a crash between a buy and the save, the position (its magic number) is adopted and managed.
+  - **Older ticks:** a tick with an older time no longer starts a new minute.
+  - **Rounding up to the minimum lot never goes past the hard cap,** and the free margin limits the lots directly.
 
 The broker part (orders, deals) cannot run outside MetaTrader. Test it first in the Strategy Tester ("Every tick based on real ticks",
 a hedging account) and on a demo account.
