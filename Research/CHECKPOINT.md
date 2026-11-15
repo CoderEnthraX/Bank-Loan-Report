@@ -950,6 +950,43 @@ Other gold findings:
         +$5,415 / +$5,017. Suggested to the user: target $2,000-3,000 for the ARS ladder, or a guard that releases (not built).
     - **Delivered:** both xlsx in `Research/deliverables/` and sent to the user.
 
+37. **Monthly analysis with the user's own settings, filters off vs on, TP1 and TP2 (asked 2026-11-15, follow-up to item 36)** (tasks #83-#85).
+    The user clarified: the Auction Retest strategy with their settings (TP1 0.6, TP2 1.0; days / hours / news / kill zones), once with all
+    filters off and once with their filters (Tue-Thu, 06:00-23:00, news 17:45-18:15 with 60 min before + close at its start, kill zones Asia +
+    London + New York), final exit TP1 and TP2 separately, M5 then M15. Work dir `$S/mcej2` (mirrored in `Research/scratchpad/mcej2`).
+    - **Settings:** the strategy's defaults = the user's screenshots (`v40/user_settings.py` 160/160, only baseRisk renamed). Engine opts = run/parity.py
+      V40_REF (+ kzAuto True). Force-close 23:55 and the Saturday close kept on in both setups (trade management, not entry filters). Costs 0.23 per oz
+      (commission_value 0.115 per side = spread 0.16 + $7 per lot), earn-back targets.
+    - **Trades:** `ref_gse.py` = gold/ref_gs.py + per-bar events like shared_engine.pine (arm / cancel EXPIRED or REPLACED / fill / exit + win / move /
+      armBar after the bar); identical trades to ref_gs in all 8 runs. `stratemu.py` = TradingView's broker emulator + strategy_template.pine sections
+      1-5 at the defaults (limit from the next bar, stop at once, earn-back target after the engine fill, close at the next open on the engine's loss
+      exit / force-close / Saturday / news start, entries cancelled in the news block, one trade at a time). `collect_user.py [check]`.
+    - **Checks:** earn-back + time closes off -> 100 % the engine's (dir, fill bar, exit bar) in all 8 runs; win / loss differs in 0.1-0.3 % (both
+      levels in one candle, TradingView's path). News flags = monthly.py news_flags (both TFs). EA broker simulator (`sim/sim46`, the EA's own code,
+      M5, user defaults, 2021-01-11 .. 2026-10-03, `cmp_ea.py`): 3,014 EA vs 3,143 emulator trades, 2,920 matched (96.9 % / 92.9 %), 98.3 % same exit
+      candle, 99.2 % same win / loss (TP2: 96.3 / 92.6 %, 99.1 %, 99.5 %). Money (`cmp_ea_levels.py`): the simulator books +216R (TP1) / +198R (TP2)
+      only because it charges no commission and its 4 ticks a minute fill entries / targets past the order prices; at the EA's own order levels
+      (bid-chart shift = the real spread) + $7 per lot: -264R / -209R; the TradingView model -185R / -138R on the same matched trades.
+      Filters off, TP1 (`sim46 ... InpDayOn=0 InpHoursOn=0 InpKzOn=0 InpDNewsOn=0`): 11,182 EA vs 11,407 trades, 94.8 % / 92.9 % matched, 98.3 % same
+      exit candle, 99.0 % same win / loss, 311 EA force-closes vs 293; order levels + commission -1,259R vs the model -1,027R.
+    - **Review of stratemu / ref_gse vs the Pine (Sonnet high, checked by me):** no discrepancy that changes trades at the defaults. Minor: the
+      'off' setup has no news window (intended: all filters off); size-0 skip not modelled (needs equity < ~$40); the summer news window uses the
+      bar-open minute (= time(tf, session) per the Pine docs, unverified on TradingView); stop moves would need ex['stp'] refreshed (off by default).
+    - **Independent money check (Sonnet high, `verify/indep2`, re-run by me):** 8,960 cells (off M15 TP2 block 1; on M5 TP1 and M15 TP1 block 1;
+      on M5 TP2 block 5), 0 above $0.01, largest 2e-11.
+    - **Money:** `money2.py` (gold/recovery.py; No recovery + Crooks E + F-J x 6 levels; $50, $10,000, 1:100 at the limit price, no cap, E / I 1 oz,
+      ladder target $1,000, exitR 0.6 / 1.0). `costs.py`: fixed-risk net R at costs 0 / 0.16 / 0.23.
+    - **Findings:** fixed risk, after costs: filters off M5 TP1 -1,109R, TP2 -929R, M15 -243R / -234R; your filters M5 TP1 -194.5R (59.8 % wins),
+      TP2 -150.7R, M15 TP1 -81.3R, TP2 -60.1R. Without costs your filters: M5 +94R / +114R, M15 -16R / -0R (the 0.23 cost is 0.10R per trade on M5).
+      M5 your filters by year: -59, -18, -79, -59, +15, +6. One account: 95 (your filters) / 118 (off) of 128 rule-level-sheet runs end wiped out
+      (balance < $100; the 1:100 limit shrinks trades so it never reaches $0); survivors e.g. M5 TP2 Crooks E +$13,985. The ladder switched on in 0 /
+      10 of 100 runs; where it did (off, M15 TP2, G / J), the start guard kept the account at about -$1.3k to -$1.7k. Each month alone: Crooks E wins
+      most months (up to 61 of 70) with very large losing months (worst -$9,981).
+    - **Workbooks:** `build_user_xlsx.py OUTDIR` (layout from mcej/build_xlsx.py + a No recovery column, grey = wiped out, a fixed-risk / cost table on
+      the Summary) -> `Gold_Monthly_YourSettings_1_AllFiltersOff.xlsx`, `Gold_Monthly_YourSettings_2_YourFilters.xlsx` (13,472 formulas each, recalc 0
+      errors; 4,912 cells checked vs the pickles, 0 differences).
+    - **Delivered:** both xlsx in `Research/deliverables/` and sent to the user.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -973,6 +1010,7 @@ Other gold findings:
 | The user's Crooks C rules (v3.9) | `crooks_user.py` (wait for wins, skip days, forget, %; random orders over the real trade times) | `crooks_user.pkl`, `crooks_user.txt` | 1 min |
 | Month-by-month workbooks | `monthly.py collect`, `monthly.py money`, `monthly.py check`, then `build_monthly_xlsx.py` | `monthly_trades.pkl`, `monthly.pkl`, 2 xlsx | 1.5 min, 1 min, seconds, 1 min + recalc |
 | Monthly Crooks E-J x ladder (item 36, `$S/mcej`) | `collect_ars.py`, `collect_grid.py`, `money.py ars`, `money.py grid`, `targets.py`, `build_xlsx.py OUTDIR both`, recalc, `check_xlsx.py OUTDIR` | `*_trades.pkl`, `*_money.pkl`, `ars_targets.pkl`, 2 xlsx | 10 s, 20 s, 5 s, 3 s, 30 s, 5 s + recalc 1 min |
+| Monthly, the user's settings (item 37, `$S/mcej2`) | `collect_user.py [check]`, `money2.py`, `costs.py`, `build_user_xlsx.py OUTDIR`, recalc; EA check: `sim/export_m1.py` -> `sim46 m1_all.csv 2021-01-11 2026-10-03 InpExitAt=1|2 [filters 0]`, `cmp_ea.py`, `cmp_ea_levels.py` | `user_trades.pkl`, `user_money.pkl`, `user_costs.pkl`, 2 xlsx | 1 min, 20 s, 1 min, 5 s + recalc; sim 45 s (filters on) / 7 min (off) |
 | No losing month | `bestmonth.py collect`, `screen`, `money`, `report`, `exact`; `bestmonth_final.py`; `build_bestmonth_xlsx.py` | `bestmonth_*.pkl`, `bestmonth*.txt`, xlsx | 1 min, seconds, 20 s, 20 s, 1 min, 1 min, seconds |
 | Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py`, `crooks_sheet.py` and `vwfilter_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |

@@ -1,0 +1,152 @@
+
+M5 off TP1: 11446 trades, 6531 wins (57.1%), net -1109.1R at fixed risk; closes {'target': 6435, 'stop': 4715, 'force close': 296}
+  Off       Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -55457, +8 / -62, blown months 0, worst -2829, best +476
+  Crooks E  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total  -200313, +38 / -32, blown months 0, worst -9447, best +1798
+  Crooks F  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total  -112521, +10 / -60, blown months 0, worst -5337, best +861
+  Crooks F  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total  -112718, +10 / -60, blown months 0, worst -5337, best +797
+  Crooks F  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total  -113385, +10 / -60, blown months 0, worst -5337, best +619
+  Crooks G  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total  -134852, +20 / -50, blown months 0, worst -8807, best +2525
+  Crooks G  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total  -135312, +20 / -50, blown months 0, worst -8807, best +2357
+  Crooks G  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total  -139593, +18 / -52, blown months 0, worst -8807, best +2036
+  Crooks H  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -81505, +9 / -61, blown months 0, worst -3684, best +749
+  Crooks H  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -81670, +9 / -61, blown months 0, worst -3684, best +585
+  Crooks H  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -81960, +9 / -61, blown months 0, worst -3684, best +532
+  Crooks I  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -88205, +13 / -57, blown months 0, worst -4104, best +1062
+  Crooks I  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -88350, +13 / -57, blown months 0, worst -4104, best +918
+  Crooks I  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -88925, +13 / -57, blown months 0, worst -4104, best +551
+  Crooks J  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -78428, +10 / -60, blown months 0, worst -3385, best +1298
+  Crooks J  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -81199, +8 / -62, blown months 0, worst -3385, best +808
+  Crooks J  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +0 / -61 || each month alone: total   -81532, +8 / -62, blown months 0, worst -3385, best +761
+
+M5 off TP2: 10404 trades, 4909 wins (47.2%), net -929.3R at fixed risk; closes {'target': 4693, 'stop': 5262, 'force close': 449}
+  Off       Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -46466, +10 / -60, blown months 0, worst -3235, best +974
+  Crooks E  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -82386, +48 / -22, blown months 0, worst -9044, best +1584
+  Crooks F  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -79601, +14 / -56, blown months 0, worst -5482, best +1475
+  Crooks F  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -80821, +13 / -57, blown months 0, worst -5482, best +1134
+  Crooks F  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -82052, +12 / -58, blown months 0, worst -5482, best +793
+  Crooks G  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +2 / -59 || each month alone: total   -76527, +21 / -49, blown months 0, worst -8223, best +1506
+  Crooks G  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +2 / -59 || each month alone: total   -78541, +18 / -52, blown months 0, worst -8223, best +1964
+  Crooks G  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +2 / -59 || each month alone: total   -80137, +17 / -53, blown months 0, worst -8223, best +2742
+  Crooks H  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -61611, +12 / -58, blown months 0, worst -3855, best +1317
+  Crooks H  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -62011, +12 / -58, blown months 0, worst -3855, best +1011
+  Crooks H  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -62852, +12 / -58, blown months 0, worst -3855, best +706
+  Crooks I  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -52383, +22 / -48, blown months 0, worst -3440, best +1158
+  Crooks I  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -52589, +22 / -48, blown months 0, worst -3440, best +1268
+  Crooks I  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -53141, +22 / -48, blown months 0, worst -3440, best +1413
+  Crooks J  Off     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -60900, +11 / -59, blown months 0, worst -3554, best +1438
+  Crooks J  Medium  one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -62985, +10 / -60, blown months 0, worst -3554, best +1144
+  Crooks J  Max     one account:   -10000 blown 2026-01  DD 100% ladder - | months +1 / -60 || each month alone: total   -64833, +9 / -61, blown months 0, worst -3554, best +927
+
+M5 on TP1: 3153 trades, 1884 wins (59.8%), net -194.5R at fixed risk; closes {'stop': 1266, 'target': 1881, 'force close': 2, 'news': 4}
+  Off       Off     one account:   -10000                DD 100% ladder - | months +16 / -54 || each month alone: total    -9725, +22 / -48, blown months 0, worst -894, best +583
+  Crooks E  Off     one account:   -10000                DD 100% ladder - | months +17 / -53 || each month alone: total   -24424, +51 / -19, blown months 0, worst -5571, best +731
+  Crooks F  Off     one account:   -10000                DD 100% ladder - | months +16 / -54 || each month alone: total   -17669, +28 / -42, blown months 0, worst -1588, best +723
+  Crooks F  Medium  one account:   -10000                DD 100% ladder - | months +16 / -54 || each month alone: total   -17669, +28 / -42, blown months 0, worst -1588, best +723
+  Crooks F  Max     one account:   -10000                DD 100% ladder - | months +16 / -54 || each month alone: total   -17669, +28 / -42, blown months 0, worst -1588, best +723
+  Crooks G  Off     one account:   -10000                DD 100% ladder - | months +23 / -47 || each month alone: total   -22012, +41 / -29, blown months 0, worst -4170, best +761
+  Crooks G  Medium  one account:   -10000                DD 100% ladder - | months +23 / -47 || each month alone: total   -22012, +41 / -29, blown months 0, worst -4170, best +761
+  Crooks G  Max     one account:   -10000                DD 100% ladder - | months +23 / -47 || each month alone: total   -22012, +41 / -29, blown months 0, worst -4170, best +761
+  Crooks H  Off     one account:   -10000                DD 100% ladder - | months +17 / -53 || each month alone: total   -14351, +24 / -46, blown months 0, worst -1200, best +690
+  Crooks H  Medium  one account:   -10000                DD 100% ladder - | months +17 / -53 || each month alone: total   -14351, +24 / -46, blown months 0, worst -1200, best +690
+  Crooks H  Max     one account:   -10000                DD 100% ladder - | months +17 / -53 || each month alone: total   -14351, +24 / -46, blown months 0, worst -1200, best +690
+  Crooks I  Off     one account:   -10000                DD 100% ladder - | months +19 / -51 || each month alone: total   -12094, +30 / -40, blown months 0, worst -1077, best +686
+  Crooks I  Medium  one account:   -10000                DD 100% ladder - | months +19 / -51 || each month alone: total   -12094, +30 / -40, blown months 0, worst -1077, best +686
+  Crooks I  Max     one account:   -10000                DD 100% ladder - | months +19 / -51 || each month alone: total   -12094, +30 / -40, blown months 0, worst -1077, best +686
+  Crooks J  Off     one account:   -10000                DD 100% ladder - | months +17 / -53 || each month alone: total   -16853, +36 / -34, blown months 0, worst -1477, best +733
+  Crooks J  Medium  one account:   -10000                DD 100% ladder - | months +17 / -53 || each month alone: total   -16853, +36 / -34, blown months 0, worst -1477, best +733
+  Crooks J  Max     one account:   -10000                DD 100% ladder - | months +17 / -53 || each month alone: total   -16853, +36 / -34, blown months 0, worst -1477, best +733
+
+M5 on TP2: 2956 trades, 1457 wins (49.3%), net -150.7R at fixed risk; closes {'stop': 1489, 'target': 1443, 'force close': 9, 'news': 15}
+  Off       Off     one account:   -10000                DD 100% ladder - | months +22 / -48 || each month alone: total    -7537, +25 / -45, blown months 0, worst -989, best +704
+  Crooks E  Off     one account:   +13985                DD  51% ladder - | months +59 / -11 || each month alone: total    +2502, +53 / -17, blown months 0, worst -3775, best +596
+  Crooks F  Off     one account:   -10000                DD 100% ladder - | months +19 / -51 || each month alone: total   -11689, +23 / -47, blown months 0, worst -1237, best +757
+  Crooks F  Medium  one account:   -10000                DD 100% ladder - | months +19 / -51 || each month alone: total   -11689, +23 / -47, blown months 0, worst -1237, best +757
+  Crooks F  Max     one account:   -10000                DD 100% ladder - | months +19 / -51 || each month alone: total   -11689, +23 / -47, blown months 0, worst -1237, best +757
+  Crooks G  Off     one account:   -10000                DD 100% ladder - | months +24 / -46 || each month alone: total   -12777, +31 / -39, blown months 0, worst -2127, best +757
+  Crooks G  Medium  one account:   -10000                DD 100% ladder - | months +24 / -46 || each month alone: total   -12777, +31 / -39, blown months 0, worst -2127, best +757
+  Crooks G  Max     one account:   -10000                DD 100% ladder - | months +24 / -46 || each month alone: total   -12777, +31 / -39, blown months 0, worst -2127, best +757
+  Crooks H  Off     one account:   -10000                DD 100% ladder - | months +21 / -49 || each month alone: total    -9561, +22 / -48, blown months 0, worst -1080, best +757
+  Crooks H  Medium  one account:   -10000                DD 100% ladder - | months +21 / -49 || each month alone: total    -9561, +22 / -48, blown months 0, worst -1080, best +757
+  Crooks H  Max     one account:   -10000                DD 100% ladder - | months +21 / -49 || each month alone: total    -9561, +22 / -48, blown months 0, worst -1080, best +757
+  Crooks I  Off     one account:   -10000                DD 100% ladder - | months +22 / -48 || each month alone: total    -5137, +35 / -35, blown months 0, worst -1359, best +596
+  Crooks I  Medium  one account:   -10000                DD 100% ladder - | months +22 / -48 || each month alone: total    -5137, +35 / -35, blown months 0, worst -1359, best +596
+  Crooks I  Max     one account:   -10000                DD 100% ladder - | months +22 / -48 || each month alone: total    -5137, +35 / -35, blown months 0, worst -1359, best +596
+  Crooks J  Off     one account:   -10000                DD 100% ladder - | months +22 / -48 || each month alone: total   -14459, +27 / -43, blown months 0, worst -1426, best +745
+  Crooks J  Medium  one account:   -10000                DD 100% ladder - | months +22 / -48 || each month alone: total   -14459, +27 / -43, blown months 0, worst -1426, best +745
+  Crooks J  Max     one account:   -10000                DD 100% ladder - | months +22 / -48 || each month alone: total   -14459, +27 / -43, blown months 0, worst -1426, best +745
+
+M15 off TP1: 4267 trades, 2457 wins (57.6%), net -242.7R at fixed risk; closes {'target': 2380, 'stop': 1609, 'force close': 278}
+  Off       Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total   -12136, +17 / -53, blown months 0, worst -736, best +630
+  Crooks E  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +25 / -27 || each month alone: total    -6396, +61 / -9, blown months 0, worst -9981, best +1251
+  Crooks F  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +7 / -45 || each month alone: total   -22436, +21 / -49, blown months 0, worst -2081, best +766
+  Crooks F  Medium  one account:   -10000 blown 2025-04  DD 100% ladder - | months +7 / -45 || each month alone: total   -22436, +21 / -49, blown months 0, worst -2081, best +766
+  Crooks F  Max     one account:   -10000 blown 2025-04  DD 100% ladder - | months +7 / -45 || each month alone: total   -22436, +21 / -49, blown months 0, worst -2081, best +766
+  Crooks G  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +19 / -33 || each month alone: total   -20062, +36 / -34, blown months 0, worst -6234, best +1056
+  Crooks G  Medium  one account:   -10000 blown 2025-04  DD 100% ladder - | months +19 / -33 || each month alone: total   -20021, +36 / -34, blown months 0, worst -6234, best +1096
+  Crooks G  Max     one account:   -10000 blown 2025-04  DD 100% ladder - | months +19 / -33 || each month alone: total   -19914, +36 / -34, blown months 0, worst -6234, best +1204
+  Crooks H  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +8 / -44 || each month alone: total   -17584, +17 / -53, blown months 0, worst -1307, best +703
+  Crooks H  Medium  one account:   -10000 blown 2025-04  DD 100% ladder - | months +8 / -44 || each month alone: total   -17584, +17 / -53, blown months 0, worst -1307, best +703
+  Crooks H  Max     one account:   -10000 blown 2025-04  DD 100% ladder - | months +8 / -44 || each month alone: total   -17584, +17 / -53, blown months 0, worst -1307, best +703
+  Crooks I  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +8 / -44 || each month alone: total   -14939, +27 / -43, blown months 0, worst -2116, best +646
+  Crooks I  Medium  one account:   -10000 blown 2025-04  DD 100% ladder - | months +8 / -44 || each month alone: total   -14939, +27 / -43, blown months 0, worst -2116, best +646
+  Crooks I  Max     one account:   -10000 blown 2025-04  DD 100% ladder - | months +8 / -44 || each month alone: total   -14939, +27 / -43, blown months 0, worst -2116, best +646
+  Crooks J  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total   -18408, +34 / -36, blown months 0, worst -1503, best +900
+  Crooks J  Medium  one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total   -18408, +34 / -36, blown months 0, worst -1503, best +900
+  Crooks J  Max     one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total   -18408, +34 / -36, blown months 0, worst -1503, best +900
+
+M15 off TP2: 3854 trades, 1823 wins (47.3%), net -234.1R at fixed risk; closes {'target': 1670, 'stop': 1817, 'force close': 367}
+  Off       Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +11 / -41 || each month alone: total   -11705, +19 / -51, blown months 0, worst -922, best +538
+  Crooks E  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +7 / -45 || each month alone: total    -9172, +53 / -17, blown months 0, worst -5635, best +909
+  Crooks F  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total   -15738, +32 / -38, blown months 0, worst -1519, best +732
+  Crooks F  Medium  one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total   -15738, +32 / -38, blown months 0, worst -1519, best +732
+  Crooks F  Max     one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total   -15738, +32 / -38, blown months 0, worst -1519, best +732
+  Crooks G  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +15 / -37 || each month alone: total   -14923, +40 / -30, blown months 0, worst -3255, best +777
+  Crooks G  Medium  one account:    -1702                DD  31% ladder 2021-04 | months +24 / -46 || each month alone: total   -14923, +40 / -30, blown months 0, worst -3255, best +777
+  Crooks G  Max     one account:    -1417                DD  36% ladder 2021-04 | months +24 / -46 || each month alone: total   -14923, +40 / -30, blown months 0, worst -3255, best +777
+  Crooks H  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +12 / -40 || each month alone: total   -13854, +24 / -46, blown months 0, worst -1204, best +731
+  Crooks H  Medium  one account:   -10000 blown 2025-04  DD 100% ladder - | months +12 / -40 || each month alone: total   -13854, +24 / -46, blown months 0, worst -1204, best +731
+  Crooks H  Max     one account:   -10000 blown 2025-04  DD 100% ladder - | months +12 / -40 || each month alone: total   -13854, +24 / -46, blown months 0, worst -1204, best +731
+  Crooks I  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total    -6554, +37 / -33, blown months 0, worst -1389, best +583
+  Crooks I  Medium  one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total    -6554, +37 / -33, blown months 0, worst -1389, best +583
+  Crooks I  Max     one account:   -10000 blown 2025-04  DD 100% ladder - | months +10 / -42 || each month alone: total    -6554, +37 / -33, blown months 0, worst -1389, best +583
+  Crooks J  Off     one account:   -10000 blown 2025-04  DD 100% ladder - | months +13 / -39 || each month alone: total   -13664, +32 / -38, blown months 0, worst -1457, best +723
+  Crooks J  Medium  one account:    -1336                DD  24% ladder 2021-04 | months +24 / -46 || each month alone: total   -13664, +32 / -38, blown months 0, worst -1457, best +723
+  Crooks J  Max     one account:    -1327                DD  26% ladder 2021-04 | months +24 / -46 || each month alone: total   -13664, +32 / -38, blown months 0, worst -1457, best +723
+
+M15 on TP1: 1317 trades, 772 wins (58.6%), net -81.3R at fixed risk; closes {'target': 769, 'stop': 529, 'force close': 5, 'news': 14}
+  Off       Off     one account:    -4067                DD  44% ladder - | months +29 / -41 || each month alone: total    -4067, +29 / -41, blown months 0, worst -480, best +296
+  Crooks E  Off     one account:   -10000 blown 2026-02  DD 100% ladder - | months +15 / -47 || each month alone: total    -8187, +44 / -26, blown months 0, worst -6014, best +343
+  Crooks F  Off     one account:   -10000 blown 2026-02  DD 100% ladder - | months +17 / -45 || each month alone: total    -6856, +34 / -36, blown months 0, worst -646, best +296
+  Crooks F  Medium  one account:   -10000 blown 2026-02  DD 100% ladder - | months +17 / -45 || each month alone: total    -6856, +34 / -36, blown months 0, worst -646, best +296
+  Crooks F  Max     one account:   -10000 blown 2026-02  DD 100% ladder - | months +17 / -45 || each month alone: total    -6856, +34 / -36, blown months 0, worst -646, best +296
+  Crooks G  Off     one account:   -10000 blown 2026-02  DD 100% ladder - | months +30 / -32 || each month alone: total    -9520, +38 / -32, blown months 0, worst -2164, best +296
+  Crooks G  Medium  one account:   -10000 blown 2026-02  DD 100% ladder - | months +30 / -32 || each month alone: total    -9520, +38 / -32, blown months 0, worst -2164, best +296
+  Crooks G  Max     one account:   -10000 blown 2026-02  DD 100% ladder - | months +30 / -32 || each month alone: total    -9520, +38 / -32, blown months 0, worst -2164, best +296
+  Crooks H  Off     one account:    -5815                DD  62% ladder - | months +26 / -44 || each month alone: total    -6011, +29 / -41, blown months 0, worst -569, best +296
+  Crooks H  Medium  one account:    -5815                DD  62% ladder - | months +26 / -44 || each month alone: total    -6011, +29 / -41, blown months 0, worst -569, best +296
+  Crooks H  Max     one account:    -5815                DD  62% ladder - | months +26 / -44 || each month alone: total    -6011, +29 / -41, blown months 0, worst -569, best +296
+  Crooks I  Off     one account:   -10000 blown 2026-02  DD 100% ladder - | months +16 / -46 || each month alone: total    -7857, +28 / -42, blown months 0, worst -784, best +260
+  Crooks I  Medium  one account:   -10000 blown 2026-02  DD 100% ladder - | months +16 / -46 || each month alone: total    -7857, +28 / -42, blown months 0, worst -784, best +260
+  Crooks I  Max     one account:   -10000 blown 2026-02  DD 100% ladder - | months +16 / -46 || each month alone: total    -7857, +28 / -42, blown months 0, worst -784, best +260
+  Crooks J  Off     one account:    -5021                DD  54% ladder - | months +28 / -42 || each month alone: total    -8045, +35 / -35, blown months 0, worst -1278, best +296
+  Crooks J  Medium  one account:    -5021                DD  54% ladder - | months +28 / -42 || each month alone: total    -8045, +35 / -35, blown months 0, worst -1278, best +296
+  Crooks J  Max     one account:    -5021                DD  54% ladder - | months +28 / -42 || each month alone: total    -8045, +35 / -35, blown months 0, worst -1278, best +296
+
+M15 on TP2: 1252 trades, 611 wins (48.8%), net -60.1R at fixed risk; closes {'target': 578, 'stop': 608, 'news': 41, 'force close': 25}
+  Off       Off     one account:    -3005                DD  41% ladder - | months +28 / -42 || each month alone: total    -3005, +28 / -42, blown months 0, worst -480, best +400
+  Crooks E  Off     one account:   -10000 blown 2026-02  DD 100% ladder - | months +14 / -48 || each month alone: total    -2368, +39 / -31, blown months 0, worst -1335, best +313
+  Crooks F  Off     one account:   -10001 blown 2026-02  DD 100% ladder - | months +20 / -42 || each month alone: total    -3169, +35 / -35, blown months 0, worst -768, best +400
+  Crooks F  Medium  one account:   -10001 blown 2026-02  DD 100% ladder - | months +20 / -42 || each month alone: total    -3169, +35 / -35, blown months 0, worst -768, best +400
+  Crooks F  Max     one account:   -10001 blown 2026-02  DD 100% ladder - | months +20 / -42 || each month alone: total    -3169, +35 / -35, blown months 0, worst -768, best +400
+  Crooks G  Off     one account:    -5778                DD  67% ladder - | months +40 / -30 || each month alone: total    -2186, +38 / -32, blown months 0, worst -1357, best +400
+  Crooks G  Medium  one account:    -5778                DD  67% ladder - | months +40 / -30 || each month alone: total    -2186, +38 / -32, blown months 0, worst -1357, best +400
+  Crooks G  Max     one account:    -5778                DD  67% ladder - | months +40 / -30 || each month alone: total    -2186, +38 / -32, blown months 0, worst -1357, best +400
+  Crooks H  Off     one account:    -4553                DD  56% ladder - | months +24 / -46 || each month alone: total    -3792, +29 / -41, blown months 0, worst -603, best +400
+  Crooks H  Medium  one account:    -4553                DD  56% ladder - | months +24 / -46 || each month alone: total    -3792, +29 / -41, blown months 0, worst -603, best +400
+  Crooks H  Max     one account:    -4553                DD  56% ladder - | months +24 / -46 || each month alone: total    -3792, +29 / -41, blown months 0, worst -603, best +400
+  Crooks I  Off     one account:   -10000 blown 2026-02  DD 100% ladder - | months +18 / -44 || each month alone: total    -5097, +29 / -41, blown months 0, worst -652, best +313
+  Crooks I  Medium  one account:   -10000 blown 2026-02  DD 100% ladder - | months +18 / -44 || each month alone: total    -5097, +29 / -41, blown months 0, worst -652, best +313
+  Crooks I  Max     one account:   -10000 blown 2026-02  DD 100% ladder - | months +18 / -44 || each month alone: total    -5097, +29 / -41, blown months 0, worst -652, best +313
+  Crooks J  Off     one account:    -3447                DD  46% ladder - | months +28 / -42 || each month alone: total    -2548, +36 / -34, blown months 0, worst -906, best +400
+  Crooks J  Medium  one account:    -3447                DD  46% ladder - | months +28 / -42 || each month alone: total    -2548, +36 / -34, blown months 0, worst -906, best +400
+  Crooks J  Max     one account:    -3447                DD  46% ladder - | months +28 / -42 || each month alone: total    -2548, +36 / -34, blown months 0, worst -906, best +400
