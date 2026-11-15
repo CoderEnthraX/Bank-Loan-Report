@@ -22,12 +22,17 @@
 //  STRATEGY BUILD: the same rules and money as the indicator, executed with TradingView orders. TradingView
 //  fills an order from the candle after it is placed, so every order is placed at a candle's close for the
 //  next one: the waiting buy stop (also a new one that this close confirms), the model's SL / TP, and the time
-//  or weekend close due at the next open. Where the model acts inside a candle in a way TradingView cannot
-//  (an SL / TP moved by a BE, salvage or trailing trigger and hit in the same candle, a dip under and back
-//  over the buy stop inside one candle, a candle-close entry), a market order at the next open puts
-//  TradingView back in line with the model ("sync" in the trade list). Properties: commission 0.115 per
-//  contract per order = the 0.23 round-trip costs (change it with the Costs input), initial capital 120,000
-//  (12 accounts of 10,000). Run it on a 1 minute chart for all 12 strategies (5 min: all but strategy 12).
+//  or weekend close due at the next open. Trade list signals: entries S1 ... S12; exits TP, SL, BE (the SL was
+//  moved to the entry by the BE trigger), SALV (the TP was moved to the entry by the salvage trigger), TRAIL,
+//  TIME, WKND. BE and SALV exits are at the entry price, so only the commission is lost (TradingView counts
+//  them as losing trades). Where the model acts inside a candle in a way TradingView cannot (an SL / TP moved
+//  by a BE, salvage or trailing trigger and hit in the same candle, a dip under and back over the buy stop
+//  inside one candle, a candle-close entry), a market order at the next open follows the model: "BE next
+//  open", "SALV next open", ... (exits) or "S11 next open" (an entry). The smaller the chart timeframe, the
+//  fewer of these (strategy 11 on gold 2021-2026: 8.1% of its trades on a 15 min chart, 5.1% on 5 min, 1.6% on
+//  1 min). Properties: commission 0.115 per contract per order = the 0.23 round-trip costs (change it with the
+//  Costs input), initial capital 120,000 (12 accounts of 10,000). Run it on a 1 minute chart: all 12 strategies
+//  run there and the trades follow the rules most closely (5 min: all but strategy 12).
 //  Alerts: create one alert with "Any alert() function call" (sent at the candle close).
 // =======================================================================================================
 strategy("Fractal Breakout Grid Strategy", shorttitle = "FBG-S", overlay = true, initial_capital = 120000, currency = currency.USD, default_qty_type = strategy.fixed, default_qty_value = 1, pyramiding = 12, commission_type = strategy.commission.cash_per_contract, commission_value = 0.115, slippage = 0, process_orders_on_close = false, close_entries_rule = "ANY", margin_long = 0, margin_short = 0, calc_on_every_tick = false, calc_on_order_fills = false, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
@@ -434,6 +439,8 @@ type Strat
     int    dPrev  = na
     bool   stopped = false
     string stopWhy = ""
+    string xWhy   = ""
+    int    xBar   = na
     int    n      = 0
     int    nW     = 0
     int    nTP    = 0
@@ -782,6 +789,8 @@ method closeAt(Strat s, float px, int rsn) =>
     if s.cnt
         s.mmBook(usd)
     string rs = rsn == 1 ? "TP" : rsn == 2 ? "SL" : rsn == 3 ? "BE" : rsn == 4 ? "SALV" : rsn == 5 ? "TRAIL" : rsn == 6 ? "TIME" : "WKND"
+    s.xWhy := rs
+    s.xBar := bar_index
     if not na(s.lnE)
         s.lnE.set_x2(bar_index)
     if not na(s.lnSL)
@@ -1029,6 +1038,10 @@ f_units(Strat s, float F) =>
     float r = f_next(s, F)
     na(r) ? na : r / (F * s.sl / 100.0 + costIn)
 
+// the names the trade list shows for the exit orders: what the model calls an exit at that price
+f_slName(Strat s) => s.trOn ? "TRAIL" : s.beOn ? "BE" : "SL"
+f_tpName(Strat s) => s.svOn ? "SALV" : "TP"
+
 array<bool> tvIn = array.new<bool>(12, false)
 if strategy.opentrades > 0
     for j = 0 to strategy.opentrades - 1
@@ -1061,18 +1074,19 @@ for [i, s] in S
         if (tExitH > 0 and tN >= s.eTime + math.round(tExitH * 3600000)) or wkN
             strategy.close(sid, comment = wkN ? "WKND" : "TIME")
         else
-            strategy.exit(xid, from_entry = sid, stop = s.SLp, limit = s.TPp, comment_loss = "SL", comment_profit = "TP")
+            strategy.exit(xid, from_entry = sid, stop = s.SLp, limit = s.TPp, comment_loss = f_slName(s), comment_profit = f_tpName(s))
     else if s.pos
         bool  dueX = (tExitH > 0 and tN >= s.eTime + math.round(tExitH * 3600000)) or wkN
         float qs   = s.cnt ? s.units : f_units(s, s.F)
         if not dueX and not na(qs) and qs > 0
-            strategy.entry(sid, strategy.long, qty = qs, comment = "sync")
-            strategy.exit(xid, from_entry = sid, stop = s.SLp, limit = s.TPp, comment_loss = "SL", comment_profit = "TP")
+            strategy.entry(sid, strategy.long, qty = qs, comment = sid + " next open")
+            strategy.exit(xid, from_entry = sid, stop = s.SLp, limit = s.TPp, comment_loss = f_slName(s), comment_profit = f_tpName(s))
         else
             strategy.cancel(sid)
             strategy.cancel(xid)
     else if inTv
-        strategy.close(sid, comment = "sync")
+        // the model closed this trade inside this candle (or never had it): out at the next open, named by the model's exit
+        strategy.close(sid, comment = (not na(s.xBar) and s.xBar == bar_index ? s.xWhy : "rules flat") + " next open")
     else
         int   tc   = TC.get(i)
         bool  last = not na(tc) and time_close >= tc
@@ -1121,7 +1135,8 @@ f_tfs(string tf) =>
     tf == "D" or tf == "1D" ? "D1" : tf == "240" ? "H4" : tf == "60" ? "H1" : tf == "15" ? "M15" : tf == "5" ? "M5" : tf == "1" ? "M1" : tf
 
 var table T = na
-if barstate.islast and showTbl
+// the table: drawn by candle index on the last confirmed candle and again at every new candle close (a strategy only calculates on confirmed candles)
+if bar_index >= last_bar_index - 1 and showTbl
     if not na(T)
         T.delete()
     int nRow = 0

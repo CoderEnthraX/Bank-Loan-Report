@@ -267,11 +267,30 @@ TradingView fills an order only from the candle after it is placed, so every ord
 - **Buy stop:** the waiting buy stop, including a new one that this close confirms. It is only placed while the price is below it.
 - **Exits:** the model's current SL / TP for an open trade.
 - **Timed closes:** a time or weekend close due at the next open.
-- **Sync:** where the model acts inside a candle in a way TradingView cannot, a market order at the next open puts TradingView back in
-  line ("sync" in the trade list). Those cases are:
+- **Next open:** where the model acts inside a candle in a way TradingView cannot, a market order at the next open follows the model.
+  Those cases are:
   - an SL / TP moved by a BE, salvage or trailing trigger and hit in the same candle;
   - a dip under and back over the buy stop inside one candle;
   - a candle-close entry.
+
+**What the trade list shows (the Signal column):**
+
+| Signal | Meaning |
+|---|---|
+| S1 ... S12 | An entry by that strategy's buy stop. |
+| TP / SL | The take profit / the stop loss. |
+| BE | The stop was moved to the entry by the BE trigger and then hit: out at the entry price, so only the commission is lost. |
+| SALV | The target was moved to the entry by the salvage trigger and then hit: out at the entry price, so only the commission is lost. |
+| TRAIL / TIME / WKND | The trailing stop / the time exit / the weekend close. |
+| BE next open, SALV next open, ... | The model's exit (named by its reason) happened inside a candle where TradingView cannot move an order, so the strategy closes at the next candle's open. The result is what the price did by that open: a little better or worse than the model's exit. |
+| S11 next open (any S1 ... S12) | The model's entry happened inside a candle where TradingView could not fill it (or at a candle close), so the strategy buys at the next open. |
+| rules flat next open | TradingView holds a trade the model does not have (not seen in the tests); it is closed at the next open. |
+| off | The strategy was switched off while its trade was open. |
+
+**Why so many trades are about $0.** TradingView counts a BE or SALV exit (the commission lost) as a losing trade, so the win % of a
+strategy with BE / salvage triggers looks low. Strategy 11 (BE 0.20 %, salvage 0.10 %, SL 1 %, TP 3 %) on gold 2021-2026, 1-minute
+candles: 741 trades, 393 SALV (53 %), 271 BE (37 %), 38 TP (5 %), 39 SL (5 %). About 90 % end at break-even; the few +3 % targets carry the
+result (PF 2.47).
 
 Properties (already set):
 - **Commission:** 0.115 per contract per order, which is the 0.23 round-trip costs. If you change the Costs input, set it to half of
@@ -295,6 +314,18 @@ The trade counts are equal within 1 per strategy. With options on (16 random opt
 - **Entry on candle close:** the model fills at the triggering candle's close, TradingView at the next open.
 - **Trailing stop:** the model moves the stop inside the candle, TradingView at its close.
 
+Strategy 11 on its own, by chart timeframe (the same broker model; "next open" = exits and entries made at the next open):
+
+| Chart | Same trades as the indicator | Next-open exits | Next-open entries | Net $ vs the indicator |
+|---|---|---|---|---|
+| 15-minute | 89.0 % (646 of 726) | 59 (8.1 %) | 20 | +0.3 % |
+| 5-minute | 92.5 % (676 of 731) | 37 (5.1 %) | 17 | -0.2 % |
+| 1-minute | 96.8 % (717 of 741) | 12 (1.6 %) | 11 | -1.8 % |
+
+The next-open exits do not bias the result. On the 15-minute chart they net +$65 over the 5 years, against -$44 for the model's own
+exits of the same trades. The smaller the chart timeframe, the fewer of them, because TradingView can move the orders at every candle
+close. The settings of strategies 10-12 were also picked on 1-minute candles.
+
 Use a 1-minute chart for all 12 strategies (5-minute for 1-11). TradingView only
 backtests the history it loads (on 1-minute charts a few weeks, more with Deep Backtesting).
 
@@ -304,7 +335,12 @@ backtests the history it loads (on 1-minute charts a few weeks, more with Deep B
   (3,591 trades).
 - **Strategy orders:** the broker model above.
 - **Pine:** both files parse and have 0 inline-title warnings, every name is defined, and no name shadows another (Pine warns about
-  that). The indicator build has no `strategy.` reference.
+  that). The indicator build has no `strategy.` reference. The strategy uses no `barstate.islast` / `isnew` / `isrealtime` /
+  `isconfirmed`: TradingView warns about those in a strategy that calculates on confirmed candles only. The table is drawn by candle
+  index instead.
+- **After the first TradingView run (2026-11-15):** the one warning (`barstate.islast` at 1124:4) is gone. The exit orders carry the
+  model's names (BE, SALV, TRAIL), and "sync" became "... next open". Trades and orders are unchanged, and the indicator is
+  byte-identical.
 - **Strategy review:** an independent review found no compile error and no lookahead leak. Its fixes were taken:
   - no sync entry when a time / weekend exit is due at that open;
   - stale orders are cancelled;

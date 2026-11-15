@@ -6,7 +6,7 @@ import pynescript.ast as A
 src = open(sys.argv[1], encoding='utf8').read(); tree = parse(src)
 BUILTIN = set('''open high low close time bar_index na true false math str ta array line label table color size position text input timeframe syminfo
 barstate barmerge request alert format dayofweek hour year month dayofmonth timestamp extend xloc yloc display plot shape location strategy int float bool string
-nz fixnan max_bars_back runtime log minute time_close currency second'''.split())
+nz fixnan max_bars_back runtime log minute time_close currency second last_bar_index'''.split())
 defined = set(); used = []; seen = set()
 def walk(n, ctx=None):
     if isinstance(n, list):

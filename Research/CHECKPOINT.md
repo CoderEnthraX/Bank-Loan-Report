@@ -760,6 +760,29 @@ Other gold findings:
       `shadowcheck.py` now 0 for both builds), calc_on_every_tick / calc_on_order_fills written out, table title v3.
     - **Final files:** `TradingView/Fractal_Breakout_Grid.pine` (indicator v3, 1,096 lines) and `TradingView/Fractal_Breakout_Grid_Strategy.pine`
       (1,201 lines); .txt copies in `Research/scratchpad/`.
+    - **Fix after the user's first TradingView run (2026-11-15).**
+      1. **The warning.** TradingView's only warning was `barstate.islast` in a strategy without calc_on_every_tick. The strategy's table
+         is now drawn when `bar_index >= last_bar_index - 1`, so it never reads barstate. `pinecheck/strategy_lint.py` flags any
+         confirmed-candle barstate in a strategy and reports 0 now. calc_on_every_tick was deliberately left off: it would change live
+         order handling.
+      2. **The "$0" trades.** The user saw many ~$0 trades named TP / SL, plus "sync" exits.
+         - What they are: strategy 11's BE / SALV exits at the entry price. Strategy 11 uses BE 0.2 % and salvage 0.1 %, so about 90 % of
+           its trades end at break-even.
+         - New exit names: the exit orders carry the model's names. `f_slName` gives TRAIL / BE / SL and `f_tpName` gives SALV / TP.
+         - New catch-up names: catch-up orders are "<model's reason> next open" (exits) or "S# next open" (entries). They read the Strat
+           fields xWhy / xBar, which exist in the strategy build only (//@@S). A trade TradingView holds and the model does not is
+           named "rules flat next open".
+      3. **How often catch-ups happen.** `sync_why.py` (emsim3 with tags) and `labels/sync_usd.py`, strategy 11 alone:
+
+         | Chart | Next-open exits | Same trades | $ vs the model |
+         |---|---|---|---|
+         | M15 | 59 (8.1 %) | 89.0 % | +0.3 % |
+         | M5 | 37 (5.1 %) | 92.5 % | -0.2 % |
+         | M1 | 12 (1.6 %) | 96.8 % | -1.8 % |
+
+         On M15 the next-open exits net +$65, against -$44 for the model's own exits of the same trades.
+      4. **What did not change.** Trades and orders are the same, and the indicator is byte-identical. The strategy is now 1,216 lines.
+         The generator before this fix is kept as `pine3/build_fbg3_prelabels.py`.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
