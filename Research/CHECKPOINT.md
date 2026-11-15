@@ -857,7 +857,10 @@ Other gold findings:
         0 differences.
       - `parity_rec.py` ($ mode regression): 7,728 runs, 11,449,048 trades, 0 differences.
       - `run/parity.py`: all identical.
-      - `parity_tp1.py` and `parity_crkpr.py`: see the logs.
+      - `parity_tp1.py`: 22,484 runs, 34,075,795 trades, 0 differences.
+      - `parity_crkpr.py`: 20,544 runs, 31,277,261 signals, 0 differences.
+      - Rebuilt from the exact final file (PSZ_ names): compile 0 / 0; new modes 2,670,000 trades and, with restarts, 1,478,875 trades,
+        0 differences; run/parity all identical.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

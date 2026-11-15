@@ -1059,8 +1059,10 @@ RISK AND POSITION SIZE has a new **Position Size**:
     trades, 0 differences.
   - **EA restart memory:** the same check with a full save, fresh start and reload every 3rd step: 10,800 runs, 1,924,348 trades,
     0 differences.
-  - **EA regression:** Fixed $ risk against the reference, 7,728 runs, 11,449,048 trades, 0 differences. The full EA engine against
-    the Python reference on every test symbol: all trades identical.
+  - **EA regression:** Fixed $ risk against the reference, 7,728 runs, 11,449,048 trades, 0 differences.
+    - The Crooks TP1 rule: 34,075,795 trades, 0 differences.
+    - The Crooks C rule after N losses: 31,277,261 signals, 0 differences.
+    - The full EA engine against the Python reference on every test symbol: all trades identical.
 
 ### Entry accuracy research (November 2026, no code change)
 
