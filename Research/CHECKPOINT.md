@@ -862,6 +862,46 @@ Other gold findings:
       - Rebuilt from the exact final file (PSZ_ names): compile 0 / 0; new modes 2,670,000 trades and, with restarts, 1,478,875 trades,
         0 differences; run/parity all identical.
 
+35. **Fractal Breakout Grid EA (MetaTrader 5) (asked 2026-11-15)** (tasks #76-#78). The user asked to "make the strategy move the stop inside the
+    candle like the EA". That is impossible on TradingView historical bars: they show OHLC only and act at the close or after a fill, so it
+    was answered with the 1-minute chart advice. The user then asked for an EA of the grid.
+    - **Files:**
+      - `$S/fbgea/build_ea.py`, the generator: HEAD + 12 strategy input blocks + OPTS + CORE, then `ea_rest.mq5` (broker, replay, memory, table),
+        then TAIL (Setup, lock, OnInit / OnDeinit / OnTick / OnTimer).
+      - Output: `FractalBreakoutGridEA.mq5`, also at `MetaTrader5/`.
+      - Progress notes: `fbgea/progress.md`.
+    - **Core:** the pine_twin2.Strat model, method by method (PushTf, BarOpen, Up, Dn, BarClose, Trail, OpenAt, CloseAt, money FBase / FLad /
+      FCrk / FRaw / FNext / MmOpen / MmBook).
+      - It runs on 1-minute bars built from ticks: the first tick of a minute is the open (the gap rules), later ticks are path moves.
+      - TF candles come from the broker (PushLive: iTime(tf, 0) changed -> CopyRates [tfLast, t0)). The trend EMA works the same way
+        (TrendLive).
+      - `gSim` = harness mode: no broker, the model P&L is booked, closed trades go to `gSimLog`.
+    - **Live part:**
+      - Entries: a virtual buy stop on the bid becomes a market Buy with the rules' SL / TP (too close: 0, kept by the EA). Magic = base +
+        id; a hedging account is required.
+      - `Sync` modifies SL / TP (throttled 10 s on a refusal).
+      - `CloseAt` -> `BrokerClose` (PositionClose; deals via HistorySelectByPosition; a refusal -> `exitDue` retry in Reconcile).
+      - `Reconcile` books broker-closed positions (DEAL_REASON SL / TP -> BE / TRAIL / SALV as the state says, else OUT).
+    - **Memory and replay:**
+      - Memory: `StateIO` per strategy (names s<id><key>, fingerprint tf / r / l / off resets the level), `lt` = the last bar.
+      - `Restore`: silent candle rebuild up to lt (kAct from actT), then `ReplayStrat(from lt + 60, pushedTo lt, closePrev true)`.
+      - `WarmStrat` (fresh start): the latest swing high from 3000 TF candles, silent pushes up to its activation (or now - InpWarmDays),
+        then the replay. If the start is before the M1 history, the TF candles' highs decide whether it was used up.
+      - ReplayStrat starts from the real previous M1 close.
+    - **Harness (`fbgea/harness`):**
+      - `export.py` writes bars.npz -> data/*.bin.
+      - `build.py` translates the EA with mq5rt (its own wrapper + stubs for broker / history functions) -> `fbg_harness`, and
+        `fbg_harness_rs` for the restart test.
+      - `driver.cpp` pushes TF candles completed by each M1 bar, then the open and the path moves.
+      - `parity.py` compares against `pine_twin2.twin2(B, 'M1', ...)` trade for trade, with the $ risk.
+    - **Results:**
+      - Defaults: 5,551 trades identical, $ risk within 9e-13.
+      - Random option / money sets: still running at this commit (all identical so far).
+      - Restart test (`FBG_RESTART`): defaults with 55 restarts, and 5 option sets with 70 restarts each, all identical.
+      - mq5check: 0 / 0. The shim got the missing `CopyRates(symbol, tf, datetime start, datetime stop, rates)` overload (VWAP EA still
+        0 / 0, run_tests 17 / 17).
+    - **Review (Sonnet high, checked by me):** still running at this commit.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |

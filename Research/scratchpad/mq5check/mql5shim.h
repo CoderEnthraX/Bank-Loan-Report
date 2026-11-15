@@ -483,6 +483,7 @@ int iHighest(const string& symbol, ENUM_TIMEFRAMES timeframe, ENUM_SERIESMODE ty
 int iLowest(const string& symbol, ENUM_TIMEFRAMES timeframe, ENUM_SERIESMODE type, int count = -1, int start = 0);
 int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<MqlRates> rates_array);
 int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, datetime start_time, int count, ArrayView<MqlRates> rates_array);
+int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, datetime start_time, datetime stop_time, ArrayView<MqlRates> rates_array);   // by start and stop time (MQL5 has all three)
 int CopyTime(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<datetime> a);
 int CopyOpen(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<double> a);
 int CopyHigh(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<double> a);

@@ -8,6 +8,7 @@
 | [`VWAP_Orderflow_Sniper.pine`](VWAP_Orderflow_Sniper.pine) | The earlier VWAP + absorption/aggression orderflow indicator. |
 | [`Fractal_Breakout_Grid.pine`](Fractal_Breakout_Grid.pine) | **Fractal Breakout Grid** (v3.1): 12 long breakout strategies on swing highs (your 9 + an M5, an M15 and an M1 one), each on its own timeframe, all at once or one by one, with a results table, money management (position size in $ risk, lots or % of equity; 28 loss recovery rules, profit ladder, hard cap, next trade's lots) and optional filters / exits. See below. |
 | [`Fractal_Breakout_Grid_Strategy.pine`](Fractal_Breakout_Grid_Strategy.pine) | The same as a **strategy** for TradingView's Strategy Tester: the same rules and money, executed with TradingView orders (see v3 below). |
+| [`../MetaTrader5/FractalBreakoutGridEA.mq5`](../MetaTrader5/FractalBreakoutGridEA.mq5) | The Fractal Breakout Grid as a **MetaTrader 5 EA**: the same 12 strategies, rules and money, with the stops moved on every tick (see below). |
 
 ## Install
 
@@ -417,6 +418,72 @@ usually below the entry. On a 1-minute chart the difference is 0 to -8 %. Use th
 - **Pine:** both files parse and have 0 inline-title warnings. They have no `barstate.islast` (the strategy's only TradingView warning), no
   shadowed names and no undefined names.
 - **Review:** an independent review found no compile error or warning.
+
+### Fractal Breakout Grid EA (MetaTrader 5)
+
+File: [`../MetaTrader5/FractalBreakoutGridEA.mq5`](../MetaTrader5/FractalBreakoutGridEA.mq5). It is the same 12 strategies, rules and money as the
+TradingView strategy, but it acts on every tick.
+
+**Why an EA.** A TradingView strategy cannot move a stop inside a candle in a backtest. It sees each candle's open, high, low and close
+and acts at the close (hence its "BE next open" / "SALV next open" exits). The EA sees every tick:
+- **BE and salvage:** the moment the price touches the BE trigger, the SL moves to the entry (the salvage trigger moves the TP the same way).
+- **No next-open exits:** there are none.
+- **All 12 strategies on any chart:** each strategy reads its own timeframe's candles from MT5.
+
+**Install.**
+1. Copy the file to `MQL5/Experts` and compile it (F7).
+2. Attach it to an XAUUSD chart. Any timeframe works, because the rules run on 1-minute bars of the ticks, as in the research.
+3. Allow algo trading.
+
+It needs a **hedging** account: every strategy holds its own position, with magic number base + strategy number (26111 ... 26122 by
+default).
+
+**How it trades.**
+- **Swing highs:** they come from the broker's completed candles on each strategy's timeframe. The D1 and H4 candles of brokers on
+  New York close time (GMT+2 / +3) are the same as TradingView's.
+- **The buy stop:** it waits on the bid. When the bid goes through it, a market buy opens with the rules' SL and TP at the broker.
+- **On every tick:** BE, salvage and trailing move the SL / TP. The broker always holds them. One too close to the price (stops level)
+  stays with the EA until it can be placed.
+- **Rule exits:** an exit the rules call (time, weekend, or a level the broker does not hold yet) closes at market. A position the broker
+  closes itself (SL, TP, stop-out, by hand) is booked with its real result and its reason.
+- **Money:** each strategy is its own account (Start balance), with Position size (Fixed $ risk / Fixed lots / % of equity at risk), the
+  28 loss recovery rules, the profit ladder, the hard cap and the leverage limit, as in the TradingView files.
+- **Real results are booked:** each trade's real result (profit + commission + swap) goes into its strategy's account. Lots are rounded
+  to the broker's step: at least the minimum lot, reduced if the free margin is short.
+
+**Restart memory.** The state is kept in MT5 global variables (`FBG|symbol|magic|...`): the buy stops, the open trades, the money and
+the stats.
+- **After a restart:** the minutes missed are caught up from the 1-minute history. The buy stops follow the rules and no new trade opens
+  for those minutes. An open trade is managed as the rules say: an exit that was missed closes it at once.
+- **A fresh start:** each strategy reads its latest swing high and the 1-minute history since it started (60 days by default), so a
+  buy stop the price already went through is not taken again.
+
+**Inputs.**
+- **Grid:** run all, the ticked ones or one strategy; magic number base; the spread and commission used for sizing (0.16 + 7 per lot
+  on gold = the 0.23 costs of the TradingView files).
+- **Strategies 1-12:** on / timeframe / right / left / offset / SL / TP / BE / salvage, with the same defaults as TradingView.
+- **Entry and exit options, days and hours, money, loss recovery:** the same choices and defaults as the TradingView strategy.
+  - Your time zone is a fixed GMT offset (India 5.5).
+  - The broker's clock is read from MT5 (Auto).
+  - "Candle close" entry uses 1-minute candles.
+- **Display:** a table (per strategy: trades, win %, net $, TP / SL / BE / SALV, and what it does now) and lines for the waiting buy
+  stops and the open trades' SL / TP.
+
+**Tests.** The EA's own code was compiled into a test harness. Its rules ran on gold 2021-2026, 1-minute bars along the research's
+path (open, nearer extreme, other extreme, close).
+- **Against the Python copy of the Pine code:** trade for trade, every entry and exit time, price and reason, and the $ risk of every
+  trade.
+  - Defaults: 5,551 trades (S1 ... S12: 43 / 49 / 79 / 144 / 274 / 225 / 255 / 294 / 999 / 1,192 / 741 / 1,256), all identical; $ risk
+    within 1e-12.
+  - Random option and money sets (candle-close entry, expiry, max per day, trailing, time / weekend exits, the EMA filter, days /
+    hours, all 28 recovery rules, the ladder, caps, the three position sizes): still running at this commit (all identical so far).
+- **Restart memory:** a save, a fresh program and a reload every 26-29 days of data gives the same trades and accounts as a run without
+  restarts. That holds for the defaults (55 restarts) and for five option sets (70 restarts each).
+- **Compile:** 0 errors and 0 warnings in the offline MQL5 check (MetaEditor itself is not available here).
+- **Review:** an independent review of the live parts (orders, catch-up, memory), checked by me: still running at this commit.
+
+The broker part (orders, deals) cannot run outside MetaTrader. Test it first in the Strategy Tester ("Every tick based on real ticks",
+a hedging account) and on a demo account.
 
 ## Auction Retest Model: how a trade is built
 
