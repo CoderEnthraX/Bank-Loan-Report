@@ -64,9 +64,11 @@
 //| the recovery trade, so a long losing run costs less.             |
 //| v4.6: PROFIT LADDER for Crooks F - J: after a first profit the   |
 //| risk grows, paid only from the profit above a lock (5 levels).   |
+//| v4.7: POSITION SIZE: Fixed $ risk, Fixed lots or % of equity at  |
+//| risk; the loss recovery sizes every trade from that base.        |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "4.60"
+#property version   "4.70"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -96,6 +98,9 @@ enum ENUM_LOT_ROUND { LOTR_DOWN = 0,  // Down (never risks more)
                       LOTR_NEAR = 1 };// To the nearest lot step
 enum ENUM_SMALL_LOT { SMALLL_MIN  = 0,  // Trade the minimum lot (risks more)
                       SMALLL_SKIP = 1 };// Skip the trade
+enum ENUM_SIZE_MODE { PSZ_USD = 0,     // Fixed $ risk (Base risk per trade)
+                      PSZ_LOT = 1,     // Fixed lots (Base lots)
+                      PSZ_PCT = 2 };   // % of equity at risk (Risk % of equity)
 enum ENUM_REC {
    REC_OFF   = 0,  // Off
    REC_ALL   = 1,  // Recover all losses on the next trade
@@ -260,7 +265,10 @@ input double InpP2   = 0.0;  // Close % at TP2
 input double InpP3   = 0.0;  // Close % at TP3
 
 input group "RISK AND POSITION SIZE"
-input double InpBaseRisk = 50.0;   // Base risk per trade (account currency)
+input ENUM_SIZE_MODE InpSizeMode = PSZ_USD; // Position size: the base trade (the loss recovery sizes every trade from it)
+input double InpBaseRisk = 50.0;   // Base risk per trade (account currency; Fixed $ risk)
+input double InpBaseLots = 0.01;   // Base lots (Fixed lots)
+input double InpEqPct    = 1.0;    // Risk % of equity (% of equity at risk, and the % of equity rule)
 input bool   InpCapOn    = false;  // Hard cap: max loss per trade
 input double InpHardCap  = 250.0;  // Hard cap amount
 input ENUM_CAP_ACTION InpCapAction = CAP_RESET; // If the risk would exceed the cap
@@ -363,7 +371,6 @@ input ENUM_LADDER InpLadder = LAD_OFF; // Profit ladder (Crooks F-J): risk appet
 input double InpLadT     = 1000.0; //   ...profit target before the risk goes up ($, closed profit of this EA)
 input int    InpParN     = 3;      // Paroli: wins before reset
 input int    InpDelayN   = 2;      // Delayed: losses before recovery starts
-input double InpEqPct    = 1.0;    // % of equity (% mode)
 
 enum ENUM_TBL_POS { TBL_TOP_RIGHT    = 0,  // Top right
                     TBL_TOP_LEFT     = 1,  // Top left
@@ -435,6 +442,8 @@ datetime gLastDone = 0;            // open time of the last bar the engine proce
 int      exState = 0;              // 0 nothing, 1 entry order working, 2 in a position
 bool     exL = true;
 double   exLots = 0, exRiskAmt = 0, exCostPx = 0, exPnl = 0;
+double   gBase = 0;    // v4.7: the base risk of the setup being sized (NextRisk); the trade keeps it in exBase
+double   exBase = 0;   // v4.7: the base risk of the EA's trade (its booking: Oscar's Grind, Crooks G)
 long     exArm = -1;               // engine armBar of the setup the EA took
 bool     exSynced = false;         // the broker position is the engine's live trade
 bool     gRearm = false;           // re-place the engine's armed setup after a restart / catch-up
@@ -1049,13 +1058,36 @@ void   LadPar(double &lam, double &phi, double &bmax, double &gam)
    if(InpLadder == LAD_MAX)   { lam = 0.4; phi = 0.30; bmax = 12.0; gam = 0.50; }
 }
 //--- the ladder's base (the plain base while it is off) and the cushion (the closed profit above the lock)
-double LadBase(double &cush)
+double LadBase(double base, double &cush)
 {
    cush = 0;
-   if(!LadOn()) return InpBaseRisk;
+   if(!LadOn()) return base;
    double lam = 0, phi = 0, bmax = 0, gam = 0; LadPar(lam, phi, bmax, gam);
    cush = MathMax(0.0, totalNet - lam * crkPk);
-   return InpBaseRisk + MathMin((bmax - 1.0) * InpBaseRisk, phi * cush);
+   return base + MathMin((bmax - 1.0) * base, phi * cush);
+}
+//--- v4.7 position size: the base trade's $ risk on a setup with this stop distance: Fixed $ risk, the Fixed lots' stop-out loss (spread and
+//--- commission included, like LotsFor), or % of the equity. 0 = no base (no equity, no tick value): the setup gets size 0
+double BaseRisk(double stopDist)
+{
+   if(InpSizeMode == PSZ_PCT) return MathMax(0.0, AccountInfoDouble(ACCOUNT_EQUITY)) * InpEqPct / 100.0;
+   if(InpSizeMode == PSZ_LOT)
+   {
+      double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
+      if(tv <= 0 || ts <= 0 || stopDist <= 0) return 0;
+      return InpBaseLots * ((stopDist + MathMax(CostSpr(), 0)) / ts * tv + InpCommLot);
+   }
+   return InpBaseRisk;
+}
+//--- the base of the EA's trade for its booking (Fixed $ risk: the input, as in v4.6)
+double BookBase() { return InpSizeMode == PSZ_USD ? InpBaseRisk : (exBase > 0 ? exBase : InpBaseRisk); }
+//--- the base shown in the table (Fixed lots: on the last setup's stop)
+double ShowBase() { return InpSizeMode == PSZ_USD ? InpBaseRisk : BaseRisk(trRisk); }
+string BaseTxt(double &cush)
+{
+   cush = 0;
+   if(InpSizeMode == PSZ_LOT && !LadOn()) return "base " + DoubleToString(InpBaseLots, 2) + " lot";
+   return "base " + DoubleToString(LadBase(ShowBase(), cush), 2) + (InpSizeMode == PSZ_PCT ? " (" + DoubleToString(InpEqPct, 2) + "% of equity)" : "");
 }
 string LadTxt()
 {
@@ -1064,7 +1096,7 @@ string LadTxt()
    if(!LadOn()) return lv + " | best profit " + DoubleToString(MathMax(0.0, crkPk), 2) + " of " + DoubleToString(InpLadT, 0) + " to start";
    if(LadGuard()) return lv + " | back at the start: 0.01 lot until in profit";
    double cush = 0, lam = 0, phi = 0, bmax = 0, gam = 0;
-   double b = LadBase(cush); LadPar(lam, phi, bmax, gam);
+   double b = LadBase(ShowBase(), cush); LadPar(lam, phi, bmax, gam);
    return lv + " | lock " + DoubleToString(lam * crkPk, 2) + " | cushion " + DoubleToString(cush, 2) + " | base " + DoubleToString(b, 2);
 }
 
@@ -1193,7 +1225,9 @@ double CrkRule(double base, double exitR, double minRisk)
 //--- the $ risk of the next trade; minRisk: the stop-out loss of the 0.01 lot (Crooks E / I lot) on this setup (0 = not known: the base is used)
 double NextRisk(double exitR, bool canTake = true, double minRisk = 0)
 {
-   double base = InpBaseRisk, r = base;
+   double base = BaseRisk(trRisk), r = base;          // v4.7: the base of this setup (Position size)
+   gBase = base;
+   if(base <= 0) return 0;                            // no base: size 0 (never a zero divide below)
    double stepBase = 0;
    if(totalNet >= 1000) { int kk = (int)MathFloor((totalNet - 1000) / 500); stepBase = (1000.0 + 500.0 * kk) / (8 + kk); }
    else if(totalNet >= 500) stepBase = 100.0;
@@ -1201,7 +1235,7 @@ double NextRisk(double exitR, bool canTake = true, double minRisk = 0)
    double baseC = InpRec == REC_CS ? MathMax(base, InpCapOn ? MathMin(stepBase, InpHardCap) : stepBase) : base;
    double fa = 1, fb = 1;
    for(int k = 2; k <= recLosses; k++) { double fc = fa + fb; fa = fb; fb = fc; }
-   int oscNeed = exitR > 0 ? (int)MathMax(1, MathCeil((base - oscP) / (base * exitR))) : 1;
+   int oscNeed = exitR > 0 ? (int)MathMax(1, MathMin(1e9, MathCeil((base - oscP) / (base * exitR)))) : 1;   // v4.7: no int overflow
    switch(InpRec)
    {
       case REC_ALL:   r = base + recPool; break;
@@ -1236,7 +1270,7 @@ double NextRisk(double exitR, bool canTake = true, double minRisk = 0)
          if(LadOn())                                                       // v4.6 profit ladder: the rule at the ladder's base, the extra paid from the cushion
          {
             double cush = 0, lam = 0, phi = 0, bmax = 0, gam = 0;
-            double lb = LadBase(cush); LadPar(lam, phi, bmax, gam);
+            double lb = LadBase(base, cush); LadPar(lam, phi, bmax, gam);
             r = LadGuard() ? (minRisk > 0 ? MathMin(base, minRisk) : base) : MathMin(CrkRule(lb, exitR, minRisk), r + gam * cush / CrkT1Mult());
          }
          break;
@@ -1677,18 +1711,18 @@ void UpdateTable()
    string kLim = InpRec == REC_CRF || InpRec == REC_CRI ? ", at most " + DoubleToString(InpCrkFK, 1) + "x base" : InpRec == REC_CRH ? ", at most " + DoubleToString(InpCrkHPct, 1) + "% of equity" :
                  InpRec == REC_CRJ ? ", drawdown " + DoubleToString(MathMax(0.0, crkPk - totalNet), 2) : "";
    string kWait = InpRec == REC_CRE || InpRec == REC_CRI ? " | " + DoubleToString(InpCrkELot, 2) + " lot, waiting for a win" : " | base, waiting for a win";
-   string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRG ? " (at most " + DoubleToString(InpCrkGX * InpBaseRisk, 0) + ")" : "") +
+   string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRG ? " (at most " + DoubleToString(InpCrkGX * ShowBase(), 0) + ")" : "") +
                  (CrkCFam() ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") + kLim : (crkL > 0 ? kWait : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "")
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v4.6", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v4.7", white, C'61,143,214');
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
    double lCu = 0;
-   TblAdd("RISK | LOTS", exState != 0 ? DoubleToString(exRiskAmt, 2) + " | " + DoubleToString(exLots, 2) : "base " + DoubleToString(LadBase(lCu), 2), white, cell);
+   TblAdd("RISK | LOTS", exState != 0 ? DoubleToString(exRiskAmt, 2) + " | " + DoubleToString(exLots, 2) : BaseTxt(lCu), white, cell);
    TblAdd(isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", rec, (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white, cell);
    if(InpLadder != LAD_OFF) TblAdd("PROFIT LADDER", LadTxt(), LadGuard() ? negC : LadOn() ? posC : white, cell);
    TblAdd("STREAK W | L", IntegerToString(winRow) + " | " + IntegerToString(lossRow) + " | total " + IntegerToString(exW) + "W/" + IntegerToString(exLn) + "L", white, cell);
@@ -1756,7 +1790,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    double sprNow = CostSpr();
    exCostPx = InpEarnBack && tv > 0 && !hg ? InpCommLot / (tv / ts) + sprNow : 0;   // no earn-back on the hedge pair: its levels are the inputs
-   exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot);
+   exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot); exBase = gBase;
    exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = exT1 ? T1Stop0Px(isL, t1d) : 0; exT1Tight = exT1 ? T1StopPx(isL, t1d) : 0; exT1Entry = lim;
    exT1Tp1 = t1; exT1Tp2 = t2; exKeepSl = 0; exHg = false; exHgS = hgS; exHgT = hgT; gLastOutProfit = 0;
    exTpL[0] = t1; exTpL[1] = t2; exTpL[2] = t3; exLim = lim;   // the trade's own levels (partials, restart)
@@ -1849,13 +1883,13 @@ void BookClosed()
       double used = LabUnits(); int n = ArraySize(labSeq); ArrayResize(labSeq, n + 1); labSeq[n] = used;
    }
    oscP += exPnl;
-   if(oscP >= InpBaseRisk) { oscU = 1; oscP = 0; } else if(win) oscU++;
+   if(oscP >= BookBase()) { oscU = 1; oscP = 0; } else if(win) oscU++;
    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, D: also when a recovery trade wins; C keeps a leftover)
    bool lastPart = CrkParts() == 1;                     // this recovery trade went for the last part of the loss (Crooks C over N wins)
    crkL = MathMax(0.0, crkL - exPnl);
    crkPk = MathMax(crkPk, totalNet);                    // v4.5 Crooks J, v4.6 ladder: the highest closed profit (whatever the rule, so a switch knows it)
    double gCush = 0;
-   if(InpRec == REC_CRG && InpCrkGX > 0) crkL = MathMin(crkL, InpCrkGX * LadBase(gCush));   // v4.5 Crooks G: never more than X x base (v4.6: the ladder's base)
+   if(InpRec == REC_CRG && InpCrkGX > 0) crkL = MathMin(crkL, InpCrkGX * LadBase(BookBase(), gCush));   // v4.5 Crooks G: never more than X x base (v4.6: the ladder's base)
    if(exHg)                                             // the hedge pair closed (exPnl = both trades): forget the loss, or Crooks C goes on from the trade that closed last
    {
       crkF = 0; crkHg = false;
@@ -2082,7 +2116,7 @@ void StateIO(bool save)
    IoD("dp", dayPnl); IoI("lr", lossRow); IoI("wr", winRow); IoB("db", dayBlock); IoI("pl", pauseLeft); IoB("pa", paused);
    IoI("mk", gMonKey); IoB("mr", monRestPend); IoD("mp", monPnl); IoD("mq", monPeak); IoB("ms", monStop); IoB("ml", monLocked);
    // the trade the EA is in, or its working order: its type and what it booked so far; the broker deals already counted
-   IoI("xs", exState); IoB("xl", exL); IoD("xv", exLots); IoD("xr", exRiskAmt); IoD("xc", exCostPx); IoD("xp", exPnl); IoD("xk", exKeepSl);
+   IoI("xs", exState); IoB("xl", exL); IoD("xv", exLots); IoD("xr", exRiskAmt); IoD("xb", exBase); IoD("xc", exCostPx); IoD("xp", exPnl); IoD("xk", exKeepSl);
    IoB("kr", crkRec); IoB("xy", exSynced);
    double xe = exLim, x1 = exTpL[0], x2 = exTpL[1], x3 = exTpL[2];   // v4.4: the trade's setup (arm bar time, entry) and its own TP1-TP3
    IoT("xa", exArmT); IoD("xe", xe); IoD("x1", x1); IoD("x2", x2); IoD("x3", x3); IoT("xt", gTakenT); IoB("xq", gExitRetry);
@@ -2422,6 +2456,8 @@ int OnInit()
    gCanDraw = MQLInfoInteger(MQL_OPTIMIZATION) == 0 && (MQLInfoInteger(MQL_TESTER) == 0 || MQLInfoInteger(MQL_VISUAL_MODE) != 0);
    ObjectsDeleteAll(0, "ARM_");
    if(InpSpread < 0 || InpCommLot < 0) { Print("Spread and commission must be 0 or more."); return INIT_PARAMETERS_INCORRECT; }
+   if((InpSizeMode == PSZ_USD && InpBaseRisk <= 0) || (InpSizeMode == PSZ_LOT && InpBaseLots <= 0) || (InpSizeMode == PSZ_PCT && InpEqPct <= 0))
+   { Print("Position size: the base risk, base lots or risk % of equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpTp1R > InpTp2R || InpTp2R > InpTp3R || InpTp3R > InpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
    if(InpMaxVwOn && InpMaxVwDist <= 0) { Print("Max distance from VWAP must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpTouchVwOn && InpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }

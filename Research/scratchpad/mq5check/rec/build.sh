@@ -28,10 +28,11 @@ cat >> "$HERE/ea_rt.cpp" <<'EOW'
 #line 1 "<rec-wrapper>"
 // what TakeSetup / the per-bar P&L update / BookClosed do with the money-management state (no broker calls)
 extern "C" void rec_init() { LabReset(); gCrkPrPrev = (int)InpCrkPr; }   // as after the first OnInit
-extern "C" double rec_next(double exitR) { return NextRisk(exitR); }
+// v4.7: the trade keeps the base it was sized with in the same step, as in TakeSetup (no restart can come between NextRisk and the take there)
+extern "C" double rec_next(double exitR) { double r = NextRisk(exitR); exBase = gBase; return r; }
 // v4.5: the $ risk with the Crooks E / I small-lot risk of this trade and the equity (Crooks H); T1 mode: the EA's own MinLotRisk() of the set stop
-extern "C" double rec_next_m(double exitR, double minRisk, double eq) { rec_eq = eq; return NextRisk(exitR, true, minRisk); }
-extern "C" double rec_next_t1(double exitR, double eq) { rec_eq = eq; return NextRisk(exitR, true, (InpRec == REC_CRE || InpRec == REC_CRI || LadOn()) ? MinLotRisk(trRisk) : 0); }
+extern "C" double rec_next_m(double exitR, double minRisk, double eq) { rec_eq = eq; double r = NextRisk(exitR, true, minRisk); exBase = gBase; return r; }
+extern "C" double rec_next_t1(double exitR, double eq) { rec_eq = eq; double r = NextRisk(exitR, true, (InpRec == REC_CRE || InpRec == REC_CRI || LadOn()) ? MinLotRisk(trRisk) : 0); exBase = gBase; return r; }
 extern "C" void rec_take() { crkRec = CrkRecNext(); }
 extern "C" void rec_part(double np) { exPnl += np; totalNet += np; if(np != 0) carried = MathMax(0.0, carried - np); }
 extern "C" void rec_close() { BookClosed(); }

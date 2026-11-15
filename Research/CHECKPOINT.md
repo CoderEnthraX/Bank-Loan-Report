@@ -832,6 +832,33 @@ Other gold findings:
       - VWAP strategy v4.7, 1,441 lines.
       - .txt copies in `Research/scratchpad/`.
 
+34. **EA v4.7: Position Size (Fixed $ risk / Fixed lots / % of equity at risk), the same as the strategy (asked 2026-11-15)** (task #75).
+    - **Patch:** `build/patch_ea_v47.py` (applied to `build/safe/AuctionRetestEA.mq5`; the v4.6 copy is in
+      `build/bak/AuctionRetestEA_v46_presize.mq5`).
+      - **Inputs:** `ENUM_SIZE_MODE` (PSZ_USD / PSZ_LOT / PSZ_PCT), `InpSizeMode`, `InpBaseLots`; `InpEqPct` moved to RISK AND POSITION SIZE
+        (same name).
+      - `BaseRisk(stopDist)`: lots x ((sd + CostSpr) / ts x tv + InpCommLot), as in LotsFor; % = max(0, equity) x pct.
+      - `NextRisk` uses `BaseRisk(trRisk)`, sets `gBase`, and returns 0 when base <= 0 (never a zero divide).
+      - `exBase = gBase` in TakeSetup. `BookBase()` (PSZ_USD: InpBaseRisk as in v4.6, else exBase) feeds the Oscar reset and Crooks G.
+      - `LadBase(base, cush)`. The restart memory has `IoD("xb", exBase)` (SvVer unchanged; old memory loads).
+      - OnInit refuses a base <= 0.
+    - **Bug found by the new parity and fixed:** Oscar's Grind `oscNeed` int overflow with a tiny base (% of equity on an almost empty
+      account). It is now clamped `MathMin(1e9, ...)`. Pine ints are 64-bit, so the Pine files are unaffected.
+    - **Reference:** `gold/recovery.py` simulate has `baseMode` / `basePct`, with the lot base as the 7th tuple element (as
+      `fractal/recovery_tol.py`). The pre-change copy is `gold/recovery_presize.py`.
+    - **Harness changes:**
+      - `mq5check/rec/build.sh`: rec_next* set exBase = gBase in the same step, as TakeSetup does (a restart cannot fall between them in
+        the EA).
+      - `rec_driver.cpp`: REC_SD=1 (the stop distance per trade, which sets trRisk and tick value 1).
+      - Pre-change copies: `build_pre47.sh`, `rec_driver_pre47.cpp`.
+    - **Checks (results in `mq5check/rec/*v47*.log`, `parity_size_1500.log`, `run/parity_v47.log`):**
+      - mq5check: 0 errors, 0 warnings.
+      - `parity_size_ea.py` (new modes): 10,800 runs, 10,188,179 trades, 0 differences. With REC_RESTART=3: 10,800 runs, 1,924,348 trades,
+        0 differences.
+      - `parity_rec.py` ($ mode regression): 7,728 runs, 11,449,048 trades, 0 differences.
+      - `run/parity.py`: all identical.
+      - `parity_tp1.py` and `parity_crkpr.py`: see the logs.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |

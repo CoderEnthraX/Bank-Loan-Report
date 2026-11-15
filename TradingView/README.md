@@ -1020,7 +1020,7 @@ What the results show:
   - strategy: 0 inline-title warnings, the parse passes, only the two new inputs were added and no existing title changed (saved settings
     are kept).
 
-### v4.7: Position size: fixed $ risk, fixed lots or % of equity (strategy only)
+### v4.7: Position size: fixed $ risk, fixed lots or % of equity (strategy and EA)
 
 RISK AND POSITION SIZE has a new **Position Size**:
 - **Fixed $ risk (default):** the same as before.
@@ -1039,12 +1039,28 @@ RISK AND POSITION SIZE has a new **Position Size**:
   for the recovery rule, the hard cap's "start again" and the profit ladder.
 - **Still applied:** lot step, rounding, leverage and the hard cap.
 - **Unchanged in the default mode:** with Fixed $ risk every number is the same as in v4.6.
-- **The EA:** it keeps the $ base risk.
+- **The EA (v4.7):** RISK AND POSITION SIZE has the same three choices: `InpSizeMode` (Position size), `InpBaseRisk`, `InpBaseLots`, and
+  `InpEqPct` (moved up from the loss recovery group, same name, so saved settings keep it).
+  - **Fixed lots in $:** lots x ((stop distance + spread) / tick size x tick value + commission per lot), the same formula as the EA's lot size.
+  - **% of equity:** the account equity at the setup.
+  - **The base is remembered:** the base a trade was sized with is kept for its booking (Oscar's Grind, Crooks G) and in the restart
+    memory.
+  - **Bad inputs stop the start:** a base of 0 or less is refused when the EA starts.
+  - **No overflow:** Oscar's Grind's unit count can no longer overflow on an almost empty account.
 - **Small fixes:**
   - A size that cannot be worked out (for example % of equity on an empty account) is skipped as "size 0".
   - A function parameter that had the same name as a variable was renamed.
-- **Checks:** the shared blocks are byte-identical with the indicator. 0 inline-title warnings, 0 shadowed names, no `barstate.islast`,
-  and the file parses.
+- **Checks:**
+  - **Strategy:** the shared blocks are byte-identical with the indicator. 0 inline-title warnings, 0 shadowed names, no
+    `barstate.islast`, and the file parses.
+  - **EA compile:** 0 errors and 0 warnings (offline MQL5 check). The source is ASCII.
+  - **EA money, new modes:** its own compiled sizing and booking against `gold/recovery.py` (with the same base modes). Fixed lots
+    0.01 / 0.05 and 0.5 / 1 / 2 % of equity, every recovery rule, caps, Crooks C over 1 / 2 wins, the ladder: 10,800 runs, 10,188,179
+    trades, 0 differences.
+  - **EA restart memory:** the same check with a full save, fresh start and reload every 3rd step: 10,800 runs, 1,924,348 trades,
+    0 differences.
+  - **EA regression:** Fixed $ risk against the reference, 7,728 runs, 11,449,048 trades, 0 differences. The full EA engine against
+    the Python reference on every test symbol: all trades identical.
 
 ### Entry accuracy research (November 2026, no code change)
 
