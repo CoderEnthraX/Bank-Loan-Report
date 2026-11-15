@@ -753,6 +753,13 @@ Other gold findings:
       4 / 9 / 10, 3,591 trades): all identical. `emsim3.py` (TradingView broker model executing the strategy's orders): M5 S1-11 93.5 %
       identical trades, $ -2.6 %; M1 S12 / 10 / 4 / 9 96.6 %, $ -0.7 %; trade counts equal within 1. Both Pine files parse, 0 inline
       warnings, `namecheck.py` clean (the first strategy draft had strategy-only table code in the indicator: fixed with the markers).
+      M1 all 12 (`emsim3_M1b.txt` + `emsim3_M1.txt`): 96.4 % identical trades (5,353 / 5,551), $ -1.5 %. Options (`emsim3_opts.py`, 32 random
+      sets): counts equal within 4; candle-close entry and trailing stop diverge most (TradingView acts at the next open / candle close).
+    - **Strategy review (Sonnet sub-agent, checked by me):** no compile error, no lookahead leak. Taken: no sync entry when a time / weekend
+      exit is due at that open (`dueX`), cancel stale orders when no size, `tN` in the table renamed `tTot` (Pine warns on shadowing;
+      `shadowcheck.py` now 0 for both builds), calc_on_every_tick / calc_on_order_fills written out, table title v3.
+    - **Final files:** `TradingView/Fractal_Breakout_Grid.pine` (indicator v3, 1,096 lines) and `TradingView/Fractal_Breakout_Grid_Strategy.pine`
+      (1,201 lines); .txt copies in `Research/scratchpad/`.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

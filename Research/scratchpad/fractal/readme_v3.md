@@ -67,9 +67,14 @@ gold data:
 | Chart | Strategies | Same trades (entry and exit candle and price) | Net $ vs the indicator |
 |---|---|---|---|
 | 5-minute | 1-11 | 93.5 % (4,010 of 4,287) | -2.6 % |
-| 1-minute | 12, 10, 4, 9 | 96.6 % (3,469 of 3,591) | -0.7 % |
+| 1-minute | all 12 | 96.4 % (5,353 of 5,551) | -1.5 % |
 
-The trade counts are equal within 1 per strategy. Use a 1-minute chart for all 12 strategies (5-minute for 1-11). TradingView only
+The trade counts are equal within 1 per strategy. With options on (16 random option sets, 15-minute chart) the counts stay equal within
+3 per run. Two options leave TradingView further from the indicator:
+- **Entry on candle close:** the model fills at the triggering candle's close, TradingView at the next open.
+- **Trailing stop:** the model moves the stop inside the candle, TradingView at its close.
+
+Use a 1-minute chart for all 12 strategies (5-minute for 1-11). TradingView only
 backtests the history it loads (on 1-minute charts a few weeks, more with Deep Backtesting).
 
 **v3 tests:**

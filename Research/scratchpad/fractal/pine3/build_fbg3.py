@@ -905,7 +905,7 @@ if barstate.islast and showTbl
     color hd = color.new(#2A2E39, 0)
     color tx = color.new(#D1D4DC, 0)
     string opts = (entMode == E_CLOSE ? " · entry on close" : "") + (expN > 0 ? " · expiry " + str.tostring(expN) : "") + (maxDay > 0 ? " · max " + str.tostring(maxDay) + "/day" : "") + (trD > 0 ? " · trail" : "") + (tExitH > 0 ? " · time exit" : "") + (wkOn ? " · weekend close" : "") + (trnOn ? (f_fits(trnTf) ? " · above EMA" : " · EMA filter ignored (timeframe below the chart)") : "") + (dayOn ? " · days" : "") + (hoursOn ? " · hours" : "")
-    T.cell(0, 0, "FRACTAL BREAKOUT GRID v2 · " + syminfo.ticker + " · chart " + timeframe.period + " · trades since " + str.format_time(math.max(statsFrom, firstT), "yyyy-MM-dd", syminfo.timezone) + " · costs " + str.tostring(costIn) + " per trade" + opts, text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
+    T.cell(0, 0, "FRACTAL BREAKOUT GRID v3 · " + syminfo.ticker + " · chart " + timeframe.period + " · trades since " + str.format_time(math.max(statsFrom, firstT), "yyyy-MM-dd", syminfo.timezone) + " · costs " + str.tostring(costIn) + " per trade" + opts, text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
     T.merge_cells(0, 0, nCol - 1, 0)
     T.cell(0, 1, mmOn ? "MONEY: " + recMode + (ladFam and not ladOff ? " + ladder " + ladMode : "") + " · base " + f_usd(baseR) + " · start " + f_usd(startB) + " each" + (capOn ? " · cap " + f_usd(hardCap) + " (" + capAction + ")" : "") : "MONEY: off (% and R only)", text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
     T.merge_cells(0, 1, nCol - 1, 1)
@@ -924,7 +924,7 @@ if barstate.islast and showTbl
     for [c, h] in H
         T.cell(c, 2, h, text_color = tx, bgcolor = hd, text_size = f_tsz(), tooltip = HT.get(c))
     int   row  = 3
-    int   tN   = 0
+    int   tTot = 0
     float tPct = 0.0
     float tR   = 0.0
     float tUsd = 0.0
@@ -961,12 +961,12 @@ if barstate.islast and showTbl
                 cNow += 1
 //@@E
             T.cell(cNow, row, now, text_color = nc, text_size = f_tsz(), text_halign = text.align_left)
-            tN   += s.n
+            tTot += s.n
             tPct += s.sumPct
             tR   += s.sumR
             row  += 1
     T.cell(0, row, "ALL", text_color = tx, bgcolor = hd, text_size = f_tsz())
-    T.cell(3, row, str.tostring(tN), text_color = tx, bgcolor = hd, text_size = f_tsz())
+    T.cell(3, row, str.tostring(tTot), text_color = tx, bgcolor = hd, text_size = f_tsz())
     T.cell(5, row, f_sgn(tPct, "0.00"), text_color = tPct >= 0 ? C_TP : C_SL, bgcolor = hd, text_size = f_tsz())
     T.cell(6, row, f_sgn(tR, "0.0"), text_color = tR >= 0 ? C_TP : C_SL, bgcolor = hd, text_size = f_tsz())
     if mmOn
@@ -983,7 +983,7 @@ if barstate.islast and showTbl
 DECL_I = 'indicator("Fractal Breakout Grid", shorttitle = "FBG", overlay = true, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)'
 DECL_S = ('strategy("Fractal Breakout Grid Strategy", shorttitle = "FBG-S", overlay = true, initial_capital = 120000, currency = currency.USD, default_qty_type = strategy.fixed, '
           'default_qty_value = 1, pyramiding = 12, commission_type = strategy.commission.cash_per_contract, commission_value = 0.115, slippage = 0, process_orders_on_close = false, '
-          'close_entries_rule = "ANY", margin_long = 0, margin_short = 0, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)')
+          'close_entries_rule = "ANY", margin_long = 0, margin_short = 0, calc_on_every_tick = false, calc_on_order_fills = false, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)')
 MMON_I = """mmOn      = input.bool(true, "Money: $ Results And The Next Trade's Lots", group = GRP_M, tooltip = "On: every strategy is its own account with the start balance below, sized by the loss recovery rule. The table adds the net $ and the largest drawdown, the Now column the next trade's lots and $ risk, and the labels and alerts the $ amounts. Off: % and R only (and the cap's Stop trading cannot stop a strategy).")"""
 MMON_S = """mmOn      = true    // the strategy always sizes its orders with the money settings below"""
 STRATNOTE = """
@@ -1037,10 +1037,14 @@ for [i, s] in S
         else
             strategy.exit(xid, from_entry = sid, stop = s.SLp, limit = s.TPp, comment_loss = "SL", comment_profit = "TP")
     else if s.pos
-        float qs = s.cnt ? s.units : f_units(s, s.F)
-        if not na(qs) and qs > 0
+        bool  dueX = (tExitH > 0 and tN >= s.eTime + math.round(tExitH * 3600000)) or wkN
+        float qs   = s.cnt ? s.units : f_units(s, s.F)
+        if not dueX and not na(qs) and qs > 0
             strategy.entry(sid, strategy.long, qty = qs, comment = "sync")
             strategy.exit(xid, from_entry = sid, stop = s.SLp, limit = s.TPp, comment_loss = "SL", comment_profit = "TP")
+        else
+            strategy.cancel(sid)
+            strategy.cancel(xid)
     else if inTv
         strategy.close(sid, comment = "sync")
     else
