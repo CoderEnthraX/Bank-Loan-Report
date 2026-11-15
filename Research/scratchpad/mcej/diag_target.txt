@@ -1,0 +1,21 @@
+Auction Retest, one account 2021-2026: net (guard months) by ladder target; Off for reference
+M5-S1   F Off +10287 | T1 Med +15704 g0 | T1 Max -117 g642 | T2 Med +15616 g0 | T2 Max +18619 g0 | T3 Med +16449 g0 | T3 Max +20419 g0 | T5 Med +18145 g0 | T5 Max +18545 g0
+        J Off +6142 | T1 Med +9348 g0 | T1 Max +7088 g0 | T2 Med +9338 g0 | T2 Max +7031 g0 | T3 Med +9239 g0 | T3 Max +7043 g0 | T5 Med +6752 g0 | T5 Max +7652 g0
+M5-S2   F Off +5487 | T1 Med -555 g1450 | T1 Max -558 g1422 | T2 Med +4310 g0 | T2 Max -109 g814 | T3 Med +5415 g0 | T3 Max +4626 g0 | T5 Med +5017 g0 | T5 Max +4744 g0
+        J Off +3475 | T1 Med -77 g1320 | T1 Max -62 g1373 | T2 Med +2899 g0 | T2 Max +1168 g0 | T3 Med +4142 g0 | T3 Max +1873 g0 | T5 Med +3475 g0 | T5 Max +3475 g0
+M5-S3   F Off +9855 | T1 Med -441 g1588 | T1 Max +452 g1186 | T2 Med +11312 g0 | T2 Max +24668 g0 | T3 Med +12656 g0 | T3 Max +4319 g0 | T5 Med +9667 g0 | T5 Max +24325 g0
+        J Off +6296 | T1 Med -345 g1506 | T1 Max -334 g1502 | T2 Med +9054 g0 | T2 Max +4061 g0 | T3 Med +8072 g0 | T3 Max +3165 g0 | T5 Med +8342 g0 | T5 Max +20509 g0
+M5-S4   F Off +5324 | T1 Med -438 g1320 | T1 Max -68 g1076 | T2 Med +4927 g0 | T2 Max +3092 g0 | T3 Med +4623 g0 | T3 Max +4970 g0 | T5 Med +4139 g0 | T5 Max +3086 g0
+        J Off +4049 | T1 Med -127 g1189 | T1 Max -137 g1276 | T2 Med +3387 g0 | T2 Max +2437 g0 | T3 Med +4078 g0 | T3 Max +2839 g0 | T5 Med +3480 g0 | T5 Max +1919 g0
+M15-S1  F Off +13276 | T1 Med +35804 g0 | T1 Max +112614 g0 | T2 Med +35100 g0 | T2 Max +130393 g0 | T3 Med +29330 g0 | T3 Max +68677 g144 | T5 Med +29752 g0 | T5 Max +103179 g0
+        J Off +11755 | T1 Med +26562 g0 | T1 Max +110845 g0 | T2 Med +25318 g0 | T2 Max +91229 g0 | T3 Med +24272 g0 | T3 Max +88627 g0 | T5 Med +24406 g0 | T5 Max +41089 g0
+M15-S3  F Off +9537 | T1 Med +20993 g167 | T1 Max +983 g792 | T2 Med +22193 g0 | T2 Max +38607 g5 | T3 Med +21928 g0 | T3 Max +44306 g0 | T5 Med +18300 g0 | T5 Max +47850 g0
+        J Off +8256 | T1 Med +1722 g594 | T1 Max +885 g616 | T2 Med +13299 g0 | T2 Max +1346 g0 | T3 Med +12665 g0 | T3 Max +2305 g0 | T5 Med +14575 g0 | T5 Max +42701 g0
+M15-S6  F Off +6798 | T1 Med +12615 g0 | T1 Max +3349 g439 | T2 Med +12191 g0 | T2 Max +38041 g0 | T3 Med +11525 g0 | T3 Max +39728 g0 | T5 Med +9342 g0 | T5 Max +18393 g0
+        J Off +5788 | T1 Med +9080 g0 | T1 Max +1933 g0 | T2 Med +7893 g0 | T2 Max +2161 g0 | T3 Med +9580 g0 | T3 Max +36022 g0 | T5 Med +7152 g0 | T5 Max +12108 g0
+M15-S7  F Off +13716 | T1 Med +35982 g0 | T1 Max +138219 g0 | T2 Med +35269 g0 | T2 Max +138051 g0 | T3 Med +30532 g0 | T3 Max +102046 g0 | T5 Med +31002 g0 | T5 Max +108096 g0
+        J Off +12061 | T1 Med +29778 g0 | T1 Max +112857 g0 | T2 Med +26698 g0 | T2 Max +101187 g0 | T3 Med +26733 g0 | T3 Max +91670 g0 | T5 Med +26071 g0 | T5 Max +48990 g0
+M15-S8  F Off +7318 | T1 Med +5793 g0 | T1 Max -191 g641 | T2 Med +5444 g0 | T2 Max -155 g590 | T3 Med +5587 g0 | T3 Max -171 g350 | T5 Med +7257 g0 | T5 Max +7959 g0
+        J Off +2843 | T1 Med +3607 g0 | T1 Max +1270 g136 | T2 Med +3768 g14 | T2 Max +626 g426 | T3 Med +3508 g0 | T3 Max +4384 g0 | T5 Med +2843 g0 | T5 Max +2843 g0
+M15-S9  F Off +1076 | T1 Med -169 g492 | T1 Max +15 g458 | T2 Med +1076 g0 | T2 Max +1076 g0 | T3 Med +1076 g0 | T3 Max +1076 g0 | T5 Med +1076 g0 | T5 Max +1076 g0
+        J Off +1400 | T1 Med +1910 g0 | T1 Max +2508 g0 | T2 Med +1400 g0 | T2 Max +1400 g0 | T3 Med +1400 g0 | T3 Max +1400 g0 | T5 Med +1400 g0 | T5 Max +1400 g0

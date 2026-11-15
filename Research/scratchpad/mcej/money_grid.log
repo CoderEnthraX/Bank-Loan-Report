@@ -1,0 +1,4 @@
+M5 strategies [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11] | combined: E/Of +12628 F/Of +23261 F/Me +42653 F/Ma +104522 G/Of +23645 G/Me +45053 G/Ma +113600 H/Of +22963 H/Me +41557 H/Ma +105262 I/Of +12381 I/Me +14398 I/Ma +20510 J/Of +23402 J/Me +44153 J/Ma +105523
+   twin check (Crooks F + Medium, every trade): OK for 11 strategies, worst relative P&L difference so far 1.5e-07
+M15 strategies [1, 2, 3, 4, 5, 6, 7, 8, 9, 11] | combined: E/Of +9563 F/Of +18529 F/Me +33309 F/Ma +84797 G/Of +18762 G/Me +34062 G/Ma +87481 H/Of +18329 H/Me +32801 H/Ma +84373 I/Of +9360 I/Me +10255 I/Ma +12954 J/Of +18706 J/Me +33849 J/Ma +86957
+   twin check (Crooks F + Medium, every trade): OK for 10 strategies, worst relative P&L difference so far 1.5e-07

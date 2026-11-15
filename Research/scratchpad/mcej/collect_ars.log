@@ -1,0 +1,14 @@
+M5-S1   Most profit                            exitR 2.50 | engine 1472 stored 1472 identical True | first 2021-01-04 18:50:00 last exit 2026-10-01 20:00:00 | trades crossing a month end 25
+M5-S2   Shortest losing streak                 exitR 2.00 | engine 1692 stored 1692 identical True | first 2021-01-04 18:50:00 last exit 2026-10-02 21:00:00 | trades crossing a month end 16
+M5-S3   Most trades a day                      exitR 2.00 | engine 1805 stored 1805 identical True | first 2021-01-04 18:45:00 last exit 2026-10-01 21:05:00 | trades crossing a month end 28
+M5-S4   Simplest                               exitR 2.00 | engine 1488 stored 1488 identical True | first 2021-01-04 18:50:00 last exit 2026-10-01 19:55:00 | trades crossing a month end 12
+M15-S1  Most profit                            exitR 2.00 | engine 1388 stored 1388 identical True | first 2021-01-05 05:45:00 last exit 2026-10-02 06:30:00 | trades crossing a month end 43
+M15-S3  Shortest losing streak - indicator only exitR 2.00 | engine 1129 stored 1129 identical True | first 2021-01-05 05:45:00 last exit 2026-10-02 18:00:00 | trades crossing a month end 41
+M15-S6  Most trades a day                      exitR 2.00 | engine 1776 stored 1776 identical True | first 2021-01-05 05:45:00 last exit 2026-10-02 06:30:00 | trades crossing a month end 41
+M15-S7  Every year positive                    exitR 2.00 | engine 1377 stored 1377 identical True | first 2021-01-05 05:45:00 last exit 2026-10-02 06:30:00 | trades crossing a month end 44
+M15-S8  Simplest                               exitR 2.00 | engine 1179 stored 1179 identical True | first 2021-01-05 05:45:00 last exit 2026-10-02 06:30:00 | trades crossing a month end 48
+M15-S9  Asia session only                      exitR 2.00 | engine 712 stored 712 identical True | first 2021-01-05 05:45:00 last exit 2026-10-02 06:30:00 | trades crossing a month end 4
+
+real	0m9.458s
+user	0m30.708s
+sys	0m1.301s

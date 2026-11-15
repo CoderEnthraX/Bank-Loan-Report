@@ -919,6 +919,37 @@ Other gold findings:
       - Not fixed: 10 (a breakout seconds before the start is taken at the first tick, a next-open style late entry) and 13 (the warm-up
         approximation when the buy stop is older than the history read).
 
+36. **Monthly analysis: Crooks E - J x the 6 profit-ladder levels, gold M5 then M15 (asked 2026-11-15)** (tasks #79-#82). The user asked for
+    every calendar month of 2021-2026 with Crooks E - J and "effort level" columns Off / Low / Medium / High / Extra high / Max, first on M5,
+    then on M15. The strategy was not named, so both were done: the Fractal Breakout Grid (all strategies on an M5 chart, then an M15 chart)
+    and the Auction Retest M5 / M15 catalogue strategies. Work dir `$S/mcej` (mirrored in `Research/scratchpad/mcej`, no .pkl / .json).
+    - **Two readings of "each month":** ONE ACCOUNT from Jan 2021, P&L booked in the IST month of the exit (blocks 1-4), and EACH MONTH ON
+      ITS OWN, a fresh $10,000 and fresh state on the 1st, trades by entry month (block 5). With a fresh month the $1,000 ladder target is
+      reached in 4 of 3,500 ARS strategy-rule-months and 0 of 3,850 / 3,500 grid ones, so only the one-account view shows the levels.
+    - **Trades:** `collect_ars.py` (engine re-run of M5 S1-S4, M15 S1 / S3 / S6-S9 as designed: 10 / 10 identical to the stored trades;
+      fill / exit time, entry price). `collect_grid.py` (engine.run on the chart TF = pine_twin2.twin2, 21 strategy / chart runs identical;
+      M5 chart S1-S11, M15 chart S1-S9 + S11; IST times).
+    - **Money:** `money.py ars | grid` = gold/recovery.py (ARS) and fractal/recovery_tol.py (grid) per account, defaults: $50, $10,000,
+      1:100, E / I 0.01 lot, F x3, G x10, H 1 %, J x20, target $1,000; ARS no cap, grid $500 Clamp; no lot rounding. Per trade the ladder
+      flag and the start-guard flag. Grid check: the twin's own money (Crooks F + Medium) trade for trade, worst relative 1.5e-7.
+      `targets.py`: ARS with ladder targets $1,000 / $2,000 / $3,000 / $5,000.
+    - **Workbooks:** `build_xlsx.py OUTDIR both` -> `Gold_Monthly_Crooks_EJ_Fractal_Grid.xlsx` (Read me, Summary, M5 chart, M5 by strategy,
+      M15 chart, M15 by strategy; 6,622 formulas) and `Gold_Monthly_Crooks_EJ_Auction_Retest.xlsx` (Read me, Summary M5, M5-S1..S4, Summary
+      M15, M15-S1..S9, Ladder target test; 32,621 formulas). Monthly sheet: 1 month P&L (values, green = ladder on, orange = guard trades),
+      2 years (SUMIFS), 3 balance (formulas), 4 deepest drop in the month, 5 each month alone; stats rows by formula; summaries link the
+      sheets (INDEX / MATCH best setting per row). recalc 0 errors.
+    - **Checks:** `check_xlsx.py` (7,618 cells vs the pickles, 0 differences); independent re-implementation from `verify/SPEC.md` only
+      (Sonnet high, `verify/indep/sim.py` + `check.py`, re-run by me): 9,172 cells, 0 above $0.01.
+    - **Findings:**
+      - Grid: every level adds profit, the guard never fires. M5 chart Crooks F Off +$23,261 / Medium +$42,653 (= v2 number) / Max
+        +$104,522; worst month -$590 / -$770 / -$2,122; M15 chart +$18,529 / +$33,309 / +$84,797. S1, S5, S6 never reach $1,000.
+      - ARS: the start guard traps accounts. M5-S2 / S3 / S4 and M15-S9 reach $1,000 early, fall back to $0, then trade 0.01 lot for years
+        (60+ guard months): M5-S2 Crooks F Off +$5,487, Low -$555, Medium -$555, Max -$558. M15-S1 / S7 the opposite: F Off +$13.3k /
+        +$13.7k -> Max +$112.6k / +$138.2k (fall 16 % -> 45 % / 42 %).
+      - Higher target: runs with guard trades 138 of 250 ($1,000) -> 35 ($2,000), 13 ($3,000), 2 ($5,000). M5-S2 F Medium -$555 / +$4,310 /
+        +$5,415 / +$5,017. Suggested to the user: target $2,000-3,000 for the ARS ladder, or a guard that releases (not built).
+    - **Delivered:** both xlsx in `Research/deliverables/` and sent to the user.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -941,6 +972,7 @@ Other gold findings:
 | Crooks C single wins | `crooks_alt.py`, `crooks_alt2.py`, `crooks_alt3.py` (no cap) | `crooks_alt*.pkl`, `crooks_alt*.txt` | 1 min each |
 | The user's Crooks C rules (v3.9) | `crooks_user.py` (wait for wins, skip days, forget, %; random orders over the real trade times) | `crooks_user.pkl`, `crooks_user.txt` | 1 min |
 | Month-by-month workbooks | `monthly.py collect`, `monthly.py money`, `monthly.py check`, then `build_monthly_xlsx.py` | `monthly_trades.pkl`, `monthly.pkl`, 2 xlsx | 1.5 min, 1 min, seconds, 1 min + recalc |
+| Monthly Crooks E-J x ladder (item 36, `$S/mcej`) | `collect_ars.py`, `collect_grid.py`, `money.py ars`, `money.py grid`, `targets.py`, `build_xlsx.py OUTDIR both`, recalc, `check_xlsx.py OUTDIR` | `*_trades.pkl`, `*_money.pkl`, `ars_targets.pkl`, 2 xlsx | 10 s, 20 s, 5 s, 3 s, 30 s, 5 s + recalc 1 min |
 | No losing month | `bestmonth.py collect`, `screen`, `money`, `report`, `exact`; `bestmonth_final.py`; `build_bestmonth_xlsx.py` | `bestmonth_*.pkl`, `bestmonth*.txt`, xlsx | 1 min, seconds, 20 s, 20 s, 1 min, 1 min, seconds |
 | Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py`, `crooks_sheet.py` and `vwfilter_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |

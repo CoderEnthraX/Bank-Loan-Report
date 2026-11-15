@@ -1,0 +1,41 @@
+
+=== GRID M5 chart, strategies [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]: combined net | losing months | worst month | maxDD% | guard trades
+  Crooks E  +12628 L20 w  -376 dd  1% g0
+  Crooks F  +23261 L22 w  -590 dd  1% g0 |  +32564 L24 w  -590 dd  1% g0 |  +42653 L24 w  -770 dd  1% g0 |  +60632 L25 w -1111 dd  1% g0 |  +86134 L27 w -1631 dd  2% g0 | +104522 L28 w -2122 dd  3% g0
+  Crooks G  +23645 L22 w  -590 dd  1% g0 |  +33721 L24 w  -590 dd  1% g0 |  +45053 L24 w  -797 dd  1% g0 |  +64555 L26 w -1184 dd  1% g0 |  +92433 L29 w -1803 dd  2% g0 | +113600 L29 w -2451 dd  2% g0
+  Crooks H  +22963 L22 w  -590 dd  1% g0 |  +31498 L25 w  -590 dd  1% g0 |  +41557 L26 w  -689 dd  1% g0 |  +59700 L27 w  -980 dd  1% g0 |  +85706 L28 w -1377 dd  2% g0 | +105262 L28 w -1716 dd  2% g0
+  Crooks I  +12381 L20 w  -345 dd  1% g0 |  +13276 L20 w  -345 dd  1% g0 |  +14398 L20 w  -447 dd  1% g0 |  +16216 L20 w  -578 dd  1% g0 |  +18416 L20 w  -730 dd  1% g0 |  +20510 L21 w  -832 dd  1% g0
+  Crooks J  +23402 L23 w  -590 dd  1% g0 |  +33007 L25 w  -590 dd  1% g0 |  +44153 L25 w  -789 dd  1% g0 |  +60605 L27 w -1159 dd  1% g0 |  +83993 L28 w -1740 dd  2% g0 | +105523 L29 w -2350 dd  3% g0
+  per strategy, Crooks F: Off / Medium / Max net (guard months at Max) and ladder on from
+   S1    43 trades:    +333 /    +333 /    +333 (g0) on None
+   S2    49 trades:   +1768 /   +2322 /   +4134 (g0) on 2024-10
+   S3    79 trades:   +2219 /   +3852 /   +9523 (g0) on 2025-08
+   S4   144 trades:   +5081 /  +11977 /  +36012 (g0) on 2023-04
+   S5   274 trades:    +703 /    +703 /    +703 (g0) on None
+   S6   225 trades:    +288 /    +288 /    +288 (g0) on None
+   S7   255 trades:   +1315 /   +1586 /   +2674 (g0) on 2025-05
+   S8   294 trades:   +2116 /   +3830 /   +9948 (g0) on 2023-04
+   S9   999 trades:   +1031 /   +1045 /    +851 (g0) on 2025-09
+   S10 1194 trades:   +4953 /   +9751 /  +21662 (g0) on 2022-02
+   S11  731 trades:   +3454 /   +6965 /  +18393 (g0) on 2022-12
+  fresh view: strategy-rule-months where a level differs from Off: 0 of 3850
+
+=== GRID M15 chart, strategies [1, 2, 3, 4, 5, 6, 7, 8, 9, 11]: combined net | losing months | worst month | maxDD% | guard trades
+  Crooks E   +9563 L19 w  -446 dd  1% g0
+  Crooks F  +18529 L25 w  -553 dd  1% g0 |  +25142 L26 w  -910 dd  1% g0 |  +33309 L26 w -1326 dd  1% g0 |  +47583 L26 w -2070 dd  2% g0 |  +68358 L29 w -3187 dd  3% g0 |  +84797 L28 w -4132 dd  3% g0
+  Crooks G  +18762 L25 w  -553 dd  1% g0 |  +25550 L26 w  -917 dd  1% g0 |  +34062 L26 w -1356 dd  1% g0 |  +48947 L26 w -2152 dd  2% g0 |  +70337 L28 w -3395 dd  3% g0 |  +87481 L28 w -4292 dd  3% g0
+  Crooks H  +18329 L25 w  -553 dd  1% g0 |  +24783 L26 w  -904 dd  1% g0 |  +32801 L26 w -1316 dd  1% g0 |  +46929 L26 w -2064 dd  2% g0 |  +67674 L29 w -3167 dd  3% g0 |  +84373 L29 w -4105 dd  3% g0
+  Crooks I   +9360 L19 w  -446 dd  1% g0 |   +9776 L19 w  -470 dd  1% g0 |  +10255 L17 w  -486 dd  1% g0 |  +10928 L16 w  -484 dd  1% g0 |  +11793 L17 w  -484 dd  1% g0 |  +12954 L17 w  -485 dd  1% g0
+  Crooks J  +18706 L25 w  -553 dd  1% g0 |  +25427 L26 w  -915 dd  1% g0 |  +33849 L26 w -1348 dd  1% g0 |  +48570 L26 w -2131 dd  2% g0 |  +69770 L28 w -3353 dd  3% g0 |  +86957 L28 w -4299 dd  3% g0
+  per strategy, Crooks F: Off / Medium / Max net (guard months at Max) and ladder on from
+   S1    43 trades:    +333 /    +333 /    +333 (g0) on None
+   S2    49 trades:   +1768 /   +2322 /   +4134 (g0) on 2024-10
+   S3    79 trades:   +2219 /   +3852 /   +9523 (g0) on 2025-08
+   S4   144 trades:   +5081 /  +11977 /  +36012 (g0) on 2023-04
+   S5   274 trades:    +780 /    +780 /    +780 (g0) on None
+   S6   225 trades:    +303 /    +303 /    +303 (g0) on None
+   S7   255 trades:   +1450 /   +1727 /   +2920 (g0) on 2024-08
+   S8   294 trades:   +2122 /   +3852 /   +9976 (g0) on 2023-10
+   S9  1000 trades:   +1215 /   +1412 /   +1636 (g0) on 2025-04
+   S11  726 trades:   +3258 /   +6751 /  +19179 (g0) on 2023-10
+  fresh view: strategy-rule-months where a level differs from Off: 0 of 3500

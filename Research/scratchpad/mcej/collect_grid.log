@@ -1,0 +1,25 @@
+M5  S1  ('D1', 3, 25, -0.14, 3.0, 0.75, 0.45, 0.8) | engine   43 twin   43 identical True | twin net (F + Medium)   +332.91, sum pnl   +332.91 | 2021-04-15 19:20:00 .. 2026-08-19 19:05:00 | crossing a month end 2
+M5  S2  ('D1', 3, 15, -0.085, 0.5, 2.0, 0.25, 0.8) | engine   49 twin   49 identical True | twin net (F + Medium)  +2321.95, sum pnl  +2321.95 | 2021-04-15 19:30:00 .. 2026-08-19 19:05:00 | crossing a month end 3
+M5  S3  ('D1', 2, 7, -0.065, 0.3, 1.65, 0.2, 0.5) | engine   79 twin   79 identical True | twin net (F + Medium)  +3852.09, sum pnl  +3852.09 | 2021-01-29 19:20:00 .. 2026-08-19 19:05:00 | crossing a month end 4
+M5  S4  ('H4', 8, 12, -0.025, 0.44, 3.1, 0.33, 0.9) | engine  144 twin  144 identical True | twin net (F + Medium) +11977.21, sum pnl +11977.21 | 2021-01-29 19:30:00 .. 2026-10-02 18:40:00 | crossing a month end 7
+M5  S5  ('H1', 19, 30, -0.045, 2.0, 0.35, 0.1, 0.7) | engine  274 twin  274 identical True | twin net (F + Medium)   +703.18, sum pnl   +703.18 | 2021-01-20 20:00:00 .. 2026-10-02 18:05:00 | crossing a month end 2
+M5  S6  ('H1', 25, 25, -0.06, 4.2, 0.33, 0.15, 0.8) | engine  225 twin  225 identical True | twin net (F + Medium)   +288.50, sum pnl   +288.50 | 2021-01-20 20:00:00 .. 2026-10-02 18:05:00 | crossing a month end 5
+M5  S7  ('H1', 23, 25, -0.055, 0.87, 0.56, 0.13, 1.1) | engine  255 twin  255 identical True | twin net (F + Medium)  +1586.21, sum pnl  +1586.21 | 2021-01-20 20:00:00 .. 2026-10-02 18:05:00 | crossing a month end 1
+M5  S8  ('H1', 20, 25, -0.06, 0.68, 0.43, 0.1, 0.7) | engine  294 twin  294 identical True | twin net (F + Medium)  +3829.84, sum pnl  +3829.84 | 2021-01-20 20:00:00 .. 2026-10-02 18:05:00 | crossing a month end 1
+M5  S9  ('H1', 5, 5, -0.08, 2.0, 0.7, 0.1, 1.0) | engine  999 twin  999 identical True | twin net (F + Medium)  +1044.63, sum pnl  +1044.63 | 2021-01-05 03:00:00 .. 2026-10-02 18:00:00 | crossing a month end 17
+M5  S10 ('M5', 30, 65, -0.05, 1.0, 1.0, 0.2, 0.0) | engine 1194 twin 1194 identical True | twin net (F + Medium)  +9751.28, sum pnl  +9751.28 | 2021-01-04 16:30:00 .. 2026-10-02 18:45:00 | crossing a month end 30
+M5  S11 ('M15', 20, 40, -0.01, 1.0, 3.0, 0.2, 0.1) | engine  731 twin  731 identical True | twin net (F + Medium)  +6965.04, sum pnl  +6965.04 | 2021-01-05 04:45:00 .. 2026-10-02 18:40:00 | crossing a month end 12
+M15 S1  ('D1', 3, 25, -0.14, 3.0, 0.75, 0.45, 0.8) | engine   43 twin   43 identical True | twin net (F + Medium)   +332.91, sum pnl   +332.91 | 2021-04-15 19:15:00 .. 2026-08-19 19:00:00 | crossing a month end 2
+M15 S2  ('D1', 3, 15, -0.085, 0.5, 2.0, 0.25, 0.8) | engine   49 twin   49 identical True | twin net (F + Medium)  +2321.95, sum pnl  +2321.95 | 2021-04-15 19:30:00 .. 2026-08-19 19:00:00 | crossing a month end 3
+M15 S3  ('D1', 2, 7, -0.065, 0.3, 1.65, 0.2, 0.5) | engine   79 twin   79 identical True | twin net (F + Medium)  +3852.31, sum pnl  +3852.31 | 2021-01-29 19:15:00 .. 2026-08-19 19:00:00 | crossing a month end 4
+M15 S4  ('H4', 8, 12, -0.025, 0.44, 3.1, 0.33, 0.9) | engine  144 twin  144 identical True | twin net (F + Medium) +11977.21, sum pnl +11977.21 | 2021-01-29 19:30:00 .. 2026-10-02 18:30:00 | crossing a month end 7
+M15 S5  ('H1', 19, 30, -0.045, 2.0, 0.35, 0.1, 0.7) | engine  274 twin  274 identical True | twin net (F + Medium)   +779.83, sum pnl   +779.83 | 2021-01-20 20:00:00 .. 2026-10-02 18:00:00 | crossing a month end 2
+M15 S6  ('H1', 25, 25, -0.06, 4.2, 0.33, 0.15, 0.8) | engine  225 twin  225 identical True | twin net (F + Medium)   +303.21, sum pnl   +303.21 | 2021-01-20 20:00:00 .. 2026-10-02 18:00:00 | crossing a month end 5
+M15 S7  ('H1', 23, 25, -0.055, 0.87, 0.56, 0.13, 1.1) | engine  255 twin  255 identical True | twin net (F + Medium)  +1727.12, sum pnl  +1727.12 | 2021-01-20 20:00:00 .. 2026-10-02 18:00:00 | crossing a month end 1
+M15 S8  ('H1', 20, 25, -0.06, 0.68, 0.43, 0.1, 0.7) | engine  294 twin  294 identical True | twin net (F + Medium)  +3852.26, sum pnl  +3852.26 | 2021-01-20 20:00:00 .. 2026-10-02 18:00:00 | crossing a month end 1
+M15 S9  ('H1', 5, 5, -0.08, 2.0, 0.7, 0.1, 1.0) | engine 1000 twin 1000 identical True | twin net (F + Medium)  +1411.85, sum pnl  +1411.85 | 2021-01-05 03:00:00 .. 2026-10-02 18:00:00 | crossing a month end 17
+M15 S11 ('M15', 20, 40, -0.01, 1.0, 3.0, 0.2, 0.1) | engine  726 twin  726 identical True | twin net (F + Medium)  +6750.82, sum pnl  +6750.82 | 2021-01-05 04:45:00 .. 2026-10-02 18:30:00 | crossing a month end 13
+
+real	0m20.456s
+user	0m27.676s
+sys	0m1.123s
