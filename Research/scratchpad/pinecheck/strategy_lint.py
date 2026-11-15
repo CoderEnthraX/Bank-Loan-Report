@@ -21,6 +21,7 @@ for p in sys.argv[1:]:
     if not m:
         print('%s: not a strategy' % p.split('/')[-1]); continue
     tick = re.search(r'calc_on_every_tick\s*=\s*true', m.group(1)) is not None
-    bad = [] if tick else [(src.count('\n', 0, x.start()) + 1, x.group(0)) for x in re.finditer(r'barstate\.(islast|isnew|isrealtime|isconfirmed|islastconfirmedhistory)\b', src)]
-    print('%s: calc_on_every_tick %s, %d confirmed-candle barstate warnings' % (p.split('/')[-1], tick, len(bad)))
+    bad = [] if tick else [(src.count('\n', 0, x.start()) + 1, x.group(0)) for x in re.finditer(r'barstate\.islast\b', src)]
+    info = [] if tick else [(src.count('\n', 0, x.start()) + 1, x.group(0)) for x in re.finditer(r'barstate\.(isnew|isrealtime|isconfirmed|islastconfirmedhistory)\b', src)]
+    print('%s: calc_on_every_tick %s, %d barstate.islast warnings (TradingView warns), %d other live-bar barstates (no known warning)' % (p.split('/')[-1], tick, len(bad), len(info)))
     for ln, w in bad: print('   line %d: %s' % (ln, w))

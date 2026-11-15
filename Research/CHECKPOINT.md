@@ -784,6 +784,54 @@ Other gold findings:
       4. **What did not change.** Trades and orders are the same, and the indicator is byte-identical. The strategy is now 1,216 lines.
          The generator before this fix is kept as `pine3/build_fbg3_prelabels.py`.
 
+33. **Position size (lots / $ / % of equity), gap-fill exits, "no trades" note, audit of all 12 grid strategies (asked 2026-11-15)** (tasks #71-#74).
+    - **User reports:**
+      - S10 / S12 had no trades on a 1-year test. The cause: the user's chart is M15, so they are switched off by design.
+      - S1 showed 2 trades in a year. That is by design: 6-11 trades a year in 2021-25, and 2 in Jan-Oct 2026.
+      - "sync" / $0 trades in all strategies: these are BE / SALV exits at the entry plus next-open catch-ups.
+      - Check: `fractal/labels/counts.py`.
+    - **No-trades note:** a red `table` at `position.top_center` on the last 2 bars in both builds (`NOTICE` in `pine3/build_fbg3.py`).
+      It names every ticked strategy whose timeframe is below the chart's.
+    - **Audit:** `fractal/labels/audit_all.py` runs `sync_why.py` (emsim3 with tags) for every strategy and chart. Output:
+      `labels/audit_all_v3.txt` and `labels/readme_table_v31.md`.
+      - Break-even share 30-90 %.
+      - Next-open exits: M15 up to 11.9 % (S9), M1 0-5.1 %.
+      - $ (`labels/emsim3_final.txt`): M15 S9 -28.5 %, S8 -19.5 %, S7 -14.7 %, S5 -11.9 %; M1 0 to -7.7 %. The BE-in-candle next-open
+        exits are biased down, and SALV ones up.
+    - **Bug found and fixed (grid strategy):** on a gap fill above the buy stop, the pre-placed exits were absolute prices based on E. A
+      weekend gap bigger than the TP made an instant "TP" exit at the entry ($0).
+      - Fix: `strategy.exit(..., profit = nE * tp / 100 / mintick, loss = nE * sl / 100 / mintick)` (ticks from the fill). The next
+        candle re-sends the absolute model prices.
+      - emsim3 and sync_why use distances, and compare prices at 6 decimals, because E + d and E (1 + p) differ by about 1e-12.
+      - Remaining: gap-fill TP within 0.03-0.3. The "same entry, other exit: SL" cases are BE inside a candle followed by the original
+        SL in the same candle (inherent).
+    - **Position size, grid:** `szMode` (Fixed $ risk / Fixed lots / % of equity at risk), `baseLot`, and `eqPct` moved to MONEY.
+      - `f_base(s, sd)`: lots = baseLot x lotSz x (sd + costIn); % = max(0, s.eq) x eqPct / 100.
+      - `f_raw` uses it, `mmOpen` stores `s.bR`, `mmBook` uses `s.bR` (Oscar reset, Crooks G via `f_lad(s, s.bR)`), and `f_lad(s, B)`.
+      - Twin: `pine_twin2.py` (f_base, P.szMode / baseLot). Reference: `recovery_tol.simulate(..., baseMode, basePct)`, with the lot
+        base as the 7th tuple element.
+      - Parity (`labels/parity_size.py`): 800 runs, 286,157 trades, 0 differences. The old `parity2_money.py` regression: 300 runs,
+        0 differences.
+      - Backups: `pine3/build_fbg3_presize.py`, `pine_twin2_presize.py`, `recovery_tol_presize.py`, `emsim3_pregap.py`.
+    - **Position size, VWAP strategy (v4.7):** in `build/strategy_template.pine`.
+      - `sizeMode`, `baseRiskIn` (input), `baseLot`; `eqPct` moved to GRP_R.
+      - `var float baseRisk` is set in `if evArm`. `exBase` is stored at the entry and used in booking (Oscar, Crooks G via
+        `f_lad(exBase)`), and `f_lad(float B)`.
+      - Default mode: identical numbers.
+      - Guard: `na(q) or q <= 0` means "size 0" (Oscar's 0/0 on an empty account in % mode).
+      - The `f_crkRule` parameter `t1` was renamed `useT1` (shadowcheck).
+      - The EA is unchanged (no lots / % base there). Backup: `build/bak/strategy_template_presize.pine`.
+    - **Review:** a Sonnet high-effort sub-agent, whose findings I checked. It found no compile issue. It confirmed the default mode is
+      identical and that no stale base is used. The na guard was taken. The display of the base before the first signal (non-default
+      modes) was left as is.
+    - **Lint:** `pinecheck/strategy_lint.py` now flags only `barstate.islast` (the known TradingView warning). Other live-bar barstates
+      are only counted: the VWAP strategy has 4, never reported as warnings.
+    - **Final files:**
+      - Grid indicator v3.1, 1,124 lines.
+      - Grid strategy v3.1, 1,247 lines.
+      - VWAP strategy v4.7, 1,441 lines.
+      - .txt copies in `Research/scratchpad/`.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |

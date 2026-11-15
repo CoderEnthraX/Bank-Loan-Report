@@ -56,14 +56,14 @@ def run_tag(ctf, k, p):
             elif order[0] == 'exit' and tv is not None:
                 tv['sl'], tv['tp'], tv['cl'], tv['cp'] = order[1], order[2], order[3], order[4]
             elif order[0] == 'stop' and tv is None:
-                q, E, slp, tpp = order[1:]
+                q, E, dsl, dtp = order[1:]
                 if o >= E:
-                    tv = dict(bar=i, F=o, q=q, sl=slp, tp=tpp, how='stop'); fillPx = o; k0 = 0
+                    tv = dict(bar=i, F=o, q=q, sl=o - dsl, tp=o + dtp, how='stop'); fillPx = o; k0 = 0
                 else:
                     for g in range(1, 4):
                         x, y = path[g - 1], path[g]
                         if y > x and x < E <= y:
-                            tv = dict(bar=i, F=E, q=q, sl=slp, tp=tpp, how='stop'); fillPx = E; k0 = g; break
+                            tv = dict(bar=i, F=E, q=q, sl=E - dsl, tp=E + dtp, how='stop'); fillPx = E; k0 = g; break
         if tv is not None:
             done = False
             if fillPx is None or k0 == 0:            # in the trade at the open (earlier fill, or a fill at this open)
@@ -113,12 +113,12 @@ def run_tag(ctf, k, p):
             q = NA
             if (not p.entClose) and nOn and not math.isnan(nE) and c < nE and okN and cntOk and not s.stopped:
                 q = f_units(s, nE)
-            if not math.isnan(q) and q > 0: order = ('stop', q, nE, nE * (1.0 - sl / 100.0), nE * (1.0 + tp / 100.0))
+            if not math.isnan(q) and q > 0: order = ('stop', q, nE, nE * sl / 100.0, nE * tp / 100.0)
     return s.trades, tvTrades, (t, utc)
     model = [(a[0], a[1], a[2], a[3]) for a in s.trades]
     mUsd = sum(s.risks[j] / (a[1] * sl / 100.0 + p.costIn) * (a[3] - a[1] - p.costIn) for j, a in enumerate(s.trades))   # risks: one per opened trade, in order
     tvUsd = sum(q * (x - f) - 2 * COMM * q for (_, f, _, x, q, _) in tvTrades)
-    ms = set((a[0], round(a[1], 9), a[2], round(a[3], 9)) for a in model); ts = set((a[0], round(a[1], 9), a[2], round(a[3], 9)) for a in tvTrades)
+    ms = set((a[0], round(a[1], 6), a[2], round(a[3], 6)) for a in model); ts = set((a[0], round(a[1], 6), a[2], round(a[3], 6)) for a in tvTrades)
     return len(model), len(tvTrades), len(ms & ts), mUsd, tvUsd, s.net
 
 
@@ -129,8 +129,8 @@ if __name__ == '__main__':
     k = int(sys.argv[1]) - 1
     for ctf in sys.argv[2:]:
         mt, tt, _ = run_tag(ctf, k, TW.P())
-        ms = set((a[0], round(a[1], 9), a[2], round(a[3], 9)) for a in mt)
-        same = sum(1 for a in tt if (a[0], round(a[1], 9), a[2], round(a[3], 9)) in ms)
+        ms = set((a[0], round(a[1], 6), a[2], round(a[3], 6)) for a in mt)
+        same = sum(1 for a in tt if (a[0], round(a[1], 6), a[2], round(a[3], 6)) in ms)
         mr = collections.Counter(RS[a[4]] for a in mt)
         lab = collections.Counter((a[6] == 'catch-up' and 'entry next open / ' or '') + (a[7] + ' next open' if a[5] == 'close' else a[7]) for a in tt)
         print('chart %-3s S%d: model %d trades %s | TradingView %d trades, identical %d (%.1f%%)' % (ctf, k + 1, len(mt), dict(mr), len(tt), same, 100.0 * same / max(1, len(mt))))

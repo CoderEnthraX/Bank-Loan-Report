@@ -1,0 +1,674 @@
+[
+ {
+  "chart": "M15",
+  "s": 1,
+  "model": 43,
+  "tv": 43,
+  "same": 43,
+  "reasons": {
+   "TP": 29,
+   "SALV": 7,
+   "SL": 1,
+   "BE": 6
+  },
+  "nextExit": 0,
+  "nextEntry": 0,
+  "causes": {},
+  "missing": 0,
+  "tvUsd": 332.9579311487846
+ },
+ {
+  "chart": "M15",
+  "s": 2,
+  "model": 49,
+  "tv": 49,
+  "same": 46,
+  "reasons": {
+   "TP": 11,
+   "SL": 7,
+   "BE": 31
+  },
+  "nextExit": 2,
+  "nextEntry": 1,
+  "causes": {
+   "exit at next open (BE)": 2,
+   "entry at next open": 1
+  },
+  "missing": 1,
+  "tvUsd": 2327.943781733495
+ },
+ {
+  "chart": "M15",
+  "s": 3,
+  "model": 79,
+  "tv": 79,
+  "same": 70,
+  "reasons": {
+   "SL": 18,
+   "BE": 49,
+   "TP": 12
+  },
+  "nextExit": 6,
+  "nextEntry": 0,
+  "causes": {
+   "exit at next open (BE)": 6,
+   "same entry, other exit: SL": 3
+  },
+  "missing": 0,
+  "tvUsd": 3585.307966013288
+ },
+ {
+  "chart": "M15",
+  "s": 4,
+  "model": 144,
+  "tv": 144,
+  "same": 141,
+  "reasons": {
+   "SL": 41,
+   "BE": 82,
+   "TP": 21
+  },
+  "nextExit": 3,
+  "nextEntry": 0,
+  "causes": {
+   "exit at next open (BE)": 3
+  },
+  "missing": 0,
+  "tvUsd": 11955.53019646659
+ },
+ {
+  "chart": "M15",
+  "s": 5,
+  "model": 274,
+  "tv": 274,
+  "same": 239,
+  "reasons": {
+   "BE": 126,
+   "TP": 125,
+   "SALV": 16,
+   "SL": 7
+  },
+  "nextExit": 31,
+  "nextEntry": 3,
+  "causes": {
+   "exit at next open (BE)": 31,
+   "entry at next open": 3,
+   "same entry, other exit: TP": 1
+  },
+  "missing": 3,
+  "tvUsd": 687.1572533036239
+ },
+ {
+  "chart": "M15",
+  "s": 6,
+  "model": 225,
+  "tv": 225,
+  "same": 208,
+  "reasons": {
+   "TP": 118,
+   "BE": 77,
+   "SALV": 27,
+   "SL": 3
+  },
+  "nextExit": 15,
+  "nextEntry": 2,
+  "causes": {
+   "exit at next open (BE)": 15,
+   "entry at next open": 2
+  },
+  "missing": 2,
+  "tvUsd": 282.4029384656984
+ },
+ {
+  "chart": "M15",
+  "s": 7,
+  "model": 255,
+  "tv": 255,
+  "same": 227,
+  "reasons": {
+   "BE": 146,
+   "TP": 83,
+   "SL": 26
+  },
+  "nextExit": 27,
+  "nextEntry": 1,
+  "causes": {
+   "exit at next open (BE)": 26,
+   "entry at next open": 1,
+   "same entry, other exit: SL": 1
+  },
+  "missing": 1,
+  "tvUsd": 1472.4696569596833
+ },
+ {
+  "chart": "M15",
+  "s": 8,
+  "model": 294,
+  "tv": 294,
+  "same": 254,
+  "reasons": {
+   "BE": 159,
+   "TP": 111,
+   "SL": 24
+  },
+  "nextExit": 34,
+  "nextEntry": 2,
+  "causes": {
+   "exit at next open (BE)": 34,
+   "same entry, other exit: SL": 3,
+   "entry at next open": 2,
+   "same entry, other exit: TP": 1
+  },
+  "missing": 2,
+  "tvUsd": 3099.3579422926477
+ },
+ {
+  "chart": "M15",
+  "s": 9,
+  "model": 1000,
+  "tv": 997,
+  "same": 862,
+  "reasons": {
+   "BE": 745,
+   "TP": 179,
+   "SL": 36,
+   "SALV": 40
+  },
+  "nextExit": 119,
+  "nextEntry": 16,
+  "causes": {
+   "exit at next open (BE)": 117,
+   "entry at next open": 16,
+   "same entry, other exit: TP": 2
+  },
+  "missing": 19,
+  "tvUsd": 1008.9380036134261
+ },
+ {
+  "chart": "M15",
+  "s": 11,
+  "model": 726,
+  "tv": 725,
+  "same": 646,
+  "reasons": {
+   "SALV": 355,
+   "BE": 284,
+   "SL": 47,
+   "TP": 40
+  },
+  "nextExit": 59,
+  "nextEntry": 20,
+  "causes": {
+   "exit at next open (SALV)": 37,
+   "exit at next open (BE)": 22,
+   "entry at next open": 20
+  },
+  "missing": 21,
+  "tvUsd": 6769.055891561231
+ },
+ {
+  "chart": "M5",
+  "s": 1,
+  "model": 43,
+  "tv": 43,
+  "same": 43,
+  "reasons": {
+   "TP": 29,
+   "SALV": 7,
+   "SL": 1,
+   "BE": 6
+  },
+  "nextExit": 0,
+  "nextEntry": 0,
+  "causes": {},
+  "missing": 0,
+  "tvUsd": 332.9579311487846
+ },
+ {
+  "chart": "M5",
+  "s": 2,
+  "model": 49,
+  "tv": 49,
+  "same": 47,
+  "reasons": {
+   "TP": 11,
+   "SL": 7,
+   "BE": 31
+  },
+  "nextExit": 2,
+  "nextEntry": 0,
+  "causes": {
+   "exit at next open (BE)": 2
+  },
+  "missing": 0,
+  "tvUsd": 2286.688614912715
+ },
+ {
+  "chart": "M5",
+  "s": 3,
+  "model": 79,
+  "tv": 79,
+  "same": 75,
+  "reasons": {
+   "SL": 18,
+   "BE": 49,
+   "TP": 12
+  },
+  "nextExit": 1,
+  "nextEntry": 0,
+  "causes": {
+   "same entry, other exit: SL": 3,
+   "exit at next open (BE)": 1
+  },
+  "missing": 0,
+  "tvUsd": 3743.833863034387
+ },
+ {
+  "chart": "M5",
+  "s": 4,
+  "model": 144,
+  "tv": 144,
+  "same": 143,
+  "reasons": {
+   "SL": 41,
+   "BE": 82,
+   "TP": 21
+  },
+  "nextExit": 1,
+  "nextEntry": 0,
+  "causes": {
+   "exit at next open (BE)": 1
+  },
+  "missing": 0,
+  "tvUsd": 11960.146170896118
+ },
+ {
+  "chart": "M5",
+  "s": 5,
+  "model": 274,
+  "tv": 274,
+  "same": 251,
+  "reasons": {
+   "BE": 132,
+   "TP": 119,
+   "SALV": 16,
+   "SL": 7
+  },
+  "nextExit": 21,
+  "nextEntry": 1,
+  "causes": {
+   "exit at next open (BE)": 21,
+   "entry at next open": 1,
+   "same entry, other exit: TP": 1
+  },
+  "missing": 1,
+  "tvUsd": 655.6857551203785
+ },
+ {
+  "chart": "M5",
+  "s": 6,
+  "model": 225,
+  "tv": 225,
+  "same": 214,
+  "reasons": {
+   "TP": 114,
+   "BE": 83,
+   "SALV": 25,
+   "SL": 3
+  },
+  "nextExit": 10,
+  "nextEntry": 1,
+  "causes": {
+   "entry at next open": 1,
+   "exit at next open (BE)": 10
+  },
+  "missing": 1,
+  "tvUsd": 276.09417531716485
+ },
+ {
+  "chart": "M5",
+  "s": 7,
+  "model": 255,
+  "tv": 255,
+  "same": 236,
+  "reasons": {
+   "BE": 153,
+   "TP": 77,
+   "SL": 25
+  },
+  "nextExit": 17,
+  "nextEntry": 2,
+  "causes": {
+   "entry at next open": 2,
+   "exit at next open (BE)": 17
+  },
+  "missing": 2,
+  "tvUsd": 1484.030929415916
+ },
+ {
+  "chart": "M5",
+  "s": 8,
+  "model": 294,
+  "tv": 294,
+  "same": 264,
+  "reasons": {
+   "BE": 162,
+   "TP": 109,
+   "SL": 23
+  },
+  "nextExit": 25,
+  "nextEntry": 2,
+  "causes": {
+   "exit at next open (BE)": 25,
+   "same entry, other exit: SL": 2,
+   "entry at next open": 2,
+   "same entry, other exit: TP": 1
+  },
+  "missing": 2,
+  "tvUsd": 3483.1481507378626
+ },
+ {
+  "chart": "M5",
+  "s": 9,
+  "model": 999,
+  "tv": 997,
+  "same": 914,
+  "reasons": {
+   "BE": 753,
+   "TP": 169,
+   "SL": 36,
+   "SALV": 41
+  },
+  "nextExit": 70,
+  "nextEntry": 14,
+  "causes": {
+   "exit at next open (BE)": 69,
+   "entry at next open": 14
+  },
+  "missing": 16,
+  "tvUsd": 921.1077410092922
+ },
+ {
+  "chart": "M5",
+  "s": 10,
+  "model": 1194,
+  "tv": 1194,
+  "same": 1150,
+  "reasons": {
+   "BE": 769,
+   "SL": 162,
+   "TP": 263
+  },
+  "nextExit": 26,
+  "nextEntry": 18,
+  "causes": {
+   "exit at next open (BE)": 26,
+   "entry at next open": 18
+  },
+  "missing": 18,
+  "tvUsd": 9584.807547143671
+ },
+ {
+  "chart": "M5",
+  "s": 11,
+  "model": 731,
+  "tv": 730,
+  "same": 676,
+  "reasons": {
+   "SALV": 380,
+   "BE": 272,
+   "SL": 40,
+   "TP": 39
+  },
+  "nextExit": 37,
+  "nextEntry": 17,
+  "causes": {
+   "entry at next open": 17,
+   "exit at next open (SALV)": 29,
+   "exit at next open (BE)": 8
+  },
+  "missing": 18,
+  "tvUsd": 6949.48285688068
+ },
+ {
+  "chart": "M1",
+  "s": 1,
+  "model": 43,
+  "tv": 43,
+  "same": 43,
+  "reasons": {
+   "TP": 29,
+   "SALV": 7,
+   "SL": 1,
+   "BE": 6
+  },
+  "nextExit": 0,
+  "nextEntry": 0,
+  "causes": {},
+  "missing": 0,
+  "tvUsd": 332.9579311487846
+ },
+ {
+  "chart": "M1",
+  "s": 2,
+  "model": 49,
+  "tv": 49,
+  "same": 47,
+  "reasons": {
+   "TP": 11,
+   "SL": 7,
+   "BE": 31
+  },
+  "nextExit": 2,
+  "nextEntry": 0,
+  "causes": {
+   "exit at next open (BE)": 2
+  },
+  "missing": 0,
+  "tvUsd": 2299.3093631025863
+ },
+ {
+  "chart": "M1",
+  "s": 3,
+  "model": 79,
+  "tv": 79,
+  "same": 77,
+  "reasons": {
+   "SL": 19,
+   "BE": 48,
+   "TP": 12
+  },
+  "nextExit": 2,
+  "nextEntry": 0,
+  "causes": {
+   "exit at next open (BE)": 2
+  },
+  "missing": 0,
+  "tvUsd": 3526.399855430273
+ },
+ {
+  "chart": "M1",
+  "s": 4,
+  "model": 144,
+  "tv": 144,
+  "same": 143,
+  "reasons": {
+   "SL": 41,
+   "BE": 82,
+   "TP": 21
+  },
+  "nextExit": 1,
+  "nextEntry": 0,
+  "causes": {
+   "exit at next open (BE)": 1
+  },
+  "missing": 0,
+  "tvUsd": 11975.498871880147
+ },
+ {
+  "chart": "M1",
+  "s": 5,
+  "model": 274,
+  "tv": 274,
+  "same": 262,
+  "reasons": {
+   "BE": 139,
+   "TP": 112,
+   "SALV": 16,
+   "SL": 7
+  },
+  "nextExit": 11,
+  "nextEntry": 1,
+  "causes": {
+   "exit at next open (BE)": 11,
+   "entry at next open": 1
+  },
+  "missing": 1,
+  "tvUsd": 614.187443795373
+ },
+ {
+  "chart": "M1",
+  "s": 6,
+  "model": 225,
+  "tv": 225,
+  "same": 218,
+  "reasons": {
+   "TP": 113,
+   "BE": 84,
+   "SALV": 25,
+   "SL": 3
+  },
+  "nextExit": 6,
+  "nextEntry": 1,
+  "causes": {
+   "entry at next open": 1,
+   "exit at next open (BE)": 6
+  },
+  "missing": 1,
+  "tvUsd": 262.24943446094375
+ },
+ {
+  "chart": "M1",
+  "s": 7,
+  "model": 255,
+  "tv": 255,
+  "same": 245,
+  "reasons": {
+   "BE": 154,
+   "TP": 76,
+   "SL": 25
+  },
+  "nextExit": 9,
+  "nextEntry": 1,
+  "causes": {
+   "entry at next open": 1,
+   "exit at next open (BE)": 9
+  },
+  "missing": 1,
+  "tvUsd": 1402.7456611005946
+ },
+ {
+  "chart": "M1",
+  "s": 8,
+  "model": 294,
+  "tv": 294,
+  "same": 277,
+  "reasons": {
+   "BE": 169,
+   "TP": 102,
+   "SL": 23
+  },
+  "nextExit": 15,
+  "nextEntry": 1,
+  "causes": {
+   "exit at next open (BE)": 15,
+   "same entry, other exit: SL": 1,
+   "entry at next open": 1
+  },
+  "missing": 1,
+  "tvUsd": 3023.590933318397
+ },
+ {
+  "chart": "M1",
+  "s": 9,
+  "model": 999,
+  "tv": 998,
+  "same": 953,
+  "reasons": {
+   "BE": 756,
+   "TP": 166,
+   "SL": 36,
+   "SALV": 41
+  },
+  "nextExit": 24,
+  "nextEntry": 21,
+  "causes": {
+   "entry at next open": 21,
+   "exit at next open (BE)": 24
+  },
+  "missing": 22,
+  "tvUsd": 888.0420626087061
+ },
+ {
+  "chart": "M1",
+  "s": 10,
+  "model": 1192,
+  "tv": 1192,
+  "same": 1168,
+  "reasons": {
+   "BE": 767,
+   "SL": 161,
+   "TP": 264
+  },
+  "nextExit": 6,
+  "nextEntry": 18,
+  "causes": {
+   "entry at next open": 18,
+   "exit at next open (BE)": 6
+  },
+  "missing": 18,
+  "tvUsd": 9678.553205656386
+ },
+ {
+  "chart": "M1",
+  "s": 11,
+  "model": 741,
+  "tv": 740,
+  "same": 717,
+  "reasons": {
+   "SALV": 393,
+   "BE": 271,
+   "SL": 39,
+   "TP": 38
+  },
+  "nextExit": 12,
+  "nextEntry": 11,
+  "causes": {
+   "entry at next open": 11,
+   "exit at next open (SALV)": 8,
+   "exit at next open (BE)": 4
+  },
+  "missing": 12,
+  "tvUsd": 7078.086850364674
+ },
+ {
+  "chart": "M1",
+  "s": 12,
+  "model": 1256,
+  "tv": 1256,
+  "same": 1207,
+  "reasons": {
+   "BE": 913,
+   "SL": 245,
+   "TP": 98
+  },
+  "nextExit": 2,
+  "nextEntry": 47,
+  "causes": {
+   "entry at next open": 47,
+   "exit at next open (BE)": 2
+  },
+  "missing": 47,
+  "tvUsd": 14903.844504880428
+ }
+]

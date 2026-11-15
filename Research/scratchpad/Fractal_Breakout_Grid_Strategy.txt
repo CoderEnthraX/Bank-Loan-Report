@@ -1,6 +1,6 @@
 //@version=6
 // =======================================================================================================
-//  FRACTAL BREAKOUT GRID v3: 12 long breakout strategies on swing highs (fractals), with money management (strategy)
+//  FRACTAL BREAKOUT GRID v3.1: 12 long breakout strategies on swing highs (fractals), with money management (strategy)
 // =======================================================================================================
 //  Each strategy finds swing highs on its own timeframe: a candle whose high is strictly above the Left
 //  candles before it and the Right candles after it. When the last Right candle closes, the swing high
@@ -14,6 +14,8 @@
 //  v2: entry / exit options and days / hours (all off = as tested), and money: every strategy is its own
 //  account (start balance, base risk) sized by one of the 28 loss-recovery rules of the Auction Retest
 //  strategy, with the profit ladder, a hard cap and the leverage limit; the next trade's lots are shown.
+//  v3.1: Position Size: Fixed $ risk, Fixed lots or % of equity at risk (the base the loss recovery rule sizes
+//  from); a red note on the chart when a ticked strategy cannot run on the chart's timeframe.
 //  The trades are worked out on the chart's candles, along open -> the nearer of high / low -> the other
 //  -> close (gaps fill at the open, also on the candle where a new buy stop starts). Use a chart timeframe
 //  at or below each strategy's timeframe (1 min runs all 12, 5 min all but 12). Swing highs come from
@@ -21,18 +23,20 @@
 //  until it closes (alerts are sent at the close).
 //  STRATEGY BUILD: the same rules and money as the indicator, executed with TradingView orders. TradingView
 //  fills an order from the candle after it is placed, so every order is placed at a candle's close for the
-//  next one: the waiting buy stop (also a new one that this close confirms), the model's SL / TP, and the time
-//  or weekend close due at the next open. Trade list signals: entries S1 ... S12; exits TP, SL, BE (the SL was
-//  moved to the entry by the BE trigger), SALV (the TP was moved to the entry by the salvage trigger), TRAIL,
-//  TIME, WKND. BE and SALV exits are at the entry price, so only the commission is lost (TradingView counts
-//  them as losing trades). Where the model acts inside a candle in a way TradingView cannot (an SL / TP moved
-//  by a BE, salvage or trailing trigger and hit in the same candle, a dip under and back over the buy stop
-//  inside one candle, a candle-close entry), a market order at the next open follows the model: "BE next
-//  open", "SALV next open", ... (exits) or "S11 next open" (an entry). The smaller the chart timeframe, the
-//  fewer of these (strategy 11 on gold 2021-2026: 8.1% of its trades on a 15 min chart, 5.1% on 5 min, 1.6% on
-//  1 min). Properties: commission 0.115 per contract per order = the 0.23 round-trip costs (change it with the
-//  Costs input), initial capital 120,000 (12 accounts of 10,000). Run it on a 1 minute chart: all 12 strategies
-//  run there and the trades follow the rules most closely (5 min: all but strategy 12).
+//  next one: the waiting buy stop (also a new one that this close confirms), the model's SL / TP, and the
+//  time or weekend close due at the next open. The SL / TP sent with the buy stop are distances from the
+//  fill, so a gap open above the buy stop moves them with the fill. Trade list signals: entries S1 ... S12;
+//  exits TP, SL, BE (the SL was moved to the entry by the BE trigger), SALV (the TP was moved to the entry
+//  by the salvage trigger), TRAIL, TIME, WKND. BE and SALV exits are at the entry price, so only the
+//  commission is lost (TradingView counts them as losing trades). Where the model acts inside a candle in a
+//  way TradingView cannot (an SL / TP moved by a BE, salvage or trailing trigger and hit in the same
+//  candle, a dip under and back over the buy stop inside one candle, a candle-close entry), a market order
+//  at the next open follows the model: "BE next open", "SALV next open", ... (exits) or "S11 next open" (an
+//  entry). The smaller the chart timeframe, the fewer of these (strategy 11 on gold 2021-2026: 8.1% of its
+//  trades on a 15 min chart, 5.1% on 5 min, 1.6% on 1 min). Properties: commission 0.115 per contract per
+//  order = the 0.23 round-trip costs (change it with the Costs input), initial capital 120,000 (12 accounts
+//  of 10,000). Run it on a 1 minute chart: all 12 strategies run there and the trades follow the rules most
+//  closely (5 min: all but strategy 12).
 //  Alerts: create one alert with "Any alert() function call" (sent at the candle close).
 // =======================================================================================================
 strategy("Fractal Breakout Grid Strategy", shorttitle = "FBG-S", overlay = true, initial_capital = 120000, currency = currency.USD, default_qty_type = strategy.fixed, default_qty_value = 1, pyramiding = 12, commission_type = strategy.commission.cash_per_contract, commission_value = 0.115, slippage = 0, process_orders_on_close = false, close_entries_rule = "ANY", margin_long = 0, margin_short = 0, calc_on_every_tick = false, calc_on_order_fills = false, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
@@ -82,7 +86,13 @@ CAP_STOP  = "Stop trading"
 CAP_RESET = "Start again from the base risk"
 mmOn      = true    // the strategy always sizes its orders with the money settings below
 startB    = input.float(10000.0, "Start Balance ($)", minval = 1.0, step = 1000.0, group = GRP_M)
-baseR     = input.float(50.0, "Base Risk Per Trade ($)", minval = 0.01, step = 5.0, group = GRP_M, tooltip = "A trade at the base risk loses this amount at its stop, costs included: units = risk / (stop distance + costs per unit). The loss recovery rule sizes the trades from it.")
+SZ_USD    = "Fixed $ risk"
+SZ_LOT    = "Fixed lots"
+SZ_PCT    = "% of equity at risk"
+szMode    = input.string(SZ_USD, "Position Size", options = [SZ_USD, SZ_LOT, SZ_PCT], group = GRP_M, tooltip = "The base trade. The loss recovery rule sizes every trade from it; with No recovery every trade is the base trade.\nFixed $ risk: the base trade loses the Base Risk $ at its stop, costs included.\nFixed lots: the base trade is the Base Lots, whatever its stop (at its stop it loses lots x contract size x (stop distance + costs)).\n% of equity at risk: the base trade loses this % of the strategy's account at its stop, costs included.")
+baseR     = input.float(50.0, "Base Risk Per Trade ($)", minval = 0.01, step = 5.0, group = GRP_M, tooltip = "Fixed $ risk: a trade at the base risk loses this amount at its stop, costs included: units = risk / (stop distance + costs per unit).")
+baseLot   = input.float(0.01, "Base Lots (Fixed lots)", minval = 0.0001, step = 0.01, group = GRP_M, tooltip = "Fixed lots: the base trade's size in lots (gold: 0.01 lot = 1 oz). Rounded to the lot step for the lots shown.")
+eqPct     = input.float(1.0, "Risk % Of Equity (% of equity at risk)", minval = 0.01, step = 0.1, group = GRP_M, tooltip = "% of equity at risk: the base trade loses this % of the strategy's account at its stop. Also used by the loss recovery rule % of equity.")
 lotSz     = input.float(100.0, "Contract Size (units per lot) / Lot Step", minval = 0.0001, step = 1.0, inline = "lot", group = GRP_M)
 lotStep   = input.float(0.01, "", minval = 0.0001, step = 0.01, inline = "lot", group = GRP_M, tooltip = "Gold: 100 oz per lot, in steps of 0.01 lot. Used for the lots shown for the next trade and for the Crooks E / I lot. The $ results use the exact size.")
 levIn     = input.float(100.0, "Leverage Limit (1:N)", minval = 1.0, step = 10.0, group = GRP_M, tooltip = "A trade is never bigger than balance x N in value (1:100 = the broker's usual gold leverage).")
@@ -130,7 +140,6 @@ recStep = input.float(25.0, "Step $ (Step-up)", minval = 0.0, step = 5.0, group 
 cSplit  = input.int(3, "Split (Rule C, Crooks B)", minval = 1, group = GRP_L)
 parN    = input.int(3, "Wins Before Reset (Paroli)", minval = 1, group = GRP_L)
 delayN  = input.int(2, "Losses Before Recovery Starts (Delayed)", minval = 1, group = GRP_L)
-eqPct   = input.float(1.0, "Risk % Of Equity (% mode)", minval = 0.01, step = 0.1, group = GRP_L)
 crkCn   = input.int(1, "Crooks C - J: Win The Loss Back Over N Wins", minval = 1, group = GRP_L, tooltip = "1 = the trade after a win wins back the whole loss. 2 = half, and if it wins the next trade the rest. A loss starts the parts again.")
 CPR_OFF    = "Off (Crooks C as now)"
 CPR_FORGET = "Forget the loss"
@@ -482,6 +491,7 @@ type Strat
     bool   crRecT = false
     float  risk   = na
     float  units  = na
+    float  bR     = na
     line   lnLvl  = na
     line   lnE    = na
     line   lnSL   = na
@@ -506,11 +516,15 @@ f_lots(float u) =>
     math.max(lotStep, math.round(u / lotSz / lotStep) * lotStep)
 
 // ---------------------------------------------------------------- money (gold/recovery.py simulate, one strategy)
+// the base trade's $ risk at a stop distance sd (price): Fixed $ risk, the Fixed lots' loss at that stop (costs included), or % of the account
+f_base(Strat s, float sd) =>
+    szMode == SZ_LOT ? baseLot * lotSz * (sd + costIn) : szMode == SZ_PCT ? math.max(0.0, s.eq) * eqPct / 100.0 : baseR
+
 // the profit ladder now: on, the start guard (closed profit 0 or less), its base, the cushion above the lock
-f_lad(Strat s) =>
+f_lad(Strat s, float B) =>
     bool  on = not ladOff and ladFam and s.peakNet >= ladT
     float C  = on ? math.max(0.0, s.net - ladLam * s.peakNet) : 0.0
-    [on, on and s.net <= 0, on ? baseR + math.min((ladBmx - 1.0) * baseR, ladPhi * C) : baseR, C]
+    [on, on and s.net <= 0, on ? B + math.min((ladBmx - 1.0) * B, ladPhi * C) : B, C]
 
 // a Crooks C - J trade at base B (rec = a recovery trade)
 f_crk(Strat s, float B, bool rec, float rmin, float pf, float xr) =>
@@ -528,6 +542,7 @@ f_crk(Strat s, float B, bool rec, float rmin, float pf, float xr) =>
 
 // the rule's risk for the next trade (before the cap and the leverage limit), whether it is a recovery trade, and Rule C split's base
 f_raw(Strat s, float sd) =>
+    float bR   = f_base(s, sd)
     float xr   = s.tp / s.sl
     float rmin = eUnits * (sd + costIn)
     float add  = recMode == L_ALL ? s.recPool : recMode == L_SPLIT ? s.recPool / recN : recMode == L_PART ? s.recPool * recPct / 100.0 : recMode == L_EXACT ? s.recPool / xr : recMode == L_STEP ? recStep * s.recLosses : 0.0
@@ -546,38 +561,38 @@ f_raw(Strat s, float sd) =>
         stepBase := 500.0 / 5.0
     else if s.net >= 200
         stepBase := 200.0 / 3.0
-    float baseC = recMode == L_CS ? math.max(baseR, capOn ? math.min(stepBase, hardCap) : stepBase) : baseR
+    float baseC = recMode == L_CS ? math.max(bR, capOn ? math.min(stepBase, hardCap) : stepBase) : bR
     float labU  = s.lab.size() > 1 ? s.lab.first() + s.lab.last() : s.lab.first()
-    int   oscNd = int(math.max(1, math.ceil((baseR - s.oscP) / (baseR * xr) - 1e-9)))
+    int   oscNd = int(math.max(1, math.ceil((bR - s.oscP) / (bR * xr) - 1e-9)))
     bool  rec   = ((recMode == L_CRA or recMode == L_CRB) and s.crN >= 2 and s.crN % 2 == 0) or (crkFam and s.crW and s.crL > 0) or (recMode == L_CRD and s.crN >= 2 and (s.crN - 2) % 3 == 0)
     if rec and prOn and crkPr == CPR_WAIT and (s.crWait or s.crNeedL)
         rec := false
     float pf = prOn and crkPr == CPR_PCT ? crkPrPct / 100.0 : 1.0
     float r = switch recMode
-        L_LAB   => baseR * labU
-        L_GMART => baseR * math.pow(recMult, math.min(s.recLosses, 200)) + baseR * s.recLosses
-        L_PAR   => baseR * math.pow(2.0, s.parWins)
-        L_RDALE => baseR * s.rdUnits
-        L_DELAY => s.recLosses >= delayN ? baseR + s.recPool / recN : baseR
+        L_LAB   => bR * labU
+        L_GMART => bR * math.pow(recMult, math.min(s.recLosses, 200)) + bR * s.recLosses
+        L_PAR   => bR * math.pow(2.0, s.parWins)
+        L_RDALE => bR * s.rdUnits
+        L_DELAY => s.recLosses >= delayN ? bR + s.recPool / recN : bR
         L_EQPCT => s.eq * eqPct / 100.0
-        L_OSC   => baseR * math.min(s.oscU, oscNd)
-        L_MART  => baseR * math.pow(recMult, math.min(s.recLosses, 200))
-        L_FIB   => baseR * (s.recLosses == 0 ? 1.0 : fb)
-        L_DALE  => baseR * s.dUnits
+        L_OSC   => bR * math.min(s.oscU, oscNd)
+        L_MART  => bR * math.pow(recMult, math.min(s.recLosses, 200))
+        L_FIB   => bR * (s.recLosses == 0 ? 1.0 : fb)
+        L_DALE  => bR * s.dUnits
         L_C     => math.max(baseC, s.carried / cSplit)
         L_CS    => math.max(baseC, s.carried / cSplit)
-        L_CRA   => rec ? math.max(baseR, s.crL / xr) : baseR
-        L_CRB   => rec ? math.max(baseR, s.crL / cSplit / xr) : baseR
-        L_CRC   => rec ? math.max(baseR, s.crL / s.crP * pf / xr) : baseR
-        L_CRD   => rec ? math.max(baseR, s.crL / xr) : baseR
-        => baseR + add
+        L_CRA   => rec ? math.max(bR, s.crL / xr) : bR
+        L_CRB   => rec ? math.max(bR, s.crL / cSplit / xr) : bR
+        L_CRC   => rec ? math.max(bR, s.crL / s.crP * pf / xr) : bR
+        L_CRD   => rec ? math.max(bR, s.crL / xr) : bR
+        => bR + add
     if crkFam
-        r := f_crk(s, baseR, rec, rmin, pf, xr)
-        [lOn, lGuard, lB, lC] = f_lad(s)
+        r := f_crk(s, bR, rec, rmin, pf, xr)
+        [lOn, lGuard, lB, lC] = f_lad(s, bR)
         if lOn
             r := math.min(f_crk(s, lB, rec, rmin, pf, xr), r + ladGam * lC)
             if lGuard
-                r := math.min(baseR, rmin)
+                r := math.min(bR, rmin)
     [r, rec, baseC]
 
 // the next trade's $ risk at fill F, shown before it happens (no state change): na = the cap would stop the strategy
@@ -594,6 +609,7 @@ f_next(Strat s, float F) =>
 // sizing at an entry (the cap's reset / stop change the state): false = the cap stops the strategy, no trade
 method mmOpen(Strat s, float F) =>
     float sd = F * s.sl / 100.0
+    s.bR := f_base(s, sd)
     [r0, rec0, baseC] = f_raw(s, sd)
     float r    = r0
     bool  take = true
@@ -669,7 +685,7 @@ method mmBook(Strat s, float pnl) =>
         s.parWins   := 0
         s.lab.push(s.lab.size() > 1 ? s.lab.first() + s.lab.last() : s.lab.first())
     s.oscP += pnl
-    if s.oscP >= baseR
+    if s.oscP >= s.bR
         s.oscU := 1
         s.oscP := 0.0
     else if win
@@ -677,7 +693,7 @@ method mmBook(Strat s, float pnl) =>
     bool lastPart = s.crP == 1
     s.crL := math.max(0.0, s.crL - pnl)
     if recMode == L_CRG
-        [gOn, gGuard, gB, gC] = f_lad(s)
+        [gOn, gGuard, gB, gC] = f_lad(s, s.bR)
         s.crL := math.min(s.crL, crkGX * gB)
     if s.crL < 0.01 or ((recMode == L_CRA or recMode == L_CRD) and win and s.crRecT)
         s.crL     := 0.0
@@ -1103,8 +1119,9 @@ for [i, s] in S
         if entMode == E_STOP and nOn and not na(nE) and close < nE and okN and cntOk and not s.stopped
             q := f_units(s, nE)
         if not na(q) and q > 0
+            // the SL / TP go with the buy stop as distances (ticks) from the fill: a gap open above the buy stop moves them up with the fill
             strategy.entry(sid, strategy.long, qty = q, stop = nE)
-            strategy.exit(xid, from_entry = sid, stop = nE * (1.0 - s.sl / 100.0), limit = nE * (1.0 + s.tp / 100.0), comment_loss = "SL", comment_profit = "TP")
+            strategy.exit(xid, from_entry = sid, profit = nE * s.tp / 100.0 / syminfo.mintick, loss = nE * s.sl / 100.0 / syminfo.mintick, comment_loss = "SL", comment_profit = "TP")
         else
             strategy.cancel(sid)
             strategy.cancel(xid)
@@ -1148,9 +1165,9 @@ if bar_index >= last_bar_index - 1 and showTbl
     color hd = color.new(#2A2E39, 0)
     color tx = color.new(#D1D4DC, 0)
     string opts = (entMode == E_CLOSE ? " · entry on close" : "") + (expN > 0 ? " · expiry " + str.tostring(expN) : "") + (maxDay > 0 ? " · max " + str.tostring(maxDay) + "/day" : "") + (trD > 0 ? " · trail" : "") + (tExitH > 0 ? " · time exit" : "") + (wkOn ? " · weekend close" : "") + (trnOn ? (f_fits(trnTf) ? " · above EMA" : " · EMA filter ignored (timeframe below the chart)") : "") + (dayOn ? " · days" : "") + (hoursOn ? " · hours" : "")
-    T.cell(0, 0, "FRACTAL BREAKOUT GRID v3 · " + syminfo.ticker + " · chart " + timeframe.period + " · trades since " + str.format_time(math.max(statsFrom, firstT), "yyyy-MM-dd", syminfo.timezone) + " · costs " + str.tostring(costIn) + " per trade" + opts, text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
+    T.cell(0, 0, "FRACTAL BREAKOUT GRID v3.1 · " + syminfo.ticker + " · chart " + timeframe.period + " · trades since " + str.format_time(math.max(statsFrom, firstT), "yyyy-MM-dd", syminfo.timezone) + " · costs " + str.tostring(costIn) + " per trade" + opts, text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
     T.merge_cells(0, 0, nCol - 1, 0)
-    T.cell(0, 1, mmOn ? "MONEY: " + recMode + (ladFam and not ladOff ? " + ladder " + ladMode : "") + " · base " + f_usd(baseR) + " · start " + f_usd(startB) + " each" + (capOn ? " · cap " + f_usd(hardCap) + " (" + capAction + ")" : "") : "MONEY: off (% and R only)", text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
+    T.cell(0, 1, mmOn ? "MONEY: " + recMode + (ladFam and not ladOff ? " + ladder " + ladMode : "") + " · base " + (szMode == SZ_LOT ? f_num(baseLot, "0.00##") + " lot" : szMode == SZ_PCT ? f_num(eqPct, "0.0#") + "% of equity" : f_usd(baseR)) + " · start " + f_usd(startB) + " each" + (capOn ? " · cap " + f_usd(hardCap) + " (" + capAction + ")" : "") : "MONEY: off (% and R only)", text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
     T.merge_cells(0, 1, nCol - 1, 1)
     array<string> H  = array.from("#", "TF", "R / L", "Trades", "Win %", "Net %", "Net R", "PF", "Max DD R", "SL in a row", "TP · SL · BE · SALV · other", "Now")
     array<string> HT = array.from("Strategy number (its colour on the chart).", "Fractal timeframe of the swing highs.", "Right / Left candles of the swing high.", "Closed trades counted (opened at or after the start date, within the loaded history).", "Trades that closed with a profit after costs. BE and salvage exits close at the entry, so the costs make them small losses.", "Sum of the trades' % results after costs (the same money in every trade).", "Sum of the trades' results in R after costs (R = 1 x the trade's SL: the same risk in every trade).", "Profit factor: R won / R lost.", "Largest fall of the running R total from its high.", "Most stop-loss exits in a row (BE, salvage and other exits are not counted; a TP resets it).", "Exits by reason: take profit, stop loss, break-even stop after the BE trigger, break-even exit after the salvage trigger, other (trailing stop, time exit, weekend close).", "Now: open trade (entry, % from the entry), waiting buy stop (with Money on: the next trade's lots and $ risk), or waiting for the next swing high.")
@@ -1214,3 +1231,17 @@ if bar_index >= last_bar_index - 1 and showTbl
     if true
         T.cell(0, row + 1, "STRATEGY TESTER: net " + (strategy.netprofit >= 0 ? "+" : "") + f_usd(strategy.netprofit) + " · " + str.tostring(strategy.closedtrades) + " closed trades · open " + str.tostring(strategy.opentrades) + " · Properties commission must be costs / 2 per contract per order (" + str.tostring(costIn / 2.0) + " now; 0.115 = costs 0.23)", text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
         T.merge_cells(0, row + 1, nCol - 1, row + 1)
+
+// ---------------------------------------------------------------- a ticked strategy that cannot run on this chart: said on the chart (also with the table off)
+var table NT = na
+if bar_index >= last_bar_index - 1
+    string offS = ""
+    for s in S
+        if s.sel and not s.ok
+            offS += (offS == "" ? "" : ", ") + "S" + str.tostring(s.id) + " (" + f_tfs(s.tf) + " swing highs)"
+    if not na(NT)
+        NT.delete()
+    NT := na
+    if offS != ""
+        NT := table.new(position.top_center, 1, 1, bgcolor = color.new(#B71C1C, 0), frame_color = color.new(#B71C1C, 0), frame_width = 1)
+        NT.cell(0, 0, "NO TRADES on this chart for " + offS + ": the chart's timeframe is above theirs. Use a chart of that timeframe or lower (a 1 minute chart runs all 12).", text_color = color.white, text_size = size.small)

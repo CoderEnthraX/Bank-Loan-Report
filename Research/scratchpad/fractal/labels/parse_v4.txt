@@ -1,0 +1,4 @@
+parsed ok 369 fbg3_strat.pine
+   tabs 0 trailing spaces 0 indent not x4 (non-comment, may be line continuations): []
+parsed ok 348 fbg3_ind.pine
+   tabs 0 trailing spaces 0 indent not x4 (non-comment, may be line continuations): []

@@ -1,0 +1,1 @@
+money: 400 random settings, 134310 trades compared, mismatches 0, worst relative difference 1.1e-13

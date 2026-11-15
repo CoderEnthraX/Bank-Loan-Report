@@ -21,7 +21,7 @@ class P:   # the inputs (defaults = the Pine defaults)
     entClose = False; expN = 0; maxDay = 0; trA = 0.0; trD = 0.0; tExitH = 0.0; wkOn = False; wkH = 16
     trnOn = False; trnTf = 'H4'; trnLen = 50
     tz = 'Asia/Kolkata'; dayOn = False; days = (True, True, True, True, True, False, False); hoursOn = False; sess = (6 * 60, 23 * 60)
-    mmOn = True; startB = 10000.0; baseR = 50.0; lotSz = 100.0; lotStep = 0.01; levIn = 100.0; capOn = True; hardCap = 500.0; capAction = 'clamp'
+    mmOn = True; startB = 10000.0; szMode = 'usd'; baseLot = 0.01; baseR = 50.0; lotSz = 100.0; lotStep = 0.01; levIn = 100.0; capOn = True; hardCap = 500.0; capAction = 'clamp'
     recMode = L_CRF; lad = 'Medium'; ladT = 1000.0; recN = 3; recPct = 50.0; recMult = 2.0; recStep = 25.0; cSplit = 3; parN = 3; delayN = 2; eqPct = 1.0
     crkCn = 1; crkPr = 'off'; crkPrN = 2; crkPrPct = 50.0; crkPrM = 2; crkELot = 0.01; crkFK = 3.0; crkGX = 10.0; crkHPct = 1.0; crkJX = 20.0
 
@@ -46,15 +46,19 @@ class Strat:
         s.eq = P_.startB; s.pkEq = P_.startB; s.ddU = 0.0; s.ddP = 0.0; s.net = 0.0; s.peakNet = 0.0
         s.recPool = 0.0; s.recLosses = 0; s.dUnits = 1; s.carried = 0.0; s.parWins = 0; s.rdUnits = 1; s.oscU = 1; s.oscP = 0.0
         s.crL = 0.0; s.crN = 0; s.crW = False; s.crP = P_.crkCn; s.crF = 0; s.crWait = False; s.crWW = 0; s.crNeedL = False; s.crRecT = False
-        s.risk = NA; s.units = NA
+        s.risk = NA; s.units = NA; s.bR = NA
         s.trades = []; s.risks = []
 
     # ---- money
-    def f_lad(s):
+    def f_base(s, sd):          # the base trade's $ risk at stop distance sd: Fixed $ risk / Fixed lots / % of equity at risk
+        p = s.P
+        return p.baseLot * p.lotSz * (sd + p.costIn) if p.szMode == 'lot' else (max(0.0, s.eq) * p.eqPct / 100.0 if p.szMode == 'pct' else p.baseR)
+
+    def f_lad(s, B):
         p = s.P
         on = (not p.ladOff) and p.ladFam and s.peakNet >= p.ladT
         C = max(0.0, s.net - p.ladLam * s.peakNet) if on else 0.0
-        return on, on and s.net <= 0, (p.baseR + min((p.ladBmx - 1.0) * p.baseR, p.ladPhi * C)) if on else p.baseR, C
+        return on, on and s.net <= 0, (B + min((p.ladBmx - 1.0) * B, p.ladPhi * C)) if on else B, C
 
     def f_crk(s, B, rec, rmin, pf, xr):
         p = s.P
@@ -68,7 +72,7 @@ class Strat:
         return x
 
     def f_raw(s, sd):
-        p = s.P; m = p.recMode; base = p.baseR
+        p = s.P; m = p.recMode; base = s.f_base(sd)
         xr = s.tp / s.sl; rmin = p.eUnits * (sd + p.costIn)
         add = s.recPool if m == L_ALL else s.recPool / p.recN if m == L_SPLIT else s.recPool * p.recPct / 100.0 if m == L_PART else s.recPool / xr if m == L_EXACT else p.recStep * s.recLosses if m == L_STEP else 0.0
         fa = 1.0; fb = 1.0
@@ -104,7 +108,7 @@ class Strat:
         else: r = base + add
         if p.crkFam:
             r = s.f_crk(base, rec, rmin, pf, xr)
-            lOn, lGuard, lB, lC = s.f_lad()
+            lOn, lGuard, lB, lC = s.f_lad(base)
             if lOn:
                 r = min(s.f_crk(lB, rec, rmin, pf, xr), r + p.ladGam * lC)
                 if lGuard: r = min(base, rmin)
@@ -112,6 +116,7 @@ class Strat:
 
     def mmOpen(s, F):
         p = s.P; sd = F * s.sl / 100.0
+        s.bR = s.f_base(sd)
         r0, rec0, baseC = s.f_raw(sd); r = r0; take = True; s.crRecT = rec0
         if p.capOn and r > p.hardCap:
             if p.capAction == 'stop':
@@ -143,12 +148,12 @@ class Strat:
             s.recPool += -pnl; s.recLosses += 1; s.dUnits += 1; s.rdUnits = max(1, s.rdUnits - 1); s.parWins = 0
             s.lab.append(s.lab[0] + s.lab[-1] if len(s.lab) > 1 else s.lab[0])
         s.oscP += pnl
-        if s.oscP >= p.baseR: s.oscU = 1; s.oscP = 0.0
+        if s.oscP >= s.bR: s.oscU = 1; s.oscP = 0.0
         elif win: s.oscU += 1
         lastPart = s.crP == 1
         s.crL = max(0.0, s.crL - pnl)
         if p.recMode == L_CRG:
-            s.crL = min(s.crL, p.crkGX * s.f_lad()[2])
+            s.crL = min(s.crL, p.crkGX * s.f_lad(s.bR)[2])
         if s.crL < 0.01 or (p.recMode in (L_CRA, L_CRD) and win and s.crRecT):
             s.crL = 0.0; s.crN = 0; s.crP = p.crkCn; s.crF = 0; s.crWait = False; s.crWW = 0; s.crNeedL = False
         else:

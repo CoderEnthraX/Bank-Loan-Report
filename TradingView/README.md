@@ -6,7 +6,7 @@
 | [`Auction_Retest_Strategy.pine`](Auction_Retest_Strategy.pine) | The same engine as a **strategy** for backtesting (identical signals and trades), with money-management settings (from v4.0 the defaults are the gold / FxPro settings, see v4.0 below). |
 | [`../MetaTrader5/AuctionRetestEA.mq5`](../MetaTrader5/AuctionRetestEA.mq5) | MetaTrader 5 Expert Advisor: a port of the same engine plus the strategy's money management. |
 | [`VWAP_Orderflow_Sniper.pine`](VWAP_Orderflow_Sniper.pine) | The earlier VWAP + absorption/aggression orderflow indicator. |
-| [`Fractal_Breakout_Grid.pine`](Fractal_Breakout_Grid.pine) | **Fractal Breakout Grid** (v3): 12 long breakout strategies on swing highs (your 9 + an M5, an M15 and an M1 one), each on its own timeframe, all at once or one by one, with a results table, money management (28 loss recovery rules, profit ladder, hard cap, next trade's lots) and optional filters / exits. See below. |
+| [`Fractal_Breakout_Grid.pine`](Fractal_Breakout_Grid.pine) | **Fractal Breakout Grid** (v3.1): 12 long breakout strategies on swing highs (your 9 + an M5, an M15 and an M1 one), each on its own timeframe, all at once or one by one, with a results table, money management (position size in $ risk, lots or % of equity; 28 loss recovery rules, profit ladder, hard cap, next trade's lots) and optional filters / exits. See below. |
 | [`Fractal_Breakout_Grid_Strategy.pine`](Fractal_Breakout_Grid_Strategy.pine) | The same as a **strategy** for TradingView's Strategy Tester: the same rules and money, executed with TradingView orders (see v3 below). |
 
 ## Install
@@ -346,6 +346,77 @@ backtests the history it loads (on 1-minute charts a few weeks, more with Deep B
   - stale orders are cancelled;
   - a table variable named like a global was renamed;
   - the recalculation settings are written out.
+
+### v3.1: position size, gap fills, the "no trades" note, and every strategy checked (November 2026)
+
+**Position Size** (MONEY group, in the indicator and the strategy):
+
+| Position Size | The base trade | Its input (default) |
+|---|---|---|
+| Fixed $ risk (default, as before) | loses the Base Risk at its stop, costs included | Base Risk Per Trade ($): 50 |
+| Fixed lots | is the Base Lots, whatever its stop | Base Lots (Fixed lots): 0.01 |
+| % of equity at risk | loses this % of the strategy's account at its stop, costs included | Risk % Of Equity: 1 |
+
+- **How the loss recovery rule uses it:** the rule sizes every trade from the base trade, so with a recovery rule on, some trades are
+  bigger than the base. For exactly the base on every trade (for example 0.01 lot on every trade), set Loss Recovery to Off.
+- **Fixed lots in $:** a fixed lot risks lots x contract size x (stop distance + costs). That $ amount is the base the recovery rule
+  works from. For example, Martingale with 0.01 lot goes 0.01, 0.02, 0.04 lot.
+- **One % input:** Risk % Of Equity moved to the MONEY group. The "% of equity" loss recovery rule uses the same input.
+
+**Strategies 10 and 12 take no trades on a 15-minute chart.** This is by design:
+- Strategy 10 uses 5-minute swing highs and strategy 12 uses 1-minute ones. A strategy only runs on a chart of its own timeframe or lower.
+- The table already said "needs a chart of M5 or lower". Now a red note at the top of the chart names every ticked strategy that
+  cannot run there, even with the table off.
+- To backtest them for a year, use a 5-minute chart (strategy 10) or a 1-minute chart (both), with Deep Backtesting.
+
+**Strategy 1 has few trades.** That is the rule:
+- It needs a daily high above the 25 daily highs before it and the 3 after it, then a breakout.
+- On gold it traded 6 / 6 / 9 / 9 / 11 times in 2021-2025, and only 2 times in January-October 2026 (4 in the 365 days to 2 October 2026).
+
+**Why so many trades are about $0, in every strategy.** Each of strategies 1-12 has a BE trigger and most have a salvage trigger. A trade
+that reaches its BE trigger and comes back closes at the entry (BE). A trade that falls to its salvage trigger and comes back also closes
+at the entry (SALV). Both lose only the commission, and TradingView counts them as losing trades.
+
+Gold 2021-2026, every strategy:
+- **Exits:** the rules' exits on 1-minute candles.
+- **Next-open exits:** when the BE / salvage move and the return to the entry happen inside one candle, TradingView closes at the next open.
+- **$ difference:** TradingView's result against the rules', from the broker model.
+
+| # | Trades 2021-26 (1 min) | TP / SL / BE / SALV | At break-even | Next-open exits: 15 min / 5 min / 1 min | TradingView $ vs the rules: 15 min / 1 min |
+|---|---|---|---|---|---|
+| 1 | 43 | 29 / 1 / 6 / 7 | 30.2 % | 0.0 % / 0.0 % / 0.0 % | +0.0 % / +0.0 % |
+| 2 | 49 | 11 / 7 / 31 / 0 | 63.3 % | 4.1 % / 4.1 % / 4.1 % | +0.3 % / -1.0 % |
+| 3 | 79 | 12 / 19 / 48 / 0 | 60.8 % | 7.6 % / 1.3 % / 2.5 % | -6.9 % / -1.2 % |
+| 4 | 144 | 21 / 41 / 82 / 0 | 56.9 % | 2.1 % / 0.7 % / 0.7 % | -0.2 % / -0.0 % |
+| 5 | 274 | 112 / 7 / 139 / 16 | 56.6 % | 11.3 % / 7.7 % / 4.0 % | -11.9 % / -4.8 % |
+| 6 | 225 | 113 / 3 / 84 / 25 | 48.4 % | 6.7 % / 4.4 % / 2.7 % | -6.9 % / -6.8 % |
+| 7 | 255 | 76 / 25 / 154 / 0 | 60.4 % | 10.6 % / 6.7 % / 3.5 % | -14.7 % / -7.1 % |
+| 8 | 294 | 102 / 23 / 169 / 0 | 57.5 % | 11.6 % / 8.5 % / 5.1 % | -19.5 % / -7.7 % |
+| 9 | 999 | 166 / 36 / 756 / 41 | 79.8 % | 11.9 % / 7.0 % / 2.4 % | -28.5 % / -4.8 % |
+| 10 | 1192 | 264 / 161 / 767 / 0 | 64.3 % | - / 2.2 % / 0.5 % | - / -1.6 % |
+| 11 | 741 | 38 / 39 / 271 / 393 | 89.6 % | 8.1 % / 5.1 % / 1.6 % | +0.3 % / -1.8 % |
+| 12 | 1256 | 98 / 245 / 913 / 0 | 72.7 % | - / - / 0.2 % | - / -0.5 % |
+
+Strategies with a tight BE trigger lose some result on a 15-minute chart (strategy 9: -28.5 %). After a BE inside a candle the next open is
+usually below the entry. On a 1-minute chart the difference is 0 to -8 %. Use the 1-minute chart for backtests.
+
+**A bug fixed: a gap open above the buy stop.**
+- **What happened:** the strategy sent the SL / TP with the buy stop as prices worked out from the buy stop. A gap open above the buy stop
+  (for example Sunday's open) filled the trade at the open. When the gap was bigger than the TP distance, the TP was already below the
+  fill and closed the trade at once at the entry price. That was a "$0 TP" trade the rules do not have.
+- **The fix:** the SL / TP now go with the buy stop as distances from the fill. On the next candle they become the rules' exact prices.
+- **The result:** in the broker model the instant exits are gone. What is left on gap fills is a TP within 0.03-0.3 of the rules' TP.
+
+**v3.1 tests:**
+- **Money:** the Python copy of the Pine money code against `gold/recovery.py`.
+  - The new base modes, with random settings over every recovery rule: 800 runs, 286,157 trades, 0 differences.
+  - Fixed $ risk is unchanged: 300 runs, 95,235 trades, 0 differences.
+  - Fixed lots 0.01 with Loss Recovery Off gives exactly 0.01 lot on every trade. 1 % of equity risks exactly 1.000000 % on every trade.
+- **TradingView orders:** the broker model runs all 12 strategies on 15-minute, 5-minute and 1-minute charts. It tags and explains every
+  trade that differs from the rules (the table above).
+- **Pine:** both files parse and have 0 inline-title warnings. They have no `barstate.islast` (the strategy's only TradingView warning), no
+  shadowed names and no undefined names.
+- **Review:** an independent review found no compile error or warning.
 
 ## Auction Retest Model: how a trade is built
 
@@ -948,6 +1019,32 @@ What the results show:
   - compile check: 0 errors, 0 warnings;
   - strategy: 0 inline-title warnings, the parse passes, only the two new inputs were added and no existing title changed (saved settings
     are kept).
+
+### v4.7: Position size: fixed $ risk, fixed lots or % of equity (strategy only)
+
+RISK AND POSITION SIZE has a new **Position Size**:
+- **Fixed $ risk (default):** the same as before.
+- **Fixed lots:** for example 0.01 lot.
+- **% of equity at risk:** the base trade loses this % of the equity at its stop.
+
+| Position Size | The base trade | Its input (default) |
+|---|---|---|
+| Fixed $ risk | loses the Base Risk at its stop (commission and spread included) | Base Risk Per Trade ($): 50 |
+| Fixed lots | is the Base Lots, whatever its stop | Base Lots (Fixed lots): 0.01 |
+| % of equity at risk | loses this % of the equity at its stop | Risk % Of Equity: 1 (moved here from Loss Recovery; the "% of equity" rule uses it too) |
+
+- **How the loss recovery rule uses it:** the rule sizes every trade from the base trade. The default Crooks C sizes the recovery trades
+  bigger. For exactly 0.01 lot on every trade, set Loss Recovery to Off.
+- **Fixed lots in $:** a fixed lot risks lots x units per lot x (stop distance x point value + costs per unit). That $ amount is the base
+  for the recovery rule, the hard cap's "start again" and the profit ladder.
+- **Still applied:** lot step, rounding, leverage and the hard cap.
+- **Unchanged in the default mode:** with Fixed $ risk every number is the same as in v4.6.
+- **The EA:** it keeps the $ base risk.
+- **Small fixes:**
+  - A size that cannot be worked out (for example % of equity on an empty account) is skipped as "size 0".
+  - A function parameter that had the same name as a variable was renamed.
+- **Checks:** the shared blocks are byte-identical with the indicator. 0 inline-title warnings, 0 shadowed names, no `barstate.islast`,
+  and the file parses.
 
 ### Entry accuracy research (November 2026, no code change)
 
