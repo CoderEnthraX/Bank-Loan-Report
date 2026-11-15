@@ -14,3 +14,5 @@ Steps: [ ] write  [ ] mq5check 0/0  [ ] harness parity vs twin2 on M1  [ ] money
 - [x] restart test: defaults 55 restarts + 5 option sets x 70 restarts: identical
 - [x] README section + CHECKPOINT item 35 drafted ({RANDOM} / {REVIEW} placeholders to fill)
 - [ ] review agent (Sonnet high) running; random-set parity running (parity_seed11/12/13.txt)
+- [x] review fixes (13 findings verified; 1-9, 11, 12 fixed), time-exit UTC fix (parity found it)
+- [x] final: 24 random sets identical (76,760 trades), restart tests identical, mq5check 0/0 -> MetaTrader5/FractalBreakoutGridEA.mq5

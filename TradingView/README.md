@@ -476,7 +476,7 @@ path (open, nearer extreme, other extreme, close).
   - Defaults: 5,551 trades (S1 ... S12: 43 / 49 / 79 / 144 / 274 / 225 / 255 / 294 / 999 / 1,192 / 741 / 1,256), all identical; $ risk
     within 1e-12.
   - Random option and money sets (candle-close entry, expiry, max per day, trailing, time / weekend exits, the EMA filter, days /
-    hours, all 28 recovery rules, the ladder, caps, the three position sizes): the final rerun on the fixed EA is running at this commit (the first run: 23 of 24 sets identical, the 24th led to the time-exit fix below).
+    hours, all 28 recovery rules, the ladder, caps, the three position sizes): 24 sets on the final EA, all identical (76,760 trades), with the $ risk within 5e-11.
   - **A bug the comparison found, now fixed:** "Close a trade after N hours" counted hours on the broker's clock, which jumps an hour at
     the US summer-time switches. Trades open over a switch closed an hour early or late. It now counts real hours (UTC). Time exits of
     4 / 24 / 72 h on all 12 strategies are identical (8,758 / 6,660 / 6,003 trades).

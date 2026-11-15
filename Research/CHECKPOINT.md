@@ -896,7 +896,7 @@ Other gold findings:
       - `parity.py` compares against `pine_twin2.twin2(B, 'M1', ...)` trade for trade, with the $ risk.
     - **Results:**
       - Defaults: 5,551 trades identical, $ risk within 9e-13.
-      - Random option / money sets: the final rerun on the fixed EA is running at this commit (the first run: 23 of 24 sets identical, the 24th led to the time-exit fix below).
+      - Random option / money sets: 24 sets on the final EA, all identical (76,760 trades), with the $ risk within 5e-11.
       - The first run found 3 differing trades: time exits over a summer-time switch, because the EA used server-clock hours. Fixed: the
         time exit now compares UtcOf times. Time exits of 4 / 24 / 72 h on all 12 strategies are identical (`harness/dst_exit.py`).
       - Restart test (`FBG_RESTART`): defaults with 55 restarts, and 5 option sets with 70 restarts each, all identical.

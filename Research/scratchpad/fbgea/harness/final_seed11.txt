@@ -1,0 +1,10 @@
+defaults                     strategies 12, trades compared   5551, mismatching strategies 0, worst $ risk difference 9.3e-13
+random set 1                 strategies 12, trades compared   4523, mismatching strategies 0, worst $ risk difference 1.0e-12
+random set 2                 strategies 12, trades compared   1283, mismatching strategies 0, worst $ risk difference 9.5e-13
+random set 3                 strategies 12, trades compared   1335, mismatching strategies 0, worst $ risk difference 8.1e-13
+random set 4                 strategies 12, trades compared   1554, mismatching strategies 0, worst $ risk difference 1.3e-12
+random set 5                 strategies 12, trades compared   3070, mismatching strategies 0, worst $ risk difference 9.9e-13
+random set 6                 strategies 12, trades compared    741, mismatching strategies 0, worst $ risk difference 4.9e-11
+random set 7                 strategies 12, trades compared   1161, mismatching strategies 0, worst $ risk difference 1.5e-13
+random set 8                 strategies 12, trades compared   5819, mismatching strategies 0, worst $ risk difference 3.4e-12
+PARITY: ALL IDENTICAL
