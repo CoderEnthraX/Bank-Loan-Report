@@ -1,0 +1,4 @@
+ARS Model+Strategy Pine reviewed: no real bugs found so far (engine inputs identical; table rows ok; Custom unchanged). Notes: M1 London Close kz uses fixed IST (kzAuto false) - check vs EA. Next: Fractal pine, then EAs.
+Pine all 4 reviewed: nothing significant yet (Fractal: display f_next uses pre-reset state - low). Next: AuctionRetestEA.mq5, FractalBreakoutGridEA.mq5
+ARS EA reviewed: candidate medium = Month VWAP anchor presets with InpWarmBars=3000 (M1/M5 presets) -> VWAP differs when attaching mid-month. Next: Fractal EA
+All 6 files reviewed. Findings: (M) EA ARS Month VWAP anchor vs InpWarmBars=3000 for M1/M5 presets; low items: Fractal display f_next/FNext pre-reset; PresetName GP5/6 same; M1 London Close fixed IST (kzAuto false); preset->Custom TfHold saved tf. Note: AuctionRetestEA.mq5 was edited at 18:07 during review (gTfTrade=gpTf fix).

@@ -1,5 +1,6 @@
 // ---- runtime implementation section (appended to a copy of mql5shim.h by create_rt.py) ----
 extern "C" int snprintf(char*, unsigned long, const char*, ...);
+extern "C" int sscanf(const char*, const char*, ...);
 
 struct RtBar { long long t; double o, h, l, c; };
 static RtBar* rt_bars = 0;
@@ -161,6 +162,13 @@ bool TimeToStruct(datetime dt, MqlDateTime& o)
    return true;
 }
 datetime StructToTime(MqlDateTime& d) { return rt_days_from_civil(d.year, d.mon, d.day) * 86400 + d.hour * 3600 + d.min * 60 + d.sec; }
+// v4.8 harness: "yyyy.mm.dd [hh:mi[:ss]]" -> datetime (the EA's Week / Month VWAP warm-up)
+datetime StringToTime(const string& ts)
+{
+   int y = 1970, mo = 1, d = 1, h = 0, mi = 0, sc = 0;
+   sscanf(ts.s ? ts.s : "", "%d.%d.%d %d:%d:%d", &y, &mo, &d, &h, &mi, &sc);
+   return rt_days_from_civil(y, mo, d) * 86400 + h * 3600 + mi * 60 + sc;
+}
 string TimeToString(datetime v, int mode)
 {
    MqlDateTime d; TimeToStruct(v, d); char b[64]; string r;

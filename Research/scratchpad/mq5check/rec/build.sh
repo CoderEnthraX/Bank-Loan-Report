@@ -27,7 +27,7 @@ EOP
 cat >> "$HERE/ea_rt.cpp" <<'EOW'
 #line 1 "<rec-wrapper>"
 // what TakeSetup / the per-bar P&L update / BookClosed do with the money-management state (no broker calls)
-extern "C" void rec_init() { LabReset(); gCrkPrPrev = (int)InpCrkPr; }   // as after the first OnInit
+extern "C" void rec_init() { PresetApply(); LabReset(); gCrkPrPrev = (int)InpCrkPr; }   // as after the first OnInit (v4.8: the preset values first)
 // v4.7: the trade keeps the base it was sized with in the same step, as in TakeSetup (no restart can come between NextRisk and the take there)
 extern "C" double rec_next(double exitR) { double r = NextRisk(exitR); exBase = gBase; return r; }
 // v4.5: the $ risk with the Crooks E / I small-lot risk of this trade and the equity (Crooks H); T1 mode: the EA's own MinLotRisk() of the set stop
@@ -52,7 +52,7 @@ extern "C" double rec_owed() { return crkL; }
 extern "C" void rec_mtick(long long t) { MonthTick((datetime)t); }
 extern "C" void rec_mpnl(double p) { monPnl += p; }
 extern "C" int rec_mcheck() { MonthCheck(); return monStop ? 1 : 0; }
-extern "C" int rec_mrestart() { if(monRestPend && exState == 0) { monRestPend = false; RecoveryRestart(); return 1; } return 0; }
+extern "C" int rec_mrestart() { if(monRestPend && exState == 0) { monRestPend = false; MonthRestart(); return 1; } return 0; }   // v4.8: the whole monthly restart
 extern "C" double rec_mpeak() { return monPeak; }
 // lot sizing test: the EA's own LotsFor() with a set lot step / minimum / maximum, equity, tick value and spread
 extern "C" double rec_lots(double risk, double sd, double entry, int isL, double ld, double tv, double spread, double vstep, double vmin, double eq)
@@ -78,3 +78,5 @@ clang++ -std=c++17 -O1 -c "$HERE/rec_driver.cpp" -o "$HERE/rec_driver.o"
 clang++ -O1 "$HERE/rec_driver.o" "$HERE/ea_rt.o" -o "$HERE/rec_harness"
 clang++ -std=c++17 -O1 -c "$HERE/lots_driver.cpp" -o "$HERE/lots_driver.o"
 clang++ -O1 "$HERE/lots_driver.o" "$HERE/ea_rt.o" -o "$HERE/lots_harness"
+clang++ -std=c++17 -O1 -c "$HERE/mrs_driver.cpp" -o "$HERE/mrs_driver.o"
+clang++ -O1 "$HERE/mrs_driver.o" "$HERE/ea_rt.o" -o "$HERE/mrs_harness"

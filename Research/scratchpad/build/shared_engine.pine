@@ -332,7 +332,7 @@ if lossBlock and lossDirBlk == -1
     bearDisp := false
 int  dowUse = dayofweek(time, tzUse)
 bool dayOk  = not dayOn or (dowUse == dayofweek.monday and dMon) or (dowUse == dayofweek.tuesday and dTue) or (dowUse == dayofweek.wednesday and dWed) or (dowUse == dayofweek.thursday and dThu) or (dowUse == dayofweek.friday and dFri) or (dowUse == dayofweek.saturday and dSat) or (dowUse == dayofweek.sunday and dSun)
-bool inHours = not na(time(timeframe.period, hoursSess, tzUse))
+bool inHours = not na(time(timeframe.period, hoursSess, tzHr))
 bool hourOk  = not hoursOn or inHours
 // kill zones: Indian times (IST) of the bar's open, all moved by the shift; with kzAuto London / London Close move 1 hour later while
 // London is on winter time and New York while New York is (the times given are the summer times; Asia never moves)
@@ -350,7 +350,7 @@ bool inLon  = f_inKz(690, 870, lonSh)
 bool inNy   = f_inKz(990, 1170, nySh)
 bool inLc   = f_inKz(1170, 1290, lonSh)
 bool kzOk   = not kzOn or (kzAsia and inAsia) or (kzLon and inLon) or (kzNy and inNy) or (kzLc and inLc)
-bool canArm  = barstate.isconfirmed and warm and dayOk and hourOk and kzOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
+bool canArm  = barstate.isconfirmed and warm and presetTfOk and dayOk and hourOk and kzOk and math.abs(st) != 2 and cooled and dayFills < maxFills and dayOpen and atr > 0
 bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))
 if canArm and (bullDisp or bearDisp) and not keepArm
     bool  isL   = bullDisp

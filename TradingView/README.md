@@ -419,6 +419,65 @@ usually below the entry. On a 1-minute chart the difference is 0 to -8 %. Use th
   shadowed names and no undefined names.
 - **Review:** an independent review found no compile error or warning.
 
+### v3.2 (EA v1.1): presets and the monthly restart (indicator, strategy and EA)
+
+**PRESET** is now the first setting. **Custom** (the default) uses your settings below, exactly as before. Each of the other 6 choices is a combination from the $1,000-a-month gold study (2021–2026, the 1-minute model the EA uses).
+
+**What a preset sets**
+- It turns on its own strategies and switches the others off.
+- It uses their tested settings: timeframe, candles, offset, SL, TP, BE and salvage.
+- The entry and exit options are as tested.
+- The money is as tested:
+  - a fixed $ base risk;
+  - exact recovery, or no recovery;
+  - the hard cap;
+  - no profit ladder;
+  - the monthly restart on.
+- Your own values stay saved, and Custom brings them back.
+
+**Always your own settings, with any preset:** the weekend close, costs, start balance, leverage, display and alerts.
+
+**Two switches under the preset**
+- **Add My Days And Hours** (off): with it on, your day and hour filters apply too.
+- **Use My Money Settings** (off): with it on, your base risk, loss recovery, cap, ladder and monthly restart apply instead of the preset's.
+
+**Which chart:** use a 1-minute chart, as tested. A 5-minute chart runs every strategy except S12, which only G5 and G6 use.
+
+**Results in the $1,000-a-month study** (calendar months in Indian time, trades counted in their entry month):
+
+| Preset | Strategies | Money | 2021-23: losing / profitable months | total | worst month | deepest drop | 2024-26: losing / profitable months | total | worst month | deepest drop |
+|---|---|---|---|---|---|---|---|---|---|---|
+| Best monthly (G1) | S7, S8, S10 | $10 fixed, exact recovery, cap $100 Clamp | 4 / 32 | +1320 | -13 | 171 | 3 / 31 | +1603 | -16 | 157 |
+| Safest (G2) | S1, S2, S6, S7, S8, S10 | $5 fixed, exact recovery, cap $50 Clamp | 3 / 33 | +734 | -14 | 85 | 3 / 31 | +975 | -8 | 78 |
+| Steady, more profit (G3) | S1, S2, S6, S7, S8, S10 | $10 fixed, exact recovery, cap $100 Start again | 3 / 33 | +1307 | -153 | 169 | 4 / 30 | +1797 | -130 | 157 |
+| Small (G4) | S7, S8, S10 | $5 fixed, exact recovery, cap $50 Clamp | 4 / 32 | +660 | -6 | 85 | 3 / 31 | +801 | -8 | 78 |
+| No recovery (G5) | all 12 | $10 fixed, no recovery | 13 / 23 | +1896 | -118 | 171 | 10 / 24 | +3744 | -74 | 139 |
+| No recovery (G6) | S1, S2, S3, S5, S6, S7, S8, S9, S10, S11, S12 | $10 fixed, no recovery | 11 / 25 | +1563 | -115 | 161 | 9 / 25 | +3061 | -74 | 134 |
+
+How these results were tested:
+- Each strategy was its own account of $1,000 / k (k = the number of strategies), restarted every month.
+- The deepest drop is the largest fall inside one month.
+- On a real account, the start balance stays yours and is larger. Then only G5 and G6 can differ: in the study, a small $83 account could be wiped out in a bad month.
+- With large accounts, the twin gave exactly the study's monthly results for every preset. Small differences (G3: at most $3.18 in one month) come only from the leverage limit on the small study accounts.
+
+**Monthly restart** (MONEY, "Restart Every Strategy's Money On The 1st Of Each Month"; off by default, on in every preset)
+- At each strategy's first trade of a new month (time zone of DAYS AND HOURS; EA: your time zone), its loss recovery starts again from the base risk.
+- The profit ladder, Crooks J and Rule C split count the closed profit from there.
+- A hard-cap "Stop trading" ends when the month changes.
+- The balance carries on.
+
+**Checks**
+- **Custom is unchanged:**
+  - all inputs keep their titles, defaults and order;
+  - the EA on the defaults matched the Python twin of the Pine code trade for trade: 5,551 trades, the same $ risk.
+- **Monthly restart:** the twin was checked against the study's fresh-every-month results, and the EA against the twin. The tests covered the defaults and random money and option sets.
+- **In total:** 15 EA configurations against the twin, 44,945 trades and their $ risk, all identical.
+- **Presets:**
+  - each of the 6 presets ran in the EA with random values in every other input, and the EA ignored them as it should;
+  - the EA matched the twin with "Add My Days And Hours" and with "Use My Money Settings";
+  - all 1,488 preset values in the indicator and the strategy were read back from the files and checked.
+- **Compile and parse:** EA 0 errors / 0 warnings; both Pine files parse, with 0 warnings and every name defined.
+
 ### Fractal Breakout Grid EA (MetaTrader 5)
 
 File: [`../MetaTrader5/FractalBreakoutGridEA.mq5`](../MetaTrader5/FractalBreakoutGridEA.mq5). It is the same 12 strategies, rules and money as the
@@ -1144,6 +1203,111 @@ RISK AND POSITION SIZE has a new **Position Size**:
     - The Crooks TP1 rule: 34,075,795 trades, 0 differences.
     - The Crooks C rule after N losses: 31,277,261 signals, 0 differences.
     - The full EA engine against the Python reference on every test symbol: all trades identical.
+
+### v4.8: strategy presets, "Add My Filters" and a wider monthly restart (indicator, strategy and EA)
+
+**STRATEGY PRESET** is now the first setting. **Custom** (the default) uses your settings below, exactly as before. Each of the other 25 choices is one tested catalogue strategy (gold, FxPro, 4 Jan 2021 – 2 Oct 2026).
+
+**What a preset sets**
+- Every signal setting, exactly as tested: stop, targets and final exit (TP4), entry price, all filters, VWAP anchor, max fills and cooldown.
+- Its own hours or kill zone.
+- In the strategy and the EA: the 70% partial close at TP1 of M15-S2, S4 and S5 and H1-S2, S4 and S5.
+- Your own values stay saved, and Custom brings them back.
+
+**Only on its own chart.** A preset trades only on its own chart timeframe (the M1, M5, M15 or H1 in its name). On another chart:
+- there are no signals and no trades;
+- the table says WRONG CHART;
+- the EA also prints a message and raises an alert.
+
+**Always your own settings, with any preset:**
+- force-close and the Saturday close;
+- spread, commission and earn-back;
+- risk, loss recovery and the monthly settings;
+- display and alerts.
+
+**Add My Filters** (right under the preset, off by default)
+- **Off:** the preset trades exactly as tested. It uses only its own hours or kill zone:
+  - M5: 18:30–22:30 IST;
+  - M1: the London Close kill zone, 19:30–21:30 IST;
+  - M15-S9: the Asia kill zone, 05:30–09:30 IST;
+  - all others: all day.
+
+  Your days, hours, kill zones and news windows are not used.
+- **On:** your own filters apply, each as you have it switched on or off.
+  - Your days and news windows are added on top of the preset.
+  - Your hours or kill zones replace the preset's own hours once either is switched on. With both off, the preset keeps its own hours.
+  - Examples with M5-S3:
+    - Tue/Wed/Thu only: tick the days, and switch your hours and kill zones off. M5-S3 then trades 18:30–22:30 on those days.
+    - Your kill zones: M5-S3 trades in Asia, London and New York instead.
+    - A window of your own (e.g. 19:00–21:00): switch on your hours with that window.
+  - A preset with your filters is no longer the tested strategy.
+
+**Times**
+- A preset's own hours are Indian times, whatever your time zone setting.
+- Its kill zones use the fixed IST times, as tested (they do not move with summer time).
+- The daily news window keeps New York time. It is 17:45–18:15 IST in US summer time and 18:45–19:15 IST in US winter time.
+- So for the M5 presets (from 18:30) the news window matters only in US winter time.
+
+**VWAP Month presets need the whole month on the chart.** These are every M1 and M5 preset, and H1-S2 and S4 to S8.
+- **TradingView:** it computes the VWAP from the first loaded candle.
+  - A 1-minute chart usually loads only 2–3 weeks (at most 20,000 candles), so in the first loaded month the VWAP, and with it the signals, differ from the tested ones. From the next month on they are right.
+  - A 5-minute chart needs about 6,500 candles for a month.
+- **The EA:** since v4.8 its warm-up reads back to the 1st of the month (the Monday for the Week VWAP), up to 100,000 bars. If the broker's history is shorter, it says so in the log.
+
+**Tested results of the 25 presets** (fixed risk; R after the spread in the data, before commission; final exit TP4):
+
+| Preset | Goal | Chart | Main settings (on top of the v3 defaults) | Own hours | Trades | Win % | R per trade | Total R | Longest losing streak |
+|---|---|---|---|---|---|---|---|---|---|
+| M1-S1 | Most profit | M1 | stop 4 ATR, cooldown 8, VWAP month | London Close kill zone | 1,958 | 36.6 | +0.057 | +112 | 14 |
+| M1-S2 | Shortest losing streak | M1 | stop 4 ATR, cooldown 30, VWAP month | London Close kill zone | 1,802 | 36.5 | +0.052 | +93 | 12 |
+| M1-S3 | Most trades a day | M1 | stop 4 ATR, displacement 0.4 ATR, VWAP month | London Close kill zone | 2,111 | 36.1 | +0.044 | +93 | 14 |
+| M1-S4 | Simplest | M1 | stop 4 ATR, VWAP month | London Close kill zone | 2,006 | 36.1 | +0.041 | +83 | 14 |
+| M5-S1 | Most profit | M5 | stop 2.4 ATR, TP4 2.5R, market entry, VWAP month, choppy max 8 | 18:30-22:30 IST | 1,472 | 32.1 | +0.087 | +128 | 21 |
+| M5-S2 | Shortest losing streak | M5 | stop 2.4 ATR, market entry, VWAP month, choppy max 8, TP2 → stop +0.6R | 18:30-22:30 IST | 1,692 | 17.3 | +0.045 | +76 | 9 |
+| M5-S3 | Most trades a day | M5 | stop 2.4 ATR, momentum 5 bars, market entry, VWAP month, choppy max 8 | 18:30-22:30 IST | 1,805 | 36.9 | +0.072 | +130 | 13 |
+| M5-S4 | Simplest | M5 | market entry, VWAP month, choppy max 8, 1h EMA 1.4 | 18:30-22:30 IST | 1,488 | 36.8 | +0.058 | +86 | 20 |
+| M15-S1 | Most profit | M15 | stop 4 ATR, half stop 1.2, TP3 → stop +1R | all day | 1,388 | 25.1 | +0.134 | +186 | 17 |
+| M15-S2 | Shortest losing streak | M15 | stop 4 ATR, half stop 1.2, CMO 30, 1h EMA 1.2, TP3 → stop +1R, 70% closed at TP1 | all day | 1,137 | 26.5 | +0.066 | +76 | 5 |
+| M15-S3 | Shortest losing streak, no partial close | M15 | stop 4 ATR, half stop 1.2, VWAP slope 0, 1h EMA 1.2, TP3 → stop +1R | all day | 1,129 | 25.1 | +0.132 | +149 | 8 |
+| M15-S4 | Longest winning streak | M15 | stop 4 ATR, half stop 1.2, choppy max 16, TP3 → stop +1R, 70% closed at TP1 | all day | 1,207 | 25.4 | +0.070 | +85 | 6 |
+| M15-S5 | Highest win rate | M15 | stop 4 ATR, half stop 1.2, TP1 0.5R, TP3 → stop +1R, 70% closed at TP1 | all day | 1,388 | 25.1 | +0.055 | +77 | 5 |
+| M15-S6 | Most trades a day | M15 | stop 4 ATR, half stop 1.2, TP2 → stop +0.6R, TP3 → stop +1R | all day | 1,776 | 13.6 | +0.062 | +110 | 11 |
+| M15-S7 | Every year positive | M15 | stop 4 ATR, half stop 1.2, break 8 bars, TP3 → stop +1R | all day | 1,377 | 25.9 | +0.146 | +201 | 17 |
+| M15-S8 | Simplest | M15 | stop 4 ATR | all day | 1,179 | 37.1 | +0.084 | +99 | 18 |
+| M15-S9 | Asia session only | M15 | stop 4 ATR, half stop 1.2, entry level 8 bars, 1h EMA 1.2, TP3 → stop +1R | Asia kill zone | 712 | 23.5 | +0.051 | +36 | 21 |
+| H1-S1 | Most profit | H1 | stop 2.4 ATR, cooldown 12, displacement 0.65 ATR, momentum 5 bars, don't chase 2σ | all day | 186 | 45.2 | +0.337 | +63 | 8 |
+| H1-S2 | Shortest losing streak | H1 | stop 2.2 ATR, structure 20, max 1 fill a day, VWAP month, don't chase 1.25σ, 70% closed at TP1 | all day | 195 | 44.1 | +0.176 | +34 | 3 |
+| H1-S3 | Shortest losing streak, no partial close | H1 | stop 2.2 ATR, body 60%, don't chase 2σ | all day | 228 | 41.7 | +0.232 | +53 | 6 |
+| H1-S4 | Longest winning streak | H1 | stop 2.2 ATR, displacement 0.5 ATR, momentum 5 bars, structure 20, VWAP month, don't chase 1.25σ, 70% closed at TP1 | all day | 261 | 42.1 | +0.108 | +28 | 6 |
+| H1-S5 | Highest win rate | H1 | stop 2.2 ATR, max 1 fill a day, VWAP month, don't chase 1.25σ, 70% closed at TP1 | all day | 200 | 43.0 | +0.174 | +35 | 4 |
+| H1-S6 | Most trades a day | H1 | stop 2.2 ATR, TP4 3R, displacement 0.5 ATR, body 45%, structure 20, VWAP month | all day | 542 | 28.4 | +0.119 | +64 | 16 |
+| H1-S7 | Smoothest | H1 | stop 2.2 ATR, structure 20, VWAP month, don't chase 1.25σ, Sunday open on | all day | 208 | 44.2 | +0.309 | +64 | 7 |
+| H1-S8 | Simplest | H1 | VWAP month, don't chase 2.2σ | all day | 498 | 37.6 | +0.105 | +52 | 12 |
+
+The S3 presets of M15 and H1 are the low-streak versions without a partial close, so the indicator shows the same trades as the strategy.
+
+**Monthly restart** (strategy and EA, "Restart The Loss Recovery On The 1st Of Each Month")
+- It now also restarts:
+  - the profit ladder (the best profit and the closed profit count from the restart);
+  - the Crooks J drawdown;
+  - the Rule C split steps;
+  - a hard-cap "Stop trading".
+- So every month starts like a fresh account, as in the $1,000-a-month study.
+- It still waits until no trade of the old month is open.
+- The account balance itself is not reset.
+
+**Checks**
+- **Custom is unchanged:**
+  - every existing input keeps its title, default and order (only two tooltips changed);
+  - the EA engine parity suite (51 configurations, 10 symbols) is identical to v4.7;
+  - the money suites show 0 differences: 7,728 runs / 11.4 M trades, and 20,544 runs / 31 M signals.
+- **Presets in the EA:**
+  - the EA with each preset matched the research engine trade for trade on 10 symbols: 25 presets × 4 variants, 35,307 trades;
+  - the four variants: as tested, your time zone GMT+0, Add My Filters with your hours and kill zones, and Add My Filters with days only;
+  - on the wrong chart there were no trades.
+- **Presets in TradingView:** all 4,025 preset values in the indicator and the strategy were read back from the files and matched the catalogue.
+- **Monthly restart:** the EA's restart against the simulator run fresh every month gave 0 differences: 1,344 runs and 1.6 M trades, also with restarts of the EA in between.
+- **Compile and parse:** EA 0 errors / 0 warnings; both Pine files parse, with 0 inline-title warnings.
 
 ### Entry accuracy research (November 2026, no code change)
 

@@ -338,7 +338,11 @@ HANDLERS = {
 }
 
 
+HAS_PRESET = [False]
+
+
 def build_cpp(path):
+    HAS_PRESET[0] = 'void PresetApply()' in open(path, encoding='latin-1').read()
     orig = read_src(path)
     body = translate(path, set())
     extra = []
@@ -366,8 +370,13 @@ def rt_wrapper():
         L.append('   if(__builtin_strcmp(name, "%s") == 0) { %s = %s; return 1; }' % (nm, nm, cast))
     L += ["   return 0;", "}"]
     L.append("struct RtEv { int fill, fillL, exit, win; long long bi, armBar; double lim, stp, stp0, res; };")
-    L.append('extern "C" void rt_reset() { ResetEngine(); }')
-    L.append('extern "C" int rt_look() { return (int)MathMax(MathMax(InpStructLen, InpBrkLen + 1), MathMax(InpMomLen + 1, InpStopLen)) + 2; }')
+    if HAS_PRESET[0]:   # v4.8 EA: the effective values come from PresetApply()
+        L.append('extern "C" void rt_reset() { PresetApply(); ResetEngine(); }')
+        L.append('extern "C" int rt_look() { return (int)MathMax(MathMax(gpStructLen, gpBrkLen + 1), MathMax(gpMomLen + 1, gpStopLen)) + 2; }')
+    else:
+        L.append('extern "C" void rt_reset() { ResetEngine(); }')
+        L.append('extern "C" int rt_look() { return (int)MathMax(MathMax(InpStructLen, InpBrkLen + 1), MathMax(InpMomLen + 1, InpStopLen)) + 2; }')
+    L.append('extern "C" void rt_period(int p) { _Period = (ENUM_TIMEFRAMES)p; }')
     L.append('extern "C" void rt_step(int s, RtEv* e) { ProcessBar(s); e->fill = evFill; e->fillL = evFillL; e->exit = evExit; e->win = evWin; e->bi = bi; '
              'e->armBar = armBar; e->lim = lim; e->stp = stp; e->stp0 = stp0; e->res = evRes; }')
     L.append('extern "C" void rt_stats(double* o) { o[0] = totW; o[1] = totL; o[2] = totR; o[3] = tpHitN[0]; o[4] = tpHitN[1]; o[5] = tpHitN[2]; o[6] = tpHitN[3]; '

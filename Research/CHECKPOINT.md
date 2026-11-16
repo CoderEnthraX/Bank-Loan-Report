@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-08 (session `21ed2550`, v4.2). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-16 (session `21ed2550`, Auction Retest v4.8, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -1012,6 +1012,77 @@ Other gold findings:
       differences. Workbook `build_best_xlsx.py` -> `Gold_Best_Monthly_Settings_1000.xlsx` (Read me, Recommendations, How to set, Monthly, Top
       lists; 210 formulas, recalc 0 errors; formula values = Python).
 
+39. **Strategy presets and the monthly restart in all six files (asked 2026-11-16)** (tasks #4-#8 of that session).
+    The user asked for the monthly restart in every Auction Retest (ARS) and Fractal Grid file, and for the catalogue strategies as one-click presets
+    at the top of the settings. Their answers: force-close and the Saturday close stay theirs; M1 and H1 presets too; grid presets yes, several combinations.
+    - **One source of the values:** `$S/presets/preset_data.py`.
+      - ARS: `crooks.sources` + `greedy.defaults()`, i.e. every engine value of the 25 catalogue strategies (M1 S1-S4, M5 S1-S4, M15 S1-S9, H1 S1-S8),
+        the own session (`session()`) and the partial at TP1 (`p1`).
+      - Grid: `GRID_PRESETS` G1-G6, from mcej3 `final.txt` / `final_150.txt` / `combo.txt`.
+    - **ARS Pine v4.8:** `build/patch_pine_v48.py` (on `build/bak/*_v47.pine`), then `assemble.py`.
+      - The engine inputs are renamed `<name>In`. The effective values follow the inputs (`PI` index, `PC` = Custom), so the engine block reads the same names.
+      - Time filters:
+        - `myF` = Custom or Add My Filters: days and news windows;
+        - `ownS` = a preset whose own session is not replaced by the user's hours / kill zones;
+        - the preset's hours use `tzHr` = Asia/Kolkata;
+        - its kill zones use kzAuto off, as tested.
+      - The timeframe guard `presetTfOk` is in `canArm`.
+      - Strategy only: the partial `p1Pct`; the news `n*On` / `dNewsOn` through `myF`.
+      - Monthly restart: `rNet0` (closed profit at the restart; the ladder, Crooks J and Rule C split count from it), `crkPk = 0`, `capStop = false`.
+      - Tables: a PRESET row and the state "WRONG CHART".
+    - **ARS EA v4.8:** `build/patch_ea_v48.py` (on `build/bak/AuctionRetestEA_v47.mq5`).
+      - `ENUM_PRESET`, `InpPreset` and `InpAddMine` come first.
+      - 92 inputs are read through `gp*`, set by `PresetApply()` first in OnInit.
+      - `gpHrIst`: a preset's hours are IST (UTC + 5:30).
+      - `gpTfOk` is in `canArm`. A preset sets `gTfTrade` to its own timeframe, so switching the chart to it starts trading.
+      - `MonthRestart()` = RecoveryRestart + `gNet0` + `crkPk = 0` + `capStop = false`; memory key `rn`.
+    - **Grid Pine v3.2:** `fractal/pine3/patch_fbg_v32.py` (on `build_fbg3_pre32.py`) -> `build_fbg3.py`.
+      - New inputs: preset, Add My Days And Hours, Use My Money Settings, and `mRestartIn` in MONEY.
+      - `effective(strats)` writes the values after the strategy blocks.
+      - Strat fields `n0 / mKey / curM / capStp`. `mReset` runs in `mmOpen` at a strategy's first trade of a new month; a cap stop ends at the month change.
+    - **Grid EA v1.1:** `fbgea/presetize.py`, called by `build_ea.py` (backup `build_ea_pre11.py`), with the same rules.
+      - The twin `fractal/pine_twin2.py` got `mRestart` (backup `pine_twin2_pre48.py`).
+    - **Checks (all on the final files):**
+      - ARS EA:
+        - `mq5check` 0/0;
+        - parity 51 configurations: Custom = v4.7;
+        - `mq5check/run/parity_presets.py`: the 25 presets x (as tested, user GMT 0, Add + my hours/kz, Add + days only, wrong chart) vs the research
+          engine `ref_gs` with the anchors, 10 symbols, 35,307 trades identical;
+        - money: `parity_rec` 7,728 runs / 11.4 M trades and `parity_crkpr` 20,544 runs, 0 differences;
+        - `rec/parity_month.py` (new `mrs_driver`): the EA restart vs `recovery.simulate` fresh every month, 1,344 runs / 1.63 M trades, 0 differences,
+          also with REC_RESTART=3;
+        - `parity_tp1` (the cache `gold/crooks_t1p.pkl` rebuilt with `crooks_t1p.py`, 10 min): 7,700 + 14,784 runs, 34 M trades, 0 mismatches.
+      - ARS Pine: parse OK, 0 inline-title warnings; all 188 / 115 old inputs unchanged in order and defaults (2 tooltips changed);
+        `presets/pine_preset_check.py` reads the generated files and evaluates every preset expression: 4,025 values, 0 wrong.
+      - Grid Pine: parse OK, 0 inline warnings, `namecheck` / `shadowcheck` clean, old inputs unchanged; `pine_preset_check.py` 1,488 values, 0 wrong.
+      - Grid twin vs the study (`presets/grid_twin_months.py`): G1 / G2 / G4 the same in every month. G3 is within $3.18 in one month, because the
+        leverage limit binds on the small study accounts. G5 / G6 are the same with large accounts (`grid_twin_g56.py`); the study's $83 accounts can be blown.
+      - Grid EA: `mq5check` 0/0. `fbgea/harness/parity_v11.py`: 15 configurations vs the twin, 44,945 trades and $ risks identical:
+        - the defaults = v1.0;
+        - the restart with the defaults and with 4 random sets;
+        - G1-G6 with random other inputs;
+        - G2 + my days and hours;
+        - G1 + my money, with the restart on and off.
+      - Independent review (Sonnet, high effort; every finding re-checked by me):
+        - no high-severity finding;
+        - fixed:
+          - (1) medium: the EA's warm-up (3,000 bars) did not reach the 1st of the month for a Month / Week VWAP (the M1 / M5 presets). It now
+            reads back to the period start (at most 100,000 bars) and logs when the history is shorter. Custom with a Month / Week anchor gets it too;
+          - (3) the grid's "next trade" text before the first trade of a month: the money now also restarts at the first candle of a new month while
+            the strategy is flat, in Pine, the EA and the twin. Sizing is unchanged; parity was re-run;
+          - (4) grid EA preset names were not unique (G5 / G6);
+          - (5) back to Custom after a preset on another timeframe: the EA now trades the chart's timeframe (global variable `tfp`);
+        - left as tested: (2) the M1 presets' London Close uses fixed IST, because the catalogue research used `kzAuto` off.
+    - Harness changes:
+      - `mq5check/run/mq5rt.py`: `HAS_PRESET`, so `rt_reset` calls PresetApply and `rt_look` uses `gp*`; `rt_period`;
+      - `mq5check/run/rt_impl.h`: `StringToTime` (backup `rt_impl_pre48.h`);
+      - do not build two harnesses at once: each build rewrites `run/mql5rt.h`;
+      - `driver.cpp`: `PERIOD=`;
+      - `mq5check/rec/build.sh`: `rec_init` calls PresetApply, `rec_mrestart` calls MonthRestart, plus `mrs_harness`;
+      - `fbgea/harness/data` must be rebuilt with `export.py` after a restore.
+    - Docs: `TradingView/README.md` sections "v4.8: strategy presets ..." and "v3.2 (EA v1.1): presets and the monthly restart", with the result
+      tables (`presets/ars_table.md`, `presets/grid_table.md`).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -1037,6 +1108,7 @@ Other gold findings:
 | Monthly Crooks E-J x ladder (item 36, `$S/mcej`) | `collect_ars.py`, `collect_grid.py`, `money.py ars`, `money.py grid`, `targets.py`, `build_xlsx.py OUTDIR both`, recalc, `check_xlsx.py OUTDIR` | `*_trades.pkl`, `*_money.pkl`, `ars_targets.pkl`, 2 xlsx | 10 s, 20 s, 5 s, 3 s, 30 s, 5 s + recalc 1 min |
 | Monthly, the user's settings (item 37, `$S/mcej2`) | `collect_user.py [check]`, `money2.py`, `costs.py`, `build_user_xlsx.py OUTDIR`, recalc; EA check: `sim/export_m1.py` -> `sim46 m1_all.csv 2021-01-11 2026-10-03 InpExitAt=1|2 [filters 0]`, `cmp_ea.py`, `cmp_ea_levels.py` | `user_trades.pkl`, `user_money.pkl`, `user_costs.pkl`, 2 xlsx | 1 min, 20 s, 1 min, 5 s + recalc; sim 45 s (filters on) / 7 min (off) |
 | Best monthly settings, $1,000 (item 38, `$S/mcej3`) | `collect.py`, `search.py`, `choose.py`, `robust2.py 300`, `robust2.py 150`, `combo.py`, `build_best_xlsx.py OUT` | `sets.pkl`, `money_*.npz`, `final*.pkl`, `picks.pkl`, `combo.pkl`, xlsx | 2 min, 2.5 min, 10 s, 20 s each, 10 s, 5 s + recalc |
+| Presets + monthly restart (item 39, `$S/presets`) | `preset_data.py`; build `build/patch_pine_v48.py` + `assemble.py`, `build/patch_ea_v48.py`, `fractal/pine3/patch_fbg_v32.py` + `build_fbg3.py OUT pick_10_12.json indicator|strategy`, `fbgea/build_ea.py OUT`; checks `pine_preset_check.py`, `mq5check/run/parity_presets.py`, `mq5check/rec/parity_month.py`, `fbgea/harness/parity_v11.py`, `grid_twin_months.py` | the 6 files | patches 5 s; parity_presets 3 min, parity_month 15 s, parity_v11 25 min, grid_twin_months 10 min |
 | No losing month | `bestmonth.py collect`, `screen`, `money`, `report`, `exact`; `bestmonth_final.py`; `build_bestmonth_xlsx.py` | `bestmonth_*.pkl`, `bestmonth*.txt`, xlsx | 1 min, seconds, 20 s, 20 s, 1 min, 1 min, seconds |
 | Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py`, `crooks_sheet.py` and `vwfilter_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |

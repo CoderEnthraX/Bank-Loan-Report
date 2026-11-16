@@ -19,6 +19,9 @@
 //     made since that trade's fill. Levels stay unrounded, like the reference.
 //  v4.0 defaults (the same in the strategy and the MT5 EA): Tue / Wed / Thu, 06:00-23:00 IST, in
 //  the Asia, London and New York kill zones, half stop never wider than the normal stop.
+//  v4.8: STRATEGY PRESET at the top of the settings: Custom (your settings) or one of the 25 tested catalogue strategies
+//  (M1 S1-S4, M5 S1-S4, M15 S1-S9, H1 S1-S8), each on its own chart timeframe; Add My Filters adds your days, hours and
+//  kill zones (the same presets as the strategy and the MT5 EA).
 //  The engine below is byte-identical in Auction_Retest_Strategy.pine, so both show the same trades.
 // ═══════════════════════════════════════════════════════════════════════════════════════
 indicator("Auction Retest Model [VWAP Displacement + Retest]", shorttitle = "ARM", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
@@ -137,7 +140,7 @@ f_row(table tb, int r, string k, string v, color vc, color bg, string sz, string
 var table mon = na
 if showTable and barstate.islast
     if na(mon)
-        mon := table.new(f_pos(tablePos), 2, 10 + (mvAny ? 1 : 0) + (fltAny ? 1 : 0) + (showRr ? 1 : 0), bgcolor = color.new(#1E222D, 0), border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
+        mon := table.new(f_pos(tablePos), 2, 10 + (PC ? 0 : 1) + (mvAny ? 1 : 0) + (fltAny ? 1 : 0) + (showRr ? 1 : 0), bgcolor = color.new(#1E222D, 0), border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
     string sz     = f_size(tableSize)
     color  white  = color.new(#FFFFFF, 0)
     color  cellBg = color.new(#1E222D, 0)
@@ -151,7 +154,7 @@ if showTable and barstate.islast
     bool   act    = math.abs(st) == 2 and not trGhost
     bool   armed  = math.abs(st) == 1 and not trGhost
     bool   has    = act or armed
-    string stTxt  = timeframe.isdwm and vwapAnchor == "Session" ? "USE AN INTRADAY CHART" : st != 0 and trGhost ? "SKIPPED (" + trSkip + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY RETEST ARMED" : st == -1 ? "SELL RETEST ARMED" : dayFills >= maxFills ? "DAY CAP REACHED" : not dayOpen ? "DAILY STOP HIT" : not dayOk ? "DAY SWITCHED OFF" : not hourOk ? "OUTSIDE HOURS" : not kzOk ? "OUTSIDE KILL ZONES" : "SCANNING"
+    string stTxt  = not presetTfOk ? "WRONG CHART: " + presetTfTxt + " PRESET" : timeframe.isdwm and vwapAnchor == "Session" ? "USE AN INTRADAY CHART" : st != 0 and trGhost ? "SKIPPED (" + trSkip + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY RETEST ARMED" : st == -1 ? "SELL RETEST ARMED" : dayFills >= maxFills ? "DAY CAP REACHED" : not dayOpen ? "DAILY STOP HIT" : not dayOk ? "DAY SWITCHED OFF" : not hourOk ? "OUTSIDE HOURS" : not kzOk ? "OUTSIDE KILL ZONES" : "SCANNING"
     color  stBg   = act ? (st == 2 ? green : red) : armed ? orange : grey
     color  rgBg   = regime == "TRENDING" ? green : regime == "TRANSITION" ? orange : pink
     float  liveR  = act and trRisk > 0 ? (st == 2 ? close - lim : lim - close) / trRisk : na
@@ -168,6 +171,9 @@ if showTable and barstate.islast
     f_row(mon, 7, "LOADED BARS", f_accTxt() + " · last " + lastRes, totR >= 0 ? posC : negC, cellBg, sz, "Closed trades · win % (wins / losses) · total R of every closed trade in the DATA RANGE · the last result. A breakeven exit counts as a loss of 0R.")
     f_row(mon, 8, "TP HIT", f_tpTxt(), posC, cellBg, sz, "Share (and number) of the closed trades whose price reached each target before the stop. TP" + str.tostring(exitK) + " is the final exit, so its share is the win rate. Targets after the final exit show n/a.")
     int r = 9
+    if not PC
+        f_row(mon, r, "PRESET", presetTxt + (presetTfOk ? "" : " · needs a " + presetTfTxt + " chart") + (addMine ? " · + my filters" : ""), presetTfOk ? posC : negC, cellBg, sz, "The strategy preset in use (STRATEGY PRESET at the top of the settings). A preset only shows signals on its own chart timeframe.")
+        r += 1
     if mvAny
         f_row(mon, r, "BREAKEVEN", f_beTxt(), white, cellBg, sz, "Closed trades that ended at a stop moved by the Move Stop settings: to the entry (breakeven, 0R) or into profit. Shares are of all closed trades.")
         r += 1

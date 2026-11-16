@@ -1,0 +1,6 @@
+G1 Best monthly: S7, S8, S10 · $10 · exact recovery · cap $100    twin: 2021-23  4 losing   +1320 | 2024-26  3 losing   +1603 || study:  4   +1320 |  3   +1603 | max month diff $0.00
+G2 Safest: S1, S2, S6, S7, S8, S10 · $5 · exact recovery · cap $5 twin: 2021-23  3 losing    +734 | 2024-26  3 losing    +975 || study:  3    +734 |  3    +975 | max month diff $0.00
+G3 Steady, more profit: S1, S2, S6, S7, S8, S10 · $10 · exact rec twin: 2021-23  3 losing   +1312 | 2024-26  4 losing   +1797 || study:  3   +1307 |  4   +1797 | max month diff $3.18
+G4 Small: S7, S8, S10 · $5 · exact recovery · cap $50             twin: 2021-23  4 losing    +660 | 2024-26  3 losing    +801 || study:  4    +660 |  3    +801 | max month diff $0.00
+G5 No recovery: all 12 · $10 fixed risk                           twin: 2021-23 13 losing   +1516 | 2024-26 12 losing   +2749 || study: 13   +1896 | 10   +3744 | max month diff $121.80
+G6 No recovery: 11 strategies (all but S4) · $10 fixed risk       twin: 2021-23 12 losing   +1175 | 2024-26 10 losing   +2067 || study: 11   +1563 |  9   +3061 | max month diff $121.80

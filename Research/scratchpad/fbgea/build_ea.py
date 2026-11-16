@@ -853,6 +853,8 @@ def build(out):
     rest = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'ea_rest.mq5')
     if os.path.exists(rest): src += open(rest).read()
     src += tail()
+    from presetize import presetize            # v1.1: presets and the monthly restart
+    src = presetize(src, S12, TFC)
     open(out, 'w', encoding='ascii').write(src)
     print('wrote', out, src.count('\n'), 'lines')
 

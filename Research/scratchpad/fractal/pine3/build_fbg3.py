@@ -15,22 +15,22 @@ def block(i, p):
     tf, r, l, off, sl, tp, be, sv = p
     g = 'GRP_%d' % i
     return '''{g} = "STRATEGY {i}"
-s{i}On  = input.bool(true, "On", inline = "s{i}a", group = {g})
+s{i}OnIn = input.bool(true, "On", inline = "s{i}a", group = {g})
 s{i}Col = input.color({col}, "", inline = "s{i}a", group = {g})
-s{i}Tf  = input.timeframe("{tfv}", "Fractal TF / Buy Entry Offset %", inline = "s{i}b", group = {g})
-s{i}Off = input.float({off}, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s{i}b", group = {g}, tooltip = TT_TF)
-s{i}R   = input.int({r}, "Right / Left Candles", minval = 1, maxval = 200, inline = "s{i}c", group = {g})
-s{i}L   = input.int({l}, "", minval = 1, maxval = 200, inline = "s{i}c", group = {g}, tooltip = TT_RL)
-s{i}Sl  = input.float({sl}, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s{i}d", group = {g})
-s{i}Tp  = input.float({tp}, "", minval = 0.001, step = 0.01, inline = "s{i}d", group = {g}, tooltip = TT_ST)
-s{i}Be  = input.float({be}, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s{i}e", group = {g})
-s{i}Sv  = input.float({sv}, "", minval = 0.0, step = 0.01, inline = "s{i}e", group = {g}, tooltip = TT_BS)
+s{i}TfIn = input.timeframe("{tfv}", "Fractal TF / Buy Entry Offset %", inline = "s{i}b", group = {g})
+s{i}OffIn = input.float({off}, "", minval = -5.0, maxval = 5.0, step = 0.005, inline = "s{i}b", group = {g}, tooltip = TT_TF)
+s{i}RIn = input.int({r}, "Right / Left Candles", minval = 1, maxval = 200, inline = "s{i}c", group = {g})
+s{i}LIn = input.int({l}, "", minval = 1, maxval = 200, inline = "s{i}c", group = {g}, tooltip = TT_RL)
+s{i}SlIn = input.float({sl}, "SL % / TP %", minval = 0.001, step = 0.01, inline = "s{i}d", group = {g})
+s{i}TpIn = input.float({tp}, "", minval = 0.001, step = 0.01, inline = "s{i}d", group = {g}, tooltip = TT_ST)
+s{i}BeIn = input.float({be}, "BE / Salvage Trigger %", minval = 0.0, step = 0.01, inline = "s{i}e", group = {g})
+s{i}SvIn = input.float({sv}, "", minval = 0.0, step = 0.01, inline = "s{i}e", group = {g}, tooltip = TT_BS)
 '''.format(g=g, i=i, col=COLS[i - 1], tfv=TFV[tf], off=num(off), r=r, l=l, sl=num(sl), tp=num(tp), be=num(be), sv=num(sv))
 
 
 HEAD = r'''//@version=6
 // =======================================================================================================
-//  FRACTAL BREAKOUT GRID v3.1: 12 long breakout strategies on swing highs (fractals), with money management{KIND}
+//  FRACTAL BREAKOUT GRID v3.2: 12 long breakout strategies on swing highs (fractals), with money management{KIND}
 // =======================================================================================================
 //  Each strategy finds swing highs on its own timeframe: a candle whose high is strictly above the Left
 //  candles before it and the Right candles after it. When the last Right candle closes, the swing high
@@ -46,6 +46,8 @@ HEAD = r'''//@version=6
 //  strategy, with the profit ladder, a hard cap and the leverage limit; the next trade's lots are shown.
 //  v3.1: Position Size: Fixed $ risk, Fixed lots or % of equity at risk (the base the loss recovery rule sizes
 //  from); a red note on the chart when a ticked strategy cannot run on the chart's timeframe.
+//  v3.2: PRESET at the top of the settings: Custom or a tested combination of strategies with its money (the $1,000-a-month
+//  study); a monthly restart of every strategy's money (the same in the MT5 EA).
 //  The trades are worked out on the chart's candles, along open -> the nearer of high / low -> the other
 //  -> close (gaps fill at the open, also on the candle where a new buy stop starts). Use a chart timeframe
 //  at or below each strategy's timeframe (1 min runs all 12, 5 min all but 12). Swing highs come from
@@ -55,11 +57,24 @@ HEAD = r'''//@version=6
 // =======================================================================================================
 {DECL}
 
+// ---------------------------------------------------------------- PRESET (v3.2: the top of the settings)
+GRP_PS    = "PRESET"
+GP_CUSTOM = "Custom (my settings below)"
+GP_1 = "Best monthly: S7, S8, S10 · $10 · exact recovery · cap $100"
+GP_2 = "Safest: S1, S2, S6, S7, S8, S10 · $5 · exact recovery · cap $50"
+GP_3 = "Steady, more profit: S1, S2, S6, S7, S8, S10 · $10 · exact recovery · cap $100 start again"
+GP_4 = "Small: S7, S8, S10 · $5 · exact recovery · cap $50"
+GP_5 = "No recovery: all 12 · $10 fixed risk"
+GP_6 = "No recovery: 11 strategies (all but S4) · $10 fixed risk"
+presetIn  = input.string(GP_CUSTOM, "Preset", options = [GP_CUSTOM, GP_1, GP_2, GP_3, GP_4, GP_5, GP_6], group = GRP_PS, tooltip = "Custom: your settings below. A preset runs its strategies with their tested settings (swing-high timeframe, candles, offset, SL, TP, BE, salvage), the entry and exit options as tested, and the money it was tested with in the $1,000-a-month gold study 2021-2026 (fixed $ base risk, loss recovery, hard cap, no profit ladder, monthly restart on). Your own settings stay saved and come back with Custom. The weekend close, costs, start balance, leverage, display and alerts stay yours. Use a 1 minute chart (as tested; a 5 minute chart runs all but S12).")
+addMine   = input.bool(false, "Add My Days And Hours", group = GRP_PS, tooltip = "Off (default): the preset trades every day and hour, as tested. On: your Trade Only On The Ticked Days / Trade Only Between settings below apply too.")
+myMoney   = input.bool(false, "Use My Money Settings", group = GRP_PS, tooltip = "Off (default): the preset's money. On: your MONEY and LOSS RECOVERY settings below (base risk, loss recovery, hard cap, profit ladder, monthly restart) instead.")
+
 // ---------------------------------------------------------------- GRID
 GRP_G   = "GRID"
 RUN_ALL = "All strategies"
 RUN_TCK = "Ticked strategies"
-runMode = input.string(RUN_ALL, "Run", options = [RUN_ALL, RUN_TCK, "Strategy 1", "Strategy 2", "Strategy 3", "Strategy 4", "Strategy 5", "Strategy 6", "Strategy 7", "Strategy 8", "Strategy 9", "Strategy 10", "Strategy 11", "Strategy 12"], group = GRP_G, tooltip = "All strategies: all 12 run. Ticked strategies: only those with On ticked below. Strategy N: that one alone.")
+runModeIn = input.string(RUN_ALL, "Run", options = [RUN_ALL, RUN_TCK, "Strategy 1", "Strategy 2", "Strategy 3", "Strategy 4", "Strategy 5", "Strategy 6", "Strategy 7", "Strategy 8", "Strategy 9", "Strategy 10", "Strategy 11", "Strategy 12"], group = GRP_G, tooltip = "All strategies: all 12 run. Ticked strategies: only those with On ticked below. Strategy N: that one alone.")
 costIn  = input.float(0.23, "Costs Per Trade (price units)", minval = 0.0, step = 0.01, group = GRP_G, tooltip = "Spread + commission of one trade in price units (per unit traded), taken off every trade in the table and in the money (the levels do not move). Gold: spread 0.16 + $7 per lot of 100 oz (0.07) = 0.23.")
 statsFrom = input.time(timestamp("01 Jan 2021 00:00 +0000"), "Table Counts Trades From", group = GRP_G, tooltip = "The table and the money count the trades that opened at or after this time (and within the chart's loaded history). Each strategy's account starts with its first counted trade.")
 
@@ -67,22 +82,22 @@ statsFrom = input.time(timestamp("01 Jan 2021 00:00 +0000"), "Table Counts Trade
 GRP_E   = "ENTRY AND EXIT OPTIONS (all off = as tested)"
 E_STOP  = "Buy stop (breakout)"
 E_CLOSE = "Candle close at or above the buy stop"
-entMode = input.string(E_STOP, "Entry", options = [E_STOP, E_CLOSE], group = GRP_E, tooltip = "Buy stop (as tested): the trade opens the moment the price rises through the buy stop.\nCandle close: a candle that closes below the buy stop arms it; the trade opens at the close of the first later candle that closes at or above it. It uses the chart's candles, so the result depends on the chart's timeframe. On gold 2021-2026 it lowered the profit of all 11 strategies.")
-expN    = input.int(0, "Buy Stop Expires After (fractal candles)", minval = 0, group = GRP_E, tooltip = "0 = never (as tested). A waiting buy stop is dropped this many candles of its strategy's timeframe after it was set. On gold 2021-2026 every expiry from 3 to 48 candles lowered the profit.")
-maxDay  = input.int(0, "Most Entries Per Day, Each Strategy", minval = 0, group = GRP_E, tooltip = "0 = no limit (as tested). Days in the time zone of DAYS AND HOURS. A breakout over the limit is skipped (its buy stop is used up).")
-trA     = input.float(0.0, "Trailing Stop: Starts At +% / Distance %", minval = 0.0, step = 0.05, inline = "trl", group = GRP_E)
-trD     = input.float(0.0, "", minval = 0.0, step = 0.05, inline = "trl", group = GRP_E, tooltip = "Distance 0 = off (as tested). Once the price has been this % (the start) above the fill, the SL follows the highest price at the distance % below it; it only moves up. On gold 2021-2026 it lowered the profit; a far start (+2 %, distance 1 %) changed little.")
-tExitH  = input.float(0.0, "Close A Trade After (hours)", minval = 0.0, step = 1.0, group = GRP_E, tooltip = "0 = off (as tested). The trade closes at the open of the first candle at least this many hours after the entry candle opened. On gold 2021-2026 4 to 72 hours lowered the profit; a week changed little.")
+entModeIn = input.string(E_STOP, "Entry", options = [E_STOP, E_CLOSE], group = GRP_E, tooltip = "Buy stop (as tested): the trade opens the moment the price rises through the buy stop.\nCandle close: a candle that closes below the buy stop arms it; the trade opens at the close of the first later candle that closes at or above it. It uses the chart's candles, so the result depends on the chart's timeframe. On gold 2021-2026 it lowered the profit of all 11 strategies.")
+expNIn  = input.int(0, "Buy Stop Expires After (fractal candles)", minval = 0, group = GRP_E, tooltip = "0 = never (as tested). A waiting buy stop is dropped this many candles of its strategy's timeframe after it was set. On gold 2021-2026 every expiry from 3 to 48 candles lowered the profit.")
+maxDayIn = input.int(0, "Most Entries Per Day, Each Strategy", minval = 0, group = GRP_E, tooltip = "0 = no limit (as tested). Days in the time zone of DAYS AND HOURS. A breakout over the limit is skipped (its buy stop is used up).")
+trAIn   = input.float(0.0, "Trailing Stop: Starts At +% / Distance %", minval = 0.0, step = 0.05, inline = "trl", group = GRP_E)
+trDIn   = input.float(0.0, "", minval = 0.0, step = 0.05, inline = "trl", group = GRP_E, tooltip = "Distance 0 = off (as tested). Once the price has been this % (the start) above the fill, the SL follows the highest price at the distance % below it; it only moves up. On gold 2021-2026 it lowered the profit; a far start (+2 %, distance 1 %) changed little.")
+tExitHIn = input.float(0.0, "Close A Trade After (hours)", minval = 0.0, step = 1.0, group = GRP_E, tooltip = "0 = off (as tested). The trade closes at the open of the first candle at least this many hours after the entry candle opened. On gold 2021-2026 4 to 72 hours lowered the profit; a week changed little.")
 wkOn    = input.bool(false, "Close Before The Weekend: Friday From (hour, New York)", inline = "wk", group = GRP_E)
 wkH     = input.int(16, "", minval = 0, maxval = 23, inline = "wk", group = GRP_E, tooltip = "Off = as tested. On: open trades close at the open of the first candle on Friday at or after this hour, New York time (gold closes at 17:00), and no trade opens after it that day. On gold 2021-2026 it lowered the profit.")
-trnOn   = input.bool(false, "Only Buy Above The EMA: Timeframe / Length", inline = "trn", group = GRP_E)
+trnOnIn = input.bool(false, "Only Buy Above The EMA: Timeframe / Length", inline = "trn", group = GRP_E)
 trnTf   = input.timeframe("240", "", inline = "trn", group = GRP_E)
 trnLen  = input.int(50, "", minval = 1, inline = "trn", group = GRP_E, tooltip = "Off = as tested. On: a breakout only opens a trade when the last closed candle of this timeframe closed above its EMA of this length. The timeframe must not be below the chart's (otherwise the filter is ignored). On gold 2021-2026 the 4 hour EMA 50 helped 5 of the 11 strategies but lowered the total, mostly through strategies 10 and 11.")
 
 // ---------------------------------------------------------------- DAYS AND HOURS
 GRP_W     = "DAYS AND HOURS (all off = as tested)"
 tzIn      = input.string("Asia/Kolkata", "Time Zone", options = ["Asia/Kolkata", "Exchange", "UTC", "Europe/London", "America/New_York", "Asia/Dubai", "Asia/Singapore", "Asia/Tokyo", "Australia/Sydney"], group = GRP_W, tooltip = "Time zone for the days, the hours and the daily entry limit (the weekend close always uses New York time).")
-dayOn     = input.bool(false, "Trade Only On The Ticked Days", group = GRP_W, tooltip = "Off = every day (as tested). On: a breakout only opens a trade on the ticked days (time zone above). Skipping Monday or Friday lowered the profit on gold 2021-2026.")
+dayOnIn   = input.bool(false, "Trade Only On The Ticked Days", group = GRP_W, tooltip = "Off = every day (as tested). On: a breakout only opens a trade on the ticked days (time zone above). Skipping Monday or Friday lowered the profit on gold 2021-2026.")
 dMon      = input.bool(true, "Mon", group = GRP_W)
 dTue      = input.bool(true, "Tue", group = GRP_W)
 dWed      = input.bool(true, "Wed", group = GRP_W)
@@ -90,7 +105,7 @@ dThu      = input.bool(true, "Thu", group = GRP_W)
 dFri      = input.bool(true, "Fri", group = GRP_W)
 dSat      = input.bool(false, "Sat", group = GRP_W)
 dSun      = input.bool(false, "Sun", group = GRP_W)
-hoursOn   = input.bool(false, "Trade Only Between", inline = "hr", group = GRP_W)
+hoursOnIn = input.bool(false, "Trade Only Between", inline = "hr", group = GRP_W)
 hoursSess = input.session("0600-2300", "", inline = "hr", group = GRP_W, tooltip = "Off = all hours (as tested). On: a breakout only opens a trade in these hours (time zone above; start included, end not; over midnight when the end is earlier). Open trades run on. On gold 2021-2026 every window tested lowered the profit: the breakouts work at all hours.")
 
 // ---------------------------------------------------------------- MONEY
@@ -103,16 +118,17 @@ startB    = input.float(10000.0, "Start Balance ($)", minval = 1.0, step = 1000.
 SZ_USD    = "Fixed $ risk"
 SZ_LOT    = "Fixed lots"
 SZ_PCT    = "% of equity at risk"
-szMode    = input.string(SZ_USD, "Position Size", options = [SZ_USD, SZ_LOT, SZ_PCT], group = GRP_M, tooltip = "The base trade. The loss recovery rule sizes every trade from it; with No recovery every trade is the base trade.\nFixed $ risk: the base trade loses the Base Risk $ at its stop, costs included.\nFixed lots: the base trade is the Base Lots, whatever its stop (at its stop it loses lots x contract size x (stop distance + costs)).\n% of equity at risk: the base trade loses this % of the strategy's account at its stop, costs included.")
-baseR     = input.float(50.0, "Base Risk Per Trade ($)", minval = 0.01, step = 5.0, group = GRP_M, tooltip = "Fixed $ risk: a trade at the base risk loses this amount at its stop, costs included: units = risk / (stop distance + costs per unit).")
+szModeIn  = input.string(SZ_USD, "Position Size", options = [SZ_USD, SZ_LOT, SZ_PCT], group = GRP_M, tooltip = "The base trade. The loss recovery rule sizes every trade from it; with No recovery every trade is the base trade.\nFixed $ risk: the base trade loses the Base Risk $ at its stop, costs included.\nFixed lots: the base trade is the Base Lots, whatever its stop (at its stop it loses lots x contract size x (stop distance + costs)).\n% of equity at risk: the base trade loses this % of the strategy's account at its stop, costs included.")
+baseRIn   = input.float(50.0, "Base Risk Per Trade ($)", minval = 0.01, step = 5.0, group = GRP_M, tooltip = "Fixed $ risk: a trade at the base risk loses this amount at its stop, costs included: units = risk / (stop distance + costs per unit).")
 baseLot   = input.float(0.01, "Base Lots (Fixed lots)", minval = 0.0001, step = 0.01, group = GRP_M, tooltip = "Fixed lots: the base trade's size in lots (gold: 0.01 lot = 1 oz). Rounded to the lot step for the lots shown.")
 eqPct     = input.float(1.0, "Risk % Of Equity (% of equity at risk)", minval = 0.01, step = 0.1, group = GRP_M, tooltip = "% of equity at risk: the base trade loses this % of the strategy's account at its stop. Also used by the loss recovery rule % of equity.")
 lotSz     = input.float(100.0, "Contract Size (units per lot) / Lot Step", minval = 0.0001, step = 1.0, inline = "lot", group = GRP_M)
 lotStep   = input.float(0.01, "", minval = 0.0001, step = 0.01, inline = "lot", group = GRP_M, tooltip = "Gold: 100 oz per lot, in steps of 0.01 lot. Used for the lots shown for the next trade and for the Crooks E / I lot. The $ results use the exact size.")
 levIn     = input.float(100.0, "Leverage Limit (1:N)", minval = 1.0, step = 10.0, group = GRP_M, tooltip = "A trade is never bigger than balance x N in value (1:100 = the broker's usual gold leverage).")
-capOn     = input.bool(true, "Hard Cap: Max Loss Per Trade ($)", inline = "cap", group = GRP_M)
-hardCap   = input.float(500.0, "", minval = 0.01, step = 50.0, inline = "cap", group = GRP_M, tooltip = "No trade may risk more than this (its stop-out loss, costs included). Applies to every loss recovery rule. On gold 2021-2026 Martingale, Grand Martingale, Labouchere, Fibonacci and D'Alembert blew 8 to 28 % of the shuffled trade orders without a cap, none with a $500 cap.")
-capAction = input.string(CAP_CLAMP, "If The Risk Would Exceed The Cap", options = [CAP_CLAMP, CAP_STOP, CAP_RESET], group = GRP_M, tooltip = "Clamp: trade at the cap.\nStop trading: that strategy takes no more trades.\nStart again: forget the losses to win back and trade at the base risk.")
+capOnIn   = input.bool(true, "Hard Cap: Max Loss Per Trade ($)", inline = "cap", group = GRP_M)
+hardCapIn = input.float(500.0, "", minval = 0.01, step = 50.0, inline = "cap", group = GRP_M, tooltip = "No trade may risk more than this (its stop-out loss, costs included). Applies to every loss recovery rule. On gold 2021-2026 Martingale, Grand Martingale, Labouchere, Fibonacci and D'Alembert blew 8 to 28 % of the shuffled trade orders without a cap, none with a $500 cap.")
+capActionIn = input.string(CAP_CLAMP, "If The Risk Would Exceed The Cap", options = [CAP_CLAMP, CAP_STOP, CAP_RESET], group = GRP_M, tooltip = "Clamp: trade at the cap.\nStop trading: that strategy takes no more trades.\nStart again: forget the losses to win back and trade at the base risk.")
+mRestartIn = input.bool(false, "Restart Every Strategy's Money On The 1st Of Each Month", group = GRP_M, tooltip = "Off (default): the money of each strategy runs on. On: at each strategy's first trade of a new month (time zone of DAYS AND HOURS) its loss recovery starts again from the base risk, the profit ladder, Crooks J and Rule C split count the closed profit from there, and a hard-cap Stop trading ends: every month starts like the $1,000-a-month test. The balance itself carries on.")
 
 // ---------------------------------------------------------------- LOSS RECOVERY
 GRP_L   = "LOSS RECOVERY (sizing only: the trades stay the same)"
@@ -144,8 +160,8 @@ L_CRG   = "Crooks G (Crooks C, loss to win back at most X x base)"
 L_CRH   = "Crooks H (Crooks C, recovery at most % of equity)"
 L_CRI   = "Crooks I (Crooks E + recovery at most K x base)"
 L_CRJ   = "Crooks J (Crooks C, recovery shrinks in a drawdown)"
-recMode = input.string(L_CRF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE, L_C, L_CS, L_LAB, L_GMART, L_PAR, L_RDALE, L_DELAY, L_EQPCT, L_OSC, L_CRA, L_CRB, L_CRC, L_CRD, L_CRE, L_CRF, L_CRG, L_CRH, L_CRI, L_CRJ], group = GRP_L, tooltip = "Each strategy's own losses and wins. A loss = a trade that closed below its entry after costs (BE and salvage exits lose the costs). TP in R = TP % / SL %.\nOff: every trade risks the base. All: base + every unrecovered $ lost. Over N trades: base + losses / N. % of losses: base + that %. Martingale: base x multiplier ^ losses in a row. Exact at TP: base + losses / TP in R. Step-up: base + step $ x losses in a row. Fibonacci: base x 1, 1, 2, 3, 5... D'Alembert: +1 unit after a loss, -1 after a win.\nRule C: risk = max(base, closed equity below its high / split). Rule C split: the same, the base steps up with the profit.\nLabouchere: units 1-2-3, risk = first + last. Grand Martingale: x mult + 1 base per loss. Paroli: x2 after each win, back after N. Reverse D'Alembert: +1 unit per win. Delayed: over N trades once N losses. % of equity. Oscar's Grind.\nCrooks A: trades 3, 5, 7 ... of a cycle are recovery trades risking max(base, loss / TP in R). B: the loss split over N. C: base until a win; the trade after a win is the recovery trade; a new cycle when all is won back. D: every 3rd trade. E - J = C with one change: E 0.01 lot while waiting, F recovery at most K x base, G loss at most X x base, H at most % of equity, I = E + F, J shrinks with the drawdown.\nGold 2021-2026, the 11 strategies, $50 base, $10,000 each: fixed risk +$21.7k (worst drawdown 3.4 %); Crooks F + ladder Medium +$41.9k (6.2 %); Rule C split $500 cap +$108k (14.5 %); D'Alembert $500 cap +$210k (27 %).")
-ladMode = input.string("Medium (keeps 70%, base up to 3x)", "Profit Ladder (Crooks F-J): Risk Appetite", options = ["Off", "Low (keeps 80% of the best profit, base up to 2x)", "Medium (keeps 70%, base up to 3x)", "High (keeps 60%, base up to 5x)", "Extra high (keeps 50%, base up to 8x)", "Max (keeps 40%, base up to 12x)"], group = GRP_L, tooltip = "Crooks F, G, H, I and J only. Until the strategy's closed profit first reaches the target, the rule trades as usual. Then the trades grow with the profit above a lock (the share of the best profit that is kept), paid only from that profit; if the profit falls back to the start, every trade is the Crooks E lot until it is in profit again.")
+recModeIn = input.string(L_CRF, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE, L_C, L_CS, L_LAB, L_GMART, L_PAR, L_RDALE, L_DELAY, L_EQPCT, L_OSC, L_CRA, L_CRB, L_CRC, L_CRD, L_CRE, L_CRF, L_CRG, L_CRH, L_CRI, L_CRJ], group = GRP_L, tooltip = "Each strategy's own losses and wins. A loss = a trade that closed below its entry after costs (BE and salvage exits lose the costs). TP in R = TP % / SL %.\nOff: every trade risks the base. All: base + every unrecovered $ lost. Over N trades: base + losses / N. % of losses: base + that %. Martingale: base x multiplier ^ losses in a row. Exact at TP: base + losses / TP in R. Step-up: base + step $ x losses in a row. Fibonacci: base x 1, 1, 2, 3, 5... D'Alembert: +1 unit after a loss, -1 after a win.\nRule C: risk = max(base, closed equity below its high / split). Rule C split: the same, the base steps up with the profit.\nLabouchere: units 1-2-3, risk = first + last. Grand Martingale: x mult + 1 base per loss. Paroli: x2 after each win, back after N. Reverse D'Alembert: +1 unit per win. Delayed: over N trades once N losses. % of equity. Oscar's Grind.\nCrooks A: trades 3, 5, 7 ... of a cycle are recovery trades risking max(base, loss / TP in R). B: the loss split over N. C: base until a win; the trade after a win is the recovery trade; a new cycle when all is won back. D: every 3rd trade. E - J = C with one change: E 0.01 lot while waiting, F recovery at most K x base, G loss at most X x base, H at most % of equity, I = E + F, J shrinks with the drawdown.\nGold 2021-2026, the 11 strategies, $50 base, $10,000 each: fixed risk +$21.7k (worst drawdown 3.4 %); Crooks F + ladder Medium +$41.9k (6.2 %); Rule C split $500 cap +$108k (14.5 %); D'Alembert $500 cap +$210k (27 %).")
+ladModeIn = input.string("Medium (keeps 70%, base up to 3x)", "Profit Ladder (Crooks F-J): Risk Appetite", options = ["Off", "Low (keeps 80% of the best profit, base up to 2x)", "Medium (keeps 70%, base up to 3x)", "High (keeps 60%, base up to 5x)", "Extra high (keeps 50%, base up to 8x)", "Max (keeps 40%, base up to 12x)"], group = GRP_L, tooltip = "Crooks F, G, H, I and J only. Until the strategy's closed profit first reaches the target, the rule trades as usual. Then the trades grow with the profit above a lock (the share of the best profit that is kept), paid only from that profit; if the profit falls back to the start, every trade is the Crooks E lot until it is in profit again.")
 ladT    = input.float(1000.0, "Profit Ladder: Profit Target Before The Risk Goes Up ($)", minval = 1.0, step = 100.0, group = GRP_L)
 recN    = input.int(3, "N Trades (Over N, Delayed)", minval = 1, group = GRP_L)
 recPct  = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.0, step = 5.0, group = GRP_L)
@@ -310,6 +326,10 @@ type Strat
     int    dPrev  = na
     bool   stopped = false
     string stopWhy = ""
+    float  n0     = 0.0       // v3.2 monthly restart: the closed profit at the last restart (the money rules count from it)
+    int    mKey   = na        //   the month of the money (yyyymm)
+    int    curM   = na        //   this candle's month
+    bool   capStp = false     //   stopped by the hard cap (ends with the month)
 //@@S
     string xWhy   = ""
     int    xBar   = na
@@ -387,8 +407,8 @@ f_base(Strat s, float sd) =>
 // the profit ladder now: on, the start guard (closed profit 0 or less), its base, the cushion above the lock
 f_lad(Strat s, float B) =>
     bool  on = not ladOff and ladFam and s.peakNet >= ladT
-    float C  = on ? math.max(0.0, s.net - ladLam * s.peakNet) : 0.0
-    [on, on and s.net <= 0, on ? B + math.min((ladBmx - 1.0) * B, ladPhi * C) : B, C]
+    float C  = on ? math.max(0.0, s.net - s.n0 - ladLam * s.peakNet) : 0.0
+    [on, on and s.net - s.n0 <= 0, on ? B + math.min((ladBmx - 1.0) * B, ladPhi * C) : B, C]
 
 // a Crooks C - J trade at base B (rec = a recovery trade)
 f_crk(Strat s, float B, bool rec, float rmin, float pf, float xr) =>
@@ -399,7 +419,7 @@ f_crk(Strat s, float B, bool rec, float rmin, float pf, float xr) =>
         else if recMode == L_CRH
             x := math.min(x, math.max(B, s.eq * crkHPct / 100.0))
         else if recMode == L_CRJ
-            x := math.max(B, x * math.max(0.0, 1.0 - (s.peakNet - s.net) / (crkJX * B)))
+            x := math.max(B, x * math.max(0.0, 1.0 - (s.peakNet - (s.net - s.n0)) / (crkJX * B)))
     else if s.crL > 0 and (recMode == L_CRE or recMode == L_CRI)
         x := math.min(B, rmin)
     x
@@ -418,12 +438,13 @@ f_raw(Strat s, float sd) =>
             fa := fb
             fb := t2
     float stepBase = 0.0
-    if s.net >= 1000
-        int kk = int(math.floor((s.net - 1000.0) / 500.0))
+    float netR = s.net - s.n0
+    if netR >= 1000
+        int kk = int(math.floor((netR - 1000.0) / 500.0))
         stepBase := (1000.0 + 500.0 * kk) / (8.0 + kk)
-    else if s.net >= 500
+    else if netR >= 500
         stepBase := 500.0 / 5.0
-    else if s.net >= 200
+    else if netR >= 200
         stepBase := 200.0 / 3.0
     float baseC = recMode == L_CS ? math.max(bR, capOn ? math.min(stepBase, hardCap) : stepBase) : bR
     float labU  = s.lab.size() > 1 ? s.lab.first() + s.lab.last() : s.lab.first()
@@ -470,8 +491,39 @@ f_next(Strat s, float F) =>
         r := math.min(r, s.eq * levIn * (sd + costIn) / F)
     r
 
+// v3.2 monthly restart: the money starts again (the loss recovery, the closed profit the ladder / Crooks J / Rule C split count from)
+method mReset(Strat s) =>
+    s.recPool   := 0.0
+    s.recLosses := 0
+    s.dUnits    := 1
+    s.carried   := 0.0
+    s.lab.clear()
+    s.lab.push(1.0)
+    s.lab.push(2.0)
+    s.lab.push(3.0)
+    s.parWins   := 0
+    s.rdUnits   := 1
+    s.oscU      := 1
+    s.oscP      := 0.0
+    s.crL       := 0.0
+    s.crN       := 0
+    s.crRecT    := false
+    s.crW       := false
+    s.crP       := crkCn
+    s.crF       := 0
+    s.crWait    := false
+    s.crWW      := 0
+    s.crNeedL   := false
+    s.n0        := s.net
+    s.peakNet   := 0.0
+    true
+
 // sizing at an entry (the cap's reset / stop change the state): false = the cap stops the strategy, no trade
 method mmOpen(Strat s, float F) =>
+    if mRestart and (na(s.mKey) or s.curM != s.mKey)     // v3.2: the first trade of a new month starts with fresh money
+        if not na(s.mKey)
+            s.mReset()
+        s.mKey := s.curM
     float sd = F * s.sl / 100.0
     s.bR := f_base(s, sd)
     [r0, rec0, baseC] = f_raw(s, sd)
@@ -482,6 +534,7 @@ method mmOpen(Strat s, float F) =>
         if capAction == CAP_STOP
             s.stopped := true
             s.stopWhy := "stopped by the hard cap"
+            s.capStp  := true
             take := false
         else if capAction == CAP_RESET
             s.recPool   := 0.0
@@ -521,7 +574,7 @@ method mmBook(Strat s, float pnl) =>
     s.pkEq    := math.max(s.pkEq, s.eq)
     s.ddU     := math.max(s.ddU, s.pkEq - s.eq)
     s.ddP     := math.max(s.ddP, (s.pkEq - s.eq) / s.pkEq)
-    s.peakNet := math.max(s.peakNet, s.net)
+    s.peakNet := math.max(s.peakNet, s.net - s.n0)
     if s.eq <= 0
         s.stopped := true
         s.stopWhy := "account blown"
@@ -811,6 +864,14 @@ method seg(Strat s, float x, float y, bool okb) =>
 // one chart candle: a new swing high, expiry, the open (trail, exits, BE / salvage, then a gap fill), the path, a close entry
 method onBar(Strat s, float ph, int pt, int hb, float pc, bool okb, bool wk, int dno) =>
     s.msg := ""
+    s.curM := int(math.floor(dno / 100))
+    if mRestart and s.capStp and not na(s.mKey) and s.curM != s.mKey     // v3.2: a hard-cap stop ends with the month
+        s.stopped := false
+        s.capStp  := false
+        s.stopWhy := ""
+    if mRestart and not s.pos and not na(s.mKey) and s.curM != s.mKey    // v3.2: flat at a new month: the money starts again now (the next trade's lots shown are right)
+        s.mReset()
+        s.mKey := s.curM
     if na(s.dPrev) or dno != s.dPrev
         s.dCnt  := 0
         s.dPrev := dno
@@ -927,7 +988,7 @@ if barstate.islast and showTbl
     color hd = color.new(#2A2E39, 0)
     color tx = color.new(#D1D4DC, 0)
     string opts = (entMode == E_CLOSE ? " · entry on close" : "") + (expN > 0 ? " · expiry " + str.tostring(expN) : "") + (maxDay > 0 ? " · max " + str.tostring(maxDay) + "/day" : "") + (trD > 0 ? " · trail" : "") + (tExitH > 0 ? " · time exit" : "") + (wkOn ? " · weekend close" : "") + (trnOn ? (f_fits(trnTf) ? " · above EMA" : " · EMA filter ignored (timeframe below the chart)") : "") + (dayOn ? " · days" : "") + (hoursOn ? " · hours" : "")
-    T.cell(0, 0, "FRACTAL BREAKOUT GRID v3.1 · " + syminfo.ticker + " · chart " + timeframe.period + " · trades since " + str.format_time(math.max(statsFrom, firstT), "yyyy-MM-dd", syminfo.timezone) + " · costs " + str.tostring(costIn) + " per trade" + opts, text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
+    T.cell(0, 0, "FRACTAL BREAKOUT GRID v3.2 · " + (PC ? "" : presetTxt + " · ") + syminfo.ticker + " · chart " + timeframe.period + " · trades since " + str.format_time(math.max(statsFrom, firstT), "yyyy-MM-dd", syminfo.timezone) + " · costs " + str.tostring(costIn) + " per trade" + opts, text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
     T.merge_cells(0, 0, nCol - 1, 0)
     T.cell(0, 1, mmOn ? "MONEY: " + recMode + (ladFam and not ladOff ? " + ladder " + ladMode : "") + " · base " + (szMode == SZ_LOT ? f_num(baseLot, "0.00##") + " lot" : szMode == SZ_PCT ? f_num(eqPct, "0.0#") + "% of equity" : f_usd(baseR)) + " · start " + f_usd(startB) + " each" + (capOn ? " · cap " + f_usd(hardCap) + " (" + capAction + ")" : "") : "MONEY: off (% and R only)", text_color = tx, bgcolor = hd, text_size = f_tsz(), text_halign = text.align_left)
     T.merge_cells(0, 1, nCol - 1, 1)
@@ -1137,6 +1198,51 @@ if bar_index >= last_bar_index - 1
 """
 
 
+def effective(strats):
+    """v3.2: the values the grid uses: your settings (Custom) or the preset's (written from presets/preset_data.py)"""
+    sys.path.insert(0, '/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad/presets')
+    import preset_data as PD
+    G = PD.GRID_PRESETS
+    def by(vals, lit):
+        from collections import Counter
+        dflt = Counter(vals).most_common(1)[0][0]; out = lit(dflt); grp = {}
+        for i, v in enumerate(vals, 1):
+            if v != dflt: grp.setdefault(v, []).append(i)
+        for v, ids in sorted(grp.items(), key=lambda kv: -kv[1][0]):
+            out = '%s ? %s : %s' % (' or '.join('GI == %d' % i for i in ids), lit(v), out)
+        return out
+    B = lambda b: 'true' if b else 'false'
+    L = ['// ---------------------------------------------------------------- v3.2: the values the grid uses (your settings, or the preset\'s)',
+         'int    GI = ' + ' : '.join('presetIn == GP_%d ? %d' % (i, i) for i in range(1, len(G) + 1)) + ' : 0',
+         'bool   PC = GI == 0',
+         'bool   PM = PC or myMoney                  // your money settings',
+         'string presetTxt = PC ? "Custom" : presetIn',
+         'string runMode = PC ? runModeIn : RUN_TCK']
+    for i, p in enumerate(strats, 1):
+        tf, r, l, off, sl, tp, be, sv = p
+        L += ['bool   s%dOn = PC ? s%dOnIn : %s' % (i, i, by([i in g['strats'] for g in G], B)),
+              'string s%dTf = PC ? s%dTfIn : "%s"' % (i, i, TFV[tf]),
+              'float  s%dOff = PC ? s%dOffIn : %s' % (i, i, num(off)),
+              'int    s%dR = PC ? s%dRIn : %d' % (i, i, r),
+              'int    s%dL = PC ? s%dLIn : %d' % (i, i, l),
+              'float  s%dSl = PC ? s%dSlIn : %s' % (i, i, num(sl)),
+              'float  s%dTp = PC ? s%dTpIn : %s' % (i, i, num(tp)),
+              'float  s%dBe = PC ? s%dBeIn : %s' % (i, i, num(be)),
+              'float  s%dSv = PC ? s%dSvIn : %s' % (i, i, num(sv))]
+    L += ['string entMode = PC ? entModeIn : E_STOP', 'int    expN = PC ? expNIn : 0', 'int    maxDay = PC ? maxDayIn : 0', 'float  trA = PC ? trAIn : 0.0',
+          'float  trD = PC ? trDIn : 0.0', 'float  tExitH = PC ? tExitHIn : 0.0', 'bool   trnOn = PC ? trnOnIn : false',
+          'bool   dayOn = (PC or addMine) and dayOnIn', 'bool   hoursOn = (PC or addMine) and hoursOnIn',
+          'string szMode = PM ? szModeIn : SZ_USD',
+          'float  baseR = PM ? baseRIn : %s' % by([g['base'] for g in G], lambda x: num(x) if '.' in num(x) else num(x) + '.0'),
+          'bool   capOn = PM ? capOnIn : %s' % by([g['cap'] is not None for g in G], B),
+          'float  hardCap = PM ? hardCapIn : %s' % by([g['cap'] or 500.0 for g in G], lambda x: num(x) if '.' in num(x) else num(x) + '.0'),
+          'string capAction = PM ? capActionIn : %s' % by([g['act'] for g in G], lambda a: {'clamp': 'CAP_CLAMP', 'reset': 'CAP_RESET', 'stop': 'CAP_STOP'}[a]),
+          'string recMode = PM ? recModeIn : %s' % by([g['rec'] for g in G], lambda r: {'EXACT': 'L_EXACT', 'OFF': 'L_OFF'}[r]),
+          'string ladMode = PM ? ladModeIn : "Off"',
+          'bool   mRestart = PM ? mRestartIn : true']
+    return '\n'.join(L) + '\n'
+
+
 def build(strats, kind):
     global NS
     NS = len(strats); isS = kind == 'strategy'
@@ -1165,7 +1271,7 @@ def build(strats, kind):
         body = body.replace('showLbl = input.bool(true, "Entry And Exit Labels", group = GRP_D)', 'showLbl = input.bool(false, "Entry And Exit Labels", group = GRP_D, tooltip = "Off by default in the strategy: the Strategy Tester marks its own fills.")')
         head = head.replace('showLbl = input.bool(true, "Entry And Exit Labels", group = GRP_D)', 'showLbl = input.bool(false, "Entry And Exit Labels", group = GRP_D, tooltip = "Off by default in the strategy: the Strategy Tester marks its own fills.")')
     body += NOTICE
-    return head + blocks + body
+    return head + blocks + effective(strats) + body
 
 
 if __name__ == '__main__':

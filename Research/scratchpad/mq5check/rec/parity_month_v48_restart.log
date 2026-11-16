@@ -1,0 +1,9 @@
+M1   Most profit                70 months,  1958 trades: done
+M1   Shortest losing streak     70 months,  1802 trades: done
+M5   Most profit                70 months,  1472 trades: done
+M5   Shortest losing streak     70 months,  1692 trades: done
+M15  Most profit                70 months,  1388 trades: done
+M15  Shortest losing streak     70 months,  1137 trades: done
+H1   Most profit                65 months,   186 trades: done
+H1   Shortest losing streak     64 months,   195 trades: done
+runs 1344, trades compared 1627032, months stopped by the cap 1894, worst relative difference 4.97e-12 -> ALL IDENTICAL

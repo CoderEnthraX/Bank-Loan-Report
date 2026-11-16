@@ -60,9 +60,20 @@
 //| magic number. The broker server clock is read from MT5 (Auto).   |
 //| The VWAP line the EA trades on is drawn on the chart (on by      |
 //| default; DISPLAY inputs).                                        |
+//| v4.5: Crooks E - J: Crooks C with smaller trades or a limit on   |
+//| the recovery trade, so a long losing run costs less.             |
+//| v4.6: PROFIT LADDER for Crooks F - J: after a first profit the   |
+//| risk grows, paid only from the profit above a lock (5 levels).   |
+//| v4.7: POSITION SIZE: Fixed $ risk, Fixed lots or % of equity at  |
+//| risk; the loss recovery sizes every trade from that base.        |
+//| v4.8: STRATEGY PRESET (top of the inputs): Custom or one of the  |
+//| 25 tested catalogue strategies (M1 S1-S4, M5 S1-S4, M15 S1-S9,   |
+//| H1 S1-S8), each on its own chart timeframe; "Add my filters"     |
+//| adds your days, hours, kill zones and news. The monthly restart  |
+//| also restarts the profit ladder and a hard-cap stop.             |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "4.40"
+#property version   "4.80"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -92,6 +103,9 @@ enum ENUM_LOT_ROUND { LOTR_DOWN = 0,  // Down (never risks more)
                       LOTR_NEAR = 1 };// To the nearest lot step
 enum ENUM_SMALL_LOT { SMALLL_MIN  = 0,  // Trade the minimum lot (risks more)
                       SMALLL_SKIP = 1 };// Skip the trade
+enum ENUM_SIZE_MODE { PSZ_USD = 0,     // Fixed $ risk (Base risk per trade)
+                      PSZ_LOT = 1,     // Fixed lots (Base lots)
+                      PSZ_PCT = 2 };   // % of equity at risk (Risk % of equity)
 enum ENUM_REC {
    REC_OFF   = 0,  // Off
    REC_ALL   = 1,  // Recover all losses on the next trade
@@ -114,7 +128,13 @@ enum ENUM_REC {
    REC_CRA   = 18, // Crooks A (base, base, then recovery every 2nd trade)
    REC_CRB   = 19, // Crooks B (Crooks A with the loss split over N trades)
    REC_CRC   = 20, // Crooks C (base until a win, then one recovery trade)
-   REC_CRD   = 21  // Crooks D (base, base, recovery: every 3rd trade)
+   REC_CRD   = 21, // Crooks D (base, base, recovery: every 3rd trade)
+   REC_CRE   = 22, // Crooks E (Crooks C, 0.01 lot while waiting for a win)
+   REC_CRF   = 23, // Crooks F (Crooks C, recovery at most K x base)
+   REC_CRG   = 24, // Crooks G (Crooks C, loss to win back at most X x base)
+   REC_CRH   = 25, // Crooks H (Crooks C, recovery at most % of equity)
+   REC_CRI   = 26, // Crooks I (Crooks E + recovery at most K x base)
+   REC_CRJ   = 27  // Crooks J (Crooks C, recovery shrinks in a drawdown)
 };
 enum ENUM_CRK_PR { CPR_OFF    = 0,   // Off (Crooks C as now)
                    CPR_FORGET = 1,   // Forget the loss
@@ -124,6 +144,39 @@ enum ENUM_CRK_PR { CPR_OFF    = 0,   // Off (Crooks C as now)
                    CPR_HEDGE  = 5 }; // Hedge: a buy and a sell on the next signal (hedging account)
 enum ENUM_HG_UNIT { HGU_R     = 0,   // R (x the signal's stop distance)
                     HGU_PRICE = 1 }; // Price (e.g. 5.0 = $5 on gold)
+
+//--- v4.8 STRATEGY PRESET (the top of the inputs): Custom = your settings below; a preset = a tested catalogue strategy (every signal setting,
+//--- its own hours or kill zone, the 70% partial close of M15-S2 / S4 / S5 and H1-S2 / S4 / S5), only on its own chart timeframe
+enum ENUM_PRESET { PRE_CUSTOM  =  0, // Custom (my settings below)
+                   PRE_M1_S1   =  1, // M1-S1 Most profit
+                   PRE_M1_S2   =  2, // M1-S2 Shortest losing streak
+                   PRE_M1_S3   =  3, // M1-S3 Most trades a day
+                   PRE_M1_S4   =  4, // M1-S4 Simplest
+                   PRE_M5_S1   =  5, // M5-S1 Most profit
+                   PRE_M5_S2   =  6, // M5-S2 Shortest losing streak
+                   PRE_M5_S3   =  7, // M5-S3 Most trades a day
+                   PRE_M5_S4   =  8, // M5-S4 Simplest
+                   PRE_M15_S1  =  9, // M15-S1 Most profit
+                   PRE_M15_S2  = 10, // M15-S2 Shortest losing streak (70% closed at TP1)
+                   PRE_M15_S3  = 11, // M15-S3 Shortest losing streak, no partial close
+                   PRE_M15_S4  = 12, // M15-S4 Longest winning streak (70% closed at TP1)
+                   PRE_M15_S5  = 13, // M15-S5 Highest win rate (70% closed at TP1)
+                   PRE_M15_S6  = 14, // M15-S6 Most trades a day
+                   PRE_M15_S7  = 15, // M15-S7 Every year positive
+                   PRE_M15_S8  = 16, // M15-S8 Simplest
+                   PRE_M15_S9  = 17, // M15-S9 Asia session only
+                   PRE_H1_S1   = 18, // H1-S1 Most profit
+                   PRE_H1_S2   = 19, // H1-S2 Shortest losing streak (70% closed at TP1)
+                   PRE_H1_S3   = 20, // H1-S3 Shortest losing streak, no partial close
+                   PRE_H1_S4   = 21, // H1-S4 Longest winning streak (70% closed at TP1)
+                   PRE_H1_S5   = 22, // H1-S5 Highest win rate (70% closed at TP1)
+                   PRE_H1_S6   = 23, // H1-S6 Most trades a day
+                   PRE_H1_S7   = 24, // H1-S7 Smoothest
+                   PRE_H1_S8   = 25  // H1-S8 Simplest
+                 };
+input group "STRATEGY PRESET"
+input ENUM_PRESET InpPreset = PRE_CUSTOM; // Strategy preset (only on its own chart timeframe; force-close, risk, recovery stay yours)
+input bool   InpAddMine  = false;  // Add my filters to the preset (days, news; my hours / kill zones replace its own)
 
 //--- ENGINE inputs: same names, order and defaults as the shared Pine inputs
 input group "SIGNAL MODEL (same as the indicator)"
@@ -250,7 +303,10 @@ input double InpP2   = 0.0;  // Close % at TP2
 input double InpP3   = 0.0;  // Close % at TP3
 
 input group "RISK AND POSITION SIZE"
-input double InpBaseRisk = 50.0;   // Base risk per trade (account currency)
+input ENUM_SIZE_MODE InpSizeMode = PSZ_USD; // Position size: the base trade (the loss recovery sizes every trade from it)
+input double InpBaseRisk = 50.0;   // Base risk per trade (account currency; Fixed $ risk)
+input double InpBaseLots = 0.01;   // Base lots (Fixed lots)
+input double InpEqPct    = 1.0;    // Risk % of equity (% of equity at risk, and the % of equity rule)
 input bool   InpCapOn    = false;  // Hard cap: max loss per trade
 input double InpHardCap  = 250.0;  // Hard cap amount
 input ENUM_CAP_ACTION InpCapAction = CAP_RESET; // If the risk would exceed the cap
@@ -280,7 +336,7 @@ input double InpMLockAmt = 150.0;  //   amount (account currency)
 input bool   InpPLockOn  = false;  // Lock profit once the month is up (stop when it falls back to the locked part)
 input double InpPLockAt  = 500.0;  //   amount (account currency)
 input double InpPLockPct = 20.0;   //   lock % of the month's highest profit (rises with new highs)
-input bool   InpMRestart = false;  // Restart the loss recovery on the 1st of each month (after a trade still open closes)
+input bool   InpMRestart = false;  // Restart the loss recovery on the 1st of each month (also the profit ladder and a hard-cap stop; after a trade still open closes)
 
 input group "RESTART MEMORY"
 input bool   InpRemember = true;   // Continue after a restart (keep the loss recovery, streaks and pauses when MT5 or the EA restarts)
@@ -313,6 +369,13 @@ input bool     InpN5On = false;        // News 5
 input datetime InpN5T  = D'2026.01.01 23:30'; //   date and time
 input int      InpN5Dur = 60;          //   length (minutes)
 
+enum ENUM_LADDER { LAD_OFF   = 0,  // Off
+                   LAD_LOW   = 1,  // Low (keeps 80% of the best profit, base up to 2x)
+                   LAD_MED   = 2,  // Medium (keeps 70%, base up to 3x)
+                   LAD_HIGH  = 3,  // High (keeps 60%, base up to 5x)
+                   LAD_XHIGH = 4,  // Extra high (keeps 50%, base up to 8x)
+                   LAD_MAX   = 5   // Max (keeps 40%, base up to 12x)
+};
 input group "LOSS RECOVERY"
 input ENUM_REC InpRec    = REC_CRC; // Loss recovery
 input int    InpRecN     = 3;      // N trades (Over N / Delayed)
@@ -324,9 +387,9 @@ input bool   InpCrkT1    = false;   // Crooks TP1 rule (exit TP1): bank the loss
 input ENUM_T1_STOP InpCrkT1Stop = T1S_FULL; //   ...stop before TP1 (the size is the same; the hard cap covers the real stop-out loss)
 input double InpCrkT1Pct = 50.0;   //   ...% closed at TP1 (10-90; that part alone banks the whole loss)
 input bool   InpCrkT1Any = false;  //   ...with any final exit (not only TP1; the rest still runs to TP2)
-input bool   InpCrkCnOn  = false;  // Crooks C: win the loss back over N wins
+input bool   InpCrkCnOn  = false;  // Crooks C (and E-J): win the loss back over N wins
 input int    InpCrkCn    = 1;      //   ...N (1 = all on the trade after a win, 2 = half then the rest, ...)
-input ENUM_CRK_PR InpCrkPr = CPR_OFF; // Crooks C: after N losing recovery trades in a row
+input ENUM_CRK_PR InpCrkPr = CPR_OFF; // Crooks C (and E-J): after N losing recovery trades in a row
 input int    InpCrkPrN   = 2;      //   ...N losing recovery trades in a row
 input double InpCrkPrPct = 50.0;   //   ...% of the loss each recovery trade goes for (the % rule, 10-100)
 input int    InpCrkPrM   = 2;      //   ...M wins in a row to wait for (the wait rule)
@@ -337,9 +400,15 @@ input double InpCrkHgSl  = 1.0;    //   ...hedge rule: stop loss of the buy and 
 input double InpCrkHgTp  = 0.6;    //   ...hedge rule: take profit of the buy and the sell (R: 0.6 = TP1)
 input ENUM_HG_UNIT InpCrkHgUnit = HGU_R; //   ...hedge rule: stop loss and take profit in R or in price
 input bool   InpCrkHgForget = true; //   ...hedge rule: forget the loss after the pair (off: Crooks C goes on from the trade that closed last)
+input double InpCrkELot  = 0.01;   // Crooks E / I: lot of the trades while a loss waits for a win (the normal size if smaller)
+input double InpCrkFK    = 3.0;    // Crooks F / I: a recovery trade risks at most this many x the base risk
+input double InpCrkGX    = 10.0;   // Crooks G: the loss to win back is at most this many x the base risk (the rest is accepted)
+input double InpCrkHPct  = 1.0;    // Crooks H: a recovery trade risks at most this % of the equity
+input double InpCrkJX    = 20.0;   // Crooks J: drawdown (x the base risk) at which a recovery trade is back to the base risk
+input ENUM_LADDER InpLadder = LAD_OFF; // Profit ladder (Crooks F-J): risk appetite once the profit target is reached
+input double InpLadT     = 1000.0; //   ...profit target before the risk goes up ($, closed profit of this EA)
 input int    InpParN     = 3;      // Paroli: wins before reset
 input int    InpDelayN   = 2;      // Delayed: losses before recovery starts
-input double InpEqPct    = 1.0;    // % of equity (% mode)
 
 enum ENUM_TBL_POS { TBL_TOP_RIGHT    = 0,  // Top right
                     TBL_TOP_LEFT     = 1,  // Top left
@@ -411,6 +480,8 @@ datetime gLastDone = 0;            // open time of the last bar the engine proce
 int      exState = 0;              // 0 nothing, 1 entry order working, 2 in a position
 bool     exL = true;
 double   exLots = 0, exRiskAmt = 0, exCostPx = 0, exPnl = 0;
+double   gBase = 0;    // v4.7: the base risk of the setup being sized (NextRisk); the trade keeps it in exBase
+double   exBase = 0;   // v4.7: the base risk of the EA's trade (its booking: Oscar's Grind, Crooks G)
 long     exArm = -1;               // engine armBar of the setup the EA took
 bool     exSynced = false;         // the broker position is the engine's live trade
 bool     gRearm = false;           // re-place the engine's armed setup after a restart / catch-up
@@ -427,9 +498,107 @@ string   gStateTxt = "SCANNING";   // table: state line
 int      gTblW = -1, gTblH = -1;   // chart size the table was laid out for
 string   tblKey[], tblVal[]; color tblCol[], tblBg[];
 double   dayPnl = 0; int lossRow = 0, winRow = 0; bool dayBlock = false; int pauseLeft = 0; bool paused = false;
+//--- v4.8 the values the EA uses: the inputs (Custom) or the preset's (PresetApply)
+int gpStructLen;
+int gpBrkLen;
+int gpEntryLen;
+int gpRetestBars;
+double gpDispAtr;
+double gpBodyPct;
+double gpClosePct;
+int gpMomLen;
+double gpMomAtr;
+double gpCmoMin;
+ENUM_REARM gpRearm;
+ENUM_STOP_MODE gpStopMode;
+double gpStopAtr;
+int gpStopLen;
+double gpStopBufAtr;
+bool gpHalfStop;
+double gpHalfStopAtr;
+int gpBiasNet;
+double gpImpBody;
+bool gpHalfOpenOut;
+bool gpHalfStrict;
+bool gpHalfCap;
+int gpCooldown;
+int gpMaxFills;
+double gpDayStopR;
+bool gpFillBarStopR;
+bool gpLegReset;
+int gpAtrLen;
+bool gpVwapFilter;
+int gpSlopeBars;
+bool gpSlopeCross;
+int gpMinOpenBars;
+bool gpSkipSunday;
+bool gpDeepOn;
+double gpDeepFar;
+bool gpAllowLong;
+bool gpAllowShort;
+ENUM_VW_ANCHOR gpVwapAnchor;
+ENUM_APPLIED_PRICE gpVwapSrc;
+ENUM_ENTRY_MODE gpEntryMode;
+double gpEntryPct;
+double gpTp1R;
+double gpTp2R;
+double gpTp3R;
+double gpTp4R;
+ENUM_EXIT_AT gpExitAt;
+bool gpMv1On;
+double gpMv1R;
+bool gpMv2On;
+double gpMv2R;
+bool gpMv3On;
+double gpMv3R;
+bool gpNoChase;
+double gpNoChaseSig;
+bool gpLossBlock;
+bool gpMinVwOn;
+double gpMinVwAtr;
+bool gpMaxVwOn;
+double gpMaxVwDist;
+ENUM_VW_UNIT gpMaxVwUnit;
+bool gpStopVwOn;
+double gpStopVwBuf;
+bool gpTouchVwOn;
+int gpTouchVwN;
+bool gpEntVwOn;
+double gpEntVwAtr;
+bool gpChopOn;
+double gpChopMax;
+bool gpEmaOn;
+double gpEmaMax;
+bool gpDayOn;
+bool gpHoursOn;
+int gpStartH;
+int gpStartM;
+int gpEndH;
+int gpEndM;
+bool gpKzOn;
+bool gpKzAsia;
+bool gpKzLon;
+bool gpKzNy;
+bool gpKzLc;
+bool gpKzAuto;
+int gpKzShift;
+bool gpDNewsOn;
+bool gpN1On;
+bool gpN2On;
+bool gpN3On;
+bool gpN4On;
+bool gpN5On;
+double gpP1;
+double gpP2;
+double gpP3;
+bool   gpHrIst = false;                // the preset's own hours: Indian times
+bool   gpTfOk = true;                  // the chart is on the preset's timeframe (always with Custom)
+int    gpTf = 0;                       // the preset's timeframe (0 = Custom)
+double gNet0 = 0;                      // v4.8 monthly restart: the closed profit at the last restart (the money rules count from it)
 double   recPool = 0; int recLosses = 0; int dUnits = 1; double carried = 0; bool capStop = false;
 double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP = 0;
 double   crkL = 0; int crkN = 0; bool crkRec = false;   // Crooks: $ loss to win back, closed trades in the cycle, the open trade is a recovery trade
+double   crkPk = 0;                                      // v4.5 Crooks J: the highest closed profit so far (its drawdown = crkPk - totalNet)
 bool     crkW = false;                                   // Crooks C: the last closed trade was a win
 int      crkP = 0;                                       // Crooks C over N wins: parts of the loss still to win back (0 = not set yet)
 int      crkF = 0;                                       // Crooks C rule: losing recovery trades in a row in this cycle
@@ -592,11 +761,11 @@ double   Op(int s) { return iOpen(_Symbol, _Period, s); }
 // kill zone in Indian minutes of the day, moved by the shift input and by extra minutes (winter time); the end is exclusive
 bool     InKz(int m, int startM, int endM, int extra)
 {
-   int sh = (int)InpKzShift * 60 + extra;
+   int sh = gpKzShift * 60 + extra;
    int ks = (startM + sh + 1440) % 1440, ke = (endM + sh + 1440) % 1440;
    return ks < ke ? (m >= ks && m < ke) : (m >= ks || m < ke);
 }
-double   ExitR() { return InpExitAt == EXIT_TP1 ? InpTp1R : InpExitAt == EXIT_TP2 ? InpTp2R : InpExitAt == EXIT_TP3 ? InpTp3R : InpTp4R; }
+double   ExitR() { return gpExitAt == EXIT_TP1 ? gpTp1R : gpExitAt == EXIT_TP2 ? gpTp2R : gpExitAt == EXIT_TP3 ? gpTp3R : gpTp4R; }
 
 void LabReset() { ArrayResize(labSeq, 3); labSeq[0] = 1; labSeq[1] = 2; labSeq[2] = 3; }
 double LabUnits() { int n = ArraySize(labSeq); if(n == 0) { LabReset(); n = 3; } return n > 1 ? labSeq[0] + labSeq[n - 1] : labSeq[0]; }
@@ -730,8 +899,8 @@ void ProcessBar(int s)
    long   rv = iVolume(_Symbol, _Period, s);
    long   tv = iTickVolume(_Symbol, _Period, s);
    double w  = rv > 0 ? (double)rv : (tv > 0 ? (double)tv : 1.0);
-   double src = InpVwapSrc == PRICE_CLOSE ? c : InpVwapSrc == PRICE_OPEN ? o : InpVwapSrc == PRICE_HIGH ? h : InpVwapSrc == PRICE_LOW ? l :
-                InpVwapSrc == PRICE_MEDIAN ? (h + l) / 2.0 : InpVwapSrc == PRICE_WEIGHTED ? (h + l + 2.0 * c) / 4.0 : (h + l + c) / 3.0;
+   double src = gpVwapSrc == PRICE_CLOSE ? c : gpVwapSrc == PRICE_OPEN ? o : gpVwapSrc == PRICE_HIGH ? h : gpVwapSrc == PRICE_LOW ? l :
+                gpVwapSrc == PRICE_MEDIAN ? (h + l) / 2.0 : gpVwapSrc == PRICE_WEIGHTED ? (h + l + 2.0 * c) / 4.0 : (h + l + c) / 3.0;
    gLastDone = t;
 
    // VWAP (reset on the broker's server date change, or week / month) and its standard deviation
@@ -740,7 +909,7 @@ void ProcessBar(int s)
    lastDayKey = key;
    gNewDay = newDay;
    MqlDateTime md; TimeToStruct(t, md);
-   int aKey = InpVwapAnchor == VW_WEEK ? (int)(((long)t + 3 * 86400) / (7 * 86400)) : InpVwapAnchor == VW_MONTH ? md.year * 12 + md.mon : key;   // weeks start Monday 00:00
+   int aKey = gpVwapAnchor == VW_WEEK ? (int)(((long)t + 3 * 86400) / (7 * 86400)) : gpVwapAnchor == VW_MONTH ? md.year * 12 + md.mon : key;   // weeks start Monday 00:00
    bool newAnchor = (lastAnchorKey == -1) || (aKey != lastAnchorKey);
    lastAnchorKey = aKey;
    if(newAnchor) { cumPV = 0; cumPV2 = 0; cumW = 0; cumP = 0; cumP2 = 0; cumN = 0; vwBars = 0; if(bi > 0) sessN++; }
@@ -760,11 +929,11 @@ void ProcessBar(int s)
    // ATR (Wilder RMA, like ta.atr: the first value is the SMA of the first N true ranges)
    double pc = Cl(s + 1);
    double tr = bi == 0 ? h - l : MathMax(h - l, MathMax(MathAbs(h - pc), MathAbs(l - pc)));
-   if(atrN < InpAtrLen) { atrSum += tr; atrN++; atrV = atrN == InpAtrLen ? atrSum / InpAtrLen : 0; }
-   else atrV = (atrV * (InpAtrLen - 1) + tr) / InpAtrLen;
+   if(atrN < gpAtrLen) { atrSum += tr; atrN++; atrV = atrN == gpAtrLen ? atrSum / gpAtrLen : 0; }
+   else atrV = (atrV * (gpAtrLen - 1) + tr) / gpAtrLen;
    double atr = atrV;
-   bool   haveAtr = atrN >= InpAtrLen;
-   bool   warm = bi >= MathMax(MathMax(InpStructLen, InpBrkLen), MathMax(MathMax(InpEntryLen, InpMomLen), MathMax(InpSlopeBars, InpStopLen))) + 1 && haveAtr;
+   bool   haveAtr = atrN >= gpAtrLen;
+   bool   warm = bi >= MathMax(MathMax(gpStructLen, gpBrkLen), MathMax(MathMax(gpEntryLen, gpMomLen), MathMax(gpSlopeBars, gpStopLen))) + 1 && haveAtr;
 
    // optional accuracy filters (off by default)
    // VWAP crosses in this VWAP period: the close moving from more than 0.2 ATR on one side of the VWAP to more than 0.2 ATR on the other
@@ -789,36 +958,36 @@ void ProcessBar(int s)
 
    // market structure and the displacement candle
    double priorHigh = -DBL_MAX, priorLow = DBL_MAX, sigHigh = -DBL_MAX, sigLow = DBL_MAX, entHigh = -DBL_MAX, entLow = DBL_MAX;
-   for(int j = 1; j <= InpStructLen; j++) { priorHigh = MathMax(priorHigh, Hi(s + j)); priorLow = MathMin(priorLow, Lo(s + j)); }
-   for(int j = 1; j <= InpBrkLen; j++) { sigHigh = MathMax(sigHigh, Hi(s + j)); sigLow = MathMin(sigLow, Lo(s + j)); }
-   int eln = (int)MathMin(InpEntryLen, InpStructLen);
+   for(int j = 1; j <= gpStructLen; j++) { priorHigh = MathMax(priorHigh, Hi(s + j)); priorLow = MathMin(priorLow, Lo(s + j)); }
+   for(int j = 1; j <= gpBrkLen; j++) { sigHigh = MathMax(sigHigh, Hi(s + j)); sigLow = MathMin(sigLow, Lo(s + j)); }
+   int eln = (int)MathMin(gpEntryLen, gpStructLen);
    for(int j = 1; j <= eln; j++) { entHigh = MathMax(entHigh, Hi(s + j)); entLow = MathMin(entLow, Lo(s + j)); }
    double swingLow = DBL_MAX, swingHigh = -DBL_MAX;
-   for(int j = 0; j < InpStopLen; j++) { swingLow = MathMin(swingLow, Lo(s + j)); swingHigh = MathMax(swingHigh, Hi(s + j)); }
+   for(int j = 0; j < gpStopLen; j++) { swingLow = MathMin(swingLow, Lo(s + j)); swingHigh = MathMax(swingHigh, Hi(s + j)); }
    double rng = h - l, body = MathAbs(c - o), bodyMid = (o + c) / 2.0;
-   double momMove = c - Cl(s + InpMomLen);
-   double erDen = 0; for(int k = 0; k < InpMomLen; k++) erDen += MathAbs(Cl(s + k) - Cl(s + k + 1));
-   bool erUp = InpCmoMin <= 0 || (erDen > 0 && momMove / erDen >= InpCmoMin / 100.0);
-   bool erDn = InpCmoMin <= 0 || (erDen > 0 && -momMove / erDen >= InpCmoMin / 100.0);
-   bool haveSlope = InpSlopeBars > 0 && vwBars >= InpSlopeBars && nHist > InpSlopeBars;
-   double vwSlope = haveSlope ? vwap - vwHist[InpSlopeBars] : 0;
+   double momMove = c - Cl(s + gpMomLen);
+   double erDen = 0; for(int k = 0; k < gpMomLen; k++) erDen += MathAbs(Cl(s + k) - Cl(s + k + 1));
+   bool erUp = gpCmoMin <= 0 || (erDen > 0 && momMove / erDen >= gpCmoMin / 100.0);
+   bool erDn = gpCmoMin <= 0 || (erDen > 0 && -momMove / erDen >= gpCmoMin / 100.0);
+   bool haveSlope = gpSlopeBars > 0 && vwBars >= gpSlopeBars && nHist > gpSlopeBars;
+   double vwSlope = haveSlope ? vwap - vwHist[gpSlopeBars] : 0;
    bool slopeUp = !haveSlope || vwSlope > 0, slopeDn = !haveSlope || vwSlope < 0;
-   bool haveSg = InpSlopeBars > 0 && (InpSlopeCross ? nHist > InpSlopeBars : haveSlope);
-   double sgSlope = haveSg ? vwap - vwHist[InpSlopeBars] : 0;
+   bool haveSg = gpSlopeBars > 0 && (gpSlopeCross ? nHist > gpSlopeBars : haveSlope);
+   double sgSlope = haveSg ? vwap - vwHist[gpSlopeBars] : 0;
    bool sigUp = !haveSg || sgSlope > 0, sigDn = !haveSg || sgSlope < 0;
-   bool bigCandle = haveAtr && rng > 0 && rng >= InpDispAtr * atr && body / rng * 100.0 >= InpBodyPct - 1e-7;
-   bool bigImp    = haveAtr && rng > 0 && rng >= InpDispAtr * atr && body / rng * 100.0 >= InpImpBody - 1e-7;
-   bool closeHi   = rng > 0 && (h - c) / rng * 100.0 <= InpClosePct + 1e-7;
-   bool closeLo   = rng > 0 && (c - l) / rng * 100.0 <= InpClosePct + 1e-7;
+   bool bigCandle = haveAtr && rng > 0 && rng >= gpDispAtr * atr && body / rng * 100.0 >= gpBodyPct - 1e-7;
+   bool bigImp    = haveAtr && rng > 0 && rng >= gpDispAtr * atr && body / rng * 100.0 >= gpImpBody - 1e-7;
+   bool closeHi   = rng > 0 && (h - c) / rng * 100.0 <= gpClosePct + 1e-7;
+   bool closeLo   = rng > 0 && (c - l) / rng * 100.0 <= gpClosePct + 1e-7;
    bool bullImp   = warm && c > o && h > priorHigh && bigImp && closeHi && slopeUp;
    bool bearImp   = warm && c < o && l < priorLow && bigImp && closeLo && slopeDn;
-   bool setupOk   = vwBars >= InpMinOpenBars && !(InpSkipSunday && DowOf(UtcTime(t)) == 0);
-   bool bullBase  = warm && InpAllowLong && setupOk && c > o && bigCandle && closeHi && sigUp && (!InpVwapFilter || c > vwap) && (InpMomAtr <= 0 || momMove >= InpMomAtr * atr) && erUp;
-   bool bearBase  = warm && InpAllowShort && setupOk && c < o && bigCandle && closeLo && sigDn && (!InpVwapFilter || c < vwap) && (InpMomAtr <= 0 || -momMove >= InpMomAtr * atr) && erDn;
-   double momB = c - Cl(s + InpBrkLen);
-   double erDenB = 0; for(int k = 0; k < InpBrkLen; k++) erDenB += MathAbs(Cl(s + k) - Cl(s + k + 1));
-   bool deepL = warm && InpDeepOn && InpAllowLong && setupOk && c > o && bigCandle && closeHi && sigUp && c > vwap && c > sigHigh && momB >= InpMomAtr * atr && erDenB > 0 && momB / erDenB >= InpCmoMin / 100.0 && priorHigh - c >= InpDeepFar * atr;
-   bool deepS = warm && InpDeepOn && InpAllowShort && setupOk && c < o && bigCandle && closeLo && sigDn && c < vwap && c < sigLow && -momB >= InpMomAtr * atr && erDenB > 0 && -momB / erDenB >= InpCmoMin / 100.0 && c - priorLow >= InpDeepFar * atr;
+   bool setupOk   = vwBars >= gpMinOpenBars && !(gpSkipSunday && DowOf(UtcTime(t)) == 0);
+   bool bullBase  = warm && gpAllowLong && setupOk && c > o && bigCandle && closeHi && sigUp && (!gpVwapFilter || c > vwap) && (gpMomAtr <= 0 || momMove >= gpMomAtr * atr) && erUp;
+   bool bearBase  = warm && gpAllowShort && setupOk && c < o && bigCandle && closeLo && sigDn && (!gpVwapFilter || c < vwap) && (gpMomAtr <= 0 || -momMove >= gpMomAtr * atr) && erDn;
+   double momB = c - Cl(s + gpBrkLen);
+   double erDenB = 0; for(int k = 0; k < gpBrkLen; k++) erDenB += MathAbs(Cl(s + k) - Cl(s + k + 1));
+   bool deepL = warm && gpDeepOn && gpAllowLong && setupOk && c > o && bigCandle && closeHi && sigUp && c > vwap && c > sigHigh && momB >= gpMomAtr * atr && erDenB > 0 && momB / erDenB >= gpCmoMin / 100.0 && priorHigh - c >= gpDeepFar * atr;
+   bool deepS = warm && gpDeepOn && gpAllowShort && setupOk && c < o && bigCandle && closeLo && sigDn && c < vwap && c < sigLow && -momB >= gpMomAtr * atr && erDenB > 0 && -momB / erDenB >= gpCmoMin / 100.0 && c - priorLow >= gpDeepFar * atr;
 
    // session counters: day stats, impulses for the half stop, session range
    if(newDay)
@@ -830,17 +999,17 @@ void ProcessBar(int s)
       sesH = h; sesL = l; sesO = o; haveSes = true;
    }
    else { sesH = MathMax(sesH, h); sesL = MathMin(sesL, l); }
-   bool halfL = InpHalfStop && bullN == 0 && havePrev && prevNet <= -InpBiasNet;
-   bool halfS = InpHalfStop && bearN == 0 && havePrev && prevNet >= InpBiasNet;
-   if(InpHalfStrict && havePrev)
+   bool halfL = gpHalfStop && bullN == 0 && havePrev && prevNet <= -gpBiasNet;
+   bool halfS = gpHalfStop && bearN == 0 && havePrev && prevNet >= gpBiasNet;
+   if(gpHalfStrict && havePrev)
    {
       halfL = halfL && (prevNet <= -5 || (prevNet + bullN - bearN <= -1 && bearN >= 1));
       halfS = halfS && (prevNet >= 5 || (prevNet + bullN - bearN >= 1 && bullN >= 1));
    }
-   if(InpHalfOpenOut && havePd)
+   if(gpHalfOpenOut && havePd)
    {
-      halfL = halfL || (InpHalfStop && bullN == 0 && sesO < pdL);
-      halfS = halfS || (InpHalfStop && bearN == 0 && sesO > pdH);
+      halfL = halfL || (gpHalfStop && bullN == 0 && sesO < pdL);
+      halfS = halfS || (gpHalfStop && bearN == 0 && sesO > pdH);
    }
    if(bullImp) bullN++;
    if(bearImp) bearN++;
@@ -867,7 +1036,7 @@ void ProcessBar(int s)
             lossDirBlk = res < 0 ? (isL ? 1 : -1) : (res > 0 ? 0 : lossDirBlk);
             totR += res; dayR += res;
             if(win) { totW++; dayW++; } else { totL++; dayL++; }
-            lastRes = (win ? "TP" + IntegerToString((int)InpExitAt) + " " : "STOP ") + (res >= 0 ? "+" : "") + DoubleToString(res, 2) + "R";
+            lastRes = (win ? "TP" + IntegerToString((int)gpExitAt) + " " : "STOP ") + (res >= 0 ? "+" : "") + DoubleToString(res, 2) + "R";
             evExit = true; evWin = win; evRes = res;
          }
          else { if(win) ghW++; else ghL++; ghR += res; }
@@ -876,9 +1045,9 @@ void ProcessBar(int s)
       else if(tpHit > prevHit)
       {
          double ns = stp;
-         if(InpMv1On && tpHit >= 1) ns = isL ? MathMax(ns, lim + InpMv1R * trRisk) : MathMin(ns, lim - InpMv1R * trRisk);
-         if(InpMv2On && tpHit >= 2) ns = isL ? MathMax(ns, lim + InpMv2R * trRisk) : MathMin(ns, lim - InpMv2R * trRisk);
-         if(InpMv3On && tpHit >= 3) ns = isL ? MathMax(ns, lim + InpMv3R * trRisk) : MathMin(ns, lim - InpMv3R * trRisk);
+         if(gpMv1On && tpHit >= 1) ns = isL ? MathMax(ns, lim + gpMv1R * trRisk) : MathMin(ns, lim - gpMv1R * trRisk);
+         if(gpMv2On && tpHit >= 2) ns = isL ? MathMax(ns, lim + gpMv2R * trRisk) : MathMin(ns, lim - gpMv2R * trRisk);
+         if(gpMv3On && tpHit >= 3) ns = isL ? MathMax(ns, lim + gpMv3R * trRisk) : MathMin(ns, lim - gpMv3R * trRisk);
          if(ns != stp) { stp = ns; evMove = !trGhost; }
          evTp = !trGhost;
       }
@@ -888,8 +1057,8 @@ void ProcessBar(int s)
    {
       bool isL = st == 1;
       double mt = TickSize();
-      bool touched = InpEntryMode == ENTRY_MARKET ? true : (isL ? l <= lim + mt * 0.001 : h >= lim - mt * 0.001);
-      if(touched && dayFills < InpMaxFills)
+      bool touched = gpEntryMode == ENTRY_MARKET ? true : (isL ? l <= lim + mt * 0.001 : h >= lim - mt * 0.001);
+      if(touched && dayFills < gpMaxFills)
       {
          st = isL ? 2 : -2; fillBar = bi; lastFill = bi; lastDir = isL ? 1 : -1; tpHit = 0; dayFills++;
          bestPx = lim;
@@ -898,7 +1067,7 @@ void ProcessBar(int s)
          {
             if(!trGhost)
             {
-               dayRiskR += InpFillBarStopR ? -1.0 : 0.0;
+               dayRiskR += gpFillBarStopR ? -1.0 : 0.0;
                lossDirBlk = isL ? 1 : -1;
                totR += -1.0; dayR += -1.0; totL++; dayL++;
                lastRes = "STOP -1.00R";
@@ -908,17 +1077,17 @@ void ProcessBar(int s)
             lastExit = bi; st = 0;
          }
       }
-      else if(bi - armBar >= InpRetestBars)
+      else if(bi - armBar >= gpRetestBars)
       {
          st = 0;
          if(!trGhost) evCancel = 1;
       }
    }
    // 3. arm a new setup on the closed displacement candle
-   bool cooled = lastExit < 0 || bi - lastExit >= MathMax(InpCooldown, 1);
-   bool dayOpen = InpDayStopR <= 0 || dayRiskR > -InpDayStopR;
+   bool cooled = lastExit < 0 || bi - lastExit >= MathMax(gpCooldown, 1);
+   bool dayOpen = gpDayStopR <= 0 || dayRiskR > -gpDayStopR;
    long legN = lastFill < 0 ? 0 : bi - lastFill;
-   bool legOn = InpLegReset && MathAbs(st) != 2 && legN > 0 && legN < InpStructLen;
+   bool legOn = gpLegReset && MathAbs(st) != 2 && legN > 0 && legN < gpStructLen;
    double brkHigh = sigHigh, brkLow = sigLow;
    if(legOn)
    {
@@ -928,51 +1097,51 @@ void ProcessBar(int s)
    }
    bool bullDisp = (bullBase && c > brkHigh) || deepL;
    bool bearDisp = (bearBase && c < brkLow) || deepS;
-   if(InpLossBlock && lossDirBlk == 1) bullDisp = false;
-   if(InpLossBlock && lossDirBlk == -1) bearDisp = false;
+   if(gpLossBlock && lossDirBlk == 1) bullDisp = false;
+   if(gpLossBlock && lossDirBlk == -1) bearDisp = false;
    datetime ut = UserTime(t);
    int dw = DowOf(ut);
-   gDayOk = !InpDayOn || (dw == 1 && InpMon) || (dw == 2 && InpTue) || (dw == 3 && InpWed) || (dw == 4 && InpThu) || (dw == 5 && InpFri) || (dw == 6 && InpSat) || (dw == 0 && InpSun);
-   int cur = MinOfDay(ut), a0 = InpStartH * 60 + InpStartM, b0 = InpEndH * 60 + InpEndM;
-   gHourOk = !InpHoursOn || (a0 < b0 ? (cur >= a0 && cur < b0) : (cur >= a0 || cur < b0));
+   gDayOk = !gpDayOn || (dw == 1 && InpMon) || (dw == 2 && InpTue) || (dw == 3 && InpWed) || (dw == 4 && InpThu) || (dw == 5 && InpFri) || (dw == 6 && InpSat) || (dw == 0 && InpSun);
+   int cur = gpHrIst ? MinOfDay(UtcTime(t) + 19800) : MinOfDay(ut), a0 = gpStartH * 60 + gpStartM, b0 = gpEndH * 60 + gpEndM;   // v4.8: a preset's hours are IST
+   gHourOk = !gpHoursOn || (a0 < b0 ? (cur >= a0 && cur < b0) : (cur >= a0 || cur < b0));
    datetime utcT = UtcTime(t);
    int kzM = MinOfDay(utcT + 19800);   // Indian Standard Time = UTC + 5:30
    // the times are the summer times: London / London close move 1 hour later in London winter time, New York in New York winter time
-   int lonSh = InpKzAuto && !UkSummer(utcT) ? 60 : 0, nySh = InpKzAuto && !NySummer(utcT) ? 60 : 0;
-   gKzOk = !InpKzOn || (InpKzAsia && InKz(kzM, 330, 570, 0)) || (InpKzLon && InKz(kzM, 690, 870, lonSh)) || (InpKzNy && InKz(kzM, 990, 1170, nySh)) || (InpKzLc && InKz(kzM, 1170, 1290, lonSh));
-   bool canArm = gDayOk && gHourOk && gKzOk && MathAbs(st) != 2 && cooled && dayFills < InpMaxFills && dayOpen && atr > 0;
-   bool keepArm = InpRearm == REARM_KEEP && ((st == 1 && bullDisp) || (st == -1 && bearDisp));
+   int lonSh = gpKzAuto && !UkSummer(utcT) ? 60 : 0, nySh = gpKzAuto && !NySummer(utcT) ? 60 : 0;
+   gKzOk = !gpKzOn || (gpKzAsia && InKz(kzM, 330, 570, 0)) || (gpKzLon && InKz(kzM, 690, 870, lonSh)) || (gpKzNy && InKz(kzM, 990, 1170, nySh)) || (gpKzLc && InKz(kzM, 1170, 1290, lonSh));
+   bool canArm = gpTfOk && gDayOk && gHourOk && gKzOk && MathAbs(st) != 2 && cooled && dayFills < gpMaxFills && dayOpen && atr > 0;
+   bool keepArm = gpRearm == REARM_KEEP && ((st == 1 && bullDisp) || (st == -1 && bearDisp));
    if(canArm && (bullDisp || bearDisp) && !keepArm)
    {
       bool isL = bullDisp; double d = isL ? 1 : -1;
-      double entry = InpEntryMode == ENTRY_MODEL ? (isL ? MathMax(bodyMid, entHigh) : MathMin(bodyMid, entLow)) : InpEntryMode == ENTRY_PCT ? c - d * InpEntryPct / 100.0 * rng : c;
-      bool half = InpStopMode == STOP_ATR && (isL ? halfL : halfS);
-      double cStop = entry - d * InpStopAtr * atr;
-      double hStop = isL ? MathMin(entry - InpHalfStopAtr * atr, l) : MathMax(entry + InpHalfStopAtr * atr, h);
-      if(InpHalfCap) hStop = isL ? MathMax(hStop, cStop) : MathMin(hStop, cStop);
-      double sStop = isL ? swingLow - InpStopBufAtr * atr : swingHigh + InpStopBufAtr * atr;
-      double stop  = InpStopMode == STOP_ATR ? (half ? hStop : cStop) : (isL ? MathMax(sStop, cStop) : MathMin(sStop, cStop));
+      double entry = gpEntryMode == ENTRY_MODEL ? (isL ? MathMax(bodyMid, entHigh) : MathMin(bodyMid, entLow)) : gpEntryMode == ENTRY_PCT ? c - d * gpEntryPct / 100.0 * rng : c;
+      bool half = gpStopMode == STOP_ATR && (isL ? halfL : halfS);
+      double cStop = entry - d * gpStopAtr * atr;
+      double hStop = isL ? MathMin(entry - gpHalfStopAtr * atr, l) : MathMax(entry + gpHalfStopAtr * atr, h);
+      if(gpHalfCap) hStop = isL ? MathMax(hStop, cStop) : MathMin(hStop, cStop);
+      double sStop = isL ? swingLow - gpStopBufAtr * atr : swingHigh + gpStopBufAtr * atr;
+      double stop  = gpStopMode == STOP_ATR ? (half ? hStop : cStop) : (isL ? MathMax(sStop, cStop) : MathMin(sStop, cStop));
       double risk = d * (entry - stop);
       if(risk >= TickSize() && RoundTick(stop) != RoundTick(entry))
       {
-         bool haveZ = InpNoChase && vwSd > 0 && vwBars >= 3 && sessN >= 1;
-         bool zNo = haveZ && d * (c - vwap) / vwSd > InpNoChaseSig;
+         bool haveZ = gpNoChase && vwSd > 0 && vwBars >= 3 && sessN >= 1;
+         bool zNo = haveZ && d * (c - vwap) / vwSd > gpNoChaseSig;
          // choppy session (VWAP crosses) / over-extended 1h EMA20; a skipped setup runs on invisibly like the no-chase one
-         bool chopNo = InpChopOn && vxRate > InpChopMax;
-         bool emaNo = InpEmaOn && haveSpd && emaSpd > InpEmaMax;
+         bool chopNo = gpChopOn && vxRate > gpChopMax;
+         bool emaNo = gpEmaOn && haveSpd && emaSpd > gpEmaMax;
          // signal close still hugging the VWAP (less than the minimum distance in ATR on the trade's side)
-         bool nearNo = InpMinVwOn && d * (c - vwap) < InpMinVwAtr * atr;
-         bool farNo = InpMaxVwOn && MathAbs(c - vwap) > (InpMaxVwUnit == VWU_PRICE ? InpMaxVwDist : InpMaxVwDist * atr);   // above or below
+         bool nearNo = gpMinVwOn && d * (c - vwap) < gpMinVwAtr * atr;
+         bool farNo = gpMaxVwOn && MathAbs(c - vwap) > (gpMaxVwUnit == VWU_PRICE ? gpMaxVwDist : gpMaxVwDist * atr);   // above or below
          // signal still on the VWAP: the stop on the other side of it, the VWAP touched in the last N candles, the entry too close to it
-         bool stopNo = InpStopVwOn && d * (stop - vwap) < InpStopVwBuf * atr;
-         bool tchNo = InpTouchVwOn && (isL ? tchL : tchS) < InpTouchVwN;
-         bool entNo = InpEntVwOn && d * (entry - vwap) < InpEntVwAtr * atr;
+         bool stopNo = gpStopVwOn && d * (stop - vwap) < gpStopVwBuf * atr;
+         bool tchNo = gpTouchVwOn && (isL ? tchL : tchS) < gpTouchVwN;
+         bool entNo = gpEntVwOn && d * (entry - vwap) < gpEntVwAtr * atr;
          bool ghost = zNo || chopNo || emaNo || nearNo || farNo || stopNo || tchNo || entNo;
          if(MathAbs(st) == 1 && !trGhost) evCancel = 2;
          st = isL ? 1 : -1; armBar = bi; lim = entry; stp = stop; stp0 = stop; trRisk = risk; trHalf = half; trGhost = ghost;
          trSkip = zNo ? 1 : (chopNo ? 2 : (emaNo ? 3 : (nearNo ? 4 : (farNo ? 5 : (stopNo ? 6 : (tchNo ? 7 : (entNo ? 8 : 0)))))));
-         t1 = lim + d * InpTp1R * risk; t2 = lim + d * InpTp2R * risk; t3 = lim + d * InpTp3R * risk; t4 = lim + d * InpTp4R * risk;
-         tF = InpExitAt == EXIT_TP1 ? t1 : InpExitAt == EXIT_TP2 ? t2 : InpExitAt == EXIT_TP3 ? t3 : t4;
+         t1 = lim + d * gpTp1R * risk; t2 = lim + d * gpTp2R * risk; t3 = lim + d * gpTp3R * risk; t4 = lim + d * gpTp4R * risk;
+         tF = gpExitAt == EXIT_TP1 ? t1 : gpExitAt == EXIT_TP2 ? t2 : gpExitAt == EXIT_TP3 ? t3 : t4;
          if(!ghost) { evArm = true; evArmL = isL; }
       }
    }
@@ -982,7 +1151,7 @@ void ProcessBar(int s)
    if(evExit)
    {
       double sd = lastDir == 1 ? 1.0 : -1.0;
-      int    xk = (int)InpExitAt;
+      int    xk = (int)gpExitAt;
       for(int k = 1; k <= 4; k++)
       {
          double lvl = k == 1 ? t1 : (k == 2 ? t2 : (k == 3 ? t3 : t4));
@@ -994,8 +1163,10 @@ void ProcessBar(int s)
    DrawBar(t);
 }
 
-//--- Crooks C rule after N losing recovery trades in a row (Crooks C only)
-bool   CrkPrOn()  { return InpRec == REC_CRC && InpCrkPr != CPR_OFF; }
+//--- v4.5: Crooks C and the rules built on it (E - J): everything of Crooks C applies to them
+bool   CrkCFam()  { return InpRec == REC_CRC || (InpRec >= REC_CRE && InpRec <= REC_CRJ); }
+//--- Crooks C rule after N losing recovery trades in a row (Crooks C and E - J)
+bool   CrkPrOn()  { return CrkCFam() && InpCrkPr != CPR_OFF; }
 double CrkPrPct() { return CrkPrOn() && InpCrkPr == CPR_PCT ? MathMax(10.0, MathMin(100.0, InpCrkPrPct)) / 100.0 : 1.0; }
 bool   CrkPause() { return CrkPrOn() && InpCrkPr == CPR_SKIP && crkSkip; }   // the skip rule pauses trading
 bool   CrkHedgeNow() { return CrkPrOn() && InpCrkPr == CPR_HEDGE && crkHg && crkL > 0; }   // hedge rule: this signal opens the pair
@@ -1003,21 +1174,78 @@ bool   CrkHedgeNow() { return CrkPrOn() && InpCrkPr == CPR_HEDGE && crkHg && crk
 bool CrkRecNext()
 {
    if(InpRec == REC_CRA || InpRec == REC_CRB) return crkN >= 2 && crkN % 2 == 0;
-   if(InpRec == REC_CRC) return (crkW && crkL > 0 && !(CrkPrOn() && InpCrkPr == CPR_WAIT && (crkWait || crkNeedL))) || CrkHedgeNow();   // wait rule: not while waiting; the hedge pair is sized as a recovery trade
+   if(CrkCFam()) return (crkW && crkL > 0 && !(CrkPrOn() && InpCrkPr == CPR_WAIT && (crkWait || crkNeedL))) || CrkHedgeNow();   // wait rule: not while waiting; the hedge pair is sized as a recovery trade
    if(InpRec == REC_CRD) return crkN >= 2 && (crkN - 2) % 3 == 0;
    return false;
 }
+//--- v4.6 PROFIT LADDER (Crooks F - J): once the highest closed profit has reached InpLadT, the trades grow with the profit above a lock and the
+//--- extra risk is paid from that profit only; back at the start (closed profit 0 or less) every trade is the 0.01 lot until it is in profit again
+bool   LadFam()   { return InpRec >= REC_CRF && InpRec <= REC_CRJ; }
+bool   LadOn()    { return InpLadder != LAD_OFF && LadFam() && InpLadT > 0 && crkPk >= InpLadT; }
+bool   LadGuard() { return LadOn() && totalNet - gNet0 <= 0; }
+//--- the level: lock (share of the best profit kept out of the extra risk), share of the cushion added to the base, most base (x), most extra loss
+void   LadPar(double &lam, double &phi, double &bmax, double &gam)
+{
+   lam = 0.8; phi = 0.10; bmax = 2.0; gam = 0.25;
+   if(InpLadder == LAD_MED)   { lam = 0.7; phi = 0.15; bmax = 3.0;  gam = 0.30; }
+   if(InpLadder == LAD_HIGH)  { lam = 0.6; phi = 0.20; bmax = 5.0;  gam = 0.35; }
+   if(InpLadder == LAD_XHIGH) { lam = 0.5; phi = 0.25; bmax = 8.0;  gam = 0.40; }
+   if(InpLadder == LAD_MAX)   { lam = 0.4; phi = 0.30; bmax = 12.0; gam = 0.50; }
+}
+//--- the ladder's base (the plain base while it is off) and the cushion (the closed profit above the lock)
+double LadBase(double base, double &cush)
+{
+   cush = 0;
+   if(!LadOn()) return base;
+   double lam = 0, phi = 0, bmax = 0, gam = 0; LadPar(lam, phi, bmax, gam);
+   cush = MathMax(0.0, totalNet - gNet0 - lam * crkPk);
+   return base + MathMin((bmax - 1.0) * base, phi * cush);
+}
+//--- v4.7 position size: the base trade's $ risk on a setup with this stop distance: Fixed $ risk, the Fixed lots' stop-out loss (spread and
+//--- commission included, like LotsFor), or % of the equity. 0 = no base (no equity, no tick value): the setup gets size 0
+double BaseRisk(double stopDist)
+{
+   if(InpSizeMode == PSZ_PCT) return MathMax(0.0, AccountInfoDouble(ACCOUNT_EQUITY)) * InpEqPct / 100.0;
+   if(InpSizeMode == PSZ_LOT)
+   {
+      double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
+      if(tv <= 0 || ts <= 0 || stopDist <= 0) return 0;
+      return InpBaseLots * ((stopDist + MathMax(CostSpr(), 0)) / ts * tv + InpCommLot);
+   }
+   return InpBaseRisk;
+}
+//--- the base of the EA's trade for its booking (Fixed $ risk: the input, as in v4.6)
+double BookBase() { return InpSizeMode == PSZ_USD ? InpBaseRisk : (exBase > 0 ? exBase : InpBaseRisk); }
+//--- the base shown in the table (Fixed lots: on the last setup's stop)
+double ShowBase() { return InpSizeMode == PSZ_USD ? InpBaseRisk : BaseRisk(trRisk); }
+string BaseTxt(double &cush)
+{
+   cush = 0;
+   if(InpSizeMode == PSZ_LOT && !LadOn()) return "base " + DoubleToString(InpBaseLots, 2) + " lot";
+   return "base " + DoubleToString(LadBase(ShowBase(), cush), 2) + (InpSizeMode == PSZ_PCT ? " (" + DoubleToString(InpEqPct, 2) + "% of equity)" : "");
+}
+string LadTxt()
+{
+   string lv = InpLadder == LAD_LOW ? "Low" : InpLadder == LAD_MED ? "Medium" : InpLadder == LAD_HIGH ? "High" : InpLadder == LAD_XHIGH ? "Extra high" : "Max";
+   if(!LadFam()) return lv + " | only with Crooks F, G, H, I or J";
+   if(!LadOn()) return lv + " | best profit " + DoubleToString(MathMax(0.0, crkPk), 2) + " of " + DoubleToString(InpLadT, 0) + " to start";
+   if(LadGuard()) return lv + " | back at the start: 0.01 lot until in profit";
+   double cush = 0, lam = 0, phi = 0, bmax = 0, gam = 0;
+   double b = LadBase(ShowBase(), cush); LadPar(lam, phi, bmax, gam);
+   return lv + " | lock " + DoubleToString(lam * crkPk, 2) + " | cushion " + DoubleToString(cush, 2) + " | base " + DoubleToString(b, 2);
+}
+
 //--- Crooks TP1 rule (exit at TP1, or any exit with InpCrkT1Any; recovery trades): the part p closed at TP1 banks the recovery amount, the rest runs to TP2.
 //--- The size is the one whose stop-out at distance d loses exactly that amount: d = p x TP1 - (1 + p) x costs (p = 0.5: TP1 / 2 - 1.5 x costs),
 //--- on the tick grid toward the entry (bid chart); 0 = not possible
 double CrkT1P() { return MathMax(10.0, MathMin(90.0, InpCrkT1Pct)) / 100.0; }
 double CrkT1Dist()
 {
-   if(!InpCrkT1 || (InpExitAt != EXIT_TP1 && !InpCrkT1Any) || !CrkRecNext() || CrkHedgeNow()) return 0;
+   if(!InpCrkT1 || (gpExitAt != EXIT_TP1 && !InpCrkT1Any) || !CrkRecNext() || CrkHedgeNow() || LadGuard()) return 0;   // v4.6: not while the ladder's guard is on
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    if(tv <= 0 || ts <= 0) return 0;
    double spr = CostSpr(), p = CrkT1P();
-   double d = MathFloor((p * InpTp1R * trRisk - (1.0 + p) * (spr + InpCommLot * ts / tv)) / ts + 1e-9) * ts;
+   double d = MathFloor((p * gpTp1R * trRisk - (1.0 + p) * (spr + InpCommLot * ts / tv)) / ts + 1e-9) * ts;
    return d >= ts ? d : 0;
 }
 
@@ -1034,7 +1262,7 @@ void   CrkDayTick(datetime t)
    if(crkUDay == -1 || k == crkUDay) { crkUDay = k; return; }
    crkUDay = k;
    int dw = DowOf(ut);
-   CrkDayCount(InpCrkPrAll || (InpDayOn ? gDayOk : (dw >= 1 && dw <= 5)));
+   CrkDayCount(InpCrkPrAll || (gpDayOn ? gDayOk : (dw >= 1 && dw <= 5)));
 }
 //--- Crooks TP1 rule, stop before TP1: its distance from the entry (bid chart; the size always uses the tight distance d)
 double CrkT1Stop0Dist(double d)
@@ -1056,11 +1284,153 @@ double CrkT1Mult()
    return per > 0 ? perL / per : 1.0;
 }
 
+//--- v4.8: the values the EA uses: the inputs (Custom) or the preset's tested values (written by build/patch_ea_v48.py from presets/preset_data.py)
+void PresetApply()
+{
+   int  pi = (int)InpPreset;
+   bool pc = pi == 0;
+   gpStructLen = pc ? InpStructLen : ((pi == 19 || pi == 21 || pi == 23 || pi == 24) ? 20 : 10);
+   gpBrkLen = pc ? InpBrkLen : ((pi == 15) ? 8 : 6);
+   gpEntryLen = pc ? InpEntryLen : ((pi == 17) ? 8 : 6);
+   gpRetestBars = pc ? InpRetestBars : (5);
+   gpDispAtr = pc ? InpDispAtr : ((pi == 3) ? 0.4 : (pi == 18) ? 0.65 : (pi == 21 || pi == 23) ? 0.5 : 0.8);
+   gpBodyPct = pc ? InpBodyPct : ((pi == 20) ? 60.0 : (pi == 23) ? 45.0 : 55.0);
+   gpClosePct = pc ? InpClosePct : (25.0);
+   gpMomLen = pc ? InpMomLen : ((pi == 7 || pi == 18 || pi == 21) ? 5 : 10);
+   gpMomAtr = pc ? InpMomAtr : (0.85);
+   gpCmoMin = pc ? InpCmoMin : ((pi == 10) ? 30.0 : 20.0);
+   gpRearm = pc ? InpRearm : (ENUM_REARM)(REARM_KEEP);
+   gpStopMode = pc ? InpStopMode : (ENUM_STOP_MODE)(STOP_ATR);
+   gpStopAtr = pc ? InpStopAtr : ((pi == 5 || pi == 6 || pi == 7 || pi == 18) ? 2.4 : (pi == 8 || pi == 25) ? 1.8 : (pi == 19 || pi == 20 || pi == 21 || pi == 22 || pi == 23 || pi == 24) ? 2.2 : 4.0);
+   gpStopLen = pc ? InpStopLen : (6);
+   gpStopBufAtr = pc ? InpStopBufAtr : (0.22);
+   gpHalfStop = pc ? InpHalfStop : (true);
+   gpHalfStopAtr = pc ? InpHalfStopAtr : ((pi == 9 || pi == 10 || pi == 11 || pi == 12 || pi == 13 || pi == 14 || pi == 15 || pi == 17) ? 1.2 : 0.9);
+   gpBiasNet = pc ? InpBiasNet : (3);
+   gpImpBody = pc ? InpImpBody : (50.0);
+   gpHalfOpenOut = pc ? InpHalfOpenOut : (true);
+   gpHalfStrict = pc ? InpHalfStrict : (false);
+   gpHalfCap = pc ? InpHalfCap : (false);
+   gpCooldown = pc ? InpCooldown : ((pi == 1) ? 8 : (pi == 2) ? 30 : (pi == 18) ? 12 : 1);
+   gpMaxFills = pc ? InpMaxFills : ((pi == 19 || pi == 22) ? 1 : 5);
+   gpDayStopR = pc ? InpDayStopR : (0.0);
+   gpFillBarStopR = pc ? InpFillBarStopR : (false);
+   gpLegReset = pc ? InpLegReset : (true);
+   gpAtrLen = pc ? InpAtrLen : (14);
+   gpVwapFilter = pc ? InpVwapFilter : (true);
+   gpSlopeBars = pc ? InpSlopeBars : ((pi == 11) ? 0 : 3);
+   gpSlopeCross = pc ? InpSlopeCross : (true);
+   gpMinOpenBars = pc ? InpMinOpenBars : (0);
+   gpSkipSunday = pc ? InpSkipSunday : ((pi == 24) ? false : true);
+   gpDeepOn = pc ? InpDeepOn : (false);
+   gpDeepFar = pc ? InpDeepFar : (2.0);
+   gpAllowLong = pc ? InpAllowLong : (true);
+   gpAllowShort = pc ? InpAllowShort : (true);
+   gpVwapAnchor = pc ? InpVwapAnchor : (ENUM_VW_ANCHOR)((pi == 9 || pi == 10 || pi == 11 || pi == 12 || pi == 13 || pi == 14 || pi == 15 || pi == 16 || pi == 17 || pi == 18 || pi == 20) ? VW_SESSION : VW_MONTH);
+   gpVwapSrc = pc ? InpVwapSrc : (ENUM_APPLIED_PRICE)(PRICE_TYPICAL);
+   gpEntryMode = pc ? InpEntryMode : (ENUM_ENTRY_MODE)((pi == 5 || pi == 6 || pi == 7 || pi == 8) ? ENTRY_MARKET : ENTRY_MODEL);
+   gpEntryPct = pc ? InpEntryPct : (50.0);
+   gpTp1R = pc ? InpTp1R : ((pi == 13) ? 0.5 : 0.6);
+   gpTp2R = pc ? InpTp2R : (1.0);
+   gpTp3R = pc ? InpTp3R : (1.5);
+   gpTp4R = pc ? InpTp4R : ((pi == 5) ? 2.5 : (pi == 23) ? 3.0 : 2.0);
+   gpExitAt = pc ? InpExitAt : (ENUM_EXIT_AT)(EXIT_TP4);
+   gpMv1On = pc ? InpMv1On : (false);
+   gpMv1R = pc ? InpMv1R : (0.0);
+   gpMv2On = pc ? InpMv2On : ((pi == 6 || pi == 14) ? true : false);
+   gpMv2R = pc ? InpMv2R : (0.6);
+   gpMv3On = pc ? InpMv3On : ((pi == 9 || pi == 10 || pi == 11 || pi == 12 || pi == 13 || pi == 14 || pi == 15 || pi == 17) ? true : false);
+   gpMv3R = pc ? InpMv3R : (1.0);
+   gpNoChase = pc ? InpNoChase : ((pi == 18 || pi == 19 || pi == 20 || pi == 21 || pi == 22 || pi == 24 || pi == 25) ? true : false);
+   gpNoChaseSig = pc ? InpNoChaseSig : ((pi == 18 || pi == 20) ? 2.0 : (pi == 19 || pi == 21 || pi == 22 || pi == 24) ? 1.25 : (pi == 25) ? 2.2 : 2.4);
+   gpLossBlock = pc ? InpLossBlock : (false);
+   gpMinVwOn = pc ? InpMinVwOn : (false);
+   gpMinVwAtr = pc ? InpMinVwAtr : (1.0);
+   gpMaxVwOn = pc ? InpMaxVwOn : (false);
+   gpMaxVwDist = pc ? InpMaxVwDist : (5.0);
+   gpMaxVwUnit = pc ? InpMaxVwUnit : (ENUM_VW_UNIT)(VWU_ATR);
+   gpStopVwOn = pc ? InpStopVwOn : (false);
+   gpStopVwBuf = pc ? InpStopVwBuf : (0.0);
+   gpTouchVwOn = pc ? InpTouchVwOn : (false);
+   gpTouchVwN = pc ? InpTouchVwN : (3);
+   gpEntVwOn = pc ? InpEntVwOn : (false);
+   gpEntVwAtr = pc ? InpEntVwAtr : (0.75);
+   gpChopOn = pc ? InpChopOn : ((pi == 5 || pi == 6 || pi == 7 || pi == 8 || pi == 12) ? true : false);
+   gpChopMax = pc ? InpChopMax : ((pi == 5 || pi == 6 || pi == 7 || pi == 8) ? 8.0 : (pi == 12) ? 16.0 : 12.0);
+   gpEmaOn = pc ? InpEmaOn : ((pi == 8 || pi == 10 || pi == 11 || pi == 17) ? true : false);
+   gpEmaMax = pc ? InpEmaMax : ((pi == 8) ? 1.4 : (pi == 10 || pi == 11 || pi == 17) ? 1.2 : 1.65);
+   // time filters: your days and news windows only for Custom or with Add my filters; the preset's own hours / kill zone unless your hours or kill zones replace them
+   bool myF = pc || InpAddMine;
+   bool ownS = !pc && !(InpAddMine && (InpHoursOn || InpKzOn));
+   gpDayOn = myF && InpDayOn;
+   gpHoursOn = ownS ? ((pi == 5 || pi == 6 || pi == 7 || pi == 8) ? true : false) : InpHoursOn;
+   gpStartH = ownS ? ((pi == 5 || pi == 6 || pi == 7 || pi == 8) ? 18 : 0) : InpStartH;
+   gpStartM = ownS ? ((pi == 5 || pi == 6 || pi == 7 || pi == 8) ? 30 : 0) : InpStartM;
+   gpEndH = ownS ? ((pi == 5 || pi == 6 || pi == 7 || pi == 8) ? 22 : 0) : InpEndH;
+   gpEndM = ownS ? ((pi == 5 || pi == 6 || pi == 7 || pi == 8) ? 30 : 0) : InpEndM;
+   gpHrIst = ownS;
+   gpKzOn = ownS ? ((pi == 1 || pi == 2 || pi == 3 || pi == 4 || pi == 17) ? true : false) : InpKzOn;
+   gpKzAsia = ownS ? ((pi == 17) ? true : false) : InpKzAsia;
+   gpKzLon = ownS ? (false) : InpKzLon;
+   gpKzNy = ownS ? (false) : InpKzNy;
+   gpKzLc = ownS ? ((pi == 1 || pi == 2 || pi == 3 || pi == 4) ? true : false) : InpKzLc;
+   gpKzAuto = ownS ? (false) : InpKzAuto;
+   gpKzShift = ownS ? (0) : (int)InpKzShift;
+   gpDNewsOn = myF && InpDNewsOn;
+   gpN1On = myF && InpN1On;
+   gpN2On = myF && InpN2On;
+   gpN3On = myF && InpN3On;
+   gpN4On = myF && InpN4On;
+   gpN5On = myF && InpN5On;
+   gpP1 = pc ? InpP1 : (pi == 10 || pi == 12 || pi == 13 || pi == 19 || pi == 21 || pi == 22) ? 70.0 : 0.0;
+   gpP2 = pc ? InpP2 : 0.0;
+   gpP3 = pc ? InpP3 : 0.0;
+   gpTf = pc ? 0 : ((pi == 1 || pi == 2 || pi == 3 || pi == 4) ? (int)PERIOD_M1 : (pi == 5 || pi == 6 || pi == 7 || pi == 8) ? (int)PERIOD_M5 : (pi == 18 || pi == 19 || pi == 20 || pi == 21 || pi == 22 || pi == 23 || pi == 24 || pi == 25) ? (int)PERIOD_H1 : (int)PERIOD_M15);
+   gpTfOk = pc || (int)_Period == gpTf;
+}
+string PresetName()
+{
+   switch(InpPreset)
+   {
+      case PRE_M1_S1: return "M1-S1";
+      case PRE_M1_S2: return "M1-S2";
+      case PRE_M1_S3: return "M1-S3";
+      case PRE_M1_S4: return "M1-S4";
+      case PRE_M5_S1: return "M5-S1";
+      case PRE_M5_S2: return "M5-S2";
+      case PRE_M5_S3: return "M5-S3";
+      case PRE_M5_S4: return "M5-S4";
+      case PRE_M15_S1: return "M15-S1";
+      case PRE_M15_S2: return "M15-S2";
+      case PRE_M15_S3: return "M15-S3";
+      case PRE_M15_S4: return "M15-S4";
+      case PRE_M15_S5: return "M15-S5";
+      case PRE_M15_S6: return "M15-S6";
+      case PRE_M15_S7: return "M15-S7";
+      case PRE_M15_S8: return "M15-S8";
+      case PRE_M15_S9: return "M15-S9";
+      case PRE_H1_S1: return "H1-S1";
+      case PRE_H1_S2: return "H1-S2";
+      case PRE_H1_S3: return "H1-S3";
+      case PRE_H1_S4: return "H1-S4";
+      case PRE_H1_S5: return "H1-S5";
+      case PRE_H1_S6: return "H1-S6";
+      case PRE_H1_S7: return "H1-S7";
+      case PRE_H1_S8: return "H1-S8";
+      default: break;
+   }
+   return "Custom";
+}
+
 //--- monthly profit lock (calendar month in your time zone; closed deals, costs included) and the monthly restart of the loss recovery
 void RecoveryRestart()                                // like the hard cap's Start again: the loss recovery starts again from the base risk
 {
    recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; CrkCycle(); crkW = false;
    crkSkip = false; crkSkipLeft = 0;
+}
+void MonthRestart()                                   // v4.8: the monthly restart: the loss recovery, the profit ladder / Crooks J / Rule C split count from here, a hard-cap stop ends
+{
+   RecoveryRestart(); gNet0 = totalNet; crkPk = 0; capStop = false;
 }
 void MonthTick(datetime ut)                           // a new month: the locks start again; the recovery restart waits until no trade of the old month is left
 {
@@ -1110,17 +1480,40 @@ void MonthFromHistory()                               // after a restart: this m
 }
 
 //--- risk $ for the next trade (loss recovery + hard cap) -------------------
-double NextRisk(double exitR, bool canTake = true)
+//--- v4.5 Crooks F / H / I / J: the most a recovery trade may risk (F / H / I: its real stop-out loss, a TP1-rule trade's wider stop included)
+double CrkRecLimit(double r, double base)
 {
-   double base = InpBaseRisk, r = base;
+   double mul = CrkT1Mult();
+   if(InpRec == REC_CRF || InpRec == REC_CRI) r = MathMin(r, MathMax(1.0, InpCrkFK) * base / mul);
+   else if(InpRec == REC_CRH) r = MathMin(r, MathMax(base, AccountInfoDouble(ACCOUNT_EQUITY) * InpCrkHPct / 100.0) / mul);
+   else if(InpRec == REC_CRJ && InpCrkJX > 0) r = MathMax(base, r * MathMax(0.0, 1.0 - MathMax(0.0, crkPk - (totalNet - gNet0)) / (InpCrkJX * base)));
+   return r;
+}
+//--- the risk of a Crooks rule's next trade at this base (v4.6: also at the profit ladder's base)
+double CrkRule(double base, double exitR, double minRisk)
+{
+   double x = crkL / (InpRec == REC_CRB ? InpCSplit : CrkCFam() ? CrkParts() : 1) * (CrkCFam() ? CrkPrPct() : 1.0);   // % rule: a part of the loss
+   bool rn = CrkRecNext();
+   double r = !rn ? base : CrkT1Dist() > 0 ? MathMax(base, x) : exitR > 0 ? MathMax(base, x / exitR) : base;   // TP1 rule: a stop-out loses x
+   if(rn) r = CrkRecLimit(r, base);                                  // v4.5 Crooks F / H / I / J
+   else if(crkL > 0 && (InpRec == REC_CRE || InpRec == REC_CRI) && minRisk > 0) r = MathMin(base, minRisk);   // v4.5 Crooks E / I: the small lot while waiting
+   return r;
+}
+//--- the $ risk of the next trade; minRisk: the stop-out loss of the 0.01 lot (Crooks E / I lot) on this setup (0 = not known: the base is used)
+double NextRisk(double exitR, bool canTake = true, double minRisk = 0)
+{
+   double base = BaseRisk(trRisk), r = base;          // v4.7: the base of this setup (Position size)
+   gBase = base;
+   if(base <= 0) return 0;                            // no base: size 0 (never a zero divide below)
    double stepBase = 0;
-   if(totalNet >= 1000) { int kk = (int)MathFloor((totalNet - 1000) / 500); stepBase = (1000.0 + 500.0 * kk) / (8 + kk); }
-   else if(totalNet >= 500) stepBase = 100.0;
-   else if(totalNet >= 200) stepBase = 200.0 / 3.0;
+   double netR = totalNet - gNet0;                    // v4.8: the closed profit since the monthly restart
+   if(netR >= 1000) { int kk = (int)MathFloor((netR - 1000) / 500); stepBase = (1000.0 + 500.0 * kk) / (8 + kk); }
+   else if(netR >= 500) stepBase = 100.0;
+   else if(netR >= 200) stepBase = 200.0 / 3.0;
    double baseC = InpRec == REC_CS ? MathMax(base, InpCapOn ? MathMin(stepBase, InpHardCap) : stepBase) : base;
    double fa = 1, fb = 1;
    for(int k = 2; k <= recLosses; k++) { double fc = fa + fb; fa = fb; fb = fc; }
-   int oscNeed = exitR > 0 ? (int)MathMax(1, MathCeil((base - oscP) / (base * exitR))) : 1;
+   int oscNeed = exitR > 0 ? (int)MathMax(1, MathMin(1e9, MathCeil((base - oscP) / (base * exitR)))) : 1;   // v4.7: no int overflow
    switch(InpRec)
    {
       case REC_ALL:   r = base + recPool; break;
@@ -1144,9 +1537,20 @@ double NextRisk(double exitR, bool canTake = true)
       case REC_CRB:
       case REC_CRC:
       case REC_CRD:
+      case REC_CRE:
+      case REC_CRF:
+      case REC_CRG:
+      case REC_CRH:
+      case REC_CRI:
+      case REC_CRJ:
       {
-         double x = crkL / (InpRec == REC_CRB ? InpCSplit : InpRec == REC_CRC ? CrkParts() : 1) * (InpRec == REC_CRC ? CrkPrPct() : 1.0);   // % rule: a part of the loss
-         r = !CrkRecNext() ? base : CrkT1Dist() > 0 ? MathMax(base, x) : exitR > 0 ? MathMax(base, x / exitR) : base;   // TP1 rule: a stop-out loses x
+         r = CrkRule(base, exitR, minRisk);
+         if(LadOn())                                                       // v4.6 profit ladder: the rule at the ladder's base, the extra paid from the cushion
+         {
+            double cush = 0, lam = 0, phi = 0, bmax = 0, gam = 0;
+            double lb = LadBase(base, cush); LadPar(lam, phi, bmax, gam);
+            r = LadGuard() ? (minRisk > 0 ? MathMin(base, minRisk) : base) : MathMin(CrkRule(lb, exitR, minRisk), r + gam * cush / CrkT1Mult());
+         }
          break;
       }
       default:        r = base;
@@ -1219,6 +1623,17 @@ double LotsFor(double riskAmt, double stopDist, double entry, bool isL, double l
    if(v < vmin) return 0;
    return NormalizeDouble(v, 8);
 }
+//--- v4.5 Crooks E / I: the stop-out loss (spread and commission included, as LotsFor) of the lot used while a loss waits for a win:
+//--- InpCrkELot, at least the broker's minimum, on its lot grid (LotsFor turns this amount back into exactly that lot)
+double MinLotRisk(double stopDist)
+{
+   double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
+   if(tv <= 0 || ts <= 0 || stopDist <= 0) return 0;
+   double step = InpLotStep > 0 ? InpLotStep : SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP), vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
+   if(step <= 0) step = vmin > 0 ? vmin : 0.01;
+   double lots = MathCeil(MathMax(InpCrkELot, vmin) / step - 1e-9) * step;
+   return lots * ((stopDist + MathMax(CostSpr(), 0)) / ts * tv + InpCommLot);
+}
 
 //--- time filters (execution only) --------------------------------------------
 bool NewsBlock(datetime ut, bool &startNow, datetime utPrev)
@@ -1227,7 +1642,7 @@ bool NewsBlock(datetime ut, bool &startNow, datetime utPrev)
    bool blk = false;
    long pre = (long)InpNewsPre * 60;
    bool on[5]; datetime ts[5]; int du[5];
-   on[0] = InpN1On; on[1] = InpN2On; on[2] = InpN3On; on[3] = InpN4On; on[4] = InpN5On;
+   on[0] = gpN1On; on[1] = gpN2On; on[2] = gpN3On; on[3] = gpN4On; on[4] = gpN5On;
    ts[0] = InpN1T;  ts[1] = InpN2T;  ts[2] = InpN3T;  ts[3] = InpN4T;  ts[4] = InpN5T;
    du[0] = InpN1Dur; du[1] = InpN2Dur; du[2] = InpN3Dur; du[3] = InpN4Dur; du[4] = InpN5Dur;
    for(int k = 0; k < 5; k++)
@@ -1236,7 +1651,7 @@ bool NewsBlock(datetime ut, bool &startNow, datetime utPrev)
       if(ut >= ts[k] - pre && ut < ts[k] + du[k] * 60) blk = true;
       if(ut >= ts[k] && utPrev < ts[k]) startNow = true;
    }
-   if(InpDNewsOn)
+   if(gpDNewsOn)
    {
       // the window is set in summer time; with InpDNewsAuto it moves 1 hour later while New York is on winter time (same New York time all year)
       int sh = InpDNewsAuto && !NySummer(ut - (datetime)(InpUserGMT * 3600)) ? 60 : 0;
@@ -1307,7 +1722,7 @@ bool   HgMarket(double v)                                // both trades at marke
 }
 bool   PlaceHedge(bool isL, double v)                    // the pair's orders: a limit in the signal's direction and a stop the other way, both at the entry level
 {
-   if(InpEntryMode == ENTRY_MARKET) return HgMarket(v);
+   if(gpEntryMode == ENTRY_MARKET) return HgMarket(v);
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), gap = MathMax(MinDist(), TickSize());
    double pB = EntryPx(true), pS = EntryPx(false);       // the buy and the sell trigger when the bid reaches the entry level
    double slB, tpB, slS, tpS; HgLevels(true, slB, tpB); HgLevels(false, slS, tpS);
@@ -1381,7 +1796,7 @@ string Share(int n, int total) { return total > 0 ? IntegerToString((int)MathRou
 string AccTxt() { int n = totW + totL; return IntegerToString(n) + " trades | " + Share(totW, n) + " (" + IntegerToString(totW) + "W/" + IntegerToString(totL) + "L) | " + SgnR(totR); }
 string TpTxt()
 {
-   int n = totW + totL, xk = (int)InpExitAt;
+   int n = totW + totL, xk = (int)gpExitAt;
    string s = "";
    for(int k = 1; k <= 4; k++) s += (k > 1 ? " | " : "") + "TP" + IntegerToString(k) + " " + (k > xk ? "n/a" : Share(tpHitN[k - 1], n) + " (" + IntegerToString(tpHitN[k - 1]) + ")");
    return s;
@@ -1445,14 +1860,20 @@ void VwDraw(datetime bt)
       ObjectSetInteger(0, nm, OBJPROP_WIDTH, (int)MathMax(1, MathMin(5, InpVwapWidth)));
       ObjectSetInteger(0, nm, OBJPROP_STYLE, STYLE_SOLID);
       ObjectSetInteger(0, nm, OBJPROP_RAY_RIGHT, false);
-      ObjectSetInteger(0, nm, OBJPROP_BACK, true);
+      ObjectSetInteger(0, nm, OBJPROP_BACK, false);           // over the candles, like the TradingView plot
       ObjectSetInteger(0, nm, OBJPROP_SELECTABLE, false);
       ObjectSetInteger(0, nm, OBJPROP_HIDDEN, true);
       ObjectSetString(0, nm, OBJPROP_TOOLTIP, "VWAP " + DoubleToString(v, _Digits));
-      if(gLive)
+      if(gLive)                                         // the bars that left the window since the last cutoff (several after a disconnect)
       {
-         datetime old = iTime(_Symbol, _Period, gVwN + 1);
-         if(old > 0) ObjectDelete(0, "ARM_VW" + IntegerToString((long)old));
+         for(int q = gVwN + 1; q < Bars(_Symbol, _Period); q++)
+         {
+            datetime ot = iTime(_Symbol, _Period, q);
+            if(ot <= 0 || ot < gVwCut) break;
+            ObjectDelete(0, "ARM_VW" + IntegerToString((long)ot));
+         }
+         datetime cut = iTime(_Symbol, _Period, gVwN);
+         if(cut > gVwCut) gVwCut = cut;
       }
    }
    gVwPrevT = bt; gVwPrev = v;
@@ -1464,8 +1885,8 @@ void DrawBar(datetime bt)
    VwDraw(bt);                                          // v4.4: the VWAP line (its own switch, also with the markings off)
    if(!InpDraw || !gCanDraw) return;
    if(evCancel != 0 || evFill) ObjectDelete(0, "ARM_limit");
-   if(evArm) MarkLine("ARM_limit", bt, lim, bt + PeriodSeconds() * InpRetestBars, lim, InpColEntry, 1, STYLE_DASH);   // MT5 dashes only width-1 lines
-   int xk = (int)InpExitAt;
+   if(evArm) MarkLine("ARM_limit", bt, lim, bt + PeriodSeconds() * gpRetestBars, lim, InpColEntry, 1, STYLE_DASH);   // MT5 dashes only width-1 lines
+   int xk = (int)gpExitAt;
    if(evFill)
    {
       string id = TrId(bt);
@@ -1519,6 +1940,7 @@ string StateText(bool newsBlk)
               capStop ? "HARD CAP: STOPPED" : newsBlk ? "NEWS WINDOW" : paused ? "PAUSED" : CrkPause() ? "CROOKS C PAUSE (" + IntegerToString(crkSkipLeft) + "d left)" : monStop ? "MONTHLY LOCK (until the 1st)" : dayBlock ? "STREAK STOP TODAY" :
               !gDayOk ? "DAY SWITCHED OFF" : !gHourOk ? "OUTSIDE HOURS" : !gKzOk ? "OUTSIDE KILL ZONES" : CrkHedgeNow() ? "SCANNING (HEDGE PAIR ON THE NEXT SIGNAL)" : "SCANNING";
    if(TfHold()) s = "CHART ON " + TfName((int)_Period) + ": NO NEW TRADES (EA TRADES " + TfName(gTfTrade) + ")";
+   if(!gpTfOk) s = "WRONG CHART: " + TfName(gpTf) + " PRESET, NO TRADES";
    string ex = exState == 2 ? (exHg ? " (hedge pair open)" : exArm < 0 ? " (in trade, own stop and target)" : " (in trade)") : (exState == 1 ? (gVirt ? " (waiting for the level)" : exHg ? " (hedge orders working)" : " (order working)") : "");
    return s + ex;
 }
@@ -1561,28 +1983,35 @@ void UpdateTable()
    ArrayResize(tblKey, 0); ArrayResize(tblVal, 0); ArrayResize(tblCol, 0); ArrayResize(tblBg, 0);
    color  white = clrWhite, posC = C'105,240,174', negC = C'255,128,171', cell = C'30,34,45';
    bool   act = MathAbs(st) == 2 && !trGhost, armed = MathAbs(st) == 1 && !trGhost, has = act || armed;
-   int    xk = (int)InpExitAt;
+   int    xk = (int)gpExitAt;
    string tps = has ? DoubleToString(t1, _Digits) + " | " + DoubleToString(t2, _Digits) + " | " + DoubleToString(t3, _Digits) + " | " + DoubleToString(t4, _Digits) : "-";
-   bool   isC = InpRec == REC_C || InpRec == REC_CS, isK = InpRec == REC_CRA || InpRec == REC_CRB || InpRec == REC_CRC || InpRec == REC_CRD;
+   bool   isC = InpRec == REC_C || InpRec == REC_CS, isK = InpRec == REC_CRA || InpRec == REC_CRB || InpRec == REC_CRD || CrkCFam();
    bool   kRec = exState != 0 ? crkRec : CrkRecNext();
-   string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRC ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") : (crkL > 0 ? " | base, waiting for a win" : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
+   string kLim = InpRec == REC_CRF || InpRec == REC_CRI ? ", at most " + DoubleToString(InpCrkFK, 1) + "x base" : InpRec == REC_CRH ? ", at most " + DoubleToString(InpCrkHPct, 1) + "% of equity" :
+                 InpRec == REC_CRJ ? ", drawdown " + DoubleToString(MathMax(0.0, crkPk - (totalNet - gNet0)), 2) : "";
+   string kWait = InpRec == REC_CRE || InpRec == REC_CRI ? " | " + DoubleToString(InpCrkELot, 2) + " lot, waiting for a win" : " | base, waiting for a win";
+   string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRG ? " (at most " + DoubleToString(InpCrkGX * ShowBase(), 0) + ")" : "") +
+                 (CrkCFam() ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") + kLim : (crkL > 0 ? kWait : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "")
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v4.4", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v4.8", white, C'61,143,214');
+   if(InpPreset != PRE_CUSTOM) TblAdd("PRESET", PresetName() + (gpTfOk ? "" : " | needs an " + TfName(gpTf) + " chart") + (InpAddMine ? " | + my filters" : ""), gpTfOk ? posC : negC, cell);
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
    TblAdd("TP1 | TP2 | TP3 | TP4 (exit TP" + IntegerToString(xk) + ")", tps, posC, cell);
-   TblAdd("RISK | LOTS", exState != 0 ? DoubleToString(exRiskAmt, 2) + " | " + DoubleToString(exLots, 2) : "base " + DoubleToString(InpBaseRisk, 2), white, cell);
+   double lCu = 0;
+   TblAdd("RISK | LOTS", exState != 0 ? DoubleToString(exRiskAmt, 2) + " | " + DoubleToString(exLots, 2) : BaseTxt(lCu), white, cell);
    TblAdd(isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", rec, (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white, cell);
+   if(InpLadder != LAD_OFF) TblAdd("PROFIT LADDER", LadTxt(), LadGuard() ? negC : LadOn() ? posC : white, cell);
    TblAdd("STREAK W | L", IntegerToString(winRow) + " | " + IntegerToString(lossRow) + " | total " + IntegerToString(exW) + "W/" + IntegerToString(exLn) + "L", white, cell);
-   TblAdd("DAY P&L | FILLS", DoubleToString(dayPnl, 2) + " | " + IntegerToString(dayFills) + "/" + IntegerToString(InpMaxFills) + (InpMLockOn || InpPLockOn ? " | month " + DoubleToString(monPnl, 2) + (monLocked ? " (locked " + DoubleToString(InpPLockPct / 100.0 * monPeak, 2) + ")" : "") : ""), dayPnl >= 0 ? posC : negC, cell);
+   TblAdd("DAY P&L | FILLS", DoubleToString(dayPnl, 2) + " | " + IntegerToString(dayFills) + "/" + IntegerToString(gpMaxFills) + (InpMLockOn || InpPLockOn ? " | month " + DoubleToString(monPnl, 2) + (monLocked ? " (locked " + DoubleToString(InpPLockPct / 100.0 * monPeak, 2) + ")" : "") : ""), dayPnl >= 0 ? posC : negC, cell);
    TblAdd("SIGNALS | TAKEN | SKIPPED", IntegerToString(sigN) + " | " + IntegerToString(takenN) + " | " + IntegerToString(skipN) + (missN > 0 ? " | missed " + IntegerToString(missN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN > 0 ? negC : white, cell);
    TblAdd("SIGNAL TRADES | WIN % | R", AccTxt() + " | last " + lastRes, totR >= 0 ? posC : negC, cell);
    TblAdd("TP HIT", TpTxt(), posC, cell);
-   if(InpMv1On || InpMv2On || InpMv3On) TblAdd("BREAKEVEN", BeTxt(), white, cell);
-   if(InpNoChase || InpChopOn || InpEmaOn || InpMinVwOn || InpMaxVwOn || InpStopVwOn || InpTouchVwOn || InpEntVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
+   if(gpMv1On || gpMv2On || gpMv3On) TblAdd("BREAKEVEN", BeTxt(), white, cell);
+   if(gpNoChase || gpChopOn || gpEmaOn || gpMinVwOn || gpMaxVwOn || gpStopVwOn || gpTouchVwOn || gpEntVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
    TblAdd("DATA RANGE", gFirstT > 0 ? DateTxt(UserTime(gFirstT), true) + " -> " + DateTxt(UserTime(gLastDone), false) + " | " + IntegerToString(bi + 1) + " bars" : "-", white, cell);
    TblAdd("RESTART MEMORY", gPersist ? (gRestored ? "on | continued from " + DateTxt(UserTime(gSvT), true) : "on") : InpRemember ? "off in the Strategy Tester" : "off", white, cell);
    TblAdd("LAST CLOSE", gLastClose, gLastCloseOut ? negC : white, cell);
@@ -1620,7 +2049,8 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    bool crkPs = CrkPause();
    bool tfHold = TfHold();                           // v4.4: the chart shows another timeframe than the one the EA trades
    bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock || crkPs || monStop || tfHold);   // the hard cap acts only on a signal that can be taken
-   double rAmt = NextRisk(ExitR(), canTake);
+   double minR = (InpRec == REC_CRE || InpRec == REC_CRI || LadOn()) ? MinLotRisk(trRisk) : 0;   // v4.5 Crooks E / I, v4.6 ladder guard: the 0.01 lot on this setup
+   double rAmt = NextRisk(ExitR(), canTake, minR);
    bool   hg = CrkHedgeNow();                        // Crooks C hedge rule: a buy and a sell (after NextRisk: a hard-cap restart cancels it)
    double hgS = hg ? HgDist(InpCrkHgSl) : 0, hgT = hg ? HgDist(InpCrkHgTp) : 0;
    if(hg && InpCapOn && hgT > hgS) rAmt = MathMin(rAmt, InpHardCap / 2.0);   // both trades can lose: the pair stays inside the hard cap
@@ -1640,7 +2070,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    double sprNow = CostSpr();
    exCostPx = InpEarnBack && tv > 0 && !hg ? InpCommLot / (tv / ts) + sprNow : 0;   // no earn-back on the hedge pair: its levels are the inputs
-   exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot);
+   exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot); exBase = gBase;
    exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = exT1 ? T1Stop0Px(isL, t1d) : 0; exT1Tight = exT1 ? T1StopPx(isL, t1d) : 0; exT1Entry = lim;
    exT1Tp1 = t1; exT1Tp2 = t2; exKeepSl = 0; exHg = false; exHgS = hgS; exHgT = hgT; gLastOutProfit = 0;
    exTpL[0] = t1; exTpL[1] = t2; exTpL[2] = t3; exLim = lim;   // the trade's own levels (partials, restart)
@@ -1652,7 +2082,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    double minD = MinDist();
    bool ok, past = false;
    if(hg) ok = PlaceHedge(isL, v);
-   else if(InpEntryMode == ENTRY_MARKET)
+   else if(gpEntryMode == ENTRY_MARKET)
    {
       past = !OrderExits(isL, ep, true, sl, tp);
       ok = !past && (isL ? trade.Buy(v, _Symbol, 0, sl, tp, "ARM") : trade.Sell(v, _Symbol, 0, sl, tp, "ARM"));
@@ -1733,10 +2163,13 @@ void BookClosed()
       double used = LabUnits(); int n = ArraySize(labSeq); ArrayResize(labSeq, n + 1); labSeq[n] = used;
    }
    oscP += exPnl;
-   if(oscP >= InpBaseRisk) { oscU = 1; oscP = 0; } else if(win) oscU++;
+   if(oscP >= BookBase()) { oscU = 1; oscP = 0; } else if(win) oscU++;
    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, D: also when a recovery trade wins; C keeps a leftover)
    bool lastPart = CrkParts() == 1;                     // this recovery trade went for the last part of the loss (Crooks C over N wins)
    crkL = MathMax(0.0, crkL - exPnl);
+   crkPk = MathMax(crkPk, totalNet - gNet0);            // v4.5 Crooks J, v4.6 ladder: the highest closed profit (whatever the rule, so a switch knows it; v4.8: since the monthly restart)
+   double gCush = 0;
+   if(InpRec == REC_CRG && InpCrkGX > 0) crkL = MathMin(crkL, InpCrkGX * LadBase(BookBase(), gCush));   // v4.5 Crooks G: never more than X x base (v4.6: the ladder's base)
    if(exHg)                                             // the hedge pair closed (exPnl = both trades): forget the loss, or Crooks C goes on from the trade that closed last
    {
       crkF = 0; crkHg = false;
@@ -1867,7 +2300,7 @@ void OnNewBar()
    if(exState == 1 && (flatNow || newsBlk)) { CancelPending(); exState = 0; exArm = -1; gVirt = false; exHg = false; }
 
    // monthly restart (once no trade of the old month is left) and the monthly locks, after every booking of this bar
-   if(monRestPend && exState == 0 && !HasPosition(pTk, pVol, pOpen)) { monRestPend = false; RecoveryRestart(); }
+   if(monRestPend && exState == 0 && !HasPosition(pTk, pVol, pOpen)) { monRestPend = false; MonthRestart(); }
    MonthCheck();
 
    // 5. take the engine's new setup
@@ -1882,14 +2315,14 @@ void OnNewBar()
 void ManagePartials()
 {
    if(exState != 2 || exHg) return;
-   int exitK = (int)InpExitAt;
+   int exitK = (int)gpExitAt;
    ulong tk; double vol, op;
    if(!HasPosition(tk, vol, op)) return;
    double px = SymbolInfoDouble(_Symbol, SYMBOL_BID);   // the engine's levels are bid-chart levels for both directions
    double tp[3]; double pp[3];
    bool eng = exArm >= 0 && armBar == exArm && MathAbs(st) == 2;   // the engine's levels are this trade's while it is in it
    tp[0] = exTpL[0] > 0 ? exTpL[0] : eng ? t1 : 0; tp[1] = exTpL[1] > 0 ? exTpL[1] : eng ? t2 : 0; tp[2] = exTpL[2] > 0 ? exTpL[2] : eng ? t3 : 0;   // the trade's own levels (v4.4)
-   pp[0] = InpP1; pp[1] = InpP2; pp[2] = InpP3;
+   pp[0] = gpP1; pp[1] = gpP2; pp[2] = gpP3;
    double step = InpLotStep > 0 ? InpLotStep : SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP);
    double vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
    if(exT1)
@@ -1956,14 +2389,14 @@ void StateIO(bool save)
    if(!save) { gSvLast = lb; gSvT = sv; }
    // loss recovery (every rule's state, whichever rule is chosen), total profit (Step-up rule), the hard-cap stop
    IoD("rp", recPool); IoI("rl", recLosses); IoI("du", dUnits); IoD("ca", carried); IoI("pw", parWins); IoI("rd", rdUnits);
-   IoI("ou", oscU); IoD("op", oscP); IoD("tn", totalNet); IoI("ew", exW); IoI("el", exLn); IoB("cs", capStop);
+   IoI("ou", oscU); IoD("op", oscP); IoD("tn", totalNet); IoD("pk", crkPk); IoD("rn", gNet0); IoI("ew", exW); IoI("el", exLn); IoB("cs", capStop);
    IoD("kl", crkL); IoI("kn", crkN); IoB("kw", crkW); IoI("kp", crkP); IoI("kf", crkF); IoB("ka", crkWait); IoI("kb", crkWW);
    IoB("kc", crkNeedL); IoB("ks", crkSkip); IoI("kt", crkSkipLeft); IoI("ku", crkUDay); IoB("kh", crkHg); IoI("kx", gCrkPrPrev);
    // streaks and pauses; the month of the last bar (a new month while the EA was off) and a restart still waiting for a trade to close
    IoD("dp", dayPnl); IoI("lr", lossRow); IoI("wr", winRow); IoB("db", dayBlock); IoI("pl", pauseLeft); IoB("pa", paused);
    IoI("mk", gMonKey); IoB("mr", monRestPend); IoD("mp", monPnl); IoD("mq", monPeak); IoB("ms", monStop); IoB("ml", monLocked);
    // the trade the EA is in, or its working order: its type and what it booked so far; the broker deals already counted
-   IoI("xs", exState); IoB("xl", exL); IoD("xv", exLots); IoD("xr", exRiskAmt); IoD("xc", exCostPx); IoD("xp", exPnl); IoD("xk", exKeepSl);
+   IoI("xs", exState); IoB("xl", exL); IoD("xv", exLots); IoD("xr", exRiskAmt); IoD("xb", exBase); IoD("xc", exCostPx); IoD("xp", exPnl); IoD("xk", exKeepSl);
    IoB("kr", crkRec); IoB("xy", exSynced);
    double xe = exLim, x1 = exTpL[0], x2 = exTpL[1], x3 = exTpL[2];   // v4.4: the trade's setup (arm bar time, entry) and its own TP1-TP3
    IoT("xa", exArmT); IoD("xe", xe); IoD("x1", x1); IoD("x2", x2); IoD("x3", x3); IoT("xt", gTakenT); IoB("xq", gExitRetry);
@@ -2020,7 +2453,9 @@ bool StateLoad()
       Print("Restart memory: the saved state belongs to account ", (long)svAcc, ", not ", (long)nowAcc, ": starting fresh.");
       return false;
    }
+   bool pkSaved = GlobalVariableCheck(gSvBase + "pk");  // v4.5: Crooks J's peak (a state saved before v4.5 has none)
    StateIO(false);
+   if(!pkSaved) crkPk = MathMax(crkPk, totalNet - gNet0);   // ... then the closed profit itself is the peak
    gSvAcc = (long)MathRound(svAcc);
    for(int q = ArraySize(labSeq); q < 100000 && GlobalVariableCheck(gSvBase + "L" + IntegerToString(q)); q++) GlobalVariableDel(gSvBase + "L" + IntegerToString(q));   // a longer old list
    gSvC = 0;                                            // the next save writes every value again
@@ -2075,7 +2510,7 @@ void BookBrokerDeals()
 //--- the saved state was not this account's: the money-management state starts fresh (as without restart memory)
 void MemoryFresh()
 {
-   recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; totalNet = 0; exW = 0; exLn = 0; capStop = false;
+   recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; totalNet = 0; crkPk = 0; gNet0 = 0; exW = 0; exLn = 0; capStop = false;
    crkL = 0; crkN = 0; crkW = false; crkP = 0; crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false;
    dayPnl = 0; lossRow = 0; winRow = 0; dayBlock = false; pauseLeft = 0; paused = false; monRestPend = false;
    TradeClear(); gDayPendN = 0; gRestFlat = false; gPauseArm = -1; gRestored = false;
@@ -2143,8 +2578,9 @@ void BrokerStart()
       double pSl = PositionGetDouble(POSITION_SL), pTp = PositionGetDouble(POSITION_TP);
       datetime aT = MathAbs(st) >= 1 && !trGhost ? BarTimeOf(armBar) : 0;
       // v4.4: the engine's setup is this trade's when it is the saved setup, re-linked in the warm-up (restart memory) and still the engine's;
-      // without a saved setup, when it has the trade's direction and was armed before the trade opened
-      bool same = MathAbs(st) >= 1 && !trGhost && (st > 0) == isL &&
+      // without a saved setup, when it has the trade's direction and was armed before the trade opened. Never on another timeframe than
+      // the one the EA trades: the trade keeps its own stop loss and take profit until the chart is back
+      bool same = !TfHold() && MathAbs(st) >= 1 && !trGhost && (st > 0) == isL &&
                   (gRestored && exArmT > 0 ? exArm >= 0 && armBar == exArm
                                            : aT > 0 && (datetime)PositionGetInteger(POSITION_TIME) >= aT + PeriodSeconds(_Period));
       exState = 2; exL = isL; if(!(gRestored && exLots > 0)) exLots = vol;   // a restored trade keeps its lots (partials)
@@ -2190,9 +2626,9 @@ void BrokerStart()
       if(gMissExit && exState == 2 && !exHg && HasPosition(rTk, rVol, rOp) && (!InpEarnBack || !gMissWin) && !(exT1 && (gMissWin || exT1Half)))
       { CloseRule(gMissWin ? "the engine's final target was reached while the EA was off" : "the engine's stop was hit while the EA was off"); BookBrokerDeals(); }
       if(gRestFlat && exHg && exState == 2) CancelPending();
-      if(monRestPend && exState == 0 && !HasPosition(rTk, rVol, rOp)) { monRestPend = false; RecoveryRestart(); }
+      if(monRestPend && exState == 0 && !HasPosition(rTk, rVol, rOp)) { monRestPend = false; MonthRestart(); }
       MonthCheck();
-      bool isCC = InpRec == REC_C || InpRec == REC_CS, isKK = InpRec == REC_CRA || InpRec == REC_CRB || InpRec == REC_CRC || InpRec == REC_CRD;
+      bool isCC = InpRec == REC_C || InpRec == REC_CS, isKK = InpRec == REC_CRA || InpRec == REC_CRB || InpRec == REC_CRD || CrkCFam();
       Print("Restart memory: continued from ", DateTxt(UserTime(gSvT), true), " | loss to win back ", DoubleToString(isCC ? carried : isKK ? crkL : recPool, 2),
             " | streak ", winRow, "W / ", lossRow, "L", (paused || pauseLeft > 0) ? " | paused" : "", CrkPause() ? " | Crooks C pause" : "",
             capStop ? " | hard cap stop" : "", exState == 2 ? " | trade still open" : "");
@@ -2252,6 +2688,7 @@ int OnInit()
    trade.SetExpertMagicNumber(InpMagic);
    trade.SetDeviationInPoints(50);
    trade.SetTypeFillingBySymbol(_Symbol);
+   PresetApply();                                        // v4.8: the preset's values (or the inputs) before anything uses them
    ResetEngine();
    if(ArraySize(labSeq) == 0) LabReset();               // the Labouchere list is kept with the other recovery states when inputs change
    // restart memory: on a fresh start (MT5 or the EA restarted) continue from the saved state; switched off: forget it
@@ -2268,14 +2705,25 @@ int OnInit()
    if(MQLInfoInteger(MQL_TESTER) == 0)                   // the timeframe the EA trades: the one it was attached to (also after a restart)
    {
       string tfN = SvExtra("tf");
-      if(gTfTrade == 0) gTfTrade = GlobalVariableCheck(tfN) ? (int)MathRound(GlobalVariableGet(tfN)) : (int)_Period;
+      string tpN = SvExtra("tfp");                      // v4.8: 1 = the timeframe was set by a preset
+      bool fromPreset = GlobalVariableCheck(tpN) && GlobalVariableGet(tpN) > 0;
+      if(gpTf > 0) gTfTrade = gpTf;                     // v4.8: a preset trades only its own timeframe
+      else if(fromPreset) gTfTrade = (int)_Period;      // back to Custom after a preset: the chart's timeframe, as if attached now
+      else if(gTfTrade == 0) gTfTrade = GlobalVariableCheck(tfN) ? (int)MathRound(GlobalVariableGet(tfN)) : (int)_Period;
       GlobalVariableSet(tfN, gTfTrade);
-      if(TfHold())
+      GlobalVariableSet(tpN, gpTf > 0 ? 1 : 0);
+      if(TfHold() && gpTf == 0)                         // (a preset on another chart has its own message below)
       {
          string m = "The chart is on " + TfName((int)_Period) + ", but this EA trades " + TfName(gTfTrade) + " (the timeframe it was attached to): no new trades until the chart is back on " +
                     TfName(gTfTrade) + ". The open trade keeps its stop loss and take profit. To trade " + TfName((int)_Period) + ", remove the EA and attach it again.";
          Print(m); Alert(m);
       }
+   }
+   if(!gpTfOk)                                          // v4.8: a preset trades only on its own chart timeframe
+   {
+      string m = "Strategy preset " + PresetName() + " trades only on an " + TfName(gpTf) + " chart; this chart is " + TfName((int)_Period) +
+                 ": no trades. Switch the chart to " + TfName(gpTf) + ", or choose another preset or Custom.";
+      Print(m); Alert(m);
    }
    if(!InpRemember && MQLInfoInteger(MQL_TESTER) == 0) SvWipe();
    gRestFlat = false; gBrokerPend = false;
@@ -2292,32 +2740,54 @@ int OnInit()
    }
    if(gPersist) gRestored = StateLoad();                 // a fresh start or new inputs: continue from the saved state (written at OnDeinit)
    if(gRestored && (gInitDone || !InpCapOn || InpCapAction != CAP_STOP)) capStop = false;   // a hard-cap Stop ends with new inputs (as before) or a cap that no longer stops
-   if(gCrkPrPrev != (int)InpCrkPr || InpRec != REC_CRC) { crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; }
+   if(gCrkPrPrev != (int)InpCrkPr || !CrkCFam()) { crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; }
    gCrkPrPrev = (int)InpCrkPr;
    gHedgeOk = (ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE) == ACCOUNT_MARGIN_MODE_RETAIL_HEDGING;
-   if(InpRec == REC_CRC && InpCrkPr == CPR_HEDGE && !gHedgeOk) Print("Crooks C hedge rule: this account cannot hold a buy and a sell together (netting), so the rule forgets the loss instead.");
+   if(CrkCFam() && InpCrkPr == CPR_HEDGE && !gHedgeOk) Print("Crooks C hedge rule: this account cannot hold a buy and a sell together (netting), so the rule forgets the loss instead.");
    // markings and table only where they can be seen (not in non-visual tests or optimisation)
    gCanDraw = MQLInfoInteger(MQL_OPTIMIZATION) == 0 && (MQLInfoInteger(MQL_TESTER) == 0 || MQLInfoInteger(MQL_VISUAL_MODE) != 0);
    ObjectsDeleteAll(0, "ARM_");
    if(InpSpread < 0 || InpCommLot < 0) { Print("Spread and commission must be 0 or more."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpTp1R > InpTp2R || InpTp2R > InpTp3R || InpTp3R > InpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpMaxVwOn && InpMaxVwDist <= 0) { Print("Max distance from VWAP must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpTouchVwOn && InpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
+   if((InpSizeMode == PSZ_USD && InpBaseRisk <= 0) || (InpSizeMode == PSZ_LOT && InpBaseLots <= 0) || (InpSizeMode == PSZ_PCT && InpEqPct <= 0))
+   { Print("Position size: the base risk, base lots or risk % of equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(gpTp1R > gpTp2R || gpTp2R > gpTp3R || gpTp3R > gpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
+   if(gpMaxVwOn && gpMaxVwDist <= 0) { Print("Max distance from VWAP must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(gpTouchVwOn && gpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
    if(InpCrkT1 && (InpCrkT1Pct < 10 || InpCrkT1Pct > 90)) { Print("Crooks TP1 rule: % closed at TP1 must be 10 to 90."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpRec == REC_CRC && InpCrkPr != CPR_OFF && (InpCrkPrN < 1 || InpCrkPrM < 1 || InpCrkPrD < 1)) { Print("Crooks C rule: N, M and D must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
+   if(CrkCFam() && InpCrkPr != CPR_OFF && (InpCrkPrN < 1 || InpCrkPrM < 1 || InpCrkPrD < 1)) { Print("Crooks C rule: N, M and D must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
    if((InpMLockOn && InpMLockAmt <= 0) || (InpPLockOn && (InpPLockAt <= 0 || InpPLockPct < 1 || InpPLockPct > 100))) { Print("Monthly profit lock: the amounts must be above 0 and the lock % 1 to 100."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpRec == REC_CRC && InpCrkPr == CPR_HEDGE && (InpCrkHgSl <= 0 || InpCrkHgTp <= 0)) { Print("Crooks C hedge rule: stop loss and take profit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpRec == REC_CRC && InpCrkPr == CPR_PCT && (InpCrkPrPct < 10 || InpCrkPrPct > 100)) { Print("Crooks C rule: % of the loss must be 10 to 100."); return INIT_PARAMETERS_INCORRECT; }
+   if(CrkCFam() && InpCrkPr == CPR_HEDGE && (InpCrkHgSl <= 0 || InpCrkHgTp <= 0)) { Print("Crooks C hedge rule: stop loss and take profit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(CrkCFam() && InpCrkPr == CPR_PCT && (InpCrkPrPct < 10 || InpCrkPrPct > 100)) { Print("Crooks C rule: % of the loss must be 10 to 100."); return INIT_PARAMETERS_INCORRECT; }
+   if((InpRec == REC_CRE || InpRec == REC_CRI) && InpCrkELot <= 0) { Print("Crooks E / I: the lot while waiting for a win must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if((InpRec == REC_CRF || InpRec == REC_CRI) && InpCrkFK < 1) { Print("Crooks F / I: the recovery limit must be 1 x the base risk or more."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpRec == REC_CRG && InpCrkGX <= 0) { Print("Crooks G: the limit of the loss to win back must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpRec == REC_CRH && InpCrkHPct <= 0) { Print("Crooks H: the % of the equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpRec == REC_CRJ && InpCrkJX <= 0) { Print("Crooks J: the drawdown must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpLadder != LAD_OFF && InpLadT <= 0) { Print("Profit ladder: the profit target must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpLadder != LAD_OFF && !LadFam()) Print("Profit ladder: it works with Crooks F, G, H, I or J only; with this loss recovery it is off.");
    // warm up the engine on history (no orders): it ends in the same state as the TradingView engine would
    int bars = Bars(_Symbol, _Period);
-   int look = (int)MathMax(MathMax(InpStructLen, InpBrkLen + 1), MathMax(InpMomLen + 1, InpStopLen)) + 2;
-   int need = look + InpAtrLen + 10;
+   int look = (int)MathMax(MathMax(gpStructLen, gpBrkLen + 1), MathMax(gpMomLen + 1, gpStopLen)) + 2;
+   int need = look + gpAtrLen + 10;
    if(bars < need) { Print("Not enough chart history yet (", bars, " bars, need ", need, "); scroll the chart back or load more history, then attach the EA again."); return INIT_FAILED; }
    int start = (int)MathMin(InpWarmBars, bars - look - 1);
    if(gRestored && gSvLast > 0)                         // reach back to the saved bar, so every day since then is counted (at most 100,000 bars)
    {
       int sh = iBarShift(_Symbol, _Period, gSvLast, false);
       if(sh < 0 || sh > start) start = (int)MathMin(sh < 0 ? 100000 : MathMin(sh, 100000), bars - look - 1);
+   }
+   if(gpVwapAnchor != VW_SESSION)                       // v4.8: a Week / Month VWAP needs its whole current week / month (at most 100,000 bars)
+   {
+      datetime vwT = iTime(_Symbol, _Period, 1);
+      MqlDateTime vwM; TimeToStruct(vwT, vwM);
+      datetime vwA = gpVwapAnchor == VW_MONTH ? StringToTime(StringFormat("%04d.%02d.01 00:00", vwM.year, vwM.mon))
+                                             : (datetime)((((long)vwT + 3 * 86400) / (7 * 86400)) * (7 * 86400) - 3 * 86400);   // Monday 00:00 (server)
+      int vwS = iBarShift(_Symbol, _Period, vwA, false), vwL = (int)MathMin(100000, bars - look - 1);
+      int vwN = vwS >= 0 ? vwS + 1 : vwL;
+      if(vwN > start) start = (int)MathMin(vwN, vwL);
+      if(iTime(_Symbol, _Period, bars - 1) > vwA || vwN > vwL)
+         Print("VWAP ", gpVwapAnchor == VW_MONTH ? "Month" : "Week", ": the chart history does not reach back to ", TimeToString(vwA, TIME_DATE),
+               ", so the VWAP starts later than TradingView's; scroll the chart back to load more history, then attach the EA again.");
    }
    gVwN = (int)MathMax(50, MathMin(20000, InpVwapBars));   // the VWAP line: the last gVwN bars
    gVwCut = iTime(_Symbol, _Period, (int)MathMin(gVwN, bars - 1));
@@ -2329,7 +2799,7 @@ int OnInit()
       // v4.4: the saved trade's setup is re-linked when the engine arms it again (its arm bar, direction and entry): its fill, stop moves and
       // exit on the bars since the saved state then reach the trade (gMiss*), like after a disconnect
       if(gRestored && exArmT > 0 && exState != 0 && !exHg && evArm && iTime(_Symbol, _Period, s) == exArmT && (st > 0) == exL &&
-         (exLim <= 0 || MathAbs(lim - exLim) <= TickSize() * 2.5)) exArm = armBar;
+         (exLim <= 0 || MathAbs(lim - exLim) <= TickSize() * 2.5) && !TfHold()) exArm = armBar;   // not on another timeframe
       if(offBar)
       {
          if(gOurFill) gMissFill = true;
@@ -2349,6 +2819,7 @@ int OnInit()
    else BrokerStart();
    gStateTxt = StateText(false);
    UpdateTable();
+   if(gCanDraw) ChartRedraw(0);                          // the VWAP line and markings show at once (also with the market closed)
    StateSave(true);                                      // restart memory: the state after this start
    OtherEAs();
    gInitDone = true;
@@ -2358,9 +2829,12 @@ int OnInit()
 void OnDeinit(const int reason)
 {
    StateSave(true);                                      // restart memory: the latest state on disk (MT5 closing, the EA removed, new inputs)
+   // restart memory off, new inputs or another timeframe: MT5 keeps the money management, but the start that follows skips earlier deals,
+   // so a trade that has just closed is booked now
+   if(!gPersist && (reason == REASON_PARAMETERS || reason == REASON_CHARTCHANGE) && exState != 0) BookBrokerDeals();
    LockFree();
    bool gone = reason == REASON_REMOVE || reason == REASON_CHARTCLOSE || reason == REASON_INITFAILED || reason == REASON_PROGRAM || reason == REASON_TEMPLATE;
-   if(gone && gTfTrade > 0 && MQLInfoInteger(MQL_TESTER) == 0) GlobalVariableDel(SvExtra("tf"));   // left the chart: attach it again on any timeframe
+   if(gone && gTfTrade > 0 && MQLInfoInteger(MQL_TESTER) == 0) { GlobalVariableDel(SvExtra("tf")); GlobalVariableDel(SvExtra("tfp")); }   // left the chart: attach it again on any timeframe
    Comment("");
    // after a Strategy Tester run the markings stay on the visual chart; everywhere else they are removed with the EA
    if(MQLInfoInteger(MQL_TESTER) == 0) ObjectsDeleteAll(0, "ARM_");

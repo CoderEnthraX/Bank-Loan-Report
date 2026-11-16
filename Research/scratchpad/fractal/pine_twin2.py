@@ -23,6 +23,7 @@ class P:   # the inputs (defaults = the Pine defaults)
     tz = 'Asia/Kolkata'; dayOn = False; days = (True, True, True, True, True, False, False); hoursOn = False; sess = (6 * 60, 23 * 60)
     mmOn = True; startB = 10000.0; szMode = 'usd'; baseLot = 0.01; baseR = 50.0; lotSz = 100.0; lotStep = 0.01; levIn = 100.0; capOn = True; hardCap = 500.0; capAction = 'clamp'
     recMode = L_CRF; lad = 'Medium'; ladT = 1000.0; recN = 3; recPct = 50.0; recMult = 2.0; recStep = 25.0; cSplit = 3; parN = 3; delayN = 2; eqPct = 1.0
+    mRestart = False   # v4.8 monthly restart: the money of every strategy starts again at its first trade of a new month (local time)
     crkCn = 1; crkPr = 'off'; crkPrN = 2; crkPrPct = 50.0; crkPrM = 2; crkELot = 0.01; crkFK = 3.0; crkGX = 10.0; crkHPct = 1.0; crkJX = 20.0
 
     def __init__(self, **kw):
@@ -47,6 +48,7 @@ class Strat:
         s.recPool = 0.0; s.recLosses = 0; s.dUnits = 1; s.carried = 0.0; s.parWins = 0; s.rdUnits = 1; s.oscU = 1; s.oscP = 0.0
         s.crL = 0.0; s.crN = 0; s.crW = False; s.crP = P_.crkCn; s.crF = 0; s.crWait = False; s.crWW = 0; s.crNeedL = False; s.crRecT = False
         s.risk = NA; s.units = NA; s.bR = NA
+        s.n0 = 0.0; s.mKey = None; s.curM = None; s.capStop = False   # v4.8: closed profit at the last monthly restart, its month, this bar's month
         s.trades = []; s.risks = []
 
     # ---- money
@@ -57,8 +59,8 @@ class Strat:
     def f_lad(s, B):
         p = s.P
         on = (not p.ladOff) and p.ladFam and s.peakNet >= p.ladT
-        C = max(0.0, s.net - p.ladLam * s.peakNet) if on else 0.0
-        return on, on and s.net <= 0, (B + min((p.ladBmx - 1.0) * B, p.ladPhi * C)) if on else B, C
+        C = max(0.0, s.net - s.n0 - p.ladLam * s.peakNet) if on else 0.0
+        return on, on and s.net - s.n0 <= 0, (B + min((p.ladBmx - 1.0) * B, p.ladPhi * C)) if on else B, C
 
     def f_crk(s, B, rec, rmin, pf, xr):
         p = s.P
@@ -66,7 +68,7 @@ class Strat:
         if rec:
             if p.recMode in (L_CRF, L_CRI): x = min(x, p.crkFK * B)
             elif p.recMode == L_CRH: x = min(x, max(B, s.eq * p.crkHPct / 100.0))
-            elif p.recMode == L_CRJ: x = max(B, x * max(0.0, 1.0 - (s.peakNet - s.net) / (p.crkJX * B)))
+            elif p.recMode == L_CRJ: x = max(B, x * max(0.0, 1.0 - (s.peakNet - (s.net - s.n0)) / (p.crkJX * B)))
         elif s.crL > 0 and p.recMode in (L_CRE, L_CRI):
             x = min(B, rmin)
         return x
@@ -79,11 +81,11 @@ class Strat:
         if s.recLosses >= 2:
             for _ in range(2, min(s.recLosses, 200) + 1):
                 t2 = fa + fb; fa = fb; fb = t2
-        stepBase = 0.0
-        if s.net >= 1000:
-            kk = int(math.floor((s.net - 1000.0) / 500.0)); stepBase = (1000.0 + 500.0 * kk) / (8.0 + kk)
-        elif s.net >= 500: stepBase = 500.0 / 5.0
-        elif s.net >= 200: stepBase = 200.0 / 3.0
+        stepBase = 0.0; nr = s.net - s.n0
+        if nr >= 1000:
+            kk = int(math.floor((nr - 1000.0) / 500.0)); stepBase = (1000.0 + 500.0 * kk) / (8.0 + kk)
+        elif nr >= 500: stepBase = 500.0 / 5.0
+        elif nr >= 200: stepBase = 200.0 / 3.0
         baseC = max(base, min(stepBase, p.hardCap) if p.capOn else stepBase) if m == L_CS else base
         labU = s.lab[0] + s.lab[-1] if len(s.lab) > 1 else s.lab[0]
         oscNd = int(max(1, math.ceil((base - s.oscP) / (base * xr) - 1e-9)))
@@ -114,13 +116,22 @@ class Strat:
                 if lGuard: r = min(base, rmin)
         return r, rec, baseC
 
+    def mreset(s):
+        p = s.P
+        s.recPool = 0.0; s.recLosses = 0; s.dUnits = 1; s.carried = 0.0; s.lab = [1.0, 2.0, 3.0]; s.parWins = 0; s.rdUnits = 1; s.oscU = 1; s.oscP = 0.0
+        s.crL = 0.0; s.crN = 0; s.crRecT = False; s.crW = False; s.crP = p.crkCn; s.crF = 0; s.crWait = False; s.crWW = 0; s.crNeedL = False
+        s.n0 = s.net; s.peakNet = 0.0
+
     def mmOpen(s, F):
         p = s.P; sd = F * s.sl / 100.0
+        if p.mRestart and s.curM != s.mKey:     # v4.8: the first trade of a new month starts with fresh money (the profit ladder etc. count from here)
+            if s.mKey is not None: s.mreset()
+            s.mKey = s.curM
         s.bR = s.f_base(sd)
         r0, rec0, baseC = s.f_raw(sd); r = r0; take = True; s.crRecT = rec0
         if p.capOn and r > p.hardCap:
             if p.capAction == 'stop':
-                s.stopped = True; take = False
+                s.stopped = True; take = False; s.capStop = True
             elif p.capAction == 'reset':
                 s.recPool = 0.0; s.recLosses = 0; s.dUnits = 1; s.carried = 0.0; s.lab = [1.0, 2.0, 3.0]; s.parWins = 0; s.rdUnits = 1; s.oscU = 1; s.oscP = 0.0
                 s.crL = 0.0; s.crN = 0; s.crRecT = False; s.crW = False; s.crP = p.crkCn; s.crF = 0; s.crWait = False; s.crWW = 0; s.crNeedL = False
@@ -134,7 +145,7 @@ class Strat:
     def mmBook(s, pnl):
         p = s.P
         s.eq += pnl; s.net += pnl; s.pkEq = max(s.pkEq, s.eq); s.ddU = max(s.ddU, s.pkEq - s.eq); s.ddP = max(s.ddP, (s.pkEq - s.eq) / s.pkEq)
-        s.peakNet = max(s.peakNet, s.net)
+        s.peakNet = max(s.peakNet, s.net - s.n0)
         if s.eq <= 0: s.stopped = True
         win = pnl > 0
         s.carried = max(0.0, s.carried - pnl)
@@ -244,6 +255,9 @@ class Strat:
 
     def onBar(s, ph, pt, hb, pc, okb, wk, dno, o, h, l, c, bar, T):
         p = s.P
+        s.curM = dno // 100
+        if p.mRestart and s.capStop and s.mKey is not None and s.curM != s.mKey: s.stopped = False; s.capStop = False   # v4.8: a hard-cap stop ends with the month
+        if p.mRestart and not s.pos and s.mKey is not None and s.curM != s.mKey: s.mreset(); s.mKey = s.curM   # flat at a new month: the money starts again now
         if s.dPrev is None or dno != s.dPrev: s.dCnt = 0; s.dPrev = dno
         lvlNew = False
         if not math.isnan(ph) and pt is not None and (s.lvlT is None or pt != s.lvlT):

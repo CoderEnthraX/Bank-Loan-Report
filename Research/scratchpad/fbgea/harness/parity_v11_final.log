@@ -1,0 +1,16 @@
+custom: defaults                             trades compared   5551, mismatching strategies 0, worst $ risk difference 9.3e-13
+custom: defaults + monthly restart           trades compared   5551, mismatching strategies 0, worst $ risk difference 9.6e-13
+custom: random set 1 + monthly restart       trades compared   1371, mismatching strategies 0, worst $ risk difference 7.0e-14
+custom: random set 2 + monthly restart       trades compared    652, mismatching strategies 0, worst $ risk difference 0.0e+00
+custom: random set 3 + monthly restart       trades compared   4894, mismatching strategies 0, worst $ risk difference 6.8e-13
+custom: random set 4 + monthly restart       trades compared   4030, mismatching strategies 0, worst $ risk difference 0.0e+00
+preset G1 (random other inputs)              trades compared   1679, mismatching strategies 0, worst $ risk difference 4.9e-12
+preset G2 (random other inputs)              trades compared   2096, mismatching strategies 0, worst $ risk difference 9.9e-12
+preset G3 (random other inputs)              trades compared   1977, mismatching strategies 0, worst $ risk difference 4.9e-12
+preset G4 (random other inputs)              trades compared   1741, mismatching strategies 0, worst $ risk difference 9.9e-12
+preset G5 (random other inputs)              trades compared   5551, mismatching strategies 0, worst $ risk difference 0.0e+00
+preset G6 (random other inputs)              trades compared   5407, mismatching strategies 0, worst $ risk difference 0.0e+00
+preset G2 + my days and hours                trades compared   1087, mismatching strategies 0, worst $ risk difference 9.8e-12
+preset G1 + my money (restart on)            trades compared   1679, mismatching strategies 0, worst $ risk difference 1.2e-13
+preset G1 + my money (restart off)           trades compared   1679, mismatching strategies 0, worst $ risk difference 4.9e-15
+PARITY v1.1: ALL IDENTICAL

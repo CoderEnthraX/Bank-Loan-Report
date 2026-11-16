@@ -26,6 +26,9 @@
 //  risk grows, paid only from the profit above a lock; back at the start, 0.01 lot (the same as in the MT5 EA).
 //  v4.7: POSITION SIZE (Risk and position size): Fixed $ risk (as before), Fixed lots (e.g. 0.01 lot) or % of
 //  equity at risk; the loss recovery rule sizes every trade from that base (strategy only; the EA keeps $ risk).
+//  v4.8: STRATEGY PRESET at the top of the settings: Custom (your settings) or one of the 25 tested catalogue strategies
+//  (M1 S1-S4, M5 S1-S4, M15 S1-S9, H1 S1-S8), each on its own chart timeframe; Add My Filters adds your days, hours, kill
+//  zones and news. The monthly restart now also restarts the profit ladder and a hard-cap stop (the same in the MT5 EA).
 //
 //  LEVERAGE: set it with the "Leverage" input (default 1:100). TradingView's own margin check is off
 //  (margin 0 in Properties): with its default 100 % margin it silently rejects orders bigger than the
@@ -40,9 +43,13 @@ strategy("Auction Retest Strategy [VWAP Displacement + Retest]", shorttitle = "A
 {{INPUTS}}
 
 GRP_P = "PARTIAL PROFITS (strategy only)"
-p1Pct = input.float(0.0, "Close % At TP1", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_P)
-p2Pct = input.float(0.0, "Close % At TP2", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_P)
-p3Pct = input.float(0.0, "Close % At TP3", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_P, tooltip = "Share of the ORIGINAL position closed at each target before the final exit (0 = no partial). The trade itself still ends at the final exit or the stop, like the indicator.")
+p1PctIn = input.float(0.0, "Close % At TP1", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_P)
+p2PctIn = input.float(0.0, "Close % At TP2", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_P)
+p3PctIn = input.float(0.0, "Close % At TP3", minval = 0.0, maxval = 100.0, step = 5.0, group = GRP_P, tooltip = "Share of the ORIGINAL position closed at each target before the final exit (0 = no partial). The trade itself still ends at the final exit or the stop, like the indicator.")
+// v4.8: a preset closes its own partial at TP1 (70% on M15-S2 / S4 / S5 and H1-S2 / S4 / S5), nothing at TP2 / TP3
+float p1Pct = PC ? p1PctIn : PI == 10 or PI == 12 or PI == 13 or PI == 19 or PI == 21 or PI == 22 ? 70.0 : 0.0
+float p2Pct = PC ? p2PctIn : 0.0
+float p3Pct = PC ? p3PctIn : 0.0
 float pp1 = exitK > 1 ? p1Pct : 0.0
 float pp2 = exitK > 2 ? p2Pct : 0.0
 float pp3 = exitK > 3 ? p3Pct : 0.0
@@ -63,7 +70,7 @@ CAP_STOP  = "Stop trading"
 CAP_RESET = "Start again from the base risk"
 capOn      = input.bool(false, "Hard Cap: Max Loss Per Trade ($)", inline = "cap", group = GRP_R, tooltip = "No trade may risk more than this amount (the stop-out loss incl. commission and spread). Applies to every loss-recovery mode.")
 hardCap    = input.float(250.0, "", minval = 0.01, step = 50.0, inline = "cap", group = GRP_R)
-capAction  = input.string(CAP_RESET, "If The Risk Would Exceed The Cap", options = [CAP_CLAMP, CAP_STOP, CAP_RESET], group = GRP_R, tooltip = "Clamp: trade at the cap.\nStop trading: take no more trades for the rest of the backtest.\nStart again: forget the carried losses / losing run and trade at the base risk.")
+capAction  = input.string(CAP_RESET, "If The Risk Would Exceed The Cap", options = [CAP_CLAMP, CAP_STOP, CAP_RESET], group = GRP_R, tooltip = "Clamp: trade at the cap.\nStop trading: take no more trades for the rest of the backtest (with the monthly restart on: until the 1st of the next month).\nStart again: forget the carried losses / losing run and trade at the base risk.")
 LOT_AUTO = "Auto (by ticker)"
 LOT_FIX  = "Broker fixed (units below)"
 lotMode    = input.string(LOT_AUTO, "Lot Size", options = [LOT_AUTO, LOT_FIX], inline = "lot", group = GRP_R, tooltip = "Auto: forex 100,000 units · gold 100 oz · silver 5,000 oz · platinum/palladium 100 oz · crypto 1 coin · oil CFDs (USOIL, UKOIL, WTI, BRENT, XTI, XBR) 1,000 bbl · natural gas CFDs (NATGAS, XNG, NGAS) 10,000 MMBtu · any futures contract (CL, NG, GC, MCX CRUDEOIL, ...) 1 contract · indices, stocks, others 1.\nBroker fixed: every symbol uses the units entered here (e.g. 100).\nLots only affect the lot display, the lot step and the per-lot commission; the $ risk sizing is the same either way.")
@@ -98,7 +105,7 @@ mLockAmt = input.float(150.0, "", minval = 0.01, step = 10.0, inline = "ml", gro
 pLockOn  = input.bool(false, "Lock Profit Once The Month Is Up ($) · Lock %", inline = "pl", group = GRP_ML)
 pLockAt  = input.float(500.0, "", minval = 0.01, step = 50.0, inline = "pl", group = GRP_ML)
 pLockPct = input.float(20.0, "", minval = 1.0, maxval = 100.0, step = 5.0, inline = "pl", group = GRP_ML, tooltip = "When this month's closed profit reaches the amount, this % of the month's highest closed profit is locked, e.g. up $500 with 20% -> $100 locked; the locked part rises with every new high (up $800 -> $160). If the month's closed profit falls back to the locked level, no new trades until the 1st of next month. It is checked when a trade closes, so one big losing trade can still end below the locked level.")
-mRestart = input.bool(false, "Restart The Loss Recovery On The 1st Of Each Month", group = GRP_ML, tooltip = "On the 1st of each month (time zone of DAYS AND HOURS) the loss recovery starts again from the base risk, like the hard cap's Start again: the loss to win back, the losing runs, the Labouchere list, Rule C's carried losses and the Crooks C rule state (incl. a skip pause) are forgotten. With a trade or entry order of the old month still open, right after it closes.\nThe gold research tested every month this way (a fresh start on the 1st).")
+mRestart = input.bool(false, "Restart The Loss Recovery On The 1st Of Each Month", group = GRP_ML, tooltip = "On the 1st of each month (time zone of DAYS AND HOURS) the loss recovery starts again from the base risk, like the hard cap's Start again: the loss to win back, the losing runs, the Labouchere list, Rule C's carried losses and the Crooks C rule state (incl. a skip pause) are forgotten. With a trade or entry order of the old month still open, right after it closes.\nThe gold research tested every month this way (a fresh start on the 1st). v4.8: it also restarts the profit ladder (its best profit and the closed profit count from the restart), the Crooks J drawdown, the Rule C split steps and a hard-cap Stop trading, so every month starts like a new account (the same as in the MT5 EA and the monthly tests).")
 
 GRP_X = "FORCE-CLOSE, WEEKEND AND NEWS (strategy only)"
 fcOn      = input.bool(true, "Force-Close Open Trades At (hour : minute)", inline = "fc", group = GRP_X)
@@ -106,24 +113,32 @@ fcHour    = input.int(23, "", minval = 0, maxval = 23, inline = "fc", group = GR
 fcMin     = input.int(55, "", minval = 0, maxval = 59, inline = "fc", group = GRP_X, tooltip = "Every day at this time (time zone in DAYS AND HOURS) any open trade is closed at market and a working entry is cancelled.")
 weekendOn = input.bool(true, "Close Open Trades When Saturday Starts", group = GRP_X, tooltip = "To stop NEW setups on Saturday/Sunday untick those days in DAYS AND HOURS (they then disappear from the indicator too).")
 newsPre   = input.int(60, "No New Trades Before News (minutes)", minval = 0, group = GRP_X, tooltip = "For every news window that is on: no new trades from this many minutes before it starts until it ends. Any open trade is closed and any working entry cancelled when the window starts.")
-dNewsOn   = input.bool(true, "Daily News Window", inline = "dn", group = GRP_X)
+dNewsOnIn = input.bool(true, "Daily News Window", inline = "dn", group = GRP_X)
 dNewsSess = input.session("1745-1815", "", inline = "dn", group = GRP_X, tooltip = "Repeats every day in the time zone of DAYS AND HOURS, set as it is in New York summer time (e.g. US data at 8:30 New York = 18:00 IST). The option below keeps it at the same New York time in winter.")
 dnAuto    = input.bool(true, "Daily News Window Follows New York Time", group = GRP_X, tooltip = "On (default): the daily window keeps the same New York time all year. Set it as it is in New York summer time; while New York is on winter time (first Sunday of November to second Sunday of March) it moves 1 hour later in IST (18:00-19:00 -> 19:00-20:00). It works for any time zone in DAYS AND HOURS: the window moves by the change in the gap between that zone and New York (London: only in the weeks when the two switch on different dates).\nOff: the window stays at the same time in your time zone all year.")
-n1On  = input.bool(false, "News 1 (start · minutes)", inline = "n1", group = GRP_X)
+n1OnIn = input.bool(false, "News 1 (start · minutes)", inline = "n1", group = GRP_X)
 n1T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n1", group = GRP_X)
 n1Dur = input.int(60, "", minval = 1, inline = "n1", group = GRP_X)
-n2On  = input.bool(false, "News 2 (start · minutes)", inline = "n2", group = GRP_X)
+n2OnIn = input.bool(false, "News 2 (start · minutes)", inline = "n2", group = GRP_X)
 n2T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n2", group = GRP_X)
 n2Dur = input.int(60, "", minval = 1, inline = "n2", group = GRP_X)
-n3On  = input.bool(false, "News 3 (start · minutes)", inline = "n3", group = GRP_X)
+n3OnIn = input.bool(false, "News 3 (start · minutes)", inline = "n3", group = GRP_X)
 n3T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n3", group = GRP_X)
 n3Dur = input.int(60, "", minval = 1, inline = "n3", group = GRP_X)
-n4On  = input.bool(false, "News 4 (start · minutes)", inline = "n4", group = GRP_X)
+n4OnIn = input.bool(false, "News 4 (start · minutes)", inline = "n4", group = GRP_X)
 n4T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n4", group = GRP_X)
 n4Dur = input.int(60, "", minval = 1, inline = "n4", group = GRP_X)
-n5On  = input.bool(false, "News 5 (start · minutes)", inline = "n5", group = GRP_X)
+n5OnIn = input.bool(false, "News 5 (start · minutes)", inline = "n5", group = GRP_X)
 n5T   = input.time(timestamp("2026-01-01T18:00:00"), "", inline = "n5", group = GRP_X)
 n5Dur = input.int(60, "", minval = 1, inline = "n5", group = GRP_X, tooltip = "One-off news events: pick the date and start time and the length in minutes.")
+
+// v4.8: your news windows apply with Custom or with Add My Filters
+bool dNewsOn = myF and dNewsOnIn
+bool n1On    = myF and n1OnIn
+bool n2On    = myF and n2OnIn
+bool n3On    = myF and n3OnIn
+bool n4On    = myF and n4OnIn
+bool n5On    = myF and n5OnIn
 
 GRP_L = "LOSS RECOVERY (strategy only)"
 L_OFF   = "Off"
@@ -281,6 +296,7 @@ var bool  crkNeedL  = false  //   the M wins came: the next recovery trade waits
 var bool  crkSkip   = false  // skip rule: trading is paused
 var int   crkSkipLeft = 0    //   counted days still to skip
 var float mNet0     = 0.0    // monthly lock: closed profit before this month
+var float rNet0     = 0.0    // v4.8 monthly restart: closed profit at the last restart (the money rules count from it)
 var float mPeak     = 0.0    //   this month's highest closed profit
 var bool  mStop     = false  //   no new trades until next month (monthly lock or profit lock)
 var bool  pLocked   = false  //   profit lock: the month reached the lock amount
@@ -296,8 +312,8 @@ float     ladGam    = ladMode == LAD_MED ? 0.3 : ladMode == LAD_HIGH ? 0.35 : la
 // the profit ladder now: on, the start guard (closed profit 0 or less), its base, and the cushion (the closed profit above the lock)
 f_lad(float B) =>
     bool  on = ladMode != LAD_OFF and ladFam and ladT > 0 and crkPk >= ladT
-    float C  = on ? math.max(0.0, strategy.netprofit - ladLam * crkPk) : 0.0
-    [on, on and strategy.netprofit <= 0, on ? B + math.min((ladBmax - 1.0) * B, ladPhi * C) : B, C]
+    float C  = on ? math.max(0.0, strategy.netprofit - rNet0 - ladLam * crkPk) : 0.0
+    [on, on and strategy.netprofit - rNet0 <= 0, on ? B + math.min((ladBmax - 1.0) * B, ladPhi * C) : B, C]
 var bool  exT1      = false  // Crooks TP1 rule: this trade banks the recovery amount at TP1 with half, the rest runs to TP2
 var float exT1Stop  = na     // its stop before TP1 (Crooks TP1 Rule: Stop Before TP1)
 var float exT1Tight = na     // the tight stop (TP1 / 2): a stop-out loses exactly the recovery amount
@@ -318,7 +334,7 @@ f_crkRule(float B, float x, bool rn, bool useT1, float mul, float eRisk) =>
     else if rn and recMode == L_CRH
         q := math.min(q, math.max(B, strategy.equity * crkHPct / 100.0) / mul)
     else if rn and recMode == L_CRJ
-        q := math.max(B, q * math.max(0.0, 1.0 - math.max(0.0, crkPk - strategy.netprofit) / (crkJX * B)))
+        q := math.max(B, q * math.max(0.0, 1.0 - math.max(0.0, crkPk - (strategy.netprofit - rNet0)) / (crkJX * B)))
     else if not rn and crkL > 0 and (recMode == L_CRE or recMode == L_CRI)
         q := math.min(B, eRisk)
     q
@@ -493,7 +509,7 @@ if exClosed
     // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, D: also when a recovery trade wins; C keeps a leftover)
     bool crkLast = crkP == 1     // this recovery trade went for the last part of the loss (Crooks C over N wins)
     crkL := math.max(0.0, crkL - exPnl)
-    crkPk := math.max(crkPk, strategy.netprofit)         // v4.5 Crooks J, v4.6 ladder: the highest closed profit
+    crkPk := math.max(crkPk, strategy.netprofit - rNet0) // v4.5 Crooks J, v4.6 ladder: the highest closed profit (v4.8: since the monthly restart)
     if recMode == L_CRG                                  // v4.5 Crooks G: never more than X x base to win back (v4.6: the ladder's base)
         [gOn, gGuard, gB, gC] = f_lad(exBase)
         crkL := math.min(crkL, crkGX * gB)
@@ -568,6 +584,9 @@ if mRestPend and exState == 0 and strategy.position_size == 0
     crkNeedL    := false
     crkSkip     := false
     crkSkipLeft := 0
+    rNet0       := strategy.netprofit   // v4.8: the profit ladder, Crooks J and Rule C split count from here; a hard-cap stop ends
+    crkPk       := 0.0
+    capStop     := false
 // this month's closed profit (costs included): stop for the month at the lock amount, or when it falls back to the locked part of its high
 float mPnl = strategy.netprofit - mNet0
 if mLockOn and mPnl >= mLockAmt
@@ -638,7 +657,7 @@ if evArm
             fa := fb
             fb := fc
     // Rule C split: base steps up with total closed profit (step amount / parts)
-    float prof     = strategy.netprofit
+    float prof     = strategy.netprofit - rNet0     // v4.8: since the monthly restart
     float stepBase = 0.0
     if prof >= 1000
         int kk = int(math.floor((prof - 1000) / 500))
@@ -772,14 +791,14 @@ var table mon = na
 // last historical bar + every realtime bar (strategies calculate realtime bars only at their close)
 if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     if na(mon)
-        mon := table.new(f_pos(tablePos), 2, 13 + (mvAny ? 1 : 0) + (fltAny ? 1 : 0) + (ladMode != LAD_OFF ? 1 : 0), border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
+        mon := table.new(f_pos(tablePos), 2, 13 + (PC ? 0 : 1) + (mvAny ? 1 : 0) + (fltAny ? 1 : 0) + (ladMode != LAD_OFF ? 1 : 0), border_color = color.new(#4A4E5A, 0), border_width = 1, frame_color = color.new(#4A4E5A, 0), frame_width = 1)
     color  white = color.new(#FFFFFF, 0)
     color  posC  = color.new(#69F0AE, 0)
     color  negC  = color.new(#FF80AB, 0)
     bool   act   = math.abs(st) == 2 and not trGhost
     bool   armed = math.abs(st) == 1 and not trGhost
     bool   has   = act or armed
-    string stTxt = st != 0 and trGhost ? "SKIPPED (" + trSkip + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" : capStop ? "HARD CAP: STOPPED" : newsBlock ? "NEWS WINDOW" : paused ? "PAUSED (" + str.tostring(pauseLeft) + "d left)" : crkPause ? "CROOKS C PAUSE (" + str.tostring(crkSkipLeft) + "d left)" : mStop ? "MONTHLY LOCK (until the 1st)" : dayBlock ? "STREAK STOP TODAY" : not dayOpen ? "DAILY STOP HIT" : not dayOk ? "DAY SWITCHED OFF" : not hourOk ? "OUTSIDE HOURS" : not kzOk ? "OUTSIDE KILL ZONES" : "SCANNING"
+    string stTxt = not presetTfOk ? "WRONG CHART: " + presetTfTxt + " PRESET, NO TRADES" : st != 0 and trGhost ? "SKIPPED (" + trSkip + ")" : st == 2 ? "LONG ACTIVE" : st == -2 ? "SHORT ACTIVE" : st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED" : capStop ? "HARD CAP: STOPPED" : newsBlock ? "NEWS WINDOW" : paused ? "PAUSED (" + str.tostring(pauseLeft) + "d left)" : crkPause ? "CROOKS C PAUSE (" + str.tostring(crkSkipLeft) + "d left)" : mStop ? "MONTHLY LOCK (until the 1st)" : dayBlock ? "STREAK STOP TODAY" : not dayOpen ? "DAILY STOP HIT" : not dayOk ? "DAY SWITCHED OFF" : not hourOk ? "OUTSIDE HOURS" : not kzOk ? "OUTSIDE KILL ZONES" : "SCANNING"
     string exTxt = exState == 2 ? " · in trade" : exState == 1 ? " · order working" : has ? " · not taken" : ""
     float  lots  = exQty / unitsPer
     table.cell(mon, 0, 0, "AUCTION RETEST", text_color = white, bgcolor = color.new(#29A3E0, 0), text_size = size.small)
@@ -792,7 +811,7 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     bool   isC = recMode == L_C or recMode == L_CS
     bool   isK = recMode == L_CRA or recMode == L_CRB or recMode == L_CRD or crkCFam
     bool   kRec = exState != 0 ? crkRec : f_crkRecNext()
-    string kLim = recMode == L_CRF or recMode == L_CRI ? ", at most " + str.tostring(crkFK) + "x base" : recMode == L_CRH ? ", at most " + str.tostring(crkHPct) + "% of equity" : recMode == L_CRJ ? ", drawdown " + f_usd(math.max(0.0, crkPk - strategy.netprofit)) : ""
+    string kLim = recMode == L_CRF or recMode == L_CRI ? ", at most " + str.tostring(crkFK) + "x base" : recMode == L_CRH ? ", at most " + str.tostring(crkHPct) + "% of equity" : recMode == L_CRJ ? ", drawdown " + f_usd(math.max(0.0, crkPk - (strategy.netprofit - rNet0))) : ""
     string kWait = recMode == L_CRE or recMode == L_CRI ? " · " + str.tostring(crkELot) + " lot, waiting for a win" : " · base, waiting for a win"
     string kTxt = f_usd(crkL) + (recMode == L_CRG ? " (at most " + f_usd(crkGX * baseRisk) + ")" : "") + (crkCFam ? (kRec ? " · recovery trade" + (crkNp > 1 ? ", part " + str.tostring(crkNp - crkP + 1) + " of " + str.tostring(crkNp) : "") + kLim : crkL > 0 ? kWait : " · base") : " · trade " + str.tostring(crkN + 1) + (kRec ? " recovery" : " base")) + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "") + (not crkPrOn ? "" : crkPause ? " · paused, " + str.tostring(crkSkipLeft) + " days left" : crkWait ? " · waiting for " + str.tostring(crkPrM) + " wins in a row (" + str.tostring(crkWW) + ")" : crkNeedL ? " · waiting for a loss, then a win" : crkF > 0 ? " · lost recoveries in a row " + str.tostring(crkF) + "/" + str.tostring(crkPrN) : "")
     f_row(mon, 5, isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", recMode == L_OFF ? "off" : isC ? f_usd(carried) + " · split " + str.tostring(cSplit) : isK ? kTxt : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : recMode == L_RDALE ? " · " + str.tostring(rdUnits) + " units" : recMode == L_OSC ? " · " + str.tostring(oscU) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white)
@@ -809,6 +828,9 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
         r += 1
     if fltAny
         f_row(mon, r, "SKIPPED BY FILTERS", f_fltTxt(), ghR <= 0 ? posC : negC)
+        r += 1
+    if not PC
+        f_row(mon, r, "PRESET", presetTxt + (presetTfOk ? "" : " · needs a " + presetTfTxt + " chart") + (addMine ? " · + my filters" : ""), presetTfOk ? posC : negC)
         r += 1
     if ladMode != LAD_OFF
         f_row(mon, r, "PROFIT LADDER", not ladFam ? "only with Crooks F, G, H, I or J" : not lOn ? "best profit " + f_usd(math.max(0.0, crkPk)) + " of " + f_usd(ladT) + " to start" : lGuard ? "back at the start: 0.01 lot until in profit" : "lock " + f_usd(ladLam * crkPk) + " · cushion " + f_usd(lC) + " · base " + f_usd(lB), lGuard ? negC : lOn ? posC : white)

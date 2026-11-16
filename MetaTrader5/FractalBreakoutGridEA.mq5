@@ -34,9 +34,13 @@
 //| a restart the missed minutes are caught up: the buy stops follow |
 //| the rules, no new trade opens for them, and an open trade is     |
 //| managed as the rules say (a missed exit closes it at once).      |
+//|                                                                  |
+//| v1.1: PRESET at the top of the inputs: Custom or a tested        |
+//| combination of strategies with its money (the $1,000-a-month     |
+//| gold study); a monthly restart of every strategy's money.        |
 //+------------------------------------------------------------------+
 #property copyright "Fractal Breakout Grid"
-#property version   "1.00"
+#property version   "1.10"
 #property description "12 long breakout strategies on swing highs (Fractal Breakout Grid), stops moved on every tick, money management."
 #include <Trade/Trade.mqh>
 
@@ -97,6 +101,19 @@ enum ENUM_TBL_POS { TBL_TOP_RIGHT = 0,    // Top right
                     TBL_TOP_LEFT = 1,     // Top left
                     TBL_BOTTOM_RIGHT = 2, // Bottom right
                     TBL_BOTTOM_LEFT = 3 }; // Bottom left
+
+enum ENUM_GPRESET { GP_CUSTOM = 0,  // Custom (my settings below)
+                    GP_1 = 1,     // Best monthly: S7, S8, S10 - $10 - exact recovery - cap $100
+                    GP_2 = 2,     // Safest: S1, S2, S6, S7, S8, S10 - $5 - exact recovery - cap $50
+                    GP_3 = 3,     // Steady, more profit: S1, S2, S6, S7, S8, S10 - $10 - exact recovery - cap $100 start again
+                    GP_4 = 4,     // Small: S7, S8, S10 - $5 - exact recovery - cap $50
+                    GP_5 = 5,     // No recovery: all 12 - $10 fixed risk
+                    GP_6 = 6      // No recovery: 11 strategies (all but S4) - $10 fixed risk
+                  };
+input group "PRESET"
+input ENUM_GPRESET InpPreset = GP_CUSTOM; // Preset (its strategies, tested settings and money; weekend close, costs, balance stay yours)
+input bool   InpAddMine  = false;  // Add my days and hours to the preset
+input bool   InpMyMoney  = false;  // Use my money settings with the preset (base risk, recovery, cap, ladder, monthly restart)
 
 input group "GRID"
 input ENUM_RUN InpRun     = RUN_ALL; // Run
@@ -276,6 +293,7 @@ input double InpLev      = 100.0;  // Leverage limit 1:N (a trade is never bigge
 input bool   InpCapOn    = true;   // Hard cap: max loss per trade
 input double InpHardCap  = 500.0;  //   ...amount
 input ENUM_CAP InpCapAction = CAP_CLAMP; //   ...if the risk would exceed the cap
+input bool   InpMRestart = false;  // Restart every strategy's money on the 1st of each month (your time zone; the balance carries on)
 
 input group "LOSS RECOVERY"
 input ENUM_REC InpRec    = REC_CRF; // Loss recovery
@@ -310,6 +328,147 @@ input bool   InpRemember = true;   // Continue after a restart (restart memory)
 input int    InpWarmDays = 60;     // Warm-up: days of 1-minute history read at a fresh start
 
 //--- one strategy: settings, swing-high candles, the waiting buy stop, the trade, the money and the stats
+//--- v1.1 the values the rules use: the inputs (Custom) or the preset's (PresetApply)
+ENUM_RUN gpRun;
+bool gpS1On;
+ENUM_TIMEFRAMES gpS1Tf;
+int gpS1R;
+int gpS1L;
+double gpS1Off;
+double gpS1Sl;
+double gpS1Tp;
+double gpS1Be;
+double gpS1Sv;
+bool gpS2On;
+ENUM_TIMEFRAMES gpS2Tf;
+int gpS2R;
+int gpS2L;
+double gpS2Off;
+double gpS2Sl;
+double gpS2Tp;
+double gpS2Be;
+double gpS2Sv;
+bool gpS3On;
+ENUM_TIMEFRAMES gpS3Tf;
+int gpS3R;
+int gpS3L;
+double gpS3Off;
+double gpS3Sl;
+double gpS3Tp;
+double gpS3Be;
+double gpS3Sv;
+bool gpS4On;
+ENUM_TIMEFRAMES gpS4Tf;
+int gpS4R;
+int gpS4L;
+double gpS4Off;
+double gpS4Sl;
+double gpS4Tp;
+double gpS4Be;
+double gpS4Sv;
+bool gpS5On;
+ENUM_TIMEFRAMES gpS5Tf;
+int gpS5R;
+int gpS5L;
+double gpS5Off;
+double gpS5Sl;
+double gpS5Tp;
+double gpS5Be;
+double gpS5Sv;
+bool gpS6On;
+ENUM_TIMEFRAMES gpS6Tf;
+int gpS6R;
+int gpS6L;
+double gpS6Off;
+double gpS6Sl;
+double gpS6Tp;
+double gpS6Be;
+double gpS6Sv;
+bool gpS7On;
+ENUM_TIMEFRAMES gpS7Tf;
+int gpS7R;
+int gpS7L;
+double gpS7Off;
+double gpS7Sl;
+double gpS7Tp;
+double gpS7Be;
+double gpS7Sv;
+bool gpS8On;
+ENUM_TIMEFRAMES gpS8Tf;
+int gpS8R;
+int gpS8L;
+double gpS8Off;
+double gpS8Sl;
+double gpS8Tp;
+double gpS8Be;
+double gpS8Sv;
+bool gpS9On;
+ENUM_TIMEFRAMES gpS9Tf;
+int gpS9R;
+int gpS9L;
+double gpS9Off;
+double gpS9Sl;
+double gpS9Tp;
+double gpS9Be;
+double gpS9Sv;
+bool gpS10On;
+ENUM_TIMEFRAMES gpS10Tf;
+int gpS10R;
+int gpS10L;
+double gpS10Off;
+double gpS10Sl;
+double gpS10Tp;
+double gpS10Be;
+double gpS10Sv;
+bool gpS11On;
+ENUM_TIMEFRAMES gpS11Tf;
+int gpS11R;
+int gpS11L;
+double gpS11Off;
+double gpS11Sl;
+double gpS11Tp;
+double gpS11Be;
+double gpS11Sv;
+bool gpS12On;
+ENUM_TIMEFRAMES gpS12Tf;
+int gpS12R;
+int gpS12L;
+double gpS12Off;
+double gpS12Sl;
+double gpS12Tp;
+double gpS12Be;
+double gpS12Sv;
+ENUM_ENTRY gpEntry;
+int gpExpN;
+int gpMaxDay;
+double gpTrA;
+double gpTrD;
+double gpTExitH;
+bool gpTrnOn;
+bool gpDayOn;
+bool gpHoursOn;
+ENUM_SIZE gpSizeMode;
+double gpBaseRisk;
+bool gpCapOn;
+double gpHardCap;
+ENUM_CAP gpCapAction;
+ENUM_REC gpRec;
+ENUM_LADDER gpLadder;
+bool gpMRestart;
+string PresetName()
+{
+   switch(InpPreset)
+   {
+      case GP_1: return "G1 Best monthly: S7, S8, S10";
+      case GP_2: return "G2 Safest: S1, S2, S6, S7, S8, S10";
+      case GP_3: return "G3 Steady, more profit: S1, S2, S6, S7, S8, S10";
+      case GP_4: return "G4 Small: S7, S8, S10";
+      case GP_5: return "G5 No recovery: all 12";
+      case GP_6: return "G6 No recovery: 11 strategies (all but S4)";
+      default: break;
+   }
+   return "Custom";
+}
 struct Strat
 {
    int      id;                  // 1 - 12
@@ -337,6 +496,9 @@ struct Strat
    int      dCnt, dPrev;         // entries today, the day
    bool     stopped;
    string   stopWhy;
+   double   n0;                  // v1.1 monthly restart: the closed profit at the last restart (the money rules count from it)
+   int      mKey, curM;          //   the month of the money (yyyymm), this candle's month
+   bool     capStp;              //   stopped by the hard cap (ends with the month)
    // money (gold/recovery.py simulate, as the Pine code)
    double   eq, pkEq, ddU, ddP, net, peakNet, recPool, carried, oscP, crL, risk, units, bR;
    int      recLosses, dUnits, parWins, rdUnits, oscU, crN, crP, crF, crWW;
@@ -404,6 +566,7 @@ void StratInit(Strat &s, int id, bool on, ENUM_TIMEFRAMES tf, int r, int l, doub
    s.lvlOn = false; s.lvlH = 0; s.E = 0; s.lvlT = 0; s.kAct = 0; s.actT = 0; s.armed = false;
    s.pos = false; s.F = 0; s.SLp = 0; s.TPp = 0; s.BEl = 0; s.SVl = 0; s.hi = 0; s.beOn = false; s.svOn = false; s.trOn = false;
    s.eTime = 0; s.cnt = false; s.ticket = 0; s.lots = 0; s.dCnt = 0; s.dPrev = -1; s.stopped = false; s.stopWhy = "";
+   s.n0 = 0; s.mKey = -1; s.curM = -1; s.capStp = false;
    s.eq = InpStartB; s.pkEq = InpStartB; s.ddU = 0; s.ddP = 0; s.net = 0; s.peakNet = 0; s.recPool = 0; s.carried = 0; s.oscP = 0; s.crL = 0;
    s.risk = 0; s.units = 0; s.bR = 0;
    s.recLosses = 0; s.dUnits = 1; s.parWins = 0; s.rdUnits = 1; s.oscU = 1; s.crN = 0; s.crP = MathMax(1, InpCrkCn); s.crF = 0; s.crWW = 0;
@@ -434,7 +597,7 @@ void PushTf(Strat &s, double high, datetime t, datetime tNow, bool detect)
          Note(s, "BUY STOP " + DoubleToString(s.E, _Digits) + " (swing high " + DoubleToString(v, _Digits) + ")", false);
       }
    }
-   if(s.lvlOn && InpExpN > 0 && hb - s.kAct >= InpExpN) s.lvlOn = false;
+   if(s.lvlOn && gpExpN > 0 && hb - s.kAct >= gpExpN) s.lvlOn = false;
 }
 //--- a completed candle of the trend timeframe: its EMA (seeded with the first close) and whether it closed above it
 void PushTrend(double c)
@@ -468,10 +631,10 @@ void Filters(datetime T, bool &okb, bool &wk, int &dno)
 {
    datetime utc = UtcOf(T), u = UserOf(T);
    MqlDateTime lz; TimeToStruct(u, lz);
-   bool dOk = !InpDayOn || (lz.day_of_week == 1 ? InpMon : lz.day_of_week == 2 ? InpTue : lz.day_of_week == 3 ? InpWed : lz.day_of_week == 4 ? InpThu :
+   bool dOk = !gpDayOn || (lz.day_of_week == 1 ? InpMon : lz.day_of_week == 2 ? InpTue : lz.day_of_week == 3 ? InpWed : lz.day_of_week == 4 ? InpThu :
                             lz.day_of_week == 5 ? InpFri : lz.day_of_week == 6 ? InpSat : InpSun);
-   bool hOk = !InpHoursOn || InSess(lz.hour * 60 + lz.min);
-   bool tOk = !InpTrnOn || gTrUp;
+   bool hOk = !gpHoursOn || InSess(lz.hour * 60 + lz.min);
+   bool tOk = !gpTrnOn || gTrUp;
    MqlDateTime ny; TimeToStruct((datetime)((long)utc - (NySummer(utc) ? 4 : 5) * 3600), ny);
    wk = InpWkOn && ny.day_of_week == 5 && ny.hour >= InpWkH;
    okb = dOk && hOk && tOk && !wk;
@@ -479,33 +642,33 @@ void Filters(datetime T, bool &okb, bool &wk, int &dno)
 }
 
 //--- money (gold/recovery.py simulate, the same as the Pine code)
-bool CrkFam() { return InpRec == REC_CRC || InpRec == REC_CRE || InpRec == REC_CRF || InpRec == REC_CRG || InpRec == REC_CRH || InpRec == REC_CRI || InpRec == REC_CRJ; }
-bool LadFam() { return InpRec == REC_CRF || InpRec == REC_CRG || InpRec == REC_CRH || InpRec == REC_CRI || InpRec == REC_CRJ; }
+bool CrkFam() { return gpRec == REC_CRC || gpRec == REC_CRE || gpRec == REC_CRF || gpRec == REC_CRG || gpRec == REC_CRH || gpRec == REC_CRI || gpRec == REC_CRJ; }
+bool LadFam() { return gpRec == REC_CRF || gpRec == REC_CRG || gpRec == REC_CRH || gpRec == REC_CRI || gpRec == REC_CRJ; }
 bool PrOn()   { return CrkFam() && InpCrkPr != CPR_OFF; }
 void LadPar(double &lam, double &phi, double &bmx, double &gam)
 {
    lam = 0.8; phi = 0.10; bmx = 2.0; gam = 0.25;
-   if(InpLadder == LAD_MED)   { lam = 0.7; phi = 0.15; bmx = 3.0;  gam = 0.30; }
-   if(InpLadder == LAD_HIGH)  { lam = 0.6; phi = 0.20; bmx = 5.0;  gam = 0.35; }
-   if(InpLadder == LAD_XHIGH) { lam = 0.5; phi = 0.25; bmx = 8.0;  gam = 0.40; }
-   if(InpLadder == LAD_MAX)   { lam = 0.4; phi = 0.30; bmx = 12.0; gam = 0.50; }
+   if(gpLadder == LAD_MED)   { lam = 0.7; phi = 0.15; bmx = 3.0;  gam = 0.30; }
+   if(gpLadder == LAD_HIGH)  { lam = 0.6; phi = 0.20; bmx = 5.0;  gam = 0.35; }
+   if(gpLadder == LAD_XHIGH) { lam = 0.5; phi = 0.25; bmx = 8.0;  gam = 0.40; }
+   if(gpLadder == LAD_MAX)   { lam = 0.4; phi = 0.30; bmx = 12.0; gam = 0.50; }
 }
 //--- units of the Crooks E / I lot (rounded up to the lot step)
 double EUnits() { double st = LotStep(); return MathCeil(MathMax(InpCrkELot, st) / st - 1e-9) * st * Contract(); }
 //--- the base trade's $ risk at a stop distance sd (price): Fixed $ risk, the Fixed lots' loss at that stop (costs included), or % of the account
 double FBase(Strat &s, double sd)
 {
-   if(InpSizeMode == PSZ_LOT) return InpBaseLots * Contract() * (sd + Costs()) * Vpu();
-   if(InpSizeMode == PSZ_PCT) return MathMax(0.0, s.eq) * InpEqPct / 100.0;
-   return InpBaseRisk;
+   if(gpSizeMode == PSZ_LOT) return InpBaseLots * Contract() * (sd + Costs()) * Vpu();
+   if(gpSizeMode == PSZ_PCT) return MathMax(0.0, s.eq) * InpEqPct / 100.0;
+   return gpBaseRisk;
 }
 //--- the profit ladder at base B: on, the start guard (closed profit 0 or less), its base, the cushion above the lock
 bool FLad(Strat &s, double B, bool &guard, double &lb, double &cush)
 {
-   bool on = InpLadder != LAD_OFF && LadFam() && s.peakNet >= InpLadT;
+   bool on = gpLadder != LAD_OFF && LadFam() && s.peakNet >= InpLadT;
    double lam = 0, phi = 0, bmx = 0, gam = 0; LadPar(lam, phi, bmx, gam);
-   cush = on ? MathMax(0.0, s.net - lam * s.peakNet) : 0.0;
-   guard = on && s.net <= 0;
+   cush = on ? MathMax(0.0, s.net - s.n0 - lam * s.peakNet) : 0.0;
+   guard = on && s.net - s.n0 <= 0;
    lb = on ? B + MathMin((bmx - 1.0) * B, phi * cush) : B;
    return on;
 }
@@ -515,11 +678,11 @@ double FCrk(Strat &s, double B, bool rec, double rmin, double pf, double xr)
    double x = rec ? MathMax(B, s.crL / s.crP * pf / xr) : B;
    if(rec)
    {
-      if(InpRec == REC_CRF || InpRec == REC_CRI) x = MathMin(x, InpCrkFK * B);
-      else if(InpRec == REC_CRH) x = MathMin(x, MathMax(B, s.eq * InpCrkHPct / 100.0));
-      else if(InpRec == REC_CRJ) x = MathMax(B, x * MathMax(0.0, 1.0 - (s.peakNet - s.net) / (InpCrkJX * B)));
+      if(gpRec == REC_CRF || gpRec == REC_CRI) x = MathMin(x, InpCrkFK * B);
+      else if(gpRec == REC_CRH) x = MathMin(x, MathMax(B, s.eq * InpCrkHPct / 100.0));
+      else if(gpRec == REC_CRJ) x = MathMax(B, x * MathMax(0.0, 1.0 - (s.peakNet - (s.net - s.n0)) / (InpCrkJX * B)));
    }
-   else if(s.crL > 0 && (InpRec == REC_CRE || InpRec == REC_CRI)) x = MathMin(B, rmin);
+   else if(s.crL > 0 && (gpRec == REC_CRE || gpRec == REC_CRI)) x = MathMin(B, rmin);
    return x;
 }
 //--- the rule's risk for the next trade (before the cap and the leverage limit), whether it is a recovery trade, and Rule C split's base
@@ -527,23 +690,24 @@ double FRaw(Strat &s, double sd, bool &rec, double &baseC)
 {
    double base = FBase(s, sd);
    double xr = s.tp / s.sl, rmin = EUnits() * (sd + Costs()) * Vpu();
-   double add = InpRec == REC_ALL ? s.recPool : InpRec == REC_SPLIT ? s.recPool / MathMax(1, InpRecN) : InpRec == REC_PART ? s.recPool * InpRecPct / 100.0 :
-                InpRec == REC_EXACT ? s.recPool / xr : InpRec == REC_STEP ? InpRecStep * s.recLosses : 0.0;
+   double add = gpRec == REC_ALL ? s.recPool : gpRec == REC_SPLIT ? s.recPool / MathMax(1, InpRecN) : gpRec == REC_PART ? s.recPool * InpRecPct / 100.0 :
+                gpRec == REC_EXACT ? s.recPool / xr : gpRec == REC_STEP ? InpRecStep * s.recLosses : 0.0;
    double fa = 1.0, fb = 1.0;
    for(int k = 2; k <= MathMin(s.recLosses, 200); k++) { double t2 = fa + fb; fa = fb; fb = t2; }
    double stepBase = 0.0;
-   if(s.net >= 1000) { int kk = (int)MathFloor((s.net - 1000.0) / 500.0); stepBase = (1000.0 + 500.0 * kk) / (8.0 + kk); }
-   else if(s.net >= 500) stepBase = 500.0 / 5.0;
-   else if(s.net >= 200) stepBase = 200.0 / 3.0;
-   baseC = InpRec == REC_CS ? MathMax(base, InpCapOn ? MathMin(stepBase, InpHardCap) : stepBase) : base;
+   double netR = s.net - s.n0;                     // v1.1: the closed profit since the monthly restart
+   if(netR >= 1000) { int kk = (int)MathFloor((netR - 1000.0) / 500.0); stepBase = (1000.0 + 500.0 * kk) / (8.0 + kk); }
+   else if(netR >= 500) stepBase = 500.0 / 5.0;
+   else if(netR >= 200) stepBase = 200.0 / 3.0;
+   baseC = gpRec == REC_CS ? MathMax(base, gpCapOn ? MathMin(stepBase, gpHardCap) : stepBase) : base;
    int nl = ArraySize(s.lab);
    double labU = nl > 1 ? s.lab[0] + s.lab[nl - 1] : (nl == 1 ? s.lab[0] : 1.0);
    int oscNd = base > 0 ? (int)MathMax(1, MathMin(1e9, MathCeil((base - s.oscP) / (base * xr) - 1e-9))) : 1;
-   rec = ((InpRec == REC_CRA || InpRec == REC_CRB) && s.crN >= 2 && s.crN % 2 == 0) || (CrkFam() && s.crW && s.crL > 0) || (InpRec == REC_CRD && s.crN >= 2 && (s.crN - 2) % 3 == 0);
+   rec = ((gpRec == REC_CRA || gpRec == REC_CRB) && s.crN >= 2 && s.crN % 2 == 0) || (CrkFam() && s.crW && s.crL > 0) || (gpRec == REC_CRD && s.crN >= 2 && (s.crN - 2) % 3 == 0);
    if(rec && PrOn() && InpCrkPr == CPR_WAIT && (s.crWait || s.crNeedL)) rec = false;
    double pf = PrOn() && InpCrkPr == CPR_PCT ? InpCrkPrPct / 100.0 : 1.0;
    double r = base + add;
-   switch(InpRec)
+   switch(gpRec)
    {
       case REC_LAB:   r = base * labU; break;
       case REC_GMART: r = base * MathPow(InpRecMult, MathMin(s.recLosses, 200)) + base * s.recLosses; break;
@@ -582,7 +746,7 @@ double FNext(Strat &s, double F)
    double sd = F * s.sl / 100.0, baseC = 0; bool rec = false;
    if(FBase(s, sd) <= 0) return 0;
    double r = FRaw(s, sd, rec, baseC);
-   if(InpCapOn && r > InpHardCap) r = InpCapAction == CAP_STOP ? -1 : InpCapAction == CAP_RESET ? MathMin(baseC, InpHardCap) : InpHardCap;
+   if(gpCapOn && r > gpHardCap) r = gpCapAction == CAP_STOP ? -1 : gpCapAction == CAP_RESET ? MathMin(baseC, gpHardCap) : gpHardCap;
    if(r > 0 && s.eq > 0) r = MathMin(r, s.eq * InpLev * (sd + Costs()) / F);
    return r;
 }
@@ -593,8 +757,11 @@ void RecReset(Strat &s)
    s.crF = 0; s.crWait = false; s.crWW = 0; s.crNeedL = false;
 }
 //--- sizing at an entry (the cap's start again / stop change the state): false = no trade
+//--- v1.1 monthly restart: the money starts again (the loss recovery; the closed profit the ladder / Crooks J / Rule C split count from)
+void MmMonthReset(Strat &s) { RecReset(s); s.n0 = s.net; s.peakNet = 0; }
 bool MmOpen(Strat &s, double F)
 {
+   if(gpMRestart && s.curM != s.mKey) { if(s.mKey >= 0) MmMonthReset(s); s.mKey = s.curM; }   // v1.1: the first trade of a new month: fresh money
    double sd = F * s.sl / 100.0;
    s.bR = FBase(s, sd);
    if(s.bR <= 0) { s.risk = 0; s.units = 0; return false; }   // no base (an empty account): no trade
@@ -602,11 +769,11 @@ bool MmOpen(Strat &s, double F)
    double r = FRaw(s, sd, rec, baseC);
    bool take = true;
    s.crRecT = rec;
-   if(InpCapOn && r > InpHardCap)
+   if(gpCapOn && r > gpHardCap)
    {
-      if(InpCapAction == CAP_STOP) { s.stopped = true; s.stopWhy = "stopped by the hard cap"; take = false; }
-      else if(InpCapAction == CAP_RESET) { RecReset(s); r = MathMin(baseC, InpHardCap); }
-      else r = InpHardCap;
+      if(gpCapAction == CAP_STOP) { s.stopped = true; s.stopWhy = "stopped by the hard cap"; s.capStp = true; take = false; }
+      else if(gpCapAction == CAP_RESET) { RecReset(s); r = MathMin(baseC, gpHardCap); }
+      else r = gpHardCap;
    }
    if(take && s.eq > 0) r = MathMin(r, s.eq * InpLev * (sd + Costs()) / F);
    s.risk = take ? r : 0;
@@ -618,7 +785,7 @@ void MmBook(Strat &s, double pnl)
 {
    s.eq += pnl; s.net += pnl; s.pkEq = MathMax(s.pkEq, s.eq); s.ddU = MathMax(s.ddU, s.pkEq - s.eq);
    if(s.pkEq > 0) s.ddP = MathMax(s.ddP, (s.pkEq - s.eq) / s.pkEq);
-   s.peakNet = MathMax(s.peakNet, s.net);
+   s.peakNet = MathMax(s.peakNet, s.net - s.n0);
    if(s.eq <= 0) { s.stopped = true; s.stopWhy = "account blown"; }
    bool win = pnl > 0;
    s.carried = MathMax(0.0, s.carried - pnl);
@@ -640,8 +807,8 @@ void MmBook(Strat &s, double pnl)
    if(s.oscP >= s.bR) { s.oscU = 1; s.oscP = 0; } else if(win) s.oscU++;
    bool lastPart = s.crP == 1;
    s.crL = MathMax(0.0, s.crL - pnl);
-   if(InpRec == REC_CRG) { bool lg = false; double lb = 0, lc = 0; FLad(s, s.bR, lg, lb, lc); s.crL = MathMin(s.crL, InpCrkGX * lb); }
-   if(s.crL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRD) && win && s.crRecT))
+   if(gpRec == REC_CRG) { bool lg = false; double lb = 0, lc = 0; FLad(s, s.bR, lg, lb, lc); s.crL = MathMin(s.crL, InpCrkGX * lb); }
+   if(s.crL < 0.01 || ((gpRec == REC_CRA || gpRec == REC_CRD) && win && s.crRecT))
    {
       s.crL = 0; s.crN = 0; s.crP = MathMax(1, InpCrkCn); s.crF = 0; s.crWait = false; s.crWW = 0; s.crNeedL = false;
    }
@@ -683,13 +850,13 @@ void DoBE(Strat &s) { s.beOn = true; if(s.F > s.SLp) s.SLp = s.F; gDirty = true;
 void DoSV(Strat &s) { s.svOn = true; s.TPp = s.F; gDirty = true; }
 void Trail(Strat &s)
 {
-   if(InpTrD > 0 && s.hi >= s.F * (1.0 + InpTrA / 100.0))
+   if(gpTrD > 0 && s.hi >= s.F * (1.0 + gpTrA / 100.0))
    {
-      double tl = s.hi * (1.0 - InpTrD / 100.0);
+      double tl = s.hi * (1.0 - gpTrD / 100.0);
       if(tl > s.SLp) { s.SLp = tl; s.trOn = true; gDirty = true; }
    }
 }
-bool CanEnter(Strat &s, bool okb) { return okb && !gNoEntry && !s.pos && !s.stopped && (InpMaxDay <= 0 || s.dCnt < InpMaxDay); }
+bool CanEnter(Strat &s, bool okb) { return okb && !gNoEntry && !s.pos && !s.stopped && (gpMaxDay <= 0 || s.dCnt < gpMaxDay); }
 void StatsAdd(Strat &s, int rsn, double usd)
 {
    s.n++; if(usd > 0) { s.nW++; s.gw += usd; } else s.gl -= usd;
@@ -733,7 +900,7 @@ void Up(Strat &s, double x, double y, bool okb, datetime T)
          if(x < s.TPp && s.TPp <= y) { best = s.TPp; ev = 1; }
          if(s.be > 0 && !s.beOn && !s.svOn && x < s.BEl && s.BEl <= y && (ev == 0 || s.BEl < best)) { best = s.BEl; ev = 2; }
       }
-      if(InpEntry == ENT_STOP && s.lvlOn && x < s.E && s.E <= y && (ev == 0 || s.E < best)) { best = s.E; ev = 3; }
+      if(gpEntry == ENT_STOP && s.lvlOn && x < s.E && s.E <= y && (ev == 0 || s.E < best)) { best = s.E; ev = 3; }
       if(ev == 0) break;
       if(ev == 1) CloseAt(s, s.TPp, s.svOn ? 4 : 1, T);
       else if(ev == 2) DoBE(s);
@@ -762,13 +929,16 @@ void Seg(Strat &s, double x, double y, bool okb, datetime T) { if(y > x) Up(s, x
 void BarOpen(Strat &s, double o, double pc, bool okb, bool wk, int dno, datetime T)
 {
    if(s.dPrev < 0 || dno != s.dPrev) { s.dCnt = 0; s.dPrev = dno; }
+   s.curM = dno / 100;                                                    // v1.1: this candle's month (your time zone)
+   if(gpMRestart && s.capStp && s.mKey >= 0 && s.curM != s.mKey) { s.stopped = false; s.capStp = false; s.stopWhy = ""; }   // a hard-cap stop ends with the month
+   if(gpMRestart && !s.pos && s.mKey >= 0 && s.curM != s.mKey) { MmMonthReset(s); s.mKey = s.curM; }   // flat at a new month: the money starts again now (the next lots shown are right)
    if(s.pos && s.exitDue == 0)
    {
       Trail(s);
       int xr = 0;
       if(o >= s.TPp) xr = s.svOn ? 4 : 1;
       else if(o <= s.SLp) xr = s.trOn ? 5 : (s.beOn ? 3 : 2);
-      else if(InpTExitH > 0 && (long)UtcOf(T) >= (long)UtcOf(s.eTime) + (long)MathRound(InpTExitH * 3600.0)) xr = 6;   // real hours (UTC): not shifted by the broker clock's summer time
+      else if(gpTExitH > 0 && (long)UtcOf(T) >= (long)UtcOf(s.eTime) + (long)MathRound(gpTExitH * 3600.0)) xr = 6;   // real hours (UTC): not shifted by the broker clock's summer time
       else if(wk) xr = 7;
       if(xr > 0) CloseAt(s, o, xr, T);
       else
@@ -778,7 +948,7 @@ void BarOpen(Strat &s, double o, double pc, bool okb, bool wk, int dno, datetime
          if(o > s.hi) s.hi = o;
       }
    }
-   if(InpEntry == ENT_STOP && s.lvlOn && pc > 0 && pc < s.E && o >= s.E)
+   if(gpEntry == ENT_STOP && s.lvlOn && pc > 0 && pc < s.E && o >= s.E)
    {
       if(CanEnter(s, okb)) OpenAt(s, o, T);
       s.lvlOn = false;
@@ -787,7 +957,7 @@ void BarOpen(Strat &s, double o, double pc, bool okb, bool wk, int dno, datetime
 //--- the close of a 1-minute bar: the candle-close entry
 void BarClose(Strat &s, double c, bool okb, datetime T)
 {
-   if(InpEntry != ENT_CLOSE || !s.lvlOn) return;
+   if(gpEntry != ENT_CLOSE || !s.lvlOn) return;
    if(s.armed && c >= s.E) { if(CanEnter(s, okb)) OpenAt(s, c, T); s.lvlOn = false; }
    else if(c < s.E) s.armed = true;
 }
@@ -841,7 +1011,7 @@ bool BrokerOpen(Strat &s)
    double v = LotsOf(s.units), st = LotStep(), vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN), mg = 0;
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID);
    double lossLot = (s.F - s.SLp + Costs()) * Vpu() * Contract();          // the stop-out loss of 1 lot
-   if(InpCapOn && lossLot > 0 && v * lossLot > InpHardCap + 1e-9) v = MathFloor(InpHardCap / lossLot / st + 1e-9) * st;   // rounding never past the cap
+   if(gpCapOn && lossLot > 0 && v * lossLot > gpHardCap + 1e-9) v = MathFloor(gpHardCap / lossLot / st + 1e-9) * st;   // rounding never past the cap
    if(OrderCalcMargin(ORDER_TYPE_BUY, _Symbol, 1.0, ask, mg) && mg > 0)
       v = MathMin(v, MathFloor(AccountInfoDouble(ACCOUNT_MARGIN_FREE) / mg / st + 1e-9) * st);           // what the free margin carries
    v = NormalizeDouble(v, 8);
@@ -1075,14 +1245,14 @@ void WarmStrat(Strat &s, datetime now, BarCtx &c)
 void TrendLoad()
 {
    gTrSeed = false; gTrUp = false; gTrLast = 0;
-   if(!InpTrnOn) return;
+   if(!gpTrnOn) return;
    MqlRates r[]; int n = CopyRates(_Symbol, InpTrnTf, 1, 5000, r);
    for(int i = 0; i < n; i++) PushTrend(r[i].close);
    gTrLast = iTime(_Symbol, InpTrnTf, 0);
 }
 void TrendLive()
 {
-   if(!InpTrnOn) return;
+   if(!gpTrnOn) return;
    datetime t0 = iTime(_Symbol, InpTrnTf, 0);
    if(t0 <= 0 || t0 <= gTrLast) return;
    if(gTrLast > 0)
@@ -1144,7 +1314,7 @@ void StratIO(Strat &s)
    IoI(p + "dc", s.dCnt); IoI(p + "dp", s.dPrev); IoB(p + "st", s.stopped);
    int sw = s.stopWhy == "account blown" ? 2 : s.stopWhy != "" ? 1 : 0; IoI(p + "sw", sw);
    if(!gIoSave) s.stopWhy = sw == 2 ? "account blown" : sw == 1 ? "stopped by the hard cap" : "";
-   IoD(p + "eq", s.eq); IoD(p + "pe", s.pkEq); IoD(p + "du", s.ddU); IoD(p + "dq", s.ddP); IoD(p + "nt", s.net); IoD(p + "pn", s.peakNet);
+   IoD(p + "eq", s.eq); IoD(p + "pe", s.pkEq); IoD(p + "du", s.ddU); IoD(p + "dq", s.ddP); IoD(p + "nt", s.net); IoD(p + "pn", s.peakNet); IoD(p + "n0", s.n0); IoI(p + "mk", s.mKey); IoB(p + "cp", s.capStp);
    IoD(p + "rp", s.recPool); IoD(p + "ca", s.carried); IoD(p + "op", s.oscP); IoD(p + "kl", s.crL); IoD(p + "rk", s.risk); IoD(p + "un", s.units); IoD(p + "br", s.bR);
    IoI(p + "rl", s.recLosses); IoI(p + "dn", s.dUnits); IoI(p + "pw", s.parWins); IoI(p + "rd", s.rdUnits); IoI(p + "ou", s.oscU);
    IoI(p + "kn", s.crN); IoI(p + "kp", s.crP); IoI(p + "kf", s.crF); IoI(p + "kb", s.crWW);
@@ -1252,7 +1422,7 @@ color  gCol[12] = { C'41,98,255', C'0,188,212', C'76,175,80', C'255,152,0', C'15
 string gRows[]; color gRowC[];
 datetime gDrawT = 0;
 string TfTxt(ENUM_TIMEFRAMES t) { return t == PERIOD_M1 ? "M1" : t == PERIOD_M5 ? "M5" : t == PERIOD_M15 ? "M15" : t == PERIOD_M30 ? "M30" : t == PERIOD_H1 ? "H1" : t == PERIOD_H4 ? "H4" : t == PERIOD_D1 ? "D1" : EnumToString(t); }
-string RecTxt() { string e = EnumToString(InpRec); return StringSubstr(e, 4); }
+string RecTxt() { string e = EnumToString(gpRec); return StringSubstr(e, 4); }
 string Usd(double v) { return (v < 0 ? "-" : "") + DoubleToString(MathAbs(v), 2); }
 string NowTxt(Strat &s)
 {
@@ -1296,10 +1466,10 @@ void Draw(bool force)
    ArrayResize(gRows, 0); ArrayResize(gRowC, 0);
    if(InpTable)
    {
-      Row("FRACTAL BREAKOUT GRID EA v1.0 | " + _Symbol + " | magic " + IntegerToString(InpMagic) + " + N", C'41,163,224');
-      string sz = InpSizeMode == PSZ_LOT ? DoubleToString(InpBaseLots, 2) + " lot" : InpSizeMode == PSZ_PCT ? DoubleToString(InpEqPct, 2) + "% of equity" : Usd(InpBaseRisk);
-      Row("MONEY: " + RecTxt() + (LadFam() && InpLadder != LAD_OFF ? " + ladder " + StringSubstr(EnumToString(InpLadder), 4) : "") + " | base " + sz + " | start " + Usd(InpStartB) +
-          " each" + (InpCapOn ? " | cap " + Usd(InpHardCap) : ""), C'209,212,220');
+      Row("FRACTAL BREAKOUT GRID EA v1.1 | " + (InpPreset != GP_CUSTOM ? PresetName() + " | " : "") + _Symbol + " | magic " + IntegerToString(InpMagic) + " + N", C'41,163,224');
+      string sz = gpSizeMode == PSZ_LOT ? DoubleToString(InpBaseLots, 2) + " lot" : gpSizeMode == PSZ_PCT ? DoubleToString(InpEqPct, 2) + "% of equity" : Usd(gpBaseRisk);
+      Row("MONEY: " + RecTxt() + (LadFam() && gpLadder != LAD_OFF ? " + ladder " + StringSubstr(EnumToString(gpLadder), 4) : "") + " | base " + sz + " | start " + Usd(InpStartB) +
+          " each" + (gpCapOn ? " | cap " + Usd(gpHardCap) : ""), C'209,212,220');
       Row(Pad("#", 3) + Pad("TF", 4) + Pad("R/L", 8) + Pad("Trades", 7) + Pad("Win%", 6) + Pad("Net $", 11) + Pad("TP/SL/BE/SV", 16) + "Now", C'209,212,220');
       int tn = 0, tw = 0; double tnet = 0;
       for(int i = 0; i < 12; i++)
@@ -1343,21 +1513,63 @@ void Draw(bool force)
 }
 
 //--- MetaTrader events ---------------------------------------------------------------------------------------------------------------
-bool Runs(int i, bool ticked) { return InpRun == RUN_ALL ? true : InpRun == RUN_TICKED ? ticked : InpRunOne == i; }
+bool Runs(int i, bool ticked) { return gpRun == RUN_ALL ? true : gpRun == RUN_TICKED ? ticked : InpRunOne == i; }
+//--- v1.1: the values the rules use: the inputs (Custom) or the preset's (written by fbgea/presetize.py from presets/preset_data.py)
+void PresetApply()
+{
+   int gi = (int)InpPreset; bool pc = gi == 0, pm = pc || InpMyMoney;
+   gpRun = pc ? InpRun : RUN_TICKED;
+   gpS1On = pc ? InpS1On : ((gi == 1 || gi == 4) ? false : true); gpS1Tf = pc ? InpS1Tf : PERIOD_D1; gpS1R = pc ? InpS1R : 3; gpS1L = pc ? InpS1L : 25;
+   gpS1Off = pc ? InpS1Off : -0.14; gpS1Sl = pc ? InpS1Sl : 3.0; gpS1Tp = pc ? InpS1Tp : 0.75; gpS1Be = pc ? InpS1Be : 0.45; gpS1Sv = pc ? InpS1Sv : 0.8;
+   gpS2On = pc ? InpS2On : ((gi == 1 || gi == 4) ? false : true); gpS2Tf = pc ? InpS2Tf : PERIOD_D1; gpS2R = pc ? InpS2R : 3; gpS2L = pc ? InpS2L : 15;
+   gpS2Off = pc ? InpS2Off : -0.085; gpS2Sl = pc ? InpS2Sl : 0.5; gpS2Tp = pc ? InpS2Tp : 2.0; gpS2Be = pc ? InpS2Be : 0.25; gpS2Sv = pc ? InpS2Sv : 0.8;
+   gpS3On = pc ? InpS3On : ((gi == 5 || gi == 6) ? true : false); gpS3Tf = pc ? InpS3Tf : PERIOD_D1; gpS3R = pc ? InpS3R : 2; gpS3L = pc ? InpS3L : 7;
+   gpS3Off = pc ? InpS3Off : -0.065; gpS3Sl = pc ? InpS3Sl : 0.3; gpS3Tp = pc ? InpS3Tp : 1.65; gpS3Be = pc ? InpS3Be : 0.2; gpS3Sv = pc ? InpS3Sv : 0.5;
+   gpS4On = pc ? InpS4On : ((gi == 5) ? true : false); gpS4Tf = pc ? InpS4Tf : PERIOD_H4; gpS4R = pc ? InpS4R : 8; gpS4L = pc ? InpS4L : 12;
+   gpS4Off = pc ? InpS4Off : -0.025; gpS4Sl = pc ? InpS4Sl : 0.44; gpS4Tp = pc ? InpS4Tp : 3.1; gpS4Be = pc ? InpS4Be : 0.33; gpS4Sv = pc ? InpS4Sv : 0.9;
+   gpS5On = pc ? InpS5On : ((gi == 5 || gi == 6) ? true : false); gpS5Tf = pc ? InpS5Tf : PERIOD_H1; gpS5R = pc ? InpS5R : 19; gpS5L = pc ? InpS5L : 30;
+   gpS5Off = pc ? InpS5Off : -0.045; gpS5Sl = pc ? InpS5Sl : 2.0; gpS5Tp = pc ? InpS5Tp : 0.35; gpS5Be = pc ? InpS5Be : 0.1; gpS5Sv = pc ? InpS5Sv : 0.7;
+   gpS6On = pc ? InpS6On : ((gi == 1 || gi == 4) ? false : true); gpS6Tf = pc ? InpS6Tf : PERIOD_H1; gpS6R = pc ? InpS6R : 25; gpS6L = pc ? InpS6L : 25;
+   gpS6Off = pc ? InpS6Off : -0.06; gpS6Sl = pc ? InpS6Sl : 4.2; gpS6Tp = pc ? InpS6Tp : 0.33; gpS6Be = pc ? InpS6Be : 0.15; gpS6Sv = pc ? InpS6Sv : 0.8;
+   gpS7On = pc ? InpS7On : (true); gpS7Tf = pc ? InpS7Tf : PERIOD_H1; gpS7R = pc ? InpS7R : 23; gpS7L = pc ? InpS7L : 25;
+   gpS7Off = pc ? InpS7Off : -0.055; gpS7Sl = pc ? InpS7Sl : 0.87; gpS7Tp = pc ? InpS7Tp : 0.56; gpS7Be = pc ? InpS7Be : 0.13; gpS7Sv = pc ? InpS7Sv : 1.1;
+   gpS8On = pc ? InpS8On : (true); gpS8Tf = pc ? InpS8Tf : PERIOD_H1; gpS8R = pc ? InpS8R : 20; gpS8L = pc ? InpS8L : 25;
+   gpS8Off = pc ? InpS8Off : -0.06; gpS8Sl = pc ? InpS8Sl : 0.68; gpS8Tp = pc ? InpS8Tp : 0.43; gpS8Be = pc ? InpS8Be : 0.1; gpS8Sv = pc ? InpS8Sv : 0.7;
+   gpS9On = pc ? InpS9On : ((gi == 5 || gi == 6) ? true : false); gpS9Tf = pc ? InpS9Tf : PERIOD_H1; gpS9R = pc ? InpS9R : 5; gpS9L = pc ? InpS9L : 5;
+   gpS9Off = pc ? InpS9Off : -0.08; gpS9Sl = pc ? InpS9Sl : 2.0; gpS9Tp = pc ? InpS9Tp : 0.7; gpS9Be = pc ? InpS9Be : 0.1; gpS9Sv = pc ? InpS9Sv : 1.0;
+   gpS10On = pc ? InpS10On : (true); gpS10Tf = pc ? InpS10Tf : PERIOD_M5; gpS10R = pc ? InpS10R : 30; gpS10L = pc ? InpS10L : 65;
+   gpS10Off = pc ? InpS10Off : -0.05; gpS10Sl = pc ? InpS10Sl : 1.0; gpS10Tp = pc ? InpS10Tp : 1.0; gpS10Be = pc ? InpS10Be : 0.2; gpS10Sv = pc ? InpS10Sv : 0.0;
+   gpS11On = pc ? InpS11On : ((gi == 5 || gi == 6) ? true : false); gpS11Tf = pc ? InpS11Tf : PERIOD_M15; gpS11R = pc ? InpS11R : 20; gpS11L = pc ? InpS11L : 40;
+   gpS11Off = pc ? InpS11Off : -0.01; gpS11Sl = pc ? InpS11Sl : 1.0; gpS11Tp = pc ? InpS11Tp : 3.0; gpS11Be = pc ? InpS11Be : 0.2; gpS11Sv = pc ? InpS11Sv : 0.1;
+   gpS12On = pc ? InpS12On : ((gi == 5 || gi == 6) ? true : false); gpS12Tf = pc ? InpS12Tf : PERIOD_M1; gpS12R = pc ? InpS12R : 45; gpS12L = pc ? InpS12L : 200;
+   gpS12Off = pc ? InpS12Off : -0.05; gpS12Sl = pc ? InpS12Sl : 0.75; gpS12Tp = pc ? InpS12Tp : 3.0; gpS12Be = pc ? InpS12Be : 0.2; gpS12Sv = pc ? InpS12Sv : 0.0;
+   gpEntry = pc ? InpEntry : ENT_STOP; gpExpN = pc ? InpExpN : 0; gpMaxDay = pc ? InpMaxDay : 0; gpTrA = pc ? InpTrA : 0.0; gpTrD = pc ? InpTrD : 0.0;
+   gpTExitH = pc ? InpTExitH : 0.0; gpTrnOn = pc ? InpTrnOn : false;
+   gpDayOn = (pc || InpAddMine) && InpDayOn; gpHoursOn = (pc || InpAddMine) && InpHoursOn;
+   gpSizeMode = pm ? InpSizeMode : PSZ_USD;
+   gpBaseRisk = pm ? InpBaseRisk : ((gi == 2 || gi == 4) ? 5.0 : 10.0);
+   gpCapOn = pm ? InpCapOn : ((gi == 5 || gi == 6) ? false : true);
+   gpHardCap = pm ? InpHardCap : ((gi == 2 || gi == 4) ? 50.0 : (gi == 5 || gi == 6) ? 500.0 : 100.0);
+   gpCapAction = pm ? InpCapAction : (ENUM_CAP)((gi == 3) ? CAP_RESET : CAP_CLAMP);
+   gpRec = pm ? InpRec : (ENUM_REC)((gi == 5 || gi == 6) ? REC_OFF : REC_EXACT);
+   gpLadder = pm ? InpLadder : LAD_OFF;
+   gpMRestart = pm ? InpMRestart : true;
+}
 void Setup()
 {
-   StratInit(S[0], 1, Runs(1, InpS1On), InpS1Tf, InpS1R, InpS1L, InpS1Off, InpS1Sl, InpS1Tp, InpS1Be, InpS1Sv);
-   StratInit(S[1], 2, Runs(2, InpS2On), InpS2Tf, InpS2R, InpS2L, InpS2Off, InpS2Sl, InpS2Tp, InpS2Be, InpS2Sv);
-   StratInit(S[2], 3, Runs(3, InpS3On), InpS3Tf, InpS3R, InpS3L, InpS3Off, InpS3Sl, InpS3Tp, InpS3Be, InpS3Sv);
-   StratInit(S[3], 4, Runs(4, InpS4On), InpS4Tf, InpS4R, InpS4L, InpS4Off, InpS4Sl, InpS4Tp, InpS4Be, InpS4Sv);
-   StratInit(S[4], 5, Runs(5, InpS5On), InpS5Tf, InpS5R, InpS5L, InpS5Off, InpS5Sl, InpS5Tp, InpS5Be, InpS5Sv);
-   StratInit(S[5], 6, Runs(6, InpS6On), InpS6Tf, InpS6R, InpS6L, InpS6Off, InpS6Sl, InpS6Tp, InpS6Be, InpS6Sv);
-   StratInit(S[6], 7, Runs(7, InpS7On), InpS7Tf, InpS7R, InpS7L, InpS7Off, InpS7Sl, InpS7Tp, InpS7Be, InpS7Sv);
-   StratInit(S[7], 8, Runs(8, InpS8On), InpS8Tf, InpS8R, InpS8L, InpS8Off, InpS8Sl, InpS8Tp, InpS8Be, InpS8Sv);
-   StratInit(S[8], 9, Runs(9, InpS9On), InpS9Tf, InpS9R, InpS9L, InpS9Off, InpS9Sl, InpS9Tp, InpS9Be, InpS9Sv);
-   StratInit(S[9], 10, Runs(10, InpS10On), InpS10Tf, InpS10R, InpS10L, InpS10Off, InpS10Sl, InpS10Tp, InpS10Be, InpS10Sv);
-   StratInit(S[10], 11, Runs(11, InpS11On), InpS11Tf, InpS11R, InpS11L, InpS11Off, InpS11Sl, InpS11Tp, InpS11Be, InpS11Sv);
-   StratInit(S[11], 12, Runs(12, InpS12On), InpS12Tf, InpS12R, InpS12L, InpS12Off, InpS12Sl, InpS12Tp, InpS12Be, InpS12Sv);
+   PresetApply();
+   StratInit(S[0], 1, Runs(1, gpS1On), gpS1Tf, gpS1R, gpS1L, gpS1Off, gpS1Sl, gpS1Tp, gpS1Be, gpS1Sv);
+   StratInit(S[1], 2, Runs(2, gpS2On), gpS2Tf, gpS2R, gpS2L, gpS2Off, gpS2Sl, gpS2Tp, gpS2Be, gpS2Sv);
+   StratInit(S[2], 3, Runs(3, gpS3On), gpS3Tf, gpS3R, gpS3L, gpS3Off, gpS3Sl, gpS3Tp, gpS3Be, gpS3Sv);
+   StratInit(S[3], 4, Runs(4, gpS4On), gpS4Tf, gpS4R, gpS4L, gpS4Off, gpS4Sl, gpS4Tp, gpS4Be, gpS4Sv);
+   StratInit(S[4], 5, Runs(5, gpS5On), gpS5Tf, gpS5R, gpS5L, gpS5Off, gpS5Sl, gpS5Tp, gpS5Be, gpS5Sv);
+   StratInit(S[5], 6, Runs(6, gpS6On), gpS6Tf, gpS6R, gpS6L, gpS6Off, gpS6Sl, gpS6Tp, gpS6Be, gpS6Sv);
+   StratInit(S[6], 7, Runs(7, gpS7On), gpS7Tf, gpS7R, gpS7L, gpS7Off, gpS7Sl, gpS7Tp, gpS7Be, gpS7Sv);
+   StratInit(S[7], 8, Runs(8, gpS8On), gpS8Tf, gpS8R, gpS8L, gpS8Off, gpS8Sl, gpS8Tp, gpS8Be, gpS8Sv);
+   StratInit(S[8], 9, Runs(9, gpS9On), gpS9Tf, gpS9R, gpS9L, gpS9Off, gpS9Sl, gpS9Tp, gpS9Be, gpS9Sv);
+   StratInit(S[9], 10, Runs(10, gpS10On), gpS10Tf, gpS10R, gpS10L, gpS10Off, gpS10Sl, gpS10Tp, gpS10Be, gpS10Sv);
+   StratInit(S[10], 11, Runs(11, gpS11On), gpS11Tf, gpS11R, gpS11L, gpS11Off, gpS11Sl, gpS11Tp, gpS11Be, gpS11Sv);
+   StratInit(S[11], 12, Runs(12, gpS12On), gpS12Tf, gpS12R, gpS12L, gpS12Off, gpS12Sl, gpS12Tp, gpS12Be, gpS12Sv);
 }
 //--- one copy per symbol + magic number: a temporary global variable holds the chart of the copy that runs
 string gLockN = ""; double gLockV = 0;
@@ -1379,22 +1591,23 @@ void LockFree() { if(gLockN != "" && MQLInfoInteger(MQL_TESTER) == 0) GlobalVari
 void TryStart();
 int OnInit()
 {
+   PresetApply();                                      // v1.1: the preset's values (or the inputs) before anything uses them
    if(AccountInfoInteger(ACCOUNT_MARGIN_MODE) != ACCOUNT_MARGIN_MODE_RETAIL_HEDGING)
    {
       string m = "Fractal Breakout Grid EA needs a HEDGING account (every strategy holds its own position); this account nets positions.";
       Print(m); Alert(m);
       return INIT_FAILED;
    }
-   if(InpRun == RUN_ONE && (InpRunOne < 1 || InpRunOne > 12)) { Print("Run one strategy: the number must be 1 to 12."); return INIT_PARAMETERS_INCORRECT; }
+   if(gpRun == RUN_ONE && (InpRunOne < 1 || InpRunOne > 12)) { Print("Run one strategy: the number must be 1 to 12."); return INIT_PARAMETERS_INCORRECT; }
    if(InpSpread < 0 || InpCommLot < 0 || InpStartB <= 0 || InpLev <= 0) { Print("Spread, commission, start balance and leverage limit must be above 0 (spread / commission: 0 or more)."); return INIT_PARAMETERS_INCORRECT; }
-   if((InpSizeMode == PSZ_USD && InpBaseRisk <= 0) || (InpSizeMode == PSZ_LOT && InpBaseLots <= 0) || (InpSizeMode == PSZ_PCT && InpEqPct <= 0))
+   if((gpSizeMode == PSZ_USD && gpBaseRisk <= 0) || (gpSizeMode == PSZ_LOT && InpBaseLots <= 0) || (gpSizeMode == PSZ_PCT && InpEqPct <= 0))
    { Print("Position size: the base risk, base lots or risk % of equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpCapOn && InpHardCap <= 0) { Print("Hard cap: the amount must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpRec == REC_CRG && InpCrkGX <= 0) { Print("Crooks G: the limit of the loss to win back must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpRec == REC_CRH && InpCrkHPct <= 0) { Print("Crooks H: the % of the equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpRec == REC_CRJ && InpCrkJX <= 0) { Print("Crooks J: the drawdown must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if((InpRec == REC_CRF || InpRec == REC_CRI) && InpCrkFK <= 0) { Print("Crooks F / I: the limit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpLadder != LAD_OFF && InpLadT <= 0) { Print("Profit ladder: the profit target must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(gpCapOn && gpHardCap <= 0) { Print("Hard cap: the amount must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(gpRec == REC_CRG && InpCrkGX <= 0) { Print("Crooks G: the limit of the loss to win back must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(gpRec == REC_CRH && InpCrkHPct <= 0) { Print("Crooks H: the % of the equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(gpRec == REC_CRJ && InpCrkJX <= 0) { Print("Crooks J: the drawdown must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if((gpRec == REC_CRF || gpRec == REC_CRI) && InpCrkFK <= 0) { Print("Crooks F / I: the limit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(gpLadder != LAD_OFF && InpLadT <= 0) { Print("Profit ladder: the profit target must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpCrkELot <= 0 || InpRecMult <= 0) { Print("Crooks E / I lot and the Martingale multiplier must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    Setup();
    for(int i = 0; i < 12; i++)
@@ -1422,7 +1635,7 @@ bool SeriesOk()
    if(MQLInfoInteger(MQL_TESTER) != 0) return true;
    bool ok = SeriesInfoInteger(_Symbol, PERIOD_M1, SERIES_SYNCHRONIZED) != 0 && iTime(_Symbol, PERIOD_M1, 0) > 0;
    for(int i = 0; i < 12; i++) if(S[i].ok && (SeriesInfoInteger(_Symbol, S[i].tf, SERIES_SYNCHRONIZED) == 0 || iTime(_Symbol, S[i].tf, 0) <= 0)) ok = false;
-   if(InpTrnOn && (SeriesInfoInteger(_Symbol, InpTrnTf, SERIES_SYNCHRONIZED) == 0 || iTime(_Symbol, InpTrnTf, 0) <= 0)) ok = false;
+   if(gpTrnOn && (SeriesInfoInteger(_Symbol, InpTrnTf, SERIES_SYNCHRONIZED) == 0 || iTime(_Symbol, InpTrnTf, 0) <= 0)) ok = false;
    return ok;
 }
 //--- the start: the memory (restart) or the warm-up (fresh), positions closed while the EA was off, positions it does not know

@@ -456,6 +456,7 @@ string TerminalInfoString(ENUM_TERMINAL_INFO_STRING property_id);
 bool GlobalVariableCheck(const string& name); double GlobalVariableGet(const string& name); datetime GlobalVariableSet(const string& name, double value);
 bool GlobalVariableDel(const string& name); bool GlobalVariableTemp(const string& name);
 void GlobalVariablesFlush(); int GlobalVariablesDeleteAll(const string& prefix_name, datetime limit_data = 0); int GlobalVariablesTotal();
+bool GlobalVariableSetOnCondition(const string& name, double value, double check_value); string GlobalVariableName(int index);
 
 // ---- strings ----
 int StringLen(const string& s); string StringSubstr(const string& s, int start_pos, int length = -1); int StringFind(const string& s, const string& match, int start_pos = 0);
@@ -482,8 +483,12 @@ mql_long iTickVolume(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift)
 int iSpread(const string& symbol, ENUM_TIMEFRAMES timeframe, int shift);
 int iHighest(const string& symbol, ENUM_TIMEFRAMES timeframe, ENUM_SERIESMODE type, int count = -1, int start = 0);
 int iLowest(const string& symbol, ENUM_TIMEFRAMES timeframe, ENUM_SERIESMODE type, int count = -1, int start = 0);
+enum ENUM_SERIES_INFO_INTEGER { SERIES_BARS_COUNT, SERIES_FIRSTDATE, SERIES_LASTBAR_DATE, SERIES_SERVER_FIRSTDATE, SERIES_TERMINAL_FIRSTDATE, SERIES_SYNCHRONIZED };
+mql_long SeriesInfoInteger(const string& symbol, ENUM_TIMEFRAMES tf, ENUM_SERIES_INFO_INTEGER prop);
+bool SeriesInfoInteger(const string& symbol, ENUM_TIMEFRAMES tf, ENUM_SERIES_INFO_INTEGER prop, mql_long& value);
 int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<MqlRates> rates_array);
 int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, datetime start_time, int count, ArrayView<MqlRates> rates_array);
+int CopyRates(const string& symbol, ENUM_TIMEFRAMES tf, datetime start_time, datetime stop_time, ArrayView<MqlRates> rates_array);   // by start and stop time (MQL5 has all three)
 int CopyTime(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<datetime> a);
 int CopyOpen(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<double> a);
 int CopyHigh(const string& symbol, ENUM_TIMEFRAMES tf, int start_pos, int count, ArrayView<double> a);
@@ -631,6 +636,7 @@ public:
 
 // ---- runtime implementation section (appended to a copy of mql5shim.h by create_rt.py) ----
 extern "C" int snprintf(char*, unsigned long, const char*, ...);
+extern "C" int sscanf(const char*, const char*, ...);
 
 struct RtBar { long long t; double o, h, l, c; };
 static RtBar* rt_bars = 0;
@@ -792,6 +798,13 @@ bool TimeToStruct(datetime dt, MqlDateTime& o)
    return true;
 }
 datetime StructToTime(MqlDateTime& d) { return rt_days_from_civil(d.year, d.mon, d.day) * 86400 + d.hour * 3600 + d.min * 60 + d.sec; }
+// v4.8 harness: "yyyy.mm.dd [hh:mi[:ss]]" -> datetime (the EA's Week / Month VWAP warm-up)
+datetime StringToTime(const string& ts)
+{
+   int y = 1970, mo = 1, d = 1, h = 0, mi = 0, sc = 0;
+   sscanf(ts.s ? ts.s : "", "%d.%d.%d %d:%d:%d", &y, &mo, &d, &h, &mi, &sc);
+   return rt_days_from_civil(y, mo, d) * 86400 + h * 3600 + mi * 60 + sc;
+}
 string TimeToString(datetime v, int mode)
 {
    MqlDateTime d; TimeToStruct(v, d); char b[64]; string r;
@@ -925,5 +938,22 @@ int GlobalVariablesDeleteAll(const string& prefix, datetime)
    for(int i = 0; i < RT_GV_CAP; i++) if(rt_gvU[i] == 1 && StringFind(rt_gvN[i], prefix) == 0) { rt_gvU[i] = 2; rt_gvC--; n++; }
    return n;
 }
+bool GlobalVariableSetOnCondition(const string& name, double value, double check_value)
+{ int i = rt_gvFind(name); if(i < 0 || rt_gvV[i] != check_value) return false; rt_gvV[i] = value; return true; }
+string GlobalVariableName(int index)
+{ rt_gvInit(); int k = 0; for(int i = 0; i < RT_GV_CAP; i++) if(rt_gvU[i] == 1) { if(k == index) return rt_gvN[i]; k++; } return string(); }
+// ---- v4.4: deal history and chart list (no broker in these harnesses: empty; the broker simulator replaces them) ----
+ulong HistoryDealGetTicket(int) { return 0; }
+mql_long HistoryDealGetInteger(ulong, ENUM_DEAL_PROPERTY_INTEGER) { return 0; }
+double HistoryDealGetDouble(ulong, ENUM_DEAL_PROPERTY_DOUBLE) { return 0; }
+string HistoryDealGetString(ulong, ENUM_DEAL_PROPERTY_STRING) { return string(); }
+mql_long ChartFirst() { return -1; }
+mql_long ChartNext(mql_long) { return -1; }
+string ChartGetString(mql_long, ENUM_CHART_PROPERTY_STRING) { return string(); }
+string ChartSymbol(mql_long) { return _Symbol; }
+ENUM_TIMEFRAMES ChartPeriod(mql_long) { return _Period; }
+string EnumToString(int) { return string(); }
+bool PositionSelectByTicket(ulong) { return false; }
+mql_long PositionGetInteger(ENUM_POSITION_PROPERTY_INTEGER) { return 0; }
 extern "C" int rt_gv_count() { return rt_gvC; }
 ushort StringGetCharacter(const string& s, int pos) { return (s.s && pos >= 0 && pos < s.n) ? (ushort)(unsigned char)s.s[pos] : (ushort)0; }
