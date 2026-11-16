@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-16 (session `21ed2550`, Auction Retest v4.8, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-16 (session `21ed2550`, Auction Retest v4.9, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -1085,26 +1085,51 @@ Other gold findings:
 
 40. **BE trigger and salvage trigger for the Auction Retest strategy (asked 2026-11-16)** (task #9). The user asked to add the grid's BE / salvage
     triggers to the ARS and find the best values on M5 and the other timeframes. Work dir `$S/bese` (mirrored).
-    - **Engine:** `bese/ref_gbe.py` is made by `make_refgbe.py` from `gold/ref_g.py`.
+    - **Engine:** `bese/ref_gbe.py` is made by `make_refgbe.py` from `gold/ref_gs.py`.
       - BE trigger `beR`: a candle reaches entry + beR x risk, and the stop moves to the entry.
       - Salvage trigger `svR`: a candle reaches entry - svR x risk, and the final target becomes the entry (0R).
       - Both are decided at the candle close and act from the next candle, as every engine rule (indicator / strategy / EA). Only the first acts;
         when both are reached on one candle, the extreme nearer the open counts first. Never on the fill candle.
-      - With both off it is identical to ref_g (checked).
+      - With both off it is identical to ref_gs (checked on M5 Month, H1 Month and M15 session).
+    - **LESSON: `gold/ref_g.py` (used by `geng.run`) resets the VWAP-period counters every day even with a Week / Month anchor.** These are
+      vwBars, the session count, the sigma sums of Don't Chase and the chop counts. `ref_gs.py`, Pine, the EA and the catalogue statistics follow the
+      anchor. Results for Month-VWAP strategies:
+      - M5 / M1: small differences (M5-S1 1,464 vs 1,472 trades);
+      - H1 Month with Don't Chase: large (H1-S8 125 vs 498 trades).
+      - The first sweep was built on ref_g (kept as `ref_gbe_from_ref_g.py`, `sweep_ref_g.jsonl`). Its Month-VWAP part was re-run on ref_gs; the session
+        part is identical in both. **Use ref_gs (or geng with ref_gs) for anything with a Week / Month anchor.**
     - **Sweep:** `sweep.py`, 1,776 runs, resumable `sweep.jsonl`.
       - Every catalogue strategy without a partial close (M1 4, M5 4, M15 6, H1 5) and the user's M5 settings (filters off / on x TP1-TP4).
       - BE off / 0.2-1.5R x salvage off / 0.3-0.9R (M1: a reduced grid).
       - Costs 0.23 / oz. Choose on 2021-23, test on 2024-26. `analyze.py` -> `analysis.txt`.
-    - **Check:** an independent exit simulator written from `SPEC_BE.md` (Sonnet high, re-run by me): `verify/check_exits.py`, 20 cases (M5 / M15 / H1,
-      4 trigger settings each), 0 mismatches.
+    - **Check:** an independent exit simulator written from `SPEC_BE.md` (Sonnet high, re-run by me on the ref_gs-based engine): `verify/check_exits.py`,
+      20 cases, 0 mismatches.
     - **Result:** off is best.
-      - Early BE (0.3-0.5R) and salvage lose a lot on every timeframe, totals over the catalogue in 2021-23 / 2024-26: BE 0.3R M5 -250 / -65R,
-        M15 -468 / -240R; salvage 0.5R M5 -169 / -72R, M15 -359 / -244R. M5-S1 with BE 0.3R: 63% of trades end at 0R, 2021-23 +66R -> -0.1R.
-      - Only a late BE at 1.5R (= the TP3 level, which the existing "When TP3 Hits, Move Stop To 0" already does) helps the strategies without
-        a stop move of their own: M15-S8 +51 / +44R -> +83 / +91R; M5-S1 +66 / +41 -> +67 / +53R; H1-S6 +42 / +22 -> +43 / +43R. Mixed elsewhere.
+      - Totals over the catalogue presets, 2021-23 / 2024-26: BE 0.3R M5 -241 / -64R, M15 -468 / -240R; salvage 0.5R M5 -170 / -79R,
+        M15 -359 / -244R; salvage 0.9R (the least harm) M5 -33 / -25R.
+      - M5-S1 with BE 0.3R: 63% of trades end at 0R, 2021-23 +67R -> +6R.
+      - BE 1.5R (= the TP3 level) helps the presets without a stop move of their own: M15-S8 +51 / +44R -> +83 / +91R; M5-S1 +67 / +45 -> +68 / +57R;
+        H1-S6 +40 / +22 -> +41 / +43R. Mixed elsewhere.
       - The user's M5 settings: BE 0.2R cuts the loss (+364R / +152R over the 8 variants) but they stay far below 0 after costs.
-      - Median stop distance (% of price): M1 0.23, M5 0.27, M15 0.52, H1 0.57, the user's M5 settings 0.12.
-    - Nothing was added to the indicator / strategy / EA (the user was asked first).
+      - Median stop distance (% of price): M1 0.23, M5 0.27, M15 0.52, H1 0.56, the user's M5 settings 0.12.
+41. **v4.9: BE trigger and salvage trigger in the ARS indicator, strategy and EA (asked 2026-11-16)** (task #10). The user wanted them for backtesting,
+    with the best M5 / M15 values.
+    - **Inputs:** `beOn` / `beR` (off, 1.5) and `svOn` / `svR` (off, 0.9; must be below 1) in GRP_T, inline ids `trbe` / `trsv` (`sv` was taken). EA:
+      `InpBeOn` / `InpBeR` / `InpSvOn` / `InpSvR` after InpMv3R. They are not set by a preset, so they work on top of any preset.
+    - **Engine:** Pine `build/patch_pine_v49.py` (on `bak/*_v48.pine`) + `assemble.py`; EA `build/patch_ea_v49.py` (on `bak/AuctionRetestEA_v48.mq5`,
+      the output of patch_ea_v48.py). The rule is the same as ref_gbe.
+      - `trTrig` (Pine "" / "be" / "sv"; EA 0 / 1 / 2) is reset at the fill.
+      - A trigger sets `evMove`, so the strategy and the EA re-send their stop / target.
+      - The salvage exit has res 0 and is not a win: `evSalv`, `svN` in BREAKEVEN.
+      - The salvage target is priced without the earn-back push (`f_tgtPx0` / `TgtPx0`), so the strategy and the EA leave at the engine's level.
+      - Indicator alerts: "BE TRIGGER ..." / "SALVAGE TRIGGER ..." / "SALVAGE EXIT AT ENTRY".
+    - **Checks:** `mq5check` 0/0; Pine lint 0, parse OK; 4 inputs added, every other input unchanged.
+      - EA parity: the 51 old configurations and the 25 presets x 5 variants are identical.
+      - `mq5check/run/parity_trig.py`: the EA vs ref_gbe with the triggers on (Custom, Custom + TP2 stop to 0, M5-S1 / M5-S2 / M15-S1 / M15-S8 / H1-S1
+        presets x 4 trigger settings, 10 symbols): 18 cases, 15,986 trades identical.
+      - The first parity_trig run against the ref_g-based reference flagged one CRUDE trade on the M5 presets: that was the ref_g lesson above,
+        not the EA.
+      - Money suites on v4.9: month 1,344 runs / 1.63 M trades, rec 7,728 runs / 11.4 M, crkpr 20,544 runs / 31.3 M signals, tp1 22,484 runs / 34 M trades: 0 mismatches.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

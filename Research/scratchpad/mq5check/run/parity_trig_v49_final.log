@@ -1,0 +1,19 @@
+defaults + BE 0.3                            ref   1254 EA   1254 identical   1254 
+defaults, TP2 stop to 0 + BE 0.3             ref   1254 EA   1254 identical   1254 
+defaults + salvage 0.5                       ref   1236 EA   1236 identical   1236 
+defaults, TP2 stop to 0 + salvage 0.5        ref   1245 EA   1245 identical   1245 
+defaults + BE 0.3 + salvage 0.5              ref   1261 EA   1261 identical   1261 
+defaults, TP2 stop to 0 + BE 0.3 + salvage 0.5 ref   1261 EA   1261 identical   1261 
+defaults + BE 1.5 + salvage 0.9              ref   1200 EA   1200 identical   1200 
+defaults, TP2 stop to 0 + BE 1.5 + salvage 0.9 ref   1217 EA   1217 identical   1217 
+M5-S1 preset + BE 0.3 + salvage 0.5          ref    320 EA    320 identical    320 
+M5-S1 preset + BE 1.5 + salvage 0.9          ref    263 EA    263 identical    263 
+M5-S2 preset + BE 0.3 + salvage 0.5          ref    343 EA    343 identical    343 
+M5-S2 preset + BE 1.5 + salvage 0.9          ref    294 EA    294 identical    294 
+M15-S1 preset + BE 0.3 + salvage 0.5         ref   1101 EA   1101 identical   1101 
+M15-S1 preset + BE 1.5 + salvage 0.9         ref    700 EA    700 identical    700 
+M15-S8 preset + BE 0.3 + salvage 0.5         ref   1079 EA   1079 identical   1079 
+M15-S8 preset + BE 1.5 + salvage 0.9         ref    664 EA    664 identical    664 
+H1-S1 preset + BE 0.3 + salvage 0.5          ref    694 EA    694 identical    694 
+H1-S1 preset + BE 1.5 + salvage 0.9          ref    600 EA    600 identical    600 
+ALL IDENTICAL

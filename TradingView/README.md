@@ -1309,6 +1309,46 @@ The S3 presets of M15 and H1 are the low-streak versions without a partial close
 - **Monthly restart:** the EA's restart against the simulator run fresh every month gave 0 differences: 1,344 runs and 1.6 M trades, also with restarts of the EA in between.
 - **Compile and parse:** EA 0 errors / 0 warnings; both Pine files parse, with 0 inline-title warnings.
 
+### v4.9: BE trigger and salvage trigger (indicator, strategy and EA)
+
+Two new settings in **TARGETS, EXIT AND STOP MOVES**, right after "When TP3 Hits". In the EA they come right after "When TP3 hits, move stop".
+
+| Setting | What it does | Default |
+|---|---|---|
+| **BE Trigger: Stop To Entry Once Up (R)** | Once a candle after the fill reaches this many R in profit, the stop moves to the entry from the next candle. The trade then ends at the target or at break-even (costs paid). | off, value **1.5** |
+| **Salvage Trigger: Target To Entry Once Down (R)** | Once a candle reaches this many R against the trade, the final target moves to the entry from the next candle. If the price comes back, the trade ends at break-even (0R) instead of waiting for the full target. Must be below 1, because the stop is at 1R. | off, value **0.9** |
+
+**The rules**
+- Both are decided at the candle close, like every rule of the engine, so the indicator, the strategy and the EA show the same trades.
+- Only the first of the two acts in a trade. If both levels are reached in one candle, the one nearer the candle's open came first.
+- Neither acts on the fill candle.
+- The salvage exit is exactly at the entry: earn-back does not push it, so the strategy and the EA leave at the same level as the engine.
+- The table's BREAKEVEN row also counts the salvage exits.
+- Both work on top of any preset: a preset doesn't set them, and off is as tested.
+- R is the stop distance. On gold it is about 0.27% of the price on M5 and 0.52% on M15.
+
+**Gold test, 2021–2026** (every preset without a partial close; after costs of 0.23 per oz; values chosen on 2021–23 and checked on 2024–26). Each cell is the change against both triggers off, added over the timeframe's presets:
+
+| | BE 0.3R | BE 1.0R | BE 1.5R | Salvage 0.5R | Salvage 0.9R |
+|---|---|---|---|---|---|
+| M5 (4 presets), 2021–23 / 2024–26 | −241R / −64R | −54R / +80R | −21R / +25R | −170R / −79R | −33R / −25R |
+| M15 (6 presets), 2021–23 / 2024–26 | −468R / −240R | −52R / −53R | **+32R / +47R** | −359R / −244R | −113R / −14R |
+
+**What the test shows**
+- **Best values for M5 and M15:** BE 1.5R, and salvage off (0.9R does the least harm). These are the default values when you switch the triggers on.
+- **Where BE 1.5R helps:** strategies without a stop move of their own.
+  - M15-S8: +51R → +83R in 2021–23, +44R → +91R in 2024–26.
+  - M5-S1: +67R → +68R and +45R → +57R.
+  - It does nothing on presets that already move their stop by then, such as M5-S2 and M15-S1.
+- **Early triggers lose:** with BE at 0.3R, 63% of M5-S1's trades end at break-even, because winners usually come back to the entry before they run.
+- **M1 and H1:** both are best left off.
+
+**Checks**
+- **Your settings and the presets are unchanged with both triggers off:** the EA engine parity (51 configurations), the preset parity (25 presets × 5 variants) and the money suites give 0 differences, and all existing inputs are unchanged.
+- **The EA with the triggers on matches the research engine trade for trade:** Custom, Custom with a TP stop move, and M5 / M15 / H1 presets, each with BE 0.3R, salvage 0.5R, both, and BE 1.5R + salvage 0.9R, on 10 symbols.
+- **The research engine** was checked against an independent implementation of these rules: 20 cases, 0 mismatches.
+- **Compile and parse:** EA 0 errors / 0 warnings; both Pine files parse, with 0 inline-title warnings.
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.

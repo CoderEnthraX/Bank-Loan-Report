@@ -24,7 +24,8 @@ IN = dict(
     # DAYS AND HOURS (IST)
     dayOn=False, days=(True, True, True, True, True, True, True), hoursOn=False, hoursSess=(600, 2300),
     # KILL ZONES (IST minutes; Asia, London, New York, London close) and the shift in hours
-    kzOn=False, kz=(True, True, True, True), kzShift=0, kzAuto=False, beOn=False, beR=0.3, svOn=False, svR=0.5)
+    kzOn=False, kz=(True, True, True, True), kzShift=0, kzAuto=False,
+    emaPos=(), stack=(), emaGhost=False, beOn=False, beR=0.3, svOn=False, svR=0.5)
 _W = {}
 def weights(sym):
     """per-bar volume weights backed out of the CSV VWAP (TradingView uses the real volume; the CSVs have none)."""
@@ -52,6 +53,23 @@ def run(sym, opts=None):
     O, H, L, C, V = P['O'], P['H'], P['L'], P['C'], P['V']; n = len(O)
     T = P['T']   # IST datetimes of the bar opens
     atr = rma(P['tr'], p['atrLen'])
+    def _ema(x, n):
+        o = [None] * len(x); a = 2.0 / (n + 1); s_ = None
+        for j in range(len(x)):
+            if s_ is None:
+                if j >= n - 1: s_ = sum(x[j - n + 1:j + 1]) / n
+            else: s_ = a * x[j] + (1 - a) * s_
+            o[j] = s_
+        return o
+    EM = {k_: _ema(C, k_) for k_ in set(list(p['emaPos']) + [v for ab in p['stack'] for v in ab])}
+    def emaSide(j, d):
+        for k_ in p['emaPos']:
+            e = EM[k_][j]
+            if e is None or not d * (C[j] - e) > 0: return False
+        for a_, b_ in p['stack']:
+            ea, eb = EM[a_][j], EM[b_][j]
+            if ea is None or eb is None or not d * (ea - eb) > 0: return False
+        return True
     w = P['W'] if (p['noChase'] or p.get('needW')) else None
     exitR = (p['tp1R'], p['tp2R'], p['tp3R'], p['tp4R'])[p['exitAt'] - 1]
     E = 1e-7
@@ -63,14 +81,14 @@ def run(sym, opts=None):
     # trade state
     st = 0; armBar = fillBar = lastExit = lastFill = None; lastDir = 0
     trig = None; svAct = False
-    lim = stp = stp0 = trRisk = None; t = [None] * 4; tF = None; tpHit = 0; trHalf = False; trGhost = False; trVwd = trVwdA = None
+    lim = stp = stp0 = trRisk = None; t = [None] * 4; tF = None; tpHit = 0; trHalf = False; trGhost = False; trVwd = trVwdA = trVwz = None; trVs = trVt = trVe = None
     trades = []; cur = None; bestPx = None
     # optional filters: VWAP crosses this VWAP period; 1-hour (UTC) candles built from the bars and their EMA20 (hE[0..3] = last 4 completed hours)
     vxSide = vxN = 0; hK = hC = None; hNum = 0; hSum = 0.0; hE = [None] * 4; hA = 2.0 / 21.0
     EP = datetime.datetime(1970, 1, 1)
     tchL = tchS = 10 ** 9    # bars since the candle range last reached the VWAP (long side / short side)
     for i in range(n):
-        newAnchor = P['daystart'][i]; newDay = newAnchor
+        newDay = P['daystart'][i]; newAnchor = P['anch'][i]
         if newAnchor: vwBars = 0; sw = s1 = s2 = 0.0; nSess = nSess + 1 if i > 0 else 0
         else: vwBars += 1
         if w is not None:
@@ -145,7 +163,7 @@ def run(sym, opts=None):
             touched = True if p['entryMode'] == 'market' else (L[i] <= lim + mt * 0.001 if isL else H[i] >= lim - mt * 0.001)
             if touched and dayFills < p['maxFills']:
                 st = 2 if isL else -2; fillBar = i; lastFill = i; lastDir = d; tpHit = 0; dayFills += 1; trig = None; svAct = False
-                cur = dict(dir=d, arm=armBar, fill=i, entry=lim, stop=stp, exit=None, res=None, half=trHalf, ghost=trGhost, vwd=trVwd, vwdA=trVwdA); trades.append(cur)
+                cur = dict(dir=d, arm=armBar, fill=i, entry=lim, stop=stp, exit=None, res=None, half=trHalf, ghost=trGhost, vwd=trVwd, vwdA=trVwdA, vwz=trVwz, vs=trVs, vt=trVt, ve=trVe); trades.append(cur)
                 bestPx = lim
                 if (L[i] <= stp + mt * 0.001 if isL else H[i] >= stp - mt * 0.001):
                     if not trGhost:
@@ -178,8 +196,9 @@ def run(sym, opts=None):
         bearImp = C[i] < O[i] and L[i] < priorLow and bigImp and closeLo and slopeDn
         utc = T[i] - datetime.timedelta(hours=5, minutes=30)
         setupOk = vwBars >= p['minOpenBars'] and not (p['skipSunday'] and utc.weekday() == 6)
-        bullBase = p['allowLong'] and setupOk and C[i] > O[i] and bigCandle and closeHi and sigUp and (not p['vwapFilter'] or C[i] > V[i]) and (p['momAtr'] <= 0 or momMove >= p['momAtr'] * A) and erUp
-        bearBase = p['allowShort'] and setupOk and C[i] < O[i] and bigCandle and closeLo and sigDn and (not p['vwapFilter'] or C[i] < V[i]) and (p['momAtr'] <= 0 or -momMove >= p['momAtr'] * A) and erDn
+        eL = emaSide(i, 1); eS = emaSide(i, -1); gEL = p['emaGhost'] and not eL; gES = p['emaGhost'] and not eS
+        bullBase = p['allowLong'] and setupOk and C[i] > O[i] and bigCandle and closeHi and sigUp and (not p['vwapFilter'] or C[i] > V[i]) and (p['momAtr'] <= 0 or momMove >= p['momAtr'] * A) and erUp and (eL or p['emaGhost'])
+        bearBase = p['allowShort'] and setupOk and C[i] < O[i] and bigCandle and closeLo and sigDn and (not p['vwapFilter'] or C[i] < V[i]) and (p['momAtr'] <= 0 or -momMove >= p['momAtr'] * A) and erDn and (eS or p['emaGhost'])
         deepL = deepS = False
         if p['deepOn']:
             momB = C[i] - C[i - p['brkLen']]; erDenB = sum(abs(C[j] - C[j - 1]) for j in range(i - p['brkLen'] + 1, i + 1))
@@ -240,15 +259,16 @@ def run(sym, opts=None):
                 chopNo = p['chopOn'] and vxRate > p['chopMax']
                 emaNo = p['emaOn'] and emaSpd is not None and emaSpd > p['emaMax']
                 nearNo = p['minVwOn'] and d * (C[i] - V[i]) < p['minVwAtr'] * A
-                # signal close too far from the VWAP (either side), in ATR or in price
                 vwd = abs(C[i] - V[i])
                 farNo = p['maxVwOn'] and vwd > (p['maxVwDist'] if p['maxVwUnit'] == 'price' else p['maxVwDist'] * A)
                 # signal still on the VWAP: stop on the other side of it, VWAP touched in the last N candles, entry too close to it
                 stopNo = p['stopVwOn'] and d * (stop - V[i]) < p['stopVwBuf'] * A
                 tchNo = p['touchVwOn'] and (tchL if isL else tchS) < p['touchVwN']
                 entNo = p['entVwOn'] and d * (entry - V[i]) < p['entVwAtr'] * A
-                ghost = ghost or chopNo or emaNo or nearNo or farNo or stopNo or tchNo or entNo
+                ghost = ghost or chopNo or emaNo or nearNo or farNo or stopNo or tchNo or entNo or (gEL if isL else gES)
                 st = d; armBar = i; lim = entry; stp = stop; stp0 = stop; trRisk = risk; trHalf = half; trGhost = ghost; trVwd = vwd; trVwdA = vwd / A
+                trVwz = d * (C[i] - V[i]) / vwSd if (vwSd and vwBars >= 3 and nSess >= 1) else None   # research: distance in sigma
+                trVs = d * (stop - V[i]) / A; trVt = tchL if isL else tchS; trVe = d * (entry - V[i]) / A   # research: the three VWAP measures
                 t = [lim + d * p['tp1R'] * risk, lim + d * p['tp2R'] * risk, lim + d * p['tp3R'] * risk, lim + d * p['tp4R'] * risk]
                 tF = t[p['exitAt'] - 1]
     return trades

@@ -1,11 +1,11 @@
-"""ref_gbe.py = gold/ref_g.py (the research engine) + BE trigger and salvage trigger in R (asked 2026-11-16), decided at the candle close like
+"""ref_gbe.py = gold/ref_gs.py (the research engine whose VWAP-period counters follow the anchor, like Pine and the EA) + BE trigger and salvage trigger in R (asked 2026-11-16), decided at the candle close like
 every engine rule (the indicator, strategy and EA would copy it), acting from the next candle:
   BE trigger      beOn / beR: a candle (after the fill candle, the trade still open) reaches entry + beR x risk -> the stop moves to the entry
   salvage trigger svOn / svR: a candle reaches entry - svR x risk -> the final target moves to the entry (out at 0R if the price comes back)
 Only the first of the two acts in a trade (both on one candle: the extreme nearer the open came first). A target exit at the moved target is
-0R. The fill candle never triggers (the engine takes no target on it either). Off = ref_g exactly."""
+0R. The fill candle never triggers (the engine takes no target on it either). Off = ref_gs exactly."""
 S = '/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad'
-s = open(S + '/gold/ref_g.py').read()
+s = open(S + '/gold/ref_gs.py').read()   # ref_gs: the VWAP-period counters follow the Week / Month anchor (= Pine / EA); ref_g reset them daily
 
 
 def sub1(a, b):
@@ -14,8 +14,8 @@ def sub1(a, b):
     s = s.replace(a, b)
 
 
-sub1("    kzOn=False, kz=(True, True, True, True), kzShift=0, kzAuto=False)",
-     "    kzOn=False, kz=(True, True, True, True), kzShift=0, kzAuto=False, beOn=False, beR=0.3, svOn=False, svR=0.5)")
+sub1("    emaPos=(), stack=(), emaGhost=False)",
+     "    emaPos=(), stack=(), emaGhost=False, beOn=False, beR=0.3, svOn=False, svR=0.5)")
 sub1("""                res = exitR if win else (-1.0 if stp == stp0 else d * (stp - lim) / trRisk)""",
      """                res = (exitR if not svAct else d * (tF - lim) / trRisk) if win else (-1.0 if stp == stp0 else d * (stp - lim) / trRisk)""")
 sub1("""                lastExit = i; st = 0; cur.update(exit=i, res=res, best=bestPx, stpX=stp)

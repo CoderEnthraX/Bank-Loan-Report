@@ -71,9 +71,12 @@
 //| H1 S1-S8), each on its own chart timeframe; "Add my filters"     |
 //| adds your days, hours, kill zones and news. The monthly restart  |
 //| also restarts the profit ladder and a hard-cap stop.             |
+//| v4.9: BE TRIGGER (stop to the entry once the trade is X R up)    |
+//| and SALVAGE TRIGGER (target to the entry once it is X R down),   |
+//| off by default; they work with any preset (TradingView too).     |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "4.80"
+#property version   "4.90"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -241,6 +244,10 @@ input bool   InpMv2On = false; // When TP2 hits, move stop (breakeven at +1R: on
 input double InpMv2R  = 0.6;   //   ...to (R)
 input bool   InpMv3On = false; // When TP3 hits, move stop
 input double InpMv3R  = 0.0;   //   ...to (R)
+input bool   InpBeOn  = false; // BE trigger: stop to the entry once the trade is up (R; works with any preset)
+input double InpBeR   = 1.5;   //   ...R in profit (gold test: 1.5 best on M5 and M15; early values lose)
+input bool   InpSvOn  = false; // Salvage trigger: target to the entry once the trade is down (R; any preset)
+input double InpSvR   = 0.9;   //   ...R against the trade (below 1; gold test: best off, 0.9 the least harm)
 
 input group "ACCURACY FILTERS (research, off = original)"
 input bool   InpNoChase    = false; // Don't chase: skip signals beyond N sigma from VWAP
@@ -451,6 +458,7 @@ long     armBar = -1, fillBar = -1, lastExit = -1, lastFill = -1;
 int      lastDir = 0;
 double   lim = 0, stp = 0, stp0 = 0, trRisk = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, tF = 0;
 int      tpHit = 0;
+int      trTrig = 0;                                     // v4.9: the trigger that acted in the live trade (0 none, 1 BE, 2 salvage)
 bool     trHalf = false, trGhost = false;
 int      trSkip = 0;               // why the setup is a ghost: 1 too far from VWAP, 2 choppy VWAP session, 3 1h EMA20 too fast, 4 too close to VWAP, 5 beyond max VWAP distance,
                                    // 6 stop beyond the VWAP, 7 VWAP touched recently, 8 entry too close to the VWAP
@@ -468,9 +476,11 @@ double   hE[4];                    // EMA20 of the last four completed hours, [0
 // accuracy of the shown trades (port of the shared Pine STATS block)
 int      tpHitN[4];                // closed trades that reached TP1..TP4 before the stop
 int      beN = 0, lkN = 0;         // closed at a stop moved to the entry (breakeven) / into profit
+int      svN = 0;                  // v4.9: closed at the entry by the salvage target (0R)
 datetime gFirstT = 0;              // first bar the engine processed
 // events of the last processed bar (shown setups / trades only)
 bool     evArm, evArmL, evFill, evFillL, evExit, evWin, evMove, evTp; double evRes; int evCancel; // 0 none, 1 expired, 2 replaced
+bool     evSalv; int evTrig;            // v4.9: an exit at the entry by the salvage target; a BE (1) / salvage (2) trigger acted on this bar
 bool     gNewDay = false, gDayOk = true, gHourOk = true, gKzOk = true;
 bool     gT1Seen = false;          // Crooks TP1 rule: TP1 was reached (on a bar caught up after a disconnect, or the partial close failed) and the TP1 part is still to be booked
 int      lastAnchorKey = -1;
@@ -894,6 +904,7 @@ void ProcessBar(int s)
 {
    bi++;
    evArm = false; evArmL = false; evFill = false; evFillL = false; evExit = false; evWin = false; evMove = false; evTp = false; evRes = 0; evCancel = 0;
+   evSalv = false; evTrig = 0;
    datetime t = iTime(_Symbol, _Period, s);
    double o = Op(s), h = Hi(s), l = Lo(s), c = Cl(s);
    long   rv = iVolume(_Symbol, _Period, s);
@@ -1028,28 +1039,51 @@ void ProcessBar(int s)
       if(!stopHit) bestPx = isL ? MathMax(bestPx, h) : MathMin(bestPx, l);
       if(stopHit || tgtHit)
       {
-         bool win = !stopHit;
-         double res = win ? exitR : (stp == stp0 ? -1.0 : d * (stp - lim) / trRisk);
+         bool salv = !stopHit && trTrig == 2;           // v4.9: the salvage target (the entry): 0R, not a win
+         bool win = !stopHit && !salv;
+         double res = win ? exitR : (salv ? 0.0 : (stp == stp0 ? -1.0 : d * (stp - lim) / trRisk));
          if(!trGhost)
          {
             dayRiskR += res;
             lossDirBlk = res < 0 ? (isL ? 1 : -1) : (res > 0 ? 0 : lossDirBlk);
             totR += res; dayR += res;
             if(win) { totW++; dayW++; } else { totL++; dayL++; }
-            lastRes = (win ? "TP" + IntegerToString((int)gpExitAt) + " " : "STOP ") + (res >= 0 ? "+" : "") + DoubleToString(res, 2) + "R";
-            evExit = true; evWin = win; evRes = res;
+            lastRes = (win ? "TP" + IntegerToString((int)gpExitAt) + " " : (salv ? "SALVAGE " : "STOP ")) + (res >= 0 ? "+" : "") + DoubleToString(res, 2) + "R";
+            evExit = true; evWin = win; evRes = res; evSalv = salv;
          }
          else { if(win) ghW++; else ghL++; ghR += res; }
          lastExit = bi; st = 0;
       }
-      else if(tpHit > prevHit)
+      else
       {
-         double ns = stp;
-         if(gpMv1On && tpHit >= 1) ns = isL ? MathMax(ns, lim + gpMv1R * trRisk) : MathMin(ns, lim - gpMv1R * trRisk);
-         if(gpMv2On && tpHit >= 2) ns = isL ? MathMax(ns, lim + gpMv2R * trRisk) : MathMin(ns, lim - gpMv2R * trRisk);
-         if(gpMv3On && tpHit >= 3) ns = isL ? MathMax(ns, lim + gpMv3R * trRisk) : MathMin(ns, lim - gpMv3R * trRisk);
-         if(ns != stp) { stp = ns; evMove = !trGhost; }
-         evTp = !trGhost;
+         if(tpHit > prevHit)
+         {
+            double ns = stp;
+            if(gpMv1On && tpHit >= 1) ns = isL ? MathMax(ns, lim + gpMv1R * trRisk) : MathMin(ns, lim - gpMv1R * trRisk);
+            if(gpMv2On && tpHit >= 2) ns = isL ? MathMax(ns, lim + gpMv2R * trRisk) : MathMin(ns, lim - gpMv2R * trRisk);
+            if(gpMv3On && tpHit >= 3) ns = isL ? MathMax(ns, lim + gpMv3R * trRisk) : MathMin(ns, lim - gpMv3R * trRisk);
+            if(ns != stp) { stp = ns; evMove = !trGhost; }
+            evTp = !trGhost;
+         }
+         // v4.9 BE / salvage trigger: only the first acts in a trade; both on one bar: the extreme nearer the open came first (from the next bar)
+         if(trTrig == 0 && (InpBeOn || InpSvOn))
+         {
+            double beL = lim + d * InpBeR * trRisk, svL = lim - d * InpSvR * trRisk;
+            bool beH = InpBeOn && (isL ? h >= beL - tol : l <= beL + tol);
+            bool svH = InpSvOn && (isL ? l <= svL + tol : h >= svL - tol);
+            if(beH && svH)
+            {
+               bool hiFirst = MathAbs(h - o) < MathAbs(o - l);
+               if(hiFirst == isL) svH = false; else beH = false;
+            }
+            if(beH)
+            {
+               trTrig = 1; evTrig = trGhost ? 0 : 1;
+               double nb = isL ? MathMax(stp, lim) : MathMin(stp, lim);
+               if(nb != stp) { stp = nb; evMove = !trGhost; }
+            }
+            else if(svH) { trTrig = 2; evTrig = trGhost ? 0 : 2; tF = lim; evMove = !trGhost; }
+         }
       }
    }
    // 2. armed setup: fill (limit touch, or the next bar for market entries) or expiry
@@ -1060,7 +1094,7 @@ void ProcessBar(int s)
       bool touched = gpEntryMode == ENTRY_MARKET ? true : (isL ? l <= lim + mt * 0.001 : h >= lim - mt * 0.001);
       if(touched && dayFills < gpMaxFills)
       {
-         st = isL ? 2 : -2; fillBar = bi; lastFill = bi; lastDir = isL ? 1 : -1; tpHit = 0; dayFills++;
+         st = isL ? 2 : -2; fillBar = bi; lastFill = bi; lastDir = isL ? 1 : -1; tpHit = 0; trTrig = 0; dayFills++;
          bestPx = lim;
          if(!trGhost) { evFill = true; evFillL = isL; }
          if(isL ? l <= stp + mt * 0.001 : h >= stp - mt * 0.001)
@@ -1157,7 +1191,8 @@ void ProcessBar(int s)
          double lvl = k == 1 ? t1 : (k == 2 ? t2 : (k == 3 ? t3 : t4));
          if(evWin ? k <= xk : (k < xk && sd * (bestPx - lvl) >= -TickSize() * 0.001)) tpHitN[k - 1]++;
       }
-      if(!evWin && stp != stp0) { if(evRes == 0.0) beN++; else if(evRes > 0.0) lkN++; }
+      if(evSalv) svN++;
+      else if(!evWin && stp != stp0) { if(evRes == 0.0) beN++; else if(evRes > 0.0) lkN++; }
    }
    if(gFirstT == 0) gFirstT = t;
    DrawBar(t);
@@ -1670,6 +1705,7 @@ double Spr() { return InpBidChart ? MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBO
 double EntryPx(bool isL) { return isL ? FloorTick(lim + TickSize() * 0.001 + Spr()) : CeilTick(lim - TickSize() * 0.001); }
 double StopPx(bool isL)  { double tl = TickSize() * 0.001; return isL ? FloorTick(stp + tl) : CeilTick(stp - tl + Spr()); }
 double TgtPx(bool isL, double lvl) { double tl = TickSize() * 0.001; return isL ? CeilTick(lvl + exCostPx - tl) : FloorTick(lvl - exCostPx + tl + Spr()); }
+double TgtPx0(bool isL, double lvl) { double tl = TickSize() * 0.001; return isL ? CeilTick(lvl - tl) : FloorTick(lvl + tl + Spr()); }   // v4.9: the salvage target (the entry), no earn-back push
 double T1StopPx(bool isL, double d) { return isL ? CeilTick(lim - d) : FloorTick(lim + d + Spr()); }   // Crooks TP1 rule stop, toward the entry
 // the TP1-rule trade's first stop (Crooks TP1 rule, stop before TP1)
 double T1Stop0Px(bool isL, double d)
@@ -1747,7 +1783,7 @@ void SetExits(bool withTarget)
 {
    ulong tk; double vol, op;
    if(!HasPosition(tk, vol, op)) return;
-   double sl = StopPx(exL), tp = withTarget ? TgtPx(exL, tF) : 0;
+   double sl = StopPx(exL), tp = withTarget ? (trTrig == 2 && exArm == armBar ? TgtPx0(exL, tF) : TgtPx(exL, tF)) : 0;   // v4.9: salvage: at the entry
    if(exT1) { sl = exT1Half ? NormalizeDouble(op, _Digits) : exT1Stop; tp = withTarget ? TgtPx(exL, exT1Tp2) : 0; }   // Crooks TP1 rule: rest to TP2, at the entry after TP1
    if(exKeepSl > 0 && (exL ? exKeepSl > sl : exKeepSl < sl)) sl = exKeepSl;   // an adopted position keeps its tighter stop
    double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
@@ -1801,7 +1837,8 @@ string TpTxt()
    for(int k = 1; k <= 4; k++) s += (k > 1 ? " | " : "") + "TP" + IntegerToString(k) + " " + (k > xk ? "n/a" : Share(tpHitN[k - 1], n) + " (" + IntegerToString(tpHitN[k - 1]) + ")");
    return s;
 }
-string BeTxt() { int n = totW + totL; return "BE " + IntegerToString(beN) + " (" + Share(beN, n) + ") | locked profit " + IntegerToString(lkN) + " (" + Share(lkN, n) + ")"; }
+string BeTxt() { int n = totW + totL; return "BE " + IntegerToString(beN) + " (" + Share(beN, n) + ") | locked profit " + IntegerToString(lkN) + " (" + Share(lkN, n) + ")" +
+                 (InpSvOn ? " | salvage " + IntegerToString(svN) + " (" + Share(svN, n) + ")" : ""); }
 string FltTxt() { return IntegerToString(ghW + ghL) + " skipped | would have been " + IntegerToString(ghW) + "W/" + IntegerToString(ghL) + "L | " + SgnR(ghR); }
 string MonTxt(int m) { string a[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}; return a[(m + 11) % 12]; }
 string DateTxt(datetime tm, bool withYear)
@@ -1996,7 +2033,7 @@ void UpdateTable()
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v4.8", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v4.9", white, C'61,143,214');
    if(InpPreset != PRE_CUSTOM) TblAdd("PRESET", PresetName() + (gpTfOk ? "" : " | needs an " + TfName(gpTf) + " chart") + (InpAddMine ? " | + my filters" : ""), gpTfOk ? posC : negC, cell);
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
@@ -2010,7 +2047,7 @@ void UpdateTable()
    TblAdd("SIGNALS | TAKEN | SKIPPED", IntegerToString(sigN) + " | " + IntegerToString(takenN) + " | " + IntegerToString(skipN) + (missN > 0 ? " | missed " + IntegerToString(missN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN > 0 ? negC : white, cell);
    TblAdd("SIGNAL TRADES | WIN % | R", AccTxt() + " | last " + lastRes, totR >= 0 ? posC : negC, cell);
    TblAdd("TP HIT", TpTxt(), posC, cell);
-   if(gpMv1On || gpMv2On || gpMv3On) TblAdd("BREAKEVEN", BeTxt(), white, cell);
+   if(gpMv1On || gpMv2On || gpMv3On || InpBeOn || InpSvOn) TblAdd("BREAKEVEN", BeTxt(), white, cell);
    if(gpNoChase || gpChopOn || gpEmaOn || gpMinVwOn || gpMaxVwOn || gpStopVwOn || gpTouchVwOn || gpEntVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
    TblAdd("DATA RANGE", gFirstT > 0 ? DateTxt(UserTime(gFirstT), true) + " -> " + DateTxt(UserTime(gLastDone), false) + " | " + IntegerToString(bi + 1) + " bars" : "-", white, cell);
    TblAdd("RESTART MEMORY", gPersist ? (gRestored ? "on | continued from " + DateTxt(UserTime(gSvT), true) : "on") : InpRemember ? "off in the Strategy Tester" : "off", white, cell);
@@ -2542,7 +2579,7 @@ void ResetEngine()
    for(int q = 0; q < 3; q++) pDone[q] = false;
    trSkip = 0; lastRes = "-"; bestPx = 0; ghW = 0; ghL = 0; ghR = 0;
    vxSide = 0; vxN = 0; tchL = 1000000; tchS = 1000000; hK = -1; hC = 0; hSum = 0; hNum = 0; ArrayInitialize(hE, 0.0);
-   ArrayInitialize(tpHitN, 0); beN = 0; lkN = 0; gFirstT = 0;
+   ArrayInitialize(tpHitN, 0); beN = 0; lkN = 0; svN = 0; gFirstT = 0; trTrig = 0;
    gDrawT = 0; ArrayResize(gDrawn, 0); gStateTxt = "SCANNING";
    exArmT = 0; exLim = 0; ArrayInitialize(exTpL, 0.0); gExitRetry = false; gExitWhy = ""; gExitSeen = false; gGoneWait = false;
    gVwPrevT = 0; gVwPrev = 0;
@@ -2752,6 +2789,8 @@ int OnInit()
    { Print("Position size: the base risk, base lots or risk % of equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(gpTp1R > gpTp2R || gpTp2R > gpTp3R || gpTp3R > gpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
    if(gpMaxVwOn && gpMaxVwDist <= 0) { Print("Max distance from VWAP must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpBeOn && InpBeR <= 0) { Print("BE trigger: the R in profit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpSvOn && (InpSvR <= 0 || InpSvR >= 1)) { Print("Salvage trigger: the R against the trade must be above 0 and below 1 (the stop is at 1R)."); return INIT_PARAMETERS_INCORRECT; }
    if(gpTouchVwOn && gpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
    if(InpCrkT1 && (InpCrkT1Pct < 10 || InpCrkT1Pct > 90)) { Print("Crooks TP1 rule: % closed at TP1 must be 10 to 90."); return INIT_PARAMETERS_INCORRECT; }
    if(CrkCFam() && InpCrkPr != CPR_OFF && (InpCrkPrN < 1 || InpCrkPrM < 1 || InpCrkPrD < 1)) { Print("Crooks C rule: N, M and D must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }

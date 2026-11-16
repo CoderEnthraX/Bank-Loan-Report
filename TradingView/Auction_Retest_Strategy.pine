@@ -29,6 +29,8 @@
 //  v4.8: STRATEGY PRESET at the top of the settings: Custom (your settings) or one of the 25 tested catalogue strategies
 //  (M1 S1-S4, M5 S1-S4, M15 S1-S9, H1 S1-S8), each on its own chart timeframe; Add My Filters adds your days, hours, kill
 //  zones and news. The monthly restart now also restarts the profit ladder and a hard-cap stop (the same in the MT5 EA).
+//  v4.9: BE TRIGGER (stop to the entry once the trade is X R up) and SALVAGE TRIGGER (target to the entry once it is X R down), in
+//  TARGETS, EXIT AND STOP MOVES; off by default, they work with any preset (the same in the indicator and the MT5 EA).
 //
 //  LEVERAGE: set it with the "Leverage" input (default 1:100). TradingView's own margin check is off
 //  (margin 0 in Properties): with its default 100 % margin it silently rejects orders bigger than the
@@ -137,6 +139,10 @@ mv2OnIn = input.bool(false, "When TP2 Hits, Move Stop To (R)", inline = "m2", gr
 mv2RIn = input.float(0.6, "", step = 0.1, inline = "m2", group = GRP_T)
 mv3OnIn = input.bool(false, "When TP3 Hits, Move Stop To (R)", inline = "m3", group = GRP_T, tooltip = "R is measured from the entry: 0 = breakeven, 0.6 = the TP1 level with the default targets, 1 = the TP2 level and so on. The stop only ever moves in the trade's favour; the new stop applies from the next bar.\nBreakeven at +1R (accuracy research): tick TP2 and set it to 0.")
 mv3RIn = input.float(0.0, "", step = 0.1, inline = "m3", group = GRP_T)
+beOn   = input.bool(false, "BE Trigger: Stop To Entry Once Up (R)", inline = "trbe", group = GRP_T)
+beR    = input.float(1.5, "", minval = 0.05, step = 0.05, inline = "trbe", group = GRP_T, tooltip = "Off (default). On: once a candle after the fill reaches this many R in profit (the high for a long, the low for a short), the stop moves to the entry from the next candle; the trade then ends at the target or at break-even (costs paid). Only the first of the BE and salvage triggers acts in a trade. Works with any preset (off = as tested). 1R = the stop distance (gold: about 0.27% of the price on M5, 0.52% on M15).\nGold 2021-2026 test (after costs): 1.5R was the best value on M5 and on M15. It helps strategies without a stop move of their own (M15-S8: +51R -> +83R in 2021-23, +44R -> +91R in 2024-26; M5-S1: +67R -> +68R, +45R -> +57R); early values cost a lot (0.3R: the 4 M5 presets -241R in 2021-23, the 6 M15 presets without a partial -468R).")
+svOn   = input.bool(false, "Salvage Trigger: Target To Entry Once Down (R)", inline = "trsv", group = GRP_T)
+svR    = input.float(0.9, "", minval = 0.05, maxval = 0.95, step = 0.05, inline = "trsv", group = GRP_T, tooltip = "Off (default). On: once a candle after the fill reaches this many R against the trade (the low for a long, the high for a short), the final target moves to the entry from the next candle: if the price comes back, the trade ends at break-even instead of waiting for the full target. Below 1 (the stop is at 1R). Only the first of the BE and salvage triggers acts in a trade. Works with any preset (off = as tested).\nGold 2021-2026 test (after costs): every value lowered the results on M5 and M15; 0.9R did the least harm (the 4 M5 presets -33R in 2021-23 and -25R in 2024-26; 0.5R: -170R and -79R), so it is best left off.")
 
 GRP_F = "ACCURACY FILTERS (research, off = original)"
 noChaseIn  = input.bool(false, "Don't Chase: Skip Signals Beyond (σ From VWAP)", inline = "nc", group = GRP_F)
@@ -670,6 +676,7 @@ var float t3       = na
 var float t4       = na
 var float tF       = na      // final target (Final Exit At)
 var int   tpHit    = 0
+var string trTrig  = ""      // v4.9: the BE / salvage trigger that acted in the live trade ("be", "sv" or "")
 var bool  trHalf   = false   // the armed / live setup uses the half stop
 var bool  trGhost  = false   // skipped by an accuracy filter: runs invisibly, never shown or traded
 var string trSkip  = ""      // which filter skipped it
@@ -691,6 +698,8 @@ bool   evWin     = false
 float  evRes     = na
 bool   evMove    = false
 bool   evTp      = false
+bool   evSalv    = false   // v4.9: the exit was at the entry, by the salvage target
+string evTrig    = ""      // v4.9: a BE / salvage trigger acted on this bar ("be" / "sv")
 string evCancel  = ""
 
 // ── 1. manage the live trade: stop first, then the final target, else stop moves (from the next bar) ──
@@ -708,8 +717,9 @@ if math.abs(st) == 2 and bar_index > fillBar
         bestPx := isL ? math.max(bestPx, high) : math.min(bestPx, low)
     if stopHit or tgtHit
         // a bar touching both counts as the stop
-        bool  win = not stopHit
-        float res = win ? exitR : stp == stp0 ? -1.0 : d * (stp - lim) / trRisk
+        bool  salv = not stopHit and trTrig == "sv"     // v4.9: the salvage target (the entry): 0R, not a win
+        bool  win  = not stopHit and not salv
+        float res  = win ? exitR : salv ? 0.0 : stp == stp0 ? -1.0 : d * (stp - lim) / trRisk
         if not trGhost
             dayRiskR   += res
             lossDirBlk := res < 0 ? (isL ? 1 : -1) : res > 0 ? 0 : lossDirBlk
@@ -719,28 +729,54 @@ if math.abs(st) == 2 and bar_index > fillBar
             dayW       += win ? 1 : 0
             totL       += win ? 0 : 1
             dayL       += win ? 0 : 1
-            lastRes    := (win ? "TP" + str.tostring(exitK) + " " : "STOP ") + (res >= 0 ? "+" : "") + str.tostring(res, "0.00") + "R"
+            lastRes    := (win ? "TP" + str.tostring(exitK) + " " : salv ? "SALVAGE " : "STOP ") + (res >= 0 ? "+" : "") + str.tostring(res, "0.00") + "R"
             evExit     := true
             evWin      := win
             evRes      := res
+            evSalv     := salv
         else
             ghW += win ? 1 : 0
             ghL += win ? 0 : 1
             ghR += res
         lastExit := bar_index
         st       := 0
-    else if tpHit > prevHit
-        float ns = stp
-        if mv1On and tpHit >= 1
-            ns := isL ? math.max(ns, lim + mv1R * trRisk) : math.min(ns, lim - mv1R * trRisk)
-        if mv2On and tpHit >= 2
-            ns := isL ? math.max(ns, lim + mv2R * trRisk) : math.min(ns, lim - mv2R * trRisk)
-        if mv3On and tpHit >= 3
-            ns := isL ? math.max(ns, lim + mv3R * trRisk) : math.min(ns, lim - mv3R * trRisk)
-        if ns != stp
-            stp    := ns
-            evMove := not trGhost
-        evTp := not trGhost
+    else
+        if tpHit > prevHit
+            float ns = stp
+            if mv1On and tpHit >= 1
+                ns := isL ? math.max(ns, lim + mv1R * trRisk) : math.min(ns, lim - mv1R * trRisk)
+            if mv2On and tpHit >= 2
+                ns := isL ? math.max(ns, lim + mv2R * trRisk) : math.min(ns, lim - mv2R * trRisk)
+            if mv3On and tpHit >= 3
+                ns := isL ? math.max(ns, lim + mv3R * trRisk) : math.min(ns, lim - mv3R * trRisk)
+            if ns != stp
+                stp    := ns
+                evMove := not trGhost
+            evTp := not trGhost
+        // v4.9 BE / salvage trigger: only the first acts in a trade; both on one bar: the extreme nearer the open came first (from the next bar)
+        if trTrig == "" and (beOn or svOn)
+            float beL = lim + d * beR * trRisk
+            float svL = lim - d * svR * trRisk
+            bool  beH = beOn and (isL ? high >= beL - syminfo.mintick * 0.001 : low <= beL + syminfo.mintick * 0.001)
+            bool  svH = svOn and (isL ? low <= svL + syminfo.mintick * 0.001 : high >= svL - syminfo.mintick * 0.001)
+            if beH and svH
+                bool hiFirst = math.abs(high - open) < math.abs(open - low)
+                if hiFirst == isL
+                    svH := false
+                else
+                    beH := false
+            if beH
+                trTrig := "be"
+                evTrig := trGhost ? "" : "be"
+                float nb = isL ? math.max(stp, lim) : math.min(stp, lim)
+                if nb != stp
+                    stp    := nb
+                    evMove := not trGhost
+            else if svH
+                trTrig := "sv"
+                evTrig := trGhost ? "" : "sv"
+                tF     := lim
+                evMove := not trGhost
 
 // ── 2. manage the armed setup: fill (limit touch, or the next bar's open for market entries) or expiry ──
 if math.abs(st) == 1 and bar_index > armBar
@@ -753,6 +789,7 @@ if math.abs(st) == 1 and bar_index > armBar
         lastFill := bar_index
         lastDir  := isL ? 1 : -1
         tpHit    := 0
+        trTrig   := ""
         dayFills += 1
         bestPx   := lim
         if not trGhost
@@ -886,18 +923,21 @@ if canArm and (bullDisp or bearDisp) and not keepArm
 var array<int> tpHitN = array.new_int(4, 0)
 var int beN = 0      // closed at a stop moved to the entry (breakeven, 0R)
 var int lkN = 0      // closed at a stop moved into profit (locked profit)
+var int svN = 0      // v4.9: closed at the entry by the salvage target (0R)
 if evExit
     float sd = lastDir == 1 ? 1.0 : -1.0
     for k = 1 to 4
         float lvl = k == 1 ? t1 : k == 2 ? t2 : k == 3 ? t3 : t4
         if evWin ? k <= exitK : (k < exitK and sd * (bestPx - lvl) >= -syminfo.mintick * 0.001)
             array.set(tpHitN, k - 1, array.get(tpHitN, k - 1) + 1)
-    if not evWin and stp != stp0
+    if evSalv
+        svN += 1
+    else if not evWin and stp != stp0
         if evRes == 0.0
             beN += 1
         else if evRes > 0.0
             lkN += 1
-bool mvAny  = mv1On or mv2On or mv3On
+bool mvAny  = mv1On or mv2On or mv3On or beOn or svOn
 bool fltAny = noChase or chopOn or emaOn or minVwOn or maxVwOn or stopVwOn or touchVwOn or entVwOn
 f_sgnR(float r) => (r >= 0 ? "+" : "") + str.tostring(r, "0.00") + "R"
 f_share(int n, int total) => total > 0 ? str.tostring(math.round(100.0 * n / total)) + "%" : "—"
@@ -910,7 +950,7 @@ f_tpTxt() =>
         int n = array.get(tpHitN, k - 1)
         s := s + (k > 1 ? " · " : "") + "TP" + str.tostring(k) + " " + (k > exitK ? "n/a" : f_share(n, totW + totL) + " (" + str.tostring(n) + ")")
     s
-f_beTxt() => "BE " + str.tostring(beN) + " (" + f_share(beN, totW + totL) + ") · locked profit " + str.tostring(lkN) + " (" + f_share(lkN, totW + totL) + ")"
+f_beTxt() => "BE " + str.tostring(beN) + " (" + f_share(beN, totW + totL) + ") · locked profit " + str.tostring(lkN) + " (" + f_share(lkN, totW + totL) + ")" + (svOn ? " · salvage " + str.tostring(svN) + " (" + f_share(svN, totW + totL) + ")" : "")
 f_fltTxt() => str.tostring(ghW + ghL) + " skipped · would have been " + str.tostring(ghW) + "W/" + str.tostring(ghL) + "L · " + f_sgnR(ghR)
 // <<< STATS END
 
@@ -1114,6 +1154,8 @@ if mNew
         mRestPend := true
 
 f_tgtPx(bool isL, float lvl) => isL ? f_ceilTick(lvl + exCostPx - syminfo.mintick * 0.001) : f_floorTick(lvl - exCostPx + syminfo.mintick * 0.001)
+// v4.9: the salvage target is the entry itself (no earn-back push), so the strategy leaves on the same bar and at the same price as the engine
+f_tgtPx0(bool isL, float lvl) => isL ? f_ceilTick(lvl - syminfo.mintick * 0.001) : f_floorTick(lvl + syminfo.mintick * 0.001)
 // exits of the executed trade: partials before the final exit and the final exit, all with the current stop
 f_exitsStd(bool isL, bool withTargets) =>
     string eid = isL ? "L" : "S"
@@ -1126,7 +1168,7 @@ f_exitsStd(bool isL, bool withTargets) =>
             strategy.exit("X2", eid, qty = exQty * pp2 / 100.0, limit = f_tgtPx(isL, t2), stop = sPx)
         if pp3 > 0 and exPartDone < exQty * (pp1 + pp2 + pp3) / 100.0 - 1e-9
             strategy.exit("X3", eid, qty = exQty * pp3 / 100.0, limit = f_tgtPx(isL, t3), stop = sPx)
-        strategy.exit("X4", eid, qty_percent = 100, limit = f_tgtPx(isL, tF), stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, limit = trTrig == "sv" ? f_tgtPx0(isL, tF) : f_tgtPx(isL, tF), stop = sPx)
     else
         if pp1 > 0
             strategy.exit("X1", eid, qty = exQty * pp1 / 100.0, stop = sPx)

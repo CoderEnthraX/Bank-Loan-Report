@@ -1,5 +1,5 @@
 | M15-1 | be0.3 | trades=2562 | mismatches=0 | be=1937 sv=0 none=625 | 1s |
-| M15-1 | sv0.5 | trades=1981 | mismatches=0 | be=0 sv=1347 none=634 | 2s |
+| M15-1 | sv0.5 | trades=1981 | mismatches=0 | be=0 sv=1347 none=634 | 1s |
 | M15-1 | be0.3+sv0.5 | trades=2845 | mismatches=0 | be=1737 sv=1001 none=107 | 1s |
 | M15-1 | be1.0+sv0.8 | trades=1767 | mismatches=0 | be=808 sv=653 none=306 | 1s |
 | M15-6 | be0.3 | trades=2739 | mismatches=0 | be=2074 sv=0 none=665 | 1s |
@@ -10,11 +10,11 @@
 | H1-1 | sv0.5 | trades=241 | mismatches=0 | be=0 sv=146 none=95 | 0s |
 | H1-1 | be0.3+sv0.5 | trades=290 | mismatches=0 | be=170 sv=88 none=32 | 0s |
 | H1-1 | be1.0+sv0.8 | trades=225 | mismatches=0 | be=99 sv=58 none=68 | 0s |
-| M5-1 | be0.3 | trades=1805 | mismatches=0 | be=1351 sv=0 none=454 | 4s |
-| M5-1 | sv0.5 | trades=1695 | mismatches=0 | be=0 sv=1215 none=480 | 4s |
-| M5-1 | be0.3+sv0.5 | trades=1897 | mismatches=0 | be=1145 sv=654 none=98 | 4s |
-| M5-1 | be1.0+sv0.8 | trades=1616 | mismatches=0 | be=738 sv=590 none=288 | 4s |
-| M5-2 | be0.3 | trades=1896 | mismatches=0 | be=1400 sv=0 none=496 | 4s |
-| M5-2 | sv0.5 | trades=1850 | mismatches=0 | be=0 sv=1088 none=762 | 4s |
-| M5-2 | be0.3+sv0.5 | trades=1986 | mismatches=0 | be=1183 sv=693 none=110 | 4s |
-| M5-2 | be1.0+sv0.8 | trades=1739 | mismatches=0 | be=774 sv=639 none=326 | 4s |
+| M5-1 | be0.3 | trades=1813 | mismatches=0 | be=1358 sv=0 none=455 | 3s |
+| M5-1 | sv0.5 | trades=1703 | mismatches=0 | be=0 sv=1219 none=484 | 4s |
+| M5-1 | be0.3+sv0.5 | trades=1906 | mismatches=0 | be=1145 sv=661 none=100 | 4s |
+| M5-1 | be1.0+sv0.8 | trades=1626 | mismatches=0 | be=742 sv=590 none=294 | 3s |
+| M5-2 | be0.3 | trades=1907 | mismatches=0 | be=1409 sv=0 none=498 | 4s |
+| M5-2 | sv0.5 | trades=1860 | mismatches=0 | be=0 sv=1092 none=768 | 4s |
+| M5-2 | be0.3+sv0.5 | trades=1997 | mismatches=0 | be=1183 sv=702 none=112 | 3s |
+| M5-2 | be1.0+sv0.8 | trades=1750 | mismatches=0 | be=777 sv=642 none=331 | 4s |

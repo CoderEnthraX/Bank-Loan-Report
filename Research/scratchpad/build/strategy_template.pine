@@ -29,6 +29,8 @@
 //  v4.8: STRATEGY PRESET at the top of the settings: Custom (your settings) or one of the 25 tested catalogue strategies
 //  (M1 S1-S4, M5 S1-S4, M15 S1-S9, H1 S1-S8), each on its own chart timeframe; Add My Filters adds your days, hours, kill
 //  zones and news. The monthly restart now also restarts the profit ladder and a hard-cap stop (the same in the MT5 EA).
+//  v4.9: BE TRIGGER (stop to the entry once the trade is X R up) and SALVAGE TRIGGER (target to the entry once it is X R down), in
+//  TARGETS, EXIT AND STOP MOVES; off by default, they work with any preset (the same in the indicator and the MT5 EA).
 //
 //  LEVERAGE: set it with the "Leverage" input (default 1:100). TradingView's own margin check is off
 //  (margin 0 in Properties): with its default 100 % margin it silently rejects orders bigger than the
@@ -368,6 +370,8 @@ if mNew
         mRestPend := true
 
 f_tgtPx(bool isL, float lvl) => isL ? f_ceilTick(lvl + exCostPx - syminfo.mintick * 0.001) : f_floorTick(lvl - exCostPx + syminfo.mintick * 0.001)
+// v4.9: the salvage target is the entry itself (no earn-back push), so the strategy leaves on the same bar and at the same price as the engine
+f_tgtPx0(bool isL, float lvl) => isL ? f_ceilTick(lvl - syminfo.mintick * 0.001) : f_floorTick(lvl + syminfo.mintick * 0.001)
 // exits of the executed trade: partials before the final exit and the final exit, all with the current stop
 f_exitsStd(bool isL, bool withTargets) =>
     string eid = isL ? "L" : "S"
@@ -380,7 +384,7 @@ f_exitsStd(bool isL, bool withTargets) =>
             strategy.exit("X2", eid, qty = exQty * pp2 / 100.0, limit = f_tgtPx(isL, t2), stop = sPx)
         if pp3 > 0 and exPartDone < exQty * (pp1 + pp2 + pp3) / 100.0 - 1e-9
             strategy.exit("X3", eid, qty = exQty * pp3 / 100.0, limit = f_tgtPx(isL, t3), stop = sPx)
-        strategy.exit("X4", eid, qty_percent = 100, limit = f_tgtPx(isL, tF), stop = sPx)
+        strategy.exit("X4", eid, qty_percent = 100, limit = trTrig == "sv" ? f_tgtPx0(isL, tF) : f_tgtPx(isL, tF), stop = sPx)
     else
         if pp1 > 0
             strategy.exit("X1", eid, qty = exQty * pp1 / 100.0, stop = sPx)

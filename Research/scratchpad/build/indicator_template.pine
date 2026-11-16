@@ -22,6 +22,7 @@
 //  v4.8: STRATEGY PRESET at the top of the settings: Custom (your settings) or one of the 25 tested catalogue strategies
 //  (M1 S1-S4, M5 S1-S4, M15 S1-S9, H1 S1-S8), each on its own chart timeframe; Add My Filters adds your days, hours and
 //  kill zones (the same presets as the strategy and the MT5 EA).
+//  v4.9: BE trigger and salvage trigger (TARGETS, EXIT AND STOP MOVES; off by default; the same in the strategy and the EA).
 //  The engine below is byte-identical in Auction_Retest_Strategy.pine, so both show the same trades.
 // ═══════════════════════════════════════════════════════════════════════════════════════
 indicator("Auction Retest Model [VWAP Displacement + Retest]", shorttitle = "ARM", overlay = true, max_boxes_count = 500, max_lines_count = 500, max_labels_count = 500, max_bars_back = 500)
@@ -121,8 +122,10 @@ if alertsOn
     if evTp and tpHit > tpSent
         alert(tag + "TP" + str.tostring(tpHit) + " reached" + (evMove ? " | stop moved to " + f_px(stp) : ""), alert.freq_all)
         tpSent := tpHit
+    if evTrig != ""
+        alert(tag + (evTrig == "be" ? "BE TRIGGER: stop moved to the entry " : "SALVAGE TRIGGER: target moved to the entry ") + f_px(lim), alert.freq_once_per_bar_close)
     if evExit
-        string exitMsg = tag + (evWin ? "TP" + str.tostring(exitK) + " HIT " : "STOP HIT ") + f_r(evRes)
+        string exitMsg = tag + (evWin ? "TP" + str.tostring(exitK) + " HIT " : evSalv ? "SALVAGE EXIT AT ENTRY " : "STOP HIT ") + f_r(evRes)
         // a target alert waits for the close (a later stop in the same bar has priority); a stop alert goes out at once
         if evWin
             alert(exitMsg, alert.freq_once_per_bar_close)
