@@ -1,0 +1,6 @@
+safe + balanced          ARS ('M15-S3 fcOff', "Oscar's Grind", 5.0, 0.0, 'clamp', 10.0) | GRID ('S7+S8+S10', 'Exact recovery at final TP', 5.0, 50.0, 'clamp')
+   all 70 months: 66 profit / 4 loss, +2249, worst -20, deepest drop 103 | choice 2021-23: 0 loss +1137 | test 2024-26: 4 loss +1112 worst -20 | mid-month: 7 loss, worst -150
+no recovery + balanced   ARS ('M15-S3 fcOff', 'No recovery', 10.0, 0.0, 'clamp', 10.0) | GRID ('S7+S8+S10', 'Exact recovery at final TP', 5.0, 50.0, 'clamp')
+   all 70 months: 63 profit / 7 loss, +2447, worst -35, deepest drop 86 | choice 2021-23: 2 loss +1275 | test 2024-26: 5 loss +1172 worst -35 | mid-month: 9 loss, worst -158
+safe + safe              ARS ('M15-S3 fcOff', "Oscar's Grind", 5.0, 0.0, 'clamp', 10.0) | GRID ('S1+S2+S6+S7+S8+S10', 'Exact recovery at final TP', 2.5, 25.0, 'clamp')
+   all 70 months: 66 profit / 4 loss, +1642, worst -19, deepest drop 84 | choice 2021-23: 0 loss +844 | test 2024-26: 4 loss +798 worst -19 | mid-month: 6 loss, worst -84

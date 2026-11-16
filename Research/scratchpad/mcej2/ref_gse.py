@@ -148,7 +148,7 @@ def run(sym, opts=None, ev=None):
                 if p['mv1On'] and reached >= 1: ns = max(ns, lim + p['mv1R'] * trRisk) if isL else min(ns, lim - p['mv1R'] * trRisk)
                 if p['mv2On'] and reached >= 2: ns = max(ns, lim + p['mv2R'] * trRisk) if isL else min(ns, lim - p['mv2R'] * trRisk)
                 if p['mv3On'] and reached >= 3: ns = max(ns, lim + p['mv3R'] * trRisk) if isL else min(ns, lim - p['mv3R'] * trRisk)
-                if ns != stp and not trGhost: E_['move'] = True
+                if ns != stp and not trGhost: E_['move'] = True; E_['stp'] = ns     # the moved stop (Pine re-sends the exits with the live stp)
                 stp = ns
         # ── 2. armed setup: fill (limit touch, or the next bar for market entries) or expiry ──
         if abs(st) == 1 and i > armBar:

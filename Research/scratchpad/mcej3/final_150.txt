@@ -1,0 +1,116 @@
+
+=== ARS: 600 candidates, 151 pass the 2021-23 rule (no blown window, drop <= $150 in calendar / mid / cost) ===
+M15-S3 fcOff | base $10, Oscar's Grind, no cap, month lock +$20
+   2021-23  cal 3 loss / 33 profit +954, worst -24, drop 108 | mid 4 loss / 31 profit +755, worst -64, drop 137 | cost 3 loss / 33 profit +913, worst -25, drop 111
+   2024-26  cal 6 loss / 28 profit +621, worst -55, drop 182 | mid 2 loss / 31 profit +777, worst -127, drop 137 | cost 6 loss / 28 profit +589, worst -64, drop 182
+M15-S3 fcOff | base $10, Oscar's Grind, cap $50 Clamp, month lock +$20
+   2021-23  cal 3 loss / 33 profit +954, worst -24, drop 108 | mid 4 loss / 31 profit +755, worst -64, drop 137 | cost 3 loss / 33 profit +913, worst -25, drop 111
+   2024-26  cal 6 loss / 28 profit +593, worst -55, drop 182 | mid 2 loss / 31 profit +782, worst -123, drop 132 | cost 6 loss / 28 profit +561, worst -64, drop 182
+M15-S3 fcOff | base $10, Oscar's Grind, cap $100 Clamp, month lock +$20
+   2021-23  cal 3 loss / 33 profit +954, worst -24, drop 108 | mid 4 loss / 31 profit +755, worst -64, drop 137 | cost 3 loss / 33 profit +913, worst -25, drop 111
+   2024-26  cal 6 loss / 28 profit +621, worst -55, drop 182 | mid 2 loss / 31 profit +777, worst -127, drop 137 | cost 6 loss / 28 profit +589, worst -64, drop 182
+M15-S3 fcOff | base $10, Oscar's Grind, cap $50 Start again, month lock +$20
+   2021-23  cal 3 loss / 33 profit +954, worst -24, drop 108 | mid 4 loss / 31 profit +755, worst -64, drop 137 | cost 3 loss / 33 profit +913, worst -25, drop 111
+   2024-26  cal 6 loss / 28 profit +512, worst -119, drop 182 | mid 2 loss / 31 profit +800, worst -105, drop 130 | cost 6 loss / 28 profit +481, worst -121, drop 182
+M15-S3 fcOff | base $10, Oscar's Grind, cap $100 Start again, month lock +$20
+   2021-23  cal 3 loss / 33 profit +954, worst -24, drop 108 | mid 4 loss / 31 profit +755, worst -64, drop 137 | cost 3 loss / 33 profit +913, worst -25, drop 111
+   2024-26  cal 6 loss / 28 profit +621, worst -55, drop 182 | mid 2 loss / 31 profit +777, worst -127, drop 137 | cost 6 loss / 28 profit +589, worst -64, drop 182
+M15-S1 fcOff | base $5, Oscar's Grind, no cap, month lock +$20
+   2021-23  cal 4 loss / 32 profit +667, worst -39, drop 85 | mid 5 loss / 30 profit +449, worst -90, drop 108 | cost 4 loss / 32 profit +605, worst -49, drop 117
+   2024-26  cal 4 loss / 30 profit +507, worst -56, drop 85 | mid 5 loss / 28 profit +355, worst -154, drop 199 | cost 5 loss / 29 profit +492, worst -57, drop 85
+M15-S1 fcOff | base $5, Oscar's Grind, cap $50 Clamp, month lock +$20
+   2021-23  cal 4 loss / 32 profit +667, worst -39, drop 85 | mid 5 loss / 30 profit +449, worst -90, drop 108 | cost 4 loss / 32 profit +605, worst -49, drop 117
+   2024-26  cal 4 loss / 30 profit +507, worst -56, drop 85 | mid 5 loss / 28 profit +355, worst -154, drop 199 | cost 5 loss / 29 profit +492, worst -57, drop 85
+M15-S1 fcOff | base $5, Oscar's Grind, cap $100 Clamp, month lock +$20
+   2021-23  cal 4 loss / 32 profit +667, worst -39, drop 85 | mid 5 loss / 30 profit +449, worst -90, drop 108 | cost 4 loss / 32 profit +605, worst -49, drop 117
+   2024-26  cal 4 loss / 30 profit +507, worst -56, drop 85 | mid 5 loss / 28 profit +355, worst -154, drop 199 | cost 5 loss / 29 profit +492, worst -57, drop 85
+   top 30 in the TEST period (calendar): losing months median 6 (min 4, max 9); total median +523; 29 of 30 positive; worst month median -56; deepest drop median 85
+
+=== GRID: 811 candidates, 92 pass the 2021-23 rule (no blown window, drop <= $150 in calendar / mid / cost) ===
+S1+S2+S6+S7+S8+S10 | base $5, Exact recovery at final TP, cap $50 Clamp
+   2021-23  cal 3 loss / 33 profit +734, worst -14, drop 85 | mid 5 loss / 30 profit +513, worst -132, drop 137 | cost 4 loss / 32 profit +712, worst -15, drop 87
+   2024-26  cal 3 loss / 31 profit +975, worst -8, drop 78 | mid 5 loss / 28 profit +865, worst -11, drop 77 | cost 3 loss / 31 profit +962, worst -9, drop 79
+S1+S2+S7+S8+S10 | base $5, Exact recovery at final TP, cap $50 Clamp
+   2021-23  cal 3 loss / 33 profit +719, worst -9, drop 85 | mid 5 loss / 30 profit +502, worst -132, drop 137 | cost 5 loss / 31 profit +698, worst -10, drop 87
+   2024-26  cal 3 loss / 31 profit +955, worst -8, drop 78 | mid 5 loss / 28 profit +844, worst -11, drop 77 | cost 3 loss / 31 profit +942, worst -9, drop 79
+S1+S6+S7+S8+S10 | base $5, Exact recovery at final TP, cap $50 Clamp
+   2021-23  cal 3 loss / 33 profit +689, worst -14, drop 85 | mid 5 loss / 30 profit +471, worst -132, drop 137 | cost 4 loss / 32 profit +668, worst -14, drop 87
+   2024-26  cal 3 loss / 31 profit +839, worst -8, drop 78 | mid 5 loss / 28 profit +724, worst -27, drop 77 | cost 3 loss / 31 profit +827, worst -9, drop 79
+S1+S2+S5+S8+S10 | base $5, Recover all on the next trade, cap $50 Clamp
+   2021-23  cal 3 loss / 33 profit +679, worst -9, drop 80 | mid 5 loss / 30 profit +472, worst -127, drop 132 | cost 3 loss / 33 profit +660, worst -9, drop 82
+   2024-26  cal 2 loss / 32 profit +878, worst -6, drop 78 | mid 4 loss / 29 profit +854, worst -10, drop 77 | cost 2 loss / 32 profit +867, worst -7, drop 79
+S1+S2+S5+S8+S10 | base $5, Exact recovery at final TP, cap $50 Clamp
+   2021-23  cal 3 loss / 33 profit +677, worst -9, drop 80 | mid 5 loss / 30 profit +478, worst -127, drop 132 | cost 3 loss / 33 profit +658, worst -10, drop 82
+   2024-26  cal 2 loss / 32 profit +881, worst -6, drop 78 | mid 4 loss / 29 profit +858, worst -10, drop 77 | cost 2 loss / 32 profit +869, worst -7, drop 79
+S1+S7+S8+S10 | base $5, Exact recovery at final TP, cap $50 Clamp
+   2021-23  cal 3 loss / 33 profit +673, worst -9, drop 85 | mid 5 loss / 30 profit +461, worst -132, drop 137 | cost 5 loss / 31 profit +653, worst -10, drop 87
+   2024-26  cal 3 loss / 31 profit +819, worst -8, drop 78 | mid 5 loss / 28 profit +703, worst -28, drop 77 | cost 3 loss / 31 profit +807, worst -9, drop 79
+S2+S5+S8+S10 | base $5, Recover all on the next trade, cap $50 Clamp
+   2021-23  cal 3 loss / 33 profit +666, worst -6, drop 80 | mid 5 loss / 30 profit +458, worst -127, drop 132 | cost 3 loss / 33 profit +646, worst -7, drop 82
+   2024-26  cal 2 loss / 32 profit +861, worst -6, drop 78 | mid 5 loss / 28 profit +836, worst -10, drop 77 | cost 2 loss / 32 profit +849, worst -7, drop 79
+S2+S5+S8+S10 | base $5, Exact recovery at final TP, cap $50 Clamp
+   2021-23  cal 3 loss / 33 profit +664, worst -6, drop 80 | mid 5 loss / 30 profit +465, worst -127, drop 132 | cost 3 loss / 33 profit +645, worst -7, drop 82
+   2024-26  cal 2 loss / 32 profit +863, worst -6, drop 78 | mid 5 loss / 28 profit +840, worst -10, drop 77 | cost 2 loss / 32 profit +851, worst -7, drop 79
+   top 30 in the TEST period (calendar): losing months median 3 (min 2, max 4); total median +889; 30 of 30 positive; worst month median -8; deepest drop median 78
+
+=== ARS no recovery: 60 candidates, 14 pass the 2021-23 rule (no blown window, drop <= $150 in calendar / mid / cost) ===
+M15-S6 fcOff | base $10, No recovery, no cap, month lock +$20
+   2021-23  cal 7 loss / 29 profit +474, worst -81, drop 104 | mid 8 loss / 27 profit +183, worst -100, drop 120 | cost 7 loss / 29 profit +466, worst -83, drop 104
+   2024-26  cal 7 loss / 27 profit +405, worst -85, drop 106 | mid 10 loss / 23 profit +114, worst -95, drop 119 | cost 8 loss / 26 profit +400, worst -86, drop 107
+M15-S3 fcOff | base $10, No recovery, no cap, month lock +$30
+   2021-23  cal 8 loss / 28 profit +787, worst -68, drop 105 | mid 9 loss / 26 profit +522, worst -56, drop 95 | cost 8 loss / 28 profit +746, worst -69, drop 106
+   2024-26  cal 11 loss / 23 profit +481, worst -51, drop 87 | mid 10 loss / 23 profit +437, worst -64, drop 71 | cost 12 loss / 22 profit +473, worst -51, drop 87
+M15-S3 fcOff | base $10, No recovery, no cap, month lock +$20
+   2021-23  cal 6 loss / 30 profit +634, worst -68, drop 105 | mid 9 loss / 26 profit +436, worst -56, drop 95 | cost 6 loss / 30 profit +602, worst -69, drop 106
+   2024-26  cal 9 loss / 25 profit +385, worst -51, drop 87 | mid 7 loss / 26 profit +468, worst -64, drop 70 | cost 10 loss / 24 profit +368, worst -51, drop 87
+H1-S8 | base $20, No recovery, no cap, month lock +$20
+   2021-23  cal 7 loss / 29 profit +596, worst -117, drop 120 | mid 10 loss / 25 profit +420, worst -101, drop 117 | cost 8 loss / 28 profit +547, worst -118, drop 120
+   2024-26  cal 11 loss / 22 profit +283, worst -76, drop 115 | mid 10 loss / 23 profit +198, worst -144, drop 154 | cost 11 loss / 22 profit +266, worst -76, drop 115
+M15-S7 | base $10, No recovery, no cap, month lock +$20
+   2021-23  cal 7 loss / 29 profit +500, worst -76, drop 76 | mid 11 loss / 24 profit +261, worst -89, drop 111 | cost 9 loss / 27 profit +347, worst -112, drop 132
+   2024-26  cal 9 loss / 25 profit +368, worst -62, drop 76 | mid 8 loss / 25 profit +442, worst -63, drop 76 | cost 10 loss / 24 profit +345, worst -63, drop 76
+M15-S1 fcOff | base $5, No recovery, no cap, month lock +$30
+   2021-23  cal 8 loss / 28 profit +486, worst -64, drop 78 | mid 11 loss / 24 profit +390, worst -52, drop 62 | cost 8 loss / 28 profit +461, worst -65, drop 78
+   2024-26  cal 15 loss / 19 profit +333, worst -30, drop 39 | mid 13 loss / 20 profit +304, worst -37, drop 57 | cost 15 loss / 19 profit +316, worst -31, drop 39
+M15-S7 fcOff | base $5, No recovery, no cap, month lock +$20
+   2021-23  cal 7 loss / 29 profit +470, worst -64, drop 78 | mid 11 loss / 24 profit +285, worst -52, drop 62 | cost 8 loss / 28 profit +431, worst -65, drop 78
+   2024-26  cal 13 loss / 21 profit +258, worst -30, drop 41 | mid 10 loss / 23 profit +397, worst -36, drop 55 | cost 13 loss / 21 profit +249, worst -31, drop 42
+M15-S1 fcOff | base $5, No recovery, no cap, month lock +$20
+   2021-23  cal 7 loss / 29 profit +442, worst -64, drop 78 | mid 11 loss / 24 profit +292, worst -52, drop 62 | cost 8 loss / 28 profit +403, worst -65, drop 78
+   2024-26  cal 15 loss / 19 profit +214, worst -30, drop 39 | mid 12 loss / 21 profit +330, worst -37, drop 57 | cost 15 loss / 19 profit +206, worst -31, drop 39
+   top 30 in the TEST period (calendar): losing months median 11 (min 7, max 15); total median +337; 14 of 30 positive; worst month median -52; deepest drop median 73
+
+=== GRID no recovery: 4 candidates, 2 pass the 2021-23 rule (no blown window, drop <= $150 in calendar / mid / cost) ===
+S5 | base $20, No recovery, no cap
+   2021-23  cal 8 loss / 28 profit +141, worst -20, drop 20 | mid 6 loss / 28 profit +138, worst -20, drop 20 | cost 8 loss / 28 profit +136, worst -20, drop 20
+   2024-26  cal 8 loss / 25 profit +82, worst -33, drop 40 | mid 11 loss / 22 profit +79, worst -17, drop 20 | cost 8 loss / 25 profit +79, worst -33, drop 40
+S1+S2+S3+S4+S5+S6+S7+S8+S9+S10+S11+S12 | base $5, No recovery, no cap
+   2021-23  cal 13 loss / 23 profit +948, worst -59, drop 85 | mid 15 loss / 20 profit +950, worst -61, drop 67 | cost 13 loss / 23 profit +893, worst -60, drop 86
+   2024-26  cal 10 loss / 24 profit +1872, worst -37, drop 70 | mid 7 loss / 26 profit +1878, worst -35, drop 65 | cost 11 loss / 23 profit +1833, worst -37, drop 70
+
+=== ARS your settings: 200 candidates, 26 pass the 2021-23 rule (no blown window, drop <= $150 in calendar / mid / cost) ===
+H1-you-on-TP1 | base $10, Exact recovery at final TP, cap $100 Start again, month lock +$30
+   2021-23  cal 10 loss / 26 profit -39, worst -118, drop 118 | mid 10 loss / 25 profit -35, worst -130, drop 130 | cost 10 loss / 26 profit -56, worst -118, drop 118
+   2024-26  cal 12 loss / 22 profit -355, worst -114, drop 114 | mid 9 loss / 24 profit -290, worst -204, drop 210 | cost 12 loss / 22 profit -369, worst -114, drop 114
+H1-you-on-TP1 | base $10, Exact recovery at final TP, cap $100 Start again, month lock +$20
+   2021-23  cal 10 loss / 26 profit -107, worst -118, drop 118 | mid 10 loss / 25 profit -32, worst -130, drop 130 | cost 10 loss / 26 profit -139, worst -118, drop 118
+   2024-26  cal 12 loss / 22 profit -402, worst -114, drop 114 | mid 9 loss / 24 profit -354, worst -204, drop 210 | cost 12 loss / 22 profit -415, worst -114, drop 114
+H1-you-off-TP1 | base $20, Crooks E, cap $50 Start again, month lock +$20
+   2021-23  cal 11 loss / 25 profit -51, worst -91, drop 102 | mid 9 loss / 26 profit +91, worst -145, drop 146 | cost 11 loss / 25 profit -71, worst -92, drop 103
+   2024-26  cal 12 loss / 22 profit -162, worst -111, drop 131 | mid 9 loss / 24 profit +37, worst -165, drop 198 | cost 12 loss / 22 profit -179, worst -113, drop 133
+H1-you-off-TP1 | base $20, Crooks I, cap $50 Start again, month lock +$20
+   2021-23  cal 11 loss / 25 profit -51, worst -91, drop 102 | mid 9 loss / 26 profit +91, worst -145, drop 146 | cost 11 loss / 25 profit -71, worst -92, drop 103
+   2024-26  cal 12 loss / 22 profit -162, worst -111, drop 131 | mid 9 loss / 24 profit +37, worst -165, drop 198 | cost 12 loss / 22 profit -179, worst -113, drop 133
+H1-you-off-TP1 | base $20, Crooks I, ladder Medium, target $50, cap $50 Start again, month lock +$20
+   2021-23  cal 11 loss / 25 profit -51, worst -91, drop 102 | mid 9 loss / 26 profit +91, worst -145, drop 146 | cost 11 loss / 25 profit -71, worst -92, drop 103
+   2024-26  cal 12 loss / 22 profit -162, worst -111, drop 131 | mid 9 loss / 24 profit +37, worst -165, drop 198 | cost 12 loss / 22 profit -179, worst -113, drop 133
+H1-you-off-TP1 | base $20, Crooks I, ladder Medium, target $100, cap $50 Start again, month lock +$20
+   2021-23  cal 11 loss / 25 profit -51, worst -91, drop 102 | mid 9 loss / 26 profit +91, worst -145, drop 146 | cost 11 loss / 25 profit -71, worst -92, drop 103
+   2024-26  cal 12 loss / 22 profit -162, worst -111, drop 131 | mid 9 loss / 24 profit +37, worst -165, drop 198 | cost 12 loss / 22 profit -179, worst -113, drop 133
+H1-you-off-TP1 | base $20, Crooks I, ladder Max, target $50, cap $50 Start again, month lock +$20
+   2021-23  cal 11 loss / 25 profit -51, worst -91, drop 102 | mid 9 loss / 26 profit +91, worst -145, drop 146 | cost 11 loss / 25 profit -71, worst -92, drop 103
+   2024-26  cal 12 loss / 22 profit -162, worst -111, drop 131 | mid 9 loss / 24 profit +37, worst -165, drop 198 | cost 12 loss / 22 profit -179, worst -113, drop 133
+H1-you-off-TP1 | base $20, Crooks I, ladder Max, target $100, cap $50 Start again, month lock +$20
+   2021-23  cal 11 loss / 25 profit -51, worst -91, drop 102 | mid 9 loss / 26 profit +91, worst -145, drop 146 | cost 11 loss / 25 profit -71, worst -92, drop 103
+   2024-26  cal 12 loss / 22 profit -162, worst -111, drop 131 | mid 9 loss / 24 profit +37, worst -165, drop 198 | cost 12 loss / 22 profit -179, worst -113, drop 133
+   top 30 in the TEST period (calendar): losing months median 12 (min 10, max 14); total median -108; 0 of 30 positive; worst month median -114; deepest drop median 131

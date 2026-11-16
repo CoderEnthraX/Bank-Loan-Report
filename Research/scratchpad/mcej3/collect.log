@@ -1,0 +1,78 @@
+M1-S1                       1864 trades (engine  1866) net    -44.6R at a fixed risk | exitR 2.00
+M1-S1 fcOff                 1862 trades (engine  1866) net     -4.2R at a fixed risk | exitR 2.00
+M1-S2                       1729 trades (engine  1731) net    -34.0R at a fixed risk | exitR 2.00
+M1-S2 fcOff                 1727 trades (engine  1731) net    +10.9R at a fixed risk | exitR 2.00
+M1-S3                       1991 trades (engine  1995) net    -44.3R at a fixed risk | exitR 2.00
+M1-S3 fcOff                 1990 trades (engine  1995) net     +9.1R at a fixed risk | exitR 2.00
+M1-S4                       1899 trades (engine  1902) net    -50.7R at a fixed risk | exitR 2.00
+M1-S4 fcOff                 1897 trades (engine  1902) net     -8.2R at a fixed risk | exitR 2.00
+M5-S1                       1445 trades (engine  1473) net    +46.9R at a fixed risk | exitR 2.50
+M5-S1 fcOff                 1443 trades (engine  1473) net   +103.8R at a fixed risk | exitR 2.50
+M5-S2                       1663 trades (engine  1693) net    +11.9R at a fixed risk | exitR 2.00
+M5-S2 fcOff                 1663 trades (engine  1693) net    +34.1R at a fixed risk | exitR 2.00
+M5-S3                       1778 trades (engine  1806) net     +9.8R at a fixed risk | exitR 2.00
+M5-S3 fcOff                 1778 trades (engine  1806) net    +75.3R at a fixed risk | exitR 2.00
+M5-S4                       1462 trades (engine  1489) net    +72.1R at a fixed risk | exitR 2.00
+M5-S4 fcOff                 1461 trades (engine  1489) net    +84.6R at a fixed risk | exitR 2.00
+M5-you-off-TP1             11446 trades (engine 11536) net  -1109.1R at a fixed risk | exitR 0.60
+M5-you-off-TP2             10404 trades (engine 10502) net   -929.3R at a fixed risk | exitR 1.00
+M5-you-off-TP3              9193 trades (engine  9286) net   -864.4R at a fixed risk | exitR 1.50
+M5-you-off-TP4              8285 trades (engine  8377) net   -786.6R at a fixed risk | exitR 2.00
+M5-you-on-TP1               3153 trades (engine  3732) net   -194.5R at a fixed risk | exitR 0.60
+M5-you-on-TP2               2956 trades (engine  3509) net   -150.7R at a fixed risk | exitR 1.00
+M5-you-on-TP3               2740 trades (engine  3246) net   -148.7R at a fixed risk | exitR 1.50
+M5-you-on-TP4               2597 trades (engine  3081) net   -136.6R at a fixed risk | exitR 2.00
+M15-S1                      1367 trades (engine  1388) net   +100.3R at a fixed risk | exitR 2.00
+M15-S1 fcOff                1377 trades (engine  1388) net   +141.8R at a fixed risk | exitR 2.00
+M15-S3                      1110 trades (engine  1129) net    +78.2R at a fixed risk | exitR 2.00
+M15-S3 fcOff                1125 trades (engine  1129) net   +132.5R at a fixed risk | exitR 2.00
+M15-S6                      1745 trades (engine  1776) net    +64.6R at a fixed risk | exitR 2.00
+M15-S6 fcOff                1767 trades (engine  1776) net    +88.2R at a fixed risk | exitR 2.00
+M15-S7                      1357 trades (engine  1377) net   +111.0R at a fixed risk | exitR 2.00
+M15-S7 fcOff                1366 trades (engine  1377) net   +157.8R at a fixed risk | exitR 2.00
+M15-S8                      1162 trades (engine  1179) net    +37.8R at a fixed risk | exitR 2.00
+M15-S8 fcOff                1171 trades (engine  1179) net    +72.3R at a fixed risk | exitR 2.00
+M15-S9                       712 trades (engine   712) net    +36.0R at a fixed risk | exitR 2.00
+M15-S9 fcOff                 708 trades (engine   712) net    +45.0R at a fixed risk | exitR 2.00
+M15-you-off-TP1             4267 trades (engine  4316) net   -242.7R at a fixed risk | exitR 0.60
+M15-you-off-TP2             3854 trades (engine  3905) net   -234.1R at a fixed risk | exitR 1.00
+M15-you-off-TP3             3434 trades (engine  3484) net   -223.1R at a fixed risk | exitR 1.50
+M15-you-off-TP4             3128 trades (engine  3172) net   -110.1R at a fixed risk | exitR 2.00
+M15-you-on-TP1              1317 trades (engine  1601) net    -81.3R at a fixed risk | exitR 0.60
+M15-you-on-TP2              1252 trades (engine  1527) net    -60.1R at a fixed risk | exitR 1.00
+M15-you-on-TP3              1185 trades (engine  1440) net    -57.6R at a fixed risk | exitR 1.50
+M15-you-on-TP4              1140 trades (engine  1382) net    -26.1R at a fixed risk | exitR 2.00
+H1-S1                        178 trades (engine   186) net    +40.3R at a fixed risk | exitR 2.00
+H1-S1 fcOff                  184 trades (engine   186) net    +56.8R at a fixed risk | exitR 2.00
+H1-S3                        220 trades (engine   228) net    +16.1R at a fixed risk | exitR 2.00
+H1-S3 fcOff                  223 trades (engine   228) net    +31.0R at a fixed risk | exitR 2.00
+H1-S6                        519 trades (engine   543) net    +43.8R at a fixed risk | exitR 3.00
+H1-S6 fcOff                  538 trades (engine   543) net    +64.4R at a fixed risk | exitR 3.00
+H1-S7                        201 trades (engine   208) net    +32.0R at a fixed risk | exitR 2.00
+H1-S7 fcOff                  208 trades (engine   208) net    +58.8R at a fixed risk | exitR 2.00
+H1-S8                        483 trades (engine   498) net    +39.1R at a fixed risk | exitR 2.00
+H1-S8 fcOff                  496 trades (engine   498) net    +48.0R at a fixed risk | exitR 2.00
+H1-you-off-TP1              1162 trades (engine  1204) net    -37.0R at a fixed risk | exitR 0.60
+H1-you-off-TP2              1060 trades (engine  1099) net    -40.7R at a fixed risk | exitR 1.00
+H1-you-off-TP3               943 trades (engine   980) net    -32.4R at a fixed risk | exitR 1.50
+H1-you-off-TP4               847 trades (engine   884) net     -8.8R at a fixed risk | exitR 2.00
+H1-you-on-TP1                415 trades (engine   503) net    -20.3R at a fixed risk | exitR 0.60
+H1-you-on-TP2                397 trades (engine   477) net    -14.7R at a fixed risk | exitR 1.00
+H1-you-on-TP3                384 trades (engine   460) net    -31.5R at a fixed risk | exitR 1.50
+H1-you-on-TP4                370 trades (engine   442) net    -31.3R at a fixed risk | exitR 2.00
+S1       43 trades net    +6.2R
+S2       49 trades net   +35.4R
+S3       79 trades net   +43.4R
+S4      144 trades net  +101.6R
+S5      274 trades net   +11.2R
+S6      225 trades net    +5.4R
+S7      255 trades net   +20.8R
+S8      294 trades net   +36.6R
+S9      999 trades net   +16.9R
+S10    1192 trades net   +90.5R
+S11     741 trades net   +67.0R
+S12    1256 trades net  +129.2R
+
+real	2m6.686s
+user	8m2.177s
+sys	0m9.815s

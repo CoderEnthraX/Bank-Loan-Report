@@ -1,0 +1,54 @@
+
+=== ARS: robust choice (2021-23 only: fewest losing windows in the worst of calendar / mid-month / +0.07 cost) ===
+M1-S3 fcOff | base $20, Exact recovery at final TP, no cap, month lock +$30
+   choice 2021-23 losing: cal 0, mid 0, cost 0 | profit +1436, deepest drop in a month 418 || TEST 2024-26: cal 0 loss / 34 profit +1343 worst +32 | mid 2 loss -144 | cost 0 loss +1359
+M1-S3 fcOff | base $20, Exact recovery at final TP, no cap, month lock +$20
+   choice 2021-23 losing: cal 0, mid 0, cost 0 | profit +1255, deepest drop in a month 418 || TEST 2024-26: cal 0 loss / 34 profit +1268 worst +22 | mid 2 loss -178 | cost 0 loss +1216
+M1-S2 fcOff | base $5, Fibonacci, no cap, month lock +$20
+   choice 2021-23 losing: cal 0, mid 0, cost 0 | profit +1123, deepest drop in a month 227 || TEST 2024-26: cal 1 loss / 33 profit +217 worst -881 | mid 1 loss +189 | cost 1 loss +174
+M1-S1 fcOff | base $5, Exact recovery at final TP, no cap, month lock +$20
+   choice 2021-23 losing: cal 0, mid 0, cost 0 | profit +902, deepest drop in a month 252 || TEST 2024-26: cal 1 loss / 33 profit -33 worst -886 | mid 3 loss -121 | cost 1 loss -51
+M1-S4 fcOff | base $5, Exact recovery at final TP, no cap, month lock +$20
+   choice 2021-23 losing: cal 0, mid 0, cost 0 | profit +899, deepest drop in a month 252 || TEST 2024-26: cal 1 loss / 33 profit -35 worst -891 | mid 3 loss -579 | cost 1 loss -43
+M1-S3 fcOff | base $20, Rule C split 1, no cap, month lock +$30
+   choice 2021-23 losing: cal 0, mid 1, cost 0 | profit +2490, deepest drop in a month 456 || TEST 2024-26: cal 3 loss / 31 profit -554 worst -1108 | mid 2 loss +402 | cost 3 loss -653
+M1-S3 fcOff | base $10, Recover all on the next trade, no cap, month lock +$20
+   choice 2021-23 losing: cal 0, mid 1, cost 1 | profit +2478, deepest drop in a month 448 || TEST 2024-26: cal 2 loss / 32 profit +1115 worst -931 | mid 3 loss -405 | cost 2 loss +994
+M1-S3 fcOff | base $10, Recover all on the next trade, no cap, month lock +$50
+   choice 2021-23 losing: cal 1, mid 1, cost 1 | profit +2402, deepest drop in a month 959 || TEST 2024-26: cal 4 loss / 30 profit -258 worst -997 | mid 4 loss -691 | cost 4 loss -333
+M15-S6 | base $10, Fibonacci, no cap, month lock +$30
+   choice 2021-23 losing: cal 1, mid 1, cost 1 | profit +2377, deepest drop in a month 460 || TEST 2024-26: cal 3 loss / 31 profit +597 worst -995 | mid 2 loss +1849 | cost 3 loss +586
+M1-S3 fcOff | base $20, Rule C split 1, no cap, month lock +$20
+   choice 2021-23 losing: cal 0, mid 1, cost 0 | profit +2340, deepest drop in a month 456 || TEST 2024-26: cal 3 loss / 31 profit -592 worst -1108 | mid 2 loss +383 | cost 3 loss -724
+M15-S9 fcOff | base $10, Recover all on the next trade, no cap, month lock +$20
+   choice 2021-23 losing: cal 0, mid 1, cost 0 | profit +2124, deepest drop in a month 311 || TEST 2024-26: cal 4 loss / 30 profit -1384 worst -1129 | mid 4 loss -846 | cost 4 loss -1420
+M5-S3 fcOff | base $5, Fibonacci, no cap, month lock +$30
+   choice 2021-23 losing: cal 0, mid 1, cost 0 | profit +2097, deepest drop in a month 493 || TEST 2024-26: cal 2 loss / 32 profit +896 worst -336 | mid 1 loss +969 | cost 2 loss +855
+   robust top 50 in the TEST period (calendar): losing months median 2 (min 0, max 5); total median +804; 40 of 50 positive; worst month median -200
+
+=== GRID: robust choice (2021-23 only: fewest losing windows in the worst of calendar / mid-month / +0.07 cost) ===
+S7+S8+S10 | base $10, Exact recovery at final TP, no cap
+   choice 2021-23 losing: cal 3, mid 5, cost 5 | profit +1327, deepest drop in a month 0 || TEST 2024-26: cal 3 loss / 31 profit +1611 worst -16 | mid 4 loss +1477 | cost 3 loss +1587
+S1+S2+S6+S7+S8+S10 | base $10, Exact recovery at final TP, cap $100 Start again
+   choice 2021-23 losing: cal 3, mid 5, cost 4 | profit +1307, deepest drop in a month 0 || TEST 2024-26: cal 4 loss / 30 profit +1797 worst -130 | mid 6 loss +1579 | cost 4 loss +1766
+S1+S2+S7+S8+S10 | base $10, Exact recovery at final TP, cap $100 Start again
+   choice 2021-23 losing: cal 3, mid 5, cost 5 | profit +1291, deepest drop in a month 0 || TEST 2024-26: cal 4 loss / 30 profit +1764 worst -131 | mid 6 loss +1545 | cost 4 loss +1736
+S1+S6+S7+S8+S10 | base $10, Exact recovery at final TP, cap $100 Start again
+   choice 2021-23 losing: cal 3, mid 5, cost 4 | profit +1221, deepest drop in a month 0 || TEST 2024-26: cal 4 loss / 30 profit +1525 worst -130 | mid 6 loss +1297 | cost 4 loss +1499
+S1+S7+S8+S10 | base $10, Exact recovery at final TP, cap $100 Start again
+   choice 2021-23 losing: cal 3, mid 5, cost 5 | profit +1200, deepest drop in a month 0 || TEST 2024-26: cal 4 loss / 30 profit +1492 worst -131 | mid 6 loss +1263 | cost 4 loss +1466
+S2+S9+S10 | base $10, Exact recovery at final TP, no cap
+   choice 2021-23 losing: cal 3, mid 5, cost 3 | profit +1070, deepest drop in a month 0 || TEST 2024-26: cal 4 loss / 30 profit +1480 worst -184 | mid 4 loss +1658 | cost 4 loss +1455
+S2+S9+S10 | base $10, Exact recovery at final TP, cap $100 Clamp
+   choice 2021-23 losing: cal 3, mid 5, cost 3 | profit +1036, deepest drop in a month 0 || TEST 2024-26: cal 4 loss / 30 profit +1532 worst -124 | mid 5 loss +1592 | cost 4 loss +1510
+S1+S2+S6+S7+S8+S10 | base $5, Exact recovery at final TP, cap $100 Clamp
+   choice 2021-23 losing: cal 2, mid 5, cost 4 | profit +738, deepest drop in a month 0 || TEST 2024-26: cal 3 loss / 31 profit +981 worst -8 | mid 4 loss +918 | cost 3 loss +967
+S1+S2+S6+S7+S8+S10 | base $5, Exact recovery at final TP, no cap
+   choice 2021-23 losing: cal 2, mid 5, cost 4 | profit +738, deepest drop in a month 0 || TEST 2024-26: cal 3 loss / 31 profit +981 worst -8 | mid 4 loss +918 | cost 3 loss +967
+S1+S2+S6+S7+S8+S10 | base $5, Exact recovery at final TP, cap $100 Start again
+   choice 2021-23 losing: cal 2, mid 5, cost 4 | profit +738, deepest drop in a month 0 || TEST 2024-26: cal 3 loss / 31 profit +981 worst -8 | mid 4 loss +918 | cost 3 loss +967
+S1+S2+S6+S7+S8+S10 | base $5, Exact recovery at final TP, cap $50 Clamp
+   choice 2021-23 losing: cal 3, mid 5, cost 4 | profit +734, deepest drop in a month 0 || TEST 2024-26: cal 3 loss / 31 profit +975 worst -8 | mid 5 loss +865 | cost 3 loss +962
+S1+S2+S6+S7+S8+S10 | base $5, Recover all on the next trade, cap $100 Start again
+   choice 2021-23 losing: cal 3, mid 5, cost 5 | profit +730, deepest drop in a month 0 || TEST 2024-26: cal 3 loss / 31 profit +946 worst -8 | mid 3 loss +918 | cost 3 loss +932
+   robust top 50 in the TEST period (calendar): losing months median 3 (min 2, max 5); total median +981; 50 of 50 positive; worst month median -8

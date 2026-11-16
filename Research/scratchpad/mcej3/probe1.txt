@@ -1,0 +1,44 @@
+ARS M1-S3 fcOff | base $20, Exact recovery at final TP, no cap, lock +$30 | months that reached the lock: 70 of 70
+  cal   all 70 windows:  0 loss / 70 profit, total  +2779, worst    +30, deepest drop in a window  791 | choice 0 loss | test 0 loss  +1343
+  mid   all 69 windows:  2 loss / 67 profit, total  +1227, worst   -975, deepest drop in a window  975 | choice 0 loss | test 2 loss   -144
+  cost  all 70 windows:  0 loss / 70 profit, total  +2907, worst    +22, deepest drop in a window  795 | choice 0 loss | test 0 loss  +1359
+ARS M15-S3 fcOff | base $10, Labouchere, no cap, lock +$50 | months that reached the lock: 67 of 70
+  cal   all 70 windows:  3 loss / 67 profit, total  +5335, worst   -399, deepest drop in a window  757 | choice 0 loss | test 3 loss  +2001
+  mid   all 69 windows:  3 loss / 66 profit, total  +4408, worst   -466, deepest drop in a window  855 | choice 3 loss | test 0 loss  +2811
+  cost  all 70 windows:  3 loss / 67 profit, total  +5142, worst   -404, deepest drop in a window  759 | choice 0 loss | test 3 loss  +1922
+ARS M15-S3 fcOff | base $10, Labouchere, no cap, lock +$30 | months that reached the lock: 69 of 70
+  cal   all 70 windows:  1 loss / 69 profit, total  +5474, worst   -150, deepest drop in a window  420 | choice 0 loss | test 1 loss  +2373
+  mid   all 69 windows:  3 loss / 66 profit, total  +3696, worst   -466, deepest drop in a window  855 | choice 3 loss | test 0 loss  +2395
+  cost  all 70 windows:  1 loss / 69 profit, total  +5314, worst   -150, deepest drop in a window  428 | choice 0 loss | test 1 loss  +2323
+ARS M15-S7 fcOff | base $10, Fibonacci, cap $100 Clamp, lock +$50 | months that reached the lock: 65 of 70
+  cal   all 70 windows:  2 loss / 68 profit, total  +4147, worst   -310, deepest drop in a window  400 | choice 0 loss | test 2 loss  +1989
+  mid   all 69 windows:  5 loss / 64 profit, total  +2889, worst   -560, deepest drop in a window  834 | choice 2 loss | test 3 loss  +1246
+  cost  all 70 windows:  2 loss / 68 profit, total  +4156, worst   -317, deepest drop in a window  400 | choice 0 loss | test 2 loss  +1953
+ARS M5-S3 fcOff | base $5, Fibonacci, no cap, lock +$30 | months that reached the lock: 68 of 70
+  cal   all 70 windows:  2 loss / 68 profit, total  +2993, worst   -336, deepest drop in a window  515 | choice 0 loss | test 2 loss   +896
+  mid   all 69 windows:  2 loss / 67 profit, total  +1718, worst   -914, deepest drop in a window  923 | choice 1 loss | test 1 loss   +969
+  cost  all 70 windows:  2 loss / 68 profit, total  +2878, worst   -366, deepest drop in a window  533 | choice 0 loss | test 2 loss   +855
+GRID S8+S10 | base $20, Exact recovery at final TP, no cap ($500 per strategy)
+  cal   all 70 windows:  4 loss / 66 profit, total  +5215, worst    -32, deepest drop in a window    0 | choice 2 loss | test 2 loss  +2887
+  mid   all 69 windows: 11 loss / 58 profit, total  +4301, worst   -503, deepest drop in a window    0 | choice 7 loss | test 4 loss  +2691
+  cost  all 70 windows:  4 loss / 66 profit, total  +5109, worst    -33, deepest drop in a window    0 | choice 2 loss | test 2 loss  +2847
+GRID S8+S10 | base $10, Exact recovery at final TP, no cap ($500 per strategy)
+  cal   all 70 windows:  4 loss / 66 profit, total  +2624, worst    -16, deepest drop in a window    0 | choice 2 loss | test 2 loss  +1452
+  mid   all 69 windows: 10 loss / 59 profit, total  +2119, worst   -330, deepest drop in a window    0 | choice 7 loss | test 3 loss  +1392
+  cost  all 70 windows:  4 loss / 66 profit, total  +2570, worst    -17, deepest drop in a window    0 | choice 2 loss | test 2 loss  +1432
+GRID S7+S8+S10 | base $10, Exact recovery at final TP, no cap ($333 per strategy)
+  cal   all 70 windows:  6 loss / 64 profit, total  +2939, worst    -16, deepest drop in a window    0 | choice 3 loss | test 3 loss  +1611
+  mid   all 69 windows:  9 loss / 60 profit, total  +2338, worst   -335, deepest drop in a window    0 | choice 5 loss | test 4 loss  +1477
+  cost  all 70 windows:  8 loss / 62 profit, total  +2872, worst    -17, deepest drop in a window    0 | choice 5 loss | test 3 loss  +1587
+GRID S7+S8+S10 | base $20, Exact recovery at final TP, no cap ($333 per strategy)
+  cal   all 70 windows:  8 loss / 62 profit, total  +5277, worst   -296, deepest drop in a window    0 | choice 4 loss | test 4 loss  +2933
+  mid   all 69 windows: 11 loss / 58 profit, total  +4598, worst   -354, deepest drop in a window    0 | choice 5 loss | test 6 loss  +2559
+  cost  all 70 windows:  9 loss / 61 profit, total  +5104, worst   -317, deepest drop in a window    0 | choice 5 loss | test 4 loss  +2870
+GRID S1+S2+S3+S4+S5+S6+S7+S8+S9+S10+S11+S12 | base $10, Exact recovery at final TP, no cap ($83 per strategy)
+  cal   all 70 windows: 25 loss / 45 profit, total  +6515, worst   -209, deepest drop in a window    0 | choice 14 loss | test 11 loss  +4526
+  mid   all 69 windows: 16 loss / 53 profit, total  +7294, worst   -193, deepest drop in a window    0 | choice 9 loss | test 7 loss  +4596
+  cost  all 70 windows: 26 loss / 44 profit, total  +6280, worst   -215, deepest drop in a window    0 | choice 15 loss | test 11 loss  +4442
+GRID S1+S2+S3+S4+S5+S6+S7+S8+S9+S10+S11+S12 | base $10, No recovery, no cap ($83 per strategy)
+  cal   all 70 windows: 23 loss / 47 profit, total  +5640, worst   -118, deepest drop in a window    0 | choice 13 loss | test 10 loss  +3744
+  mid   all 69 windows: 22 loss / 47 profit, total  +5663, worst   -122, deepest drop in a window    0 | choice 15 loss | test 7 loss  +3755
+  cost  all 70 windows: 24 loss / 46 profit, total  +5451, worst   -121, deepest drop in a window    0 | choice 13 loss | test 11 loss  +3665

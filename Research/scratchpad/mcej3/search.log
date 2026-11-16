@@ -1,0 +1,68 @@
+runs per set 558 | ARS sets 62 | grid strategies 12
+ARS M5-you-off-TP4
+ARS M5-you-off-TP3
+ARS M5-you-off-TP2
+ARS M5-you-off-TP1
+ARS M15-you-off-TP1
+ARS M15-you-off-TP2
+ARS M15-you-off-TP3
+ARS M5-you-on-TP1
+ARS M15-you-off-TP4
+ARS M5-you-on-TP2
+ARS M5-you-on-TP3
+ARS M5-you-on-TP4
+ARS M1-S3
+ARS M1-S3 fcOff
+ARS M1-S4
+ARS M1-S4 fcOff
+ARS M1-S1
+ARS M1-S1 fcOff
+ARS M5-S3
+ARS M5-S3 fcOff
+ARS M15-S6 fcOff
+ARS M15-S6
+ARS M1-S2
+ARS M1-S2 fcOff
+ARS M5-S2
+ARS M5-S2 fcOff
+ARS M5-S4
+ARS M5-S4 fcOff
+ARS M5-S1
+ARS M5-S1 fcOff
+ARS M15-S1 fcOff
+ARS M15-S1
+ARS M15-S7 fcOff
+ARS M15-you-on-TP1
+ARS M15-S7
+ARS M15-you-on-TP2
+ARS M15-you-on-TP3
+ARS M15-S8 fcOff
+ARS M15-S8
+ARS M15-you-on-TP4
+ARS H1-you-off-TP1
+ARS M15-S3 fcOff
+ARS M15-S3
+ARS H1-you-off-TP3
+ARS H1-you-off-TP2
+ARS M15-S9
+ARS H1-you-off-TP4
+ARS H1-S6 fcOff
+ARS M15-S9 fcOff
+ARS H1-S6
+ARS H1-S8 fcOff
+ARS H1-S8
+ARS H1-you-on-TP2
+ARS H1-you-on-TP1
+ARS H1-you-on-TP3
+ARS H1-you-on-TP4
+ARS H1-S3
+ARS H1-S3 fcOff
+ARS H1-S7 fcOff
+ARS H1-S1 fcOff
+ARS H1-S7
+ARS H1-S1
+saved
+
+real	2m32.874s
+user	9m45.828s
+sys	0m0.643s

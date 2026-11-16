@@ -48,7 +48,7 @@ def time_flags(T, fcOn=True, fcHM=(23, 55), wkOn=True, newsOn=False, news=(17 * 
     return fc, wk, blk, st
 
 
-def run(O, H, L, C, T, ev, mt, earnBack=True, costPx=0.23, flags=None):
+def run(O, H, L, C, T, ev, mt, earnBack=True, costPx=0.23, flags=None, market=False):
     fc, wk, blk, nst = flags if flags is not None else time_flags(T)
     n = len(O)
     exState = 0; pos = 0; entry = None; stopPx = tgtPx = None; closePend = None; exArm = None; ex = None
@@ -64,7 +64,8 @@ def run(O, H, L, C, T, ev, mt, earnBack=True, costPx=0.23, flags=None):
         closePend = None
         if entry is not None and pos == 0:
             d, lp = entry
-            if (d > 0 and o <= lp) or (d < 0 and o >= lp): fpx = o; k0 = 0
+            if lp is None: fpx = o; k0 = 0                              # market entry (Entry Price: Market): the next open
+            elif (d > 0 and o <= lp) or (d < 0 and o >= lp): fpx = o; k0 = 0
             else:
                 for k in range(1, 4):
                     b = pts[k]
@@ -104,6 +105,8 @@ def run(O, H, L, C, T, ev, mt, earnBack=True, costPx=0.23, flags=None):
             entry = None; stopPx = None; exState = 0; exArm = None; cnt['cancelEng'] += 1
         if e['fill'] and exState == 1 and pos == 0 and not exClosed:
             entry = None; stopPx = None; exState = 0; exArm = None; cnt['missed'] += 1
+        if exState == 2 and exMine and e['move']:
+            ex['stp'] = e['stp']                                      # the engine moved its stop (TP1 / TP2 / TP3 stop moves)
         if exState == 2 and exMine and (e['fill'] or e['move']):
             stopPx = stop_px(pos, ex['stp'], mt); tgtPx = tgt_px(pos, ex['tF'], costPx if earnBack else 0.0, mt)
         if e['exit'] and exState == 2 and exMine and (not earnBack or not e['win']):
@@ -121,6 +124,6 @@ def run(O, H, L, C, T, ev, mt, earnBack=True, costPx=0.23, flags=None):
             else:
                 d = a['dir']
                 ex = dict(dir=d, arm=i, lim=a['lim'], stp=a['stp'], tF=a['tF'], risk=a['risk'])
-                entry = (d, entry_px(d, a['lim'], mt)); stopPx = stop_px(d, a['stp'], mt); tgtPx = None
+                entry = (d, None if market else entry_px(d, a['lim'], mt)); stopPx = stop_px(d, a['stp'], mt); tgtPx = None
                 exState = 1; exArm = i; cnt['taken'] += 1
     return trades, cnt

@@ -987,6 +987,31 @@ Other gold findings:
       errors; 4,912 cells checked vs the pickles, 0 differences).
     - **Delivered:** both xlsx in `Research/deliverables/` and sent to the user.
 
+38. **Best monthly settings with a fresh $1,000 every month, Auction Retest and Fractal Grid (asked 2026-11-16)** (tasks #1-#3 of that session).
+    The container had restarted: the scratchpad was rebuilt with `bash Research/restore.sh` (2 min) and `fractal/bars.py` (bars.npz, 5 s;
+    strategy 12 needs `B['M1_' + k] = B[k]`). Work dir `$S/mcej3` (mirrored without .pkl / .npz / .json).
+    - **Trades (`collect.py`):** ARS = the 19 catalogue strategies without a partial close (force-close on and off) + the user's settings (M5 / M15 /
+      H1 x filters off / on x TP1-TP4) through the TradingView strategy model (mcej2 ref_gse + stratemu; built-in check: with earn-back and the time
+      closes off the model = the engine in all 62 sets). Grid = the 12 strategies on the M1 model (= the grid EA). The grid part runs in a spawn
+      process (another `engine.py` on sys.path shadows fractal/engine.py).
+    - **Model fixes found here (mcej2, before -> `*_premove.py`):** (1) stop moves: ref_gse records the moved stop (`E_['stp']`), stratemu re-sends it
+      (Pine re-sends exits with the live stp); (2) market entries (`entryMode 'market'`, all M5 catalogue strategies) fill at the next open.
+      The user's-settings workbooks (item 37) are unaffected (no stop moves, model entries).
+    - **Money (`search.py`):** every IST month alone, $1,000, fresh state, trades by entry month; base $5 / $10 / $20 x 38 rules (incl. Crooks E-J and
+      the ladder with $50 / $100 targets) x 5 caps; ARS also the monthly lock (none, 20, 30, 50, 100, 150); grid: each strategy $1,000 / k,
+      subsets summed in `choose.py` (all 4,095). 2.5 min.
+    - **Choice (`choose.py`, `robust.py`, `robust2.py 300|150`):** 2021-23 only; versions calendar / mid-month (15th) / +0.07 cost; no blown window,
+      deepest drop inside a window <= $300 or $150; fewest losing windows (worst version), then profit. Test 2024-26 only reported.
+      Lesson: without a drop limit, recovery + monthly lock gives ~0 losing months in 2021-23 but -$880 to -$970 months in the test period.
+    - **Results (70 months, $1,000 each):** both 50/50 (ARS M15-S3 fcOff Oscar's Grind $5 lock +$10 + grid S7+S8+S10 exact $5 cap $50 Clamp)
+      66 profit / 4 loss, +$2,249, worst -$20; grid S7+S8+S10 exact $10 cap $100 Clamp 63 / 7, +$2,923, worst -$16; grid S1+S2+S6+S7+S8+S10 exact
+      $5 cap $50 64 / 6, +$1,709, worst -$14; ARS M15-S3 fcOff Oscar's Grind $10 lock +$20 61 / 9, +$1,575, worst -$55; ARS M15-S3 fcOff no
+      recovery $20 lock +$20 61 / 9, +$1,972, worst -$102. Higher risk: grid S8+S10 $20 66 / 4 (+$5,215, but a -$503 mid-month window); ARS
+      M15-S6 recover-all 67 / 3 (worst -$972); user's own settings best +$238 (break-even).
+    - **Checks:** independent re-implementation from `verify/SPEC3.md` (Sonnet high, re-run by me): the 5 recommended options, 70 months each, 0
+      differences. Workbook `build_best_xlsx.py` -> `Gold_Best_Monthly_Settings_1000.xlsx` (Read me, Recommendations, How to set, Monthly, Top
+      lists; 210 formulas, recalc 0 errors; formula values = Python).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
@@ -1011,6 +1036,7 @@ Other gold findings:
 | Month-by-month workbooks | `monthly.py collect`, `monthly.py money`, `monthly.py check`, then `build_monthly_xlsx.py` | `monthly_trades.pkl`, `monthly.pkl`, 2 xlsx | 1.5 min, 1 min, seconds, 1 min + recalc |
 | Monthly Crooks E-J x ladder (item 36, `$S/mcej`) | `collect_ars.py`, `collect_grid.py`, `money.py ars`, `money.py grid`, `targets.py`, `build_xlsx.py OUTDIR both`, recalc, `check_xlsx.py OUTDIR` | `*_trades.pkl`, `*_money.pkl`, `ars_targets.pkl`, 2 xlsx | 10 s, 20 s, 5 s, 3 s, 30 s, 5 s + recalc 1 min |
 | Monthly, the user's settings (item 37, `$S/mcej2`) | `collect_user.py [check]`, `money2.py`, `costs.py`, `build_user_xlsx.py OUTDIR`, recalc; EA check: `sim/export_m1.py` -> `sim46 m1_all.csv 2021-01-11 2026-10-03 InpExitAt=1|2 [filters 0]`, `cmp_ea.py`, `cmp_ea_levels.py` | `user_trades.pkl`, `user_money.pkl`, `user_costs.pkl`, 2 xlsx | 1 min, 20 s, 1 min, 5 s + recalc; sim 45 s (filters on) / 7 min (off) |
+| Best monthly settings, $1,000 (item 38, `$S/mcej3`) | `collect.py`, `search.py`, `choose.py`, `robust2.py 300`, `robust2.py 150`, `combo.py`, `build_best_xlsx.py OUT` | `sets.pkl`, `money_*.npz`, `final*.pkl`, `picks.pkl`, `combo.pkl`, xlsx | 2 min, 2.5 min, 10 s, 20 s each, 10 s, 5 s + recalc |
 | No losing month | `bestmonth.py collect`, `screen`, `money`, `report`, `exact`; `bestmonth_final.py`; `build_bestmonth_xlsx.py` | `bestmonth_*.pkl`, `bestmonth*.txt`, xlsx | 1 min, seconds, 20 s, 20 s, 1 min, 1 min, seconds |
 | Workbook | `build_final.py OUT.xlsx` (sheets from `strategy_sheets.py`, `crooks_sheet.py` and `vwfilter_sheet.py`), then `recalc.py` | xlsx | 1 min |
 | Summaries | `showfin.py TF`, `chat_rows.py` | printed | seconds |

@@ -1,0 +1,2 @@
+- step1: run.py written, 5 settings computed into mine.json (before opening expected.json)
+- step2: cmp.py compared

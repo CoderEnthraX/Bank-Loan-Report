@@ -1,0 +1,78 @@
+M1-S1                       1864 trades (engine  1866) net    -44.6R at a fixed risk | exitR 2.00 | check engine 1866 model 1866 same 1866
+M1-S1 fcOff                 1862 trades (engine  1866) net     -4.2R at a fixed risk | exitR 2.00 | check engine 1866 model 1866 same 1866
+M1-S2                       1729 trades (engine  1731) net    -34.0R at a fixed risk | exitR 2.00 | check engine 1731 model 1731 same 1731
+M1-S2 fcOff                 1727 trades (engine  1731) net    +10.9R at a fixed risk | exitR 2.00 | check engine 1731 model 1731 same 1731
+M1-S3                       1991 trades (engine  1995) net    -44.3R at a fixed risk | exitR 2.00 | check engine 1995 model 1995 same 1995
+M1-S3 fcOff                 1990 trades (engine  1995) net     +9.1R at a fixed risk | exitR 2.00 | check engine 1995 model 1995 same 1995
+M1-S4                       1899 trades (engine  1902) net    -50.7R at a fixed risk | exitR 2.00 | check engine 1902 model 1902 same 1902
+M1-S4 fcOff                 1897 trades (engine  1902) net     -8.2R at a fixed risk | exitR 2.00 | check engine 1902 model 1902 same 1902
+M5-S1                       1473 trades (engine  1473) net    +60.3R at a fixed risk | exitR 2.50 | check engine 1472 model 1472 same 1472
+M5-S1 fcOff                 1471 trades (engine  1473) net   +113.7R at a fixed risk | exitR 2.50 | check engine 1472 model 1472 same 1472
+M5-S2                       1693 trades (engine  1693) net    +20.0R at a fixed risk | exitR 2.00 | check engine 1692 model 1692 same 1692
+M5-S2 fcOff                 1693 trades (engine  1693) net    +41.2R at a fixed risk | exitR 2.00 | check engine 1692 model 1692 same 1692
+M5-S3                       1805 trades (engine  1806) net    +18.9R at a fixed risk | exitR 2.00 | check engine 1805 model 1805 same 1805
+M5-S3 fcOff                 1805 trades (engine  1806) net    +80.6R at a fixed risk | exitR 2.00 | check engine 1805 model 1805 same 1805
+M5-S4                       1489 trades (engine  1489) net    +77.3R at a fixed risk | exitR 2.00 | check engine 1488 model 1488 same 1488
+M5-S4 fcOff                 1488 trades (engine  1489) net    +88.1R at a fixed risk | exitR 2.00 | check engine 1488 model 1488 same 1488
+M5-you-off-TP1             11446 trades (engine 11536) net  -1109.1R at a fixed risk | exitR 0.60 | check engine 11536 model 11536 same 11536
+M5-you-off-TP2             10404 trades (engine 10502) net   -929.3R at a fixed risk | exitR 1.00 | check engine 10501 model 10501 same 10501
+M5-you-off-TP3              9193 trades (engine  9286) net   -864.4R at a fixed risk | exitR 1.50 | check engine 9285 model 9285 same 9285
+M5-you-off-TP4              8285 trades (engine  8377) net   -786.6R at a fixed risk | exitR 2.00 | check engine 8376 model 8376 same 8376
+M5-you-on-TP1               3153 trades (engine  3732) net   -194.5R at a fixed risk | exitR 0.60 | check engine 3732 model 3732 same 3732
+M5-you-on-TP2               2956 trades (engine  3509) net   -150.7R at a fixed risk | exitR 1.00 | check engine 3509 model 3509 same 3509
+M5-you-on-TP3               2740 trades (engine  3246) net   -148.7R at a fixed risk | exitR 1.50 | check engine 3246 model 3246 same 3246
+M5-you-on-TP4               2597 trades (engine  3081) net   -136.6R at a fixed risk | exitR 2.00 | check engine 3081 model 3081 same 3081
+M15-S1                      1367 trades (engine  1388) net    +95.7R at a fixed risk | exitR 2.00 | check engine 1388 model 1388 same 1388
+M15-S1 fcOff                1384 trades (engine  1388) net   +148.2R at a fixed risk | exitR 2.00 | check engine 1388 model 1388 same 1388
+M15-S3                      1110 trades (engine  1129) net    +72.5R at a fixed risk | exitR 2.00 | check engine 1129 model 1129 same 1129
+M15-S3 fcOff                1126 trades (engine  1129) net   +131.7R at a fixed risk | exitR 2.00 | check engine 1129 model 1129 same 1129
+M15-S6                      1745 trades (engine  1776) net    +56.4R at a fixed risk | exitR 2.00 | check engine 1776 model 1776 same 1776
+M15-S6 fcOff                1767 trades (engine  1776) net    +79.9R at a fixed risk | exitR 2.00 | check engine 1776 model 1776 same 1776
+M15-S7                      1357 trades (engine  1377) net   +107.1R at a fixed risk | exitR 2.00 | check engine 1377 model 1377 same 1377
+M15-S7 fcOff                1373 trades (engine  1377) net   +164.8R at a fixed risk | exitR 2.00 | check engine 1377 model 1377 same 1377
+M15-S8                      1162 trades (engine  1179) net    +37.8R at a fixed risk | exitR 2.00 | check engine 1179 model 1179 same 1179
+M15-S8 fcOff                1171 trades (engine  1179) net    +72.3R at a fixed risk | exitR 2.00 | check engine 1179 model 1179 same 1179
+M15-S9                       712 trades (engine   712) net    +29.6R at a fixed risk | exitR 2.00 | check engine 712 model 712 same 712
+M15-S9 fcOff                 710 trades (engine   712) net    +40.9R at a fixed risk | exitR 2.00 | check engine 712 model 712 same 712
+M15-you-off-TP1             4267 trades (engine  4316) net   -242.7R at a fixed risk | exitR 0.60 | check engine 4316 model 4316 same 4316
+M15-you-off-TP2             3854 trades (engine  3905) net   -234.1R at a fixed risk | exitR 1.00 | check engine 3905 model 3905 same 3905
+M15-you-off-TP3             3434 trades (engine  3484) net   -223.1R at a fixed risk | exitR 1.50 | check engine 3484 model 3484 same 3484
+M15-you-off-TP4             3128 trades (engine  3172) net   -110.1R at a fixed risk | exitR 2.00 | check engine 3172 model 3172 same 3172
+M15-you-on-TP1              1317 trades (engine  1601) net    -81.3R at a fixed risk | exitR 0.60 | check engine 1601 model 1601 same 1601
+M15-you-on-TP2              1252 trades (engine  1527) net    -60.1R at a fixed risk | exitR 1.00 | check engine 1527 model 1527 same 1527
+M15-you-on-TP3              1185 trades (engine  1440) net    -57.6R at a fixed risk | exitR 1.50 | check engine 1440 model 1440 same 1440
+M15-you-on-TP4              1140 trades (engine  1382) net    -26.1R at a fixed risk | exitR 2.00 | check engine 1382 model 1382 same 1382
+H1-S1                        178 trades (engine   186) net    +40.3R at a fixed risk | exitR 2.00 | check engine 186 model 186 same 186
+H1-S1 fcOff                  184 trades (engine   186) net    +56.8R at a fixed risk | exitR 2.00 | check engine 186 model 186 same 186
+H1-S3                        220 trades (engine   228) net    +16.1R at a fixed risk | exitR 2.00 | check engine 228 model 228 same 228
+H1-S3 fcOff                  223 trades (engine   228) net    +31.0R at a fixed risk | exitR 2.00 | check engine 228 model 228 same 228
+H1-S6                        519 trades (engine   543) net    +43.8R at a fixed risk | exitR 3.00 | check engine 542 model 542 same 542
+H1-S6 fcOff                  538 trades (engine   543) net    +64.4R at a fixed risk | exitR 3.00 | check engine 542 model 542 same 542
+H1-S7                        201 trades (engine   208) net    +32.0R at a fixed risk | exitR 2.00 | check engine 208 model 208 same 208
+H1-S7 fcOff                  208 trades (engine   208) net    +58.8R at a fixed risk | exitR 2.00 | check engine 208 model 208 same 208
+H1-S8                        483 trades (engine   498) net    +39.1R at a fixed risk | exitR 2.00 | check engine 498 model 498 same 498
+H1-S8 fcOff                  496 trades (engine   498) net    +48.0R at a fixed risk | exitR 2.00 | check engine 498 model 498 same 498
+H1-you-off-TP1              1162 trades (engine  1204) net    -37.0R at a fixed risk | exitR 0.60 | check engine 1203 model 1203 same 1203
+H1-you-off-TP2              1060 trades (engine  1099) net    -40.7R at a fixed risk | exitR 1.00 | check engine 1098 model 1098 same 1098
+H1-you-off-TP3               943 trades (engine   980) net    -32.4R at a fixed risk | exitR 1.50 | check engine 979 model 979 same 979
+H1-you-off-TP4               847 trades (engine   884) net     -8.8R at a fixed risk | exitR 2.00 | check engine 883 model 883 same 883
+H1-you-on-TP1                415 trades (engine   503) net    -20.3R at a fixed risk | exitR 0.60 | check engine 503 model 503 same 503
+H1-you-on-TP2                397 trades (engine   477) net    -14.7R at a fixed risk | exitR 1.00 | check engine 477 model 477 same 477
+H1-you-on-TP3                384 trades (engine   460) net    -31.5R at a fixed risk | exitR 1.50 | check engine 460 model 460 same 460
+H1-you-on-TP4                370 trades (engine   442) net    -31.3R at a fixed risk | exitR 2.00 | check engine 442 model 442 same 442
+S1       43 trades net    +6.2R
+S2       49 trades net   +35.4R
+S3       79 trades net   +43.4R
+S4      144 trades net  +101.6R
+S5      274 trades net   +11.2R
+S6      225 trades net    +5.4R
+S7      255 trades net   +20.8R
+S8      294 trades net   +36.6R
+S9      999 trades net   +16.9R
+S10    1192 trades net   +90.5R
+S11     741 trades net   +67.0R
+S12    1256 trades net  +129.2R
+
+real	2m15.054s
+user	8m34.654s
+sys	0m10.495s

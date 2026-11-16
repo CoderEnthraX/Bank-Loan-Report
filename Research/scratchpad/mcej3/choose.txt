@@ -1,0 +1,132 @@
+
+=== ARS, fewest losing months (chosen on 2021-23) ===
+M15-S6 fcOff | base $20, Recover all on the next trade, no cap, month lock +$50
+      2021-23:  0 loss / 36 profit,    +3409, worst    +51 | 2024-26:  3 loss / 31 profit,    +1023, worst   -972 | all 70:  3 loss / 67 profit,    +4432, worst   -972
+M15-S9 fcOff | base $10, Martingale x2, no cap, month lock +$50
+      2021-23:  0 loss / 36 profit,    +3360, worst    +35 | 2024-26:  6 loss / 28 profit,    -2019, worst  -1129 | all 70:  6 loss / 64 profit,    +1341, worst  -1129
+M15-S3 fcOff | base $10, Labouchere, no cap, month lock +$50
+      2021-23:  0 loss / 36 profit,    +3218, worst    +51 | 2024-26:  3 loss / 31 profit,    +2164, worst   -209 | all 70:  3 loss / 67 profit,    +5382, worst   -209
+M15-S3 fcOff | base $10, Labouchere, cap $100 Clamp, month lock +$50
+      2021-23:  0 loss / 36 profit,    +3085, worst    +51 | 2024-26:  5 loss / 29 profit,    +1263, worst   -337 | all 70:  5 loss / 65 profit,    +4348, worst   -337
+M15-S9 fcOff | base $10, Recover all on the next trade, no cap, month lock +$50
+      2021-23:  0 loss / 36 profit,    +3067, worst    +35 | 2024-26:  7 loss / 27 profit,    -2072, worst  -1129 | all 70:  7 loss / 63 profit,     +995, worst  -1129
+M15-S3 fcOff | base $10, Labouchere, no cap, month lock +$30
+      2021-23:  0 loss / 36 profit,    +3008, worst    +32 | 2024-26:  2 loss / 32 profit,    +2038, worst   -150 | all 70:  2 loss / 68 profit,    +5046, worst   -150
+M15-S3 fcOff | base $20, Fibonacci, no cap, month lock +$50
+      2021-23:  0 loss / 36 profit,    +2963, worst    +50 | 2024-26:  2 loss / 32 profit,    +2228, worst   -964 | all 70:  2 loss / 68 profit,    +5191, worst   -964
+M15-S3 fcOff | base $10, Labouchere, cap $100 Clamp, month lock +$30
+      2021-23:  0 loss / 36 profit,    +2771, worst    +32 | 2024-26:  3 loss / 31 profit,    +1632, worst   -226 | all 70:  3 loss / 67 profit,    +4403, worst   -226
+M15-S6 fcOff | base $20, Recover all on the next trade, no cap, month lock +$30
+      2021-23:  0 loss / 36 profit,    +2748, worst    +35 | 2024-26:  2 loss / 32 profit,    +1485, worst   -740 | all 70:  2 loss / 68 profit,    +4233, worst   -740
+M15-S3 fcOff | base $10, Labouchere, no cap, month lock +$20
+      2021-23:  0 loss / 36 profit,    +2650, worst    +20 | 2024-26:  2 loss / 32 profit,    +1920, worst   -150 | all 70:  2 loss / 68 profit,    +4569, worst   -150
+M15-S6 | base $10, Fibonacci, no cap, month lock +$30
+      2021-23:  0 loss / 36 profit,    +2574, worst    +30 | 2024-26:  5 loss / 29 profit,     -347, worst   -994 | all 70:  5 loss / 65 profit,    +2227, worst   -994
+M15-S3 fcOff | base $10, Labouchere, cap $100 Clamp, month lock +$20
+      2021-23:  0 loss / 36 profit,    +2547, worst    +24 | 2024-26:  3 loss / 31 profit,    +1513, worst   -226 | all 70:  3 loss / 67 profit,    +4060, worst   -226
+M15-S3 fcOff | base $20, Exact recovery at final TP, no cap, month lock +$50
+      2021-23:  0 loss / 36 profit,    +2492, worst     +8 | 2024-26:  4 loss / 30 profit,    +1096, worst   -860 | all 70:  4 loss / 66 profit,    +3588, worst   -860
+M1-S3 fcOff | base $20, Rule C split 1, no cap, month lock +$30
+      2021-23:  0 loss / 36 profit,    +2490, worst    +32 | 2024-26:  3 loss / 31 profit,     -554, worst  -1108 | all 70:  3 loss / 67 profit,    +1936, worst  -1108
+M1-S3 fcOff | base $10, Recover all on the next trade, no cap, month lock +$20
+      2021-23:  0 loss / 36 profit,    +2478, worst    +20 | 2024-26:  2 loss / 32 profit,    +1115, worst   -931 | all 70:  2 loss / 68 profit,    +3593, worst   -931
+   top 50 in the test period: losing months median 4 (min 1, max 7), total median +962; 36 of 50 positive
+
+=== ARS, most profit within 2 losing months of the fewest (chosen on 2021-23) ===
+M15-S3 fcOff | base $20, Labouchere, no cap, month lock +$150
+      2021-23:  1 loss / 35 profit,    +7231, worst   -617 | 2024-26:  6 loss / 28 profit,    +3226, worst  -1001 | all 70:  7 loss / 63 profit,   +10456, worst  -1001
+M15-S7 fcOff | base $20, Martingale x2, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +6075, worst   -878 | 2024-26:  8 loss / 26 profit,     +111, worst  -1145 | all 70: 10 loss / 60 profit,    +6186, worst  -1145
+M15-S1 fcOff | base $20, Martingale x2, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +6050, worst   -878 | 2024-26:  8 loss / 26 profit,     -447, worst  -1145 | all 70: 10 loss / 60 profit,    +5602, worst  -1145
+M1-S1 fcOff | base $20, Fibonacci, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5850, worst   -855 | 2024-26:  5 loss / 29 profit,    +2847, worst   -927 | all 70:  7 loss / 63 profit,    +8697, worst   -927
+M1-S3 fcOff | base $10, Fibonacci, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5804, worst   -761 | 2024-26:  6 loss / 28 profit,     +809, worst   -974 | all 70:  8 loss / 62 profit,    +6613, worst   -974
+M15-S3 fcOff | base $10, Labouchere, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5773, worst   -941 | 2024-26:  6 loss / 28 profit,    +4217, worst   -371 | all 70:  8 loss / 62 profit,    +9990, worst   -941
+M15-S7 fcOff | base $20, D'Alembert, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5654, worst   -313 | 2024-26:  4 loss / 30 profit,    +4960, worst   -463 | all 70:  6 loss / 64 profit,   +10615, worst   -463
+M15-S3 fcOff | base $20, Labouchere, no cap, month lock +$100
+      2021-23:  1 loss / 35 profit,    +5581, worst   -617 | 2024-26:  5 loss / 29 profit,    +2048, worst  -1001 | all 70:  6 loss / 64 profit,    +7629, worst  -1001
+M15-S1 fcOff | base $20, Recover all on the next trade, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5537, worst   -879 | 2024-26:  6 loss / 28 profit,    +1240, worst  -1286 | all 70:  8 loss / 62 profit,    +6777, worst  -1286
+M1-S4 fcOff | base $20, Fibonacci, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5519, worst   -855 | 2024-26:  7 loss / 27 profit,    +1507, worst  -1099 | all 70:  9 loss / 61 profit,    +7026, worst  -1099
+M15-S7 fcOff | base $20, Recover all on the next trade, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5510, worst   -879 | 2024-26:  5 loss / 29 profit,    +1880, worst  -1286 | all 70:  7 loss / 63 profit,    +7389, worst  -1286
+M15-S7 fcOff | base $20, Recover all on the next trade, cap $100 Clamp, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5450, worst   -255 | 2024-26:  9 loss / 25 profit,    +2193, worst   -590 | all 70: 11 loss / 59 profit,    +7643, worst   -590
+M15-S1 fcOff | base $20, Recover all on the next trade, cap $100 Clamp, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5411, worst   -255 | 2024-26:  9 loss / 25 profit,    +2163, worst   -457 | all 70: 11 loss / 59 profit,    +7574, worst   -457
+M1-S3 fcOff | base $5, Recover all on the next trade, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5319, worst   -809 | 2024-26:  8 loss / 26 profit,    -1469, worst   -981 | all 70: 10 loss / 60 profit,    +3850, worst   -981
+M1-S3 fcOff | base $10, Rule C split 1, no cap, month lock +$150
+      2021-23:  2 loss / 34 profit,    +5217, worst   -808 | 2024-26:  9 loss / 25 profit,    -2636, worst   -981 | all 70: 11 loss / 59 profit,    +2581, worst   -981
+   top 50 in the test period: losing months median 6 (min 2, max 10), total median +1456; 40 of 50 positive
+
+=== GRID, fewest losing months (chosen on 2021-23) ===
+S8+S10 | base $20, Exact recovery at final TP, no cap
+      2021-23:  2 loss / 34 profit,    +2328, worst    -26 | 2024-26:  2 loss / 32 profit,    +2887, worst    -32 | all 70:  4 loss / 66 profit,    +5215, worst    -32
+S8+S10 | base $20, Recover all on the next trade, no cap
+      2021-23:  2 loss / 34 profit,    +2281, worst    -26 | 2024-26:  2 loss / 32 profit,    +2821, worst    -32 | all 70:  4 loss / 66 profit,    +5103, worst    -32
+S2+S8+S9+S10 | base $10, Exact recovery at final TP, no cap
+      2021-23:  2 loss / 34 profit,    +1353, worst    -70 | 2024-26:  4 loss / 30 profit,    +1689, worst   -182 | all 70:  6 loss / 64 profit,    +3042, worst   -182
+S2+S8+S9+S10 | base $10, Exact recovery at final TP, cap $100 Clamp
+      2021-23:  2 loss / 34 profit,    +1327, worst    -69 | 2024-26:  4 loss / 30 profit,    +1748, worst   -124 | all 70:  6 loss / 64 profit,    +3074, worst   -124
+S3+S8+S9+S10 | base $10, Exact recovery at final TP, no cap
+      2021-23:  2 loss / 34 profit,    +1318, worst    -70 | 2024-26:  4 loss / 30 profit,    +1803, worst   -182 | all 70:  6 loss / 64 profit,    +3121, worst   -182
+S3+S8+S9+S10 | base $10, Exact recovery at final TP, cap $100 Clamp
+      2021-23:  2 loss / 34 profit,    +1292, worst    -69 | 2024-26:  4 loss / 30 profit,    +1862, worst   -124 | all 70:  6 loss / 64 profit,    +3153, worst   -124
+S8+S9+S10 | base $10, Exact recovery at final TP, no cap
+      2021-23:  2 loss / 34 profit,    +1269, worst    -70 | 2024-26:  4 loss / 30 profit,    +1424, worst   -184 | all 70:  6 loss / 64 profit,    +2693, worst   -184
+S2+S8+S10 | base $10, Recover all on the next trade, no cap
+      2021-23:  2 loss / 34 profit,    +1268, worst    -13 | 2024-26:  3 loss / 31 profit,    +1692, worst    -16 | all 70:  5 loss / 65 profit,    +2960, worst    -16
+S2+S8+S10 | base $10, Exact recovery at final TP, no cap
+      2021-23:  2 loss / 34 profit,    +1263, worst    -13 | 2024-26:  3 loss / 31 profit,    +1725, worst    -16 | all 70:  5 loss / 65 profit,    +2987, worst    -16
+S2+S8+S10 | base $10, Recover all on the next trade, cap $100 Clamp
+      2021-23:  2 loss / 34 profit,    +1261, worst    -13 | 2024-26:  3 loss / 31 profit,    +1683, worst    -16 | all 70:  5 loss / 65 profit,    +2944, worst    -16
+S2+S8+S10 | base $10, Exact recovery at final TP, cap $100 Clamp
+      2021-23:  2 loss / 34 profit,    +1256, worst    -13 | 2024-26:  3 loss / 31 profit,    +1716, worst    -16 | all 70:  5 loss / 65 profit,    +2971, worst    -16
+S8+S9+S10 | base $10, Exact recovery at final TP, cap $100 Clamp
+      2021-23:  2 loss / 34 profit,    +1236, worst    -69 | 2024-26:  4 loss / 30 profit,    +1476, worst   -124 | all 70:  6 loss / 64 profit,    +2711, worst   -124
+S8+S10 | base $10, Exact recovery at final TP, no cap
+      2021-23:  2 loss / 34 profit,    +1171, worst    -13 | 2024-26:  2 loss / 32 profit,    +1452, worst    -16 | all 70:  4 loss / 66 profit,    +2624, worst    -16
+S8+S10 | base $10, Exact recovery at final TP, cap $100 Clamp
+      2021-23:  2 loss / 34 profit,    +1164, worst    -13 | 2024-26:  2 loss / 32 profit,    +1444, worst    -16 | all 70:  4 loss / 66 profit,    +2608, worst    -16
+S8+S10 | base $10, Recover all on the next trade, no cap
+      2021-23:  2 loss / 34 profit,    +1148, worst    -13 | 2024-26:  2 loss / 32 profit,    +1420, worst    -16 | all 70:  4 loss / 66 profit,    +2568, worst    -16
+   top 50 in the test period: losing months median 3 (min 2, max 5), total median +966; 50 of 50 positive
+
+=== GRID, most profit within 2 losing months of the fewest (chosen on 2021-23) ===
+S7+S8+S10 | base $20, Exact recovery at final TP, no cap
+      2021-23:  4 loss / 32 profit,    +2345, worst   -296 | 2024-26:  4 loss / 30 profit,    +2933, worst   -242 | all 70:  8 loss / 62 profit,    +5277, worst   -296
+S8+S10 | base $20, Exact recovery at final TP, no cap
+      2021-23:  2 loss / 34 profit,    +2328, worst    -26 | 2024-26:  2 loss / 32 profit,    +2887, worst    -32 | all 70:  4 loss / 66 profit,    +5215, worst    -32
+S8+S10 | base $20, Recover all on the next trade, no cap
+      2021-23:  2 loss / 34 profit,    +2281, worst    -26 | 2024-26:  2 loss / 32 profit,    +2821, worst    -32 | all 70:  4 loss / 66 profit,    +5103, worst    -32
+S8+S9+S10 | base $20, Exact recovery at final TP, no cap
+      2021-23:  3 loss / 33 profit,    +2229, worst   -262 | 2024-26:  5 loss / 29 profit,    +2563, worst   -363 | all 70:  8 loss / 62 profit,    +4792, worst   -363
+S2+S8+S10 | base $20, Recover all on the next trade, no cap
+      2021-23:  4 loss / 32 profit,    +2227, worst   -275 | 2024-26:  4 loss / 30 profit,    +3095, worst   -242 | all 70:  8 loss / 62 profit,    +5321, worst   -275
+S2+S8+S10 | base $20, Exact recovery at final TP, no cap
+      2021-23:  4 loss / 32 profit,    +2216, worst   -275 | 2024-26:  4 loss / 30 profit,    +3159, worst   -242 | all 70:  8 loss / 62 profit,    +5375, worst   -275
+S1+S7+S8+S10 | base $20, Exact recovery at final TP, cap $100 Clamp
+      2021-23:  4 loss / 32 profit,    +2186, worst   -258 | 2024-26:  4 loss / 30 profit,    +2953, worst   -223 | all 70:  8 loss / 62 profit,    +5139, worst   -258
+S5+S8+S10 | base $20, Exact recovery at final TP, no cap
+      2021-23:  4 loss / 32 profit,    +2178, worst   -275 | 2024-26:  3 loss / 31 profit,    +2664, worst   -242 | all 70:  7 loss / 63 profit,    +4842, worst   -275
+S5+S8+S10 | base $20, Recover all on the next trade, no cap
+      2021-23:  4 loss / 32 profit,    +2129, worst   -275 | 2024-26:  3 loss / 31 profit,    +2625, worst   -242 | all 70:  7 loss / 63 profit,    +4754, worst   -275
+S8+S9+S10 | base $20, Recover all on the next trade, no cap
+      2021-23:  4 loss / 32 profit,    +2117, worst   -273 | 2024-26:  5 loss / 29 profit,    +2723, worst   -239 | all 70:  9 loss / 61 profit,    +4841, worst   -273
+S6+S8+S10 | base $20, Exact recovery at final TP, no cap
+      2021-23:  4 loss / 32 profit,    +2095, worst   -275 | 2024-26:  3 loss / 31 profit,    +2701, worst   -240 | all 70:  7 loss / 63 profit,    +4796, worst   -275
+S1+S8+S10 | base $20, Exact recovery at final TP, no cap
+      2021-23:  4 loss / 32 profit,    +2087, worst   -275 | 2024-26:  3 loss / 31 profit,    +2685, worst   -242 | all 70:  7 loss / 63 profit,    +4772, worst   -275
+S1+S8+S10 | base $20, Recover all on the next trade, no cap
+      2021-23:  4 loss / 32 profit,    +2040, worst   -275 | 2024-26:  3 loss / 31 profit,    +2619, worst   -242 | all 70:  7 loss / 63 profit,    +4659, worst   -275
+S6+S8+S10 | base $20, Recover all on the next trade, no cap
+      2021-23:  4 loss / 32 profit,    +2031, worst   -275 | 2024-26:  3 loss / 31 profit,    +2616, worst   -240 | all 70:  7 loss / 63 profit,    +4647, worst   -275
+S2+S10 | base $20, Recover all on the next trade, no cap
+      2021-23:  4 loss / 32 profit,    +1986, worst    -45 | 2024-26:  3 loss / 31 profit,    +3001, worst    -43 | all 70:  7 loss / 63 profit,    +4988, worst    -45
+   top 50 in the test period: losing months median 3 (min 2, max 5), total median +2498; 50 of 50 positive

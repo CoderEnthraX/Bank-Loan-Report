@@ -1,0 +1,16 @@
+ARS aggr.    M15-S3 fcOff | base $10, Labouchere, no cap, month lock +$50
+   all 70 months: 67 profit / 3 loss, +5335, worst -399, deepest drop 757 | mid-month: 3 loss, worst -466 | +cost: 3 loss +5142 | test 2024-26: 3 loss +2001 worst -399
+ARS bal.     M1-S2 fcOff | base $5, Fibonacci, no cap, month lock +$20
+   all 70 months: 69 profit / 1 loss, +1340, worst -881, deepest drop 891 | mid-month: 1 loss, worst -873 | +cost: 1 loss +1279 | test 2024-26: 1 loss +217 worst -881
+ARS safe     M15-S6 fcOff | base $5, Exact recovery at final TP, cap $50 Start again, month lock +$20
+   all 70 months: 60 profit / 10 loss, +617, worst -130, deepest drop 160 | mid-month: 9 loss, worst -138 | +cost: 11 loss +562 | test 2024-26: 7 loss +26 worst -130
+ARS no-rec   M15-S3 fcOff | base $20, No recovery, no cap, month lock +$20
+   all 70 months: 63 profit / 7 loss, +2099, worst -85, deepest drop 120 | mid-month: 8 loss, worst -129 | +cost: 7 loss +2048 | test 2024-26: 4 loss +867 worst -85
+GRID aggr.   S8+S10 | base $20, Exact recovery at final TP, no cap
+   all 70 months: 66 profit / 4 loss, +5215, worst -32, deepest drop 320 | mid-month: 11 loss, worst -503 | +cost: 4 loss +5109 | test 2024-26: 2 loss +2887 worst -32
+GRID bal.    S1+S2+S6+S7+S8+S10 | base $10, Exact recovery at final TP, cap $100 Start again
+   all 70 months: 63 profit / 7 loss, +3104, worst -153, deepest drop 169 | mid-month: 11 loss, worst -171 | +cost: 8 loss +3020 | test 2024-26: 4 loss +1797 worst -130
+GRID safe    S1+S2+S6+S7+S8+S10 | base $5, Exact recovery at final TP, cap $50 Clamp
+   all 70 months: 64 profit / 6 loss, +1709, worst -14, deepest drop 85 | mid-month: 10 loss, worst -132 | +cost: 7 loss +1674 | test 2024-26: 3 loss +975 worst -8
+GRID no-rec  S1+S2+S3+S4+S5+S6+S7+S8+S9+S10+S11+S12 | base $10, No recovery, no cap
+   all 70 months: 47 profit / 23 loss, +5640, worst -118, deepest drop 171 | mid-month: 22 loss, worst -122 | +cost: 24 loss +5451 | test 2024-26: 10 loss +3744 worst -74

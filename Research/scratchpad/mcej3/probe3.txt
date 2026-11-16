@@ -1,0 +1,18 @@
+ars_aggr     M15-S6 fcOff | base $20, Recover all on the next trade, no cap, month lock +$50
+   all 70 months: 67 profit / 3 loss, +4432, worst -972, deepest drop 1012 | mid-month: 6 loss, worst -1070 | +cost: 3 loss +4265 | choice 2021-23: 0 loss +3409 | test 2024-26: 3 loss +1023 worst -972
+ars_bal      M1-S2 fcOff | base $5, Fibonacci, no cap, month lock +$20
+   all 70 months: 69 profit / 1 loss, +1340, worst -881, deepest drop 891 | mid-month: 1 loss, worst -873 | +cost: 1 loss +1279 | choice 2021-23: 0 loss +1123 | test 2024-26: 1 loss +217 worst -881
+ars_safe     M15-S3 fcOff | base $10, Oscar's Grind, no cap, month lock +$20
+   all 70 months: 61 profit / 9 loss, +1575, worst -55, deepest drop 182 | mid-month: 6 loss, worst -127 | +cost: 9 loss +1501 | choice 2021-23: 3 loss +954 | test 2024-26: 6 loss +621 worst -55
+ars_norec    M15-S3 fcOff | base $20, No recovery, no cap, month lock +$20
+   all 70 months: 61 profit / 9 loss, +1972, worst -102, deepest drop 141 | mid-month: 11 loss, worst -129 | +cost: 9 loss +1915 | choice 2021-23: 3 loss +1230 | test 2024-26: 6 loss +742 worst -102
+ars_you      M15-you-on-TP1 | base $5, Exact recovery at final TP, cap $100 Start again, month lock +$20
+   all 70 months: 60 profit / 10 loss, +238, worst -152, deepest drop 162 | mid-month: 8 loss, worst -276 | +cost: 11 loss -236 | choice 2021-23: 4 loss +300 | test 2024-26: 6 loss -62 worst -143
+grid_aggr    S8+S10 | base $20, Exact recovery at final TP, no cap
+   all 70 months: 66 profit / 4 loss, +5215, worst -32, deepest drop 320 | mid-month: 11 loss, worst -503 | +cost: 4 loss +5109 | choice 2021-23: 2 loss +2328 | test 2024-26: 2 loss +2887 worst -32
+grid_bal     S7+S8+S10 | base $10, Exact recovery at final TP, cap $100 Clamp
+   all 70 months: 63 profit / 7 loss, +2923, worst -16, deepest drop 171 | mid-month: 10 loss, worst -264 | +cost: 8 loss +2859 | choice 2021-23: 4 loss +1320 | test 2024-26: 3 loss +1603 worst -16
+grid_safe    S1+S2+S6+S7+S8+S10 | base $5, Exact recovery at final TP, cap $50 Clamp
+   all 70 months: 64 profit / 6 loss, +1709, worst -14, deepest drop 85 | mid-month: 10 loss, worst -132 | +cost: 7 loss +1674 | choice 2021-23: 3 loss +734 | test 2024-26: 3 loss +975 worst -8
+grid_norec   S1+S2+S3+S4+S5+S6+S7+S8+S9+S10+S11+S12 | base $10, No recovery, no cap
+   all 70 months: 47 profit / 23 loss, +5640, worst -118, deepest drop 171 | mid-month: 22 loss, worst -122 | +cost: 24 loss +5451 | choice 2021-23: 13 loss +1896 | test 2024-26: 10 loss +3744 worst -74
