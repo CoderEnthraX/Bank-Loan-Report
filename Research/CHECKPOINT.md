@@ -1083,6 +1083,29 @@ Other gold findings:
     - Docs: `TradingView/README.md` sections "v4.8: strategy presets ..." and "v3.2 (EA v1.1): presets and the monthly restart", with the result
       tables (`presets/ars_table.md`, `presets/grid_table.md`).
 
+40. **BE trigger and salvage trigger for the Auction Retest strategy (asked 2026-11-16)** (task #9). The user asked to add the grid's BE / salvage
+    triggers to the ARS and find the best values on M5 and the other timeframes. Work dir `$S/bese` (mirrored).
+    - **Engine:** `bese/ref_gbe.py` is made by `make_refgbe.py` from `gold/ref_g.py`.
+      - BE trigger `beR`: a candle reaches entry + beR x risk, and the stop moves to the entry.
+      - Salvage trigger `svR`: a candle reaches entry - svR x risk, and the final target becomes the entry (0R).
+      - Both are decided at the candle close and act from the next candle, as every engine rule (indicator / strategy / EA). Only the first acts;
+        when both are reached on one candle, the extreme nearer the open counts first. Never on the fill candle.
+      - With both off it is identical to ref_g (checked).
+    - **Sweep:** `sweep.py`, 1,776 runs, resumable `sweep.jsonl`.
+      - Every catalogue strategy without a partial close (M1 4, M5 4, M15 6, H1 5) and the user's M5 settings (filters off / on x TP1-TP4).
+      - BE off / 0.2-1.5R x salvage off / 0.3-0.9R (M1: a reduced grid).
+      - Costs 0.23 / oz. Choose on 2021-23, test on 2024-26. `analyze.py` -> `analysis.txt`.
+    - **Check:** an independent exit simulator written from `SPEC_BE.md` (Sonnet high, re-run by me): `verify/check_exits.py`, 20 cases (M5 / M15 / H1,
+      4 trigger settings each), 0 mismatches.
+    - **Result:** off is best.
+      - Early BE (0.3-0.5R) and salvage lose a lot on every timeframe, totals over the catalogue in 2021-23 / 2024-26: BE 0.3R M5 -250 / -65R,
+        M15 -468 / -240R; salvage 0.5R M5 -169 / -72R, M15 -359 / -244R. M5-S1 with BE 0.3R: 63% of trades end at 0R, 2021-23 +66R -> -0.1R.
+      - Only a late BE at 1.5R (= the TP3 level, which the existing "When TP3 Hits, Move Stop To 0" already does) helps the strategies without
+        a stop move of their own: M15-S8 +51 / +44R -> +83 / +91R; M5-S1 +66 / +41 -> +67 / +53R; H1-S6 +42 / +22 -> +43 / +43R. Mixed elsewhere.
+      - The user's M5 settings: BE 0.2R cuts the loss (+364R / +152R over the 8 variants) but they stay far below 0 after costs.
+      - Median stop distance (% of price): M1 0.23, M5 0.27, M15 0.52, H1 0.57, the user's M5 settings 0.12.
+    - Nothing was added to the indicator / strategy / EA (the user was asked first).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |

@@ -1,0 +1,54 @@
+strategy           base (both off)                   21-23    24-26 | best on 2021-23                   21-23    24-26 | smoothed best                     21-23    24-26
+M1-S1              n 977/978                         +50.2    +41.1 | BE off / salvage off              +50.2    +41.1 | BE off / salvage off              +50.2    +41.1
+M1-S2              n 905/893                         +25.5    +47.4 | BE off / salvage off              +25.5    +47.4 | BE off / salvage off              +25.5    +47.4
+M1-S3              n 1046/1063                       +61.3     +8.4 | BE off / salvage off              +61.3     +8.4 | BE off / salvage off              +61.3     +8.4
+M1-S4              n 998/1005                        +43.4    +17.2 | BE off / salvage off              +43.4    +17.2 | BE off / salvage off              +43.4    +17.2
+M5-S1              n 727/737                         +66.2    +40.9 | BE 1.5R / salvage off             +67.3    +52.9 | BE 1.5R / salvage 0.9R            +56.6    +42.9
+M5-S2              n 845/839                         +38.3    +22.4 | BE off / salvage off              +38.3    +22.4 | BE 1.5R / salvage 0.9R            +34.2    +18.1
+M5-S3              n 899/897                         +55.3    +52.8 | BE 1.5R / salvage off             +55.6    +52.4 | BE 1.5R / salvage 0.9R            +43.2    +35.7
+M5-S4              n 770/709                         +56.8    +16.4 | BE off / salvage off              +56.8    +16.4 | BE off / salvage 0.9R             +51.4    +27.2
+M5-you-off-TP1     n 5990/5546                      -902.0   -415.2 | BE 0.2R / salvage off            -781.6   -317.2 | BE 0.3R / salvage 0.9R           -858.3   -392.1
+M5-you-off-TP2     n 5414/5087                      -732.6   -334.2 | BE 0.2R / salvage off            -680.6   -240.6 | BE off / salvage 0.9R            -784.2   -351.5
+M5-you-off-TP3     n 4757/4528                      -676.9   -210.0 | BE off / salvage off             -676.9   -210.0 | BE off / salvage 0.9R            -708.4   -226.7
+M5-you-off-TP4     n 4289/4087                      -659.0   -145.7 | BE 1.5R / salvage off            -641.0   -174.1 | BE off / salvage 0.9R            -667.3   -183.2
+M5-you-on-TP1      n 1976/1756                      -246.4   -100.7 | BE 0.2R / salvage off            -216.8    -83.1 | BE 0.3R / salvage 0.9R           -225.7   -110.1
+M5-you-on-TP2      n 1861/1648                      -228.4    -24.6 | BE 0.2R / salvage off            -160.0    -33.6 | BE 0.3R / salvage 0.9R           -171.2    -55.0
+M5-you-on-TP3      n 1719/1527                      -246.4    +26.2 | BE 0.2R / salvage off            -168.9    -16.2 | BE 0.3R / salvage 0.9R           -174.6    -28.5
+M5-you-on-TP4      n 1638/1443                      -200.4    +31.8 | BE 0.2R / salvage off            -163.1    -14.4 | BE off / salvage 0.9R            -189.1    +24.0
+M15-S1             n 687/701                         +92.0    +87.7 | BE off / salvage off              +92.0    +87.7 | BE 1.5R / salvage 0.9R            +67.1    +82.0
+M15-S3             n 562/567                         +74.2    +69.0 | BE 1R / salvage 0.9R              +74.6    +40.8 | BE 1.25R / salvage 0.9R           +48.6    +46.1
+M15-S6             n 883/893                         +39.1    +66.5 | BE off / salvage off              +39.1    +66.5 | BE 1.25R / salvage 0.9R           +11.7    +63.5
+M15-S7             n 677/700                         +97.1    +97.7 | BE off / salvage off              +97.1    +97.7 | BE 1.5R / salvage 0.9R            +73.2    +93.8
+M15-S8             n 609/570                         +51.3    +44.1 | BE 1.5R / salvage off             +83.2    +91.0 | BE 1.5R / salvage 0.9R            +53.5    +88.2
+M15-S9             n 365/347                         +28.1     +9.5 | BE off / salvage off              +28.1     +9.5 | BE 1.5R / salvage 0.9R            +26.7    +11.0
+H1-S1              n 95/91                           +33.9    +27.6 | BE 1.5R / salvage off             +35.7    +30.6 | BE 1.5R / salvage 0.9R            +33.6    +11.9
+H1-S3              n 111/117                         +14.7    +37.3 | BE off / salvage off              +14.7    +37.3 | BE 1.5R / salvage off             +12.8    +31.3
+H1-S6              n 278/262                         +41.9    +22.1 | BE 1.5R / salvage off             +42.6    +43.4 | BE 1.25R / salvage 0.9R           +32.2    +31.3
+H1-S7              n 30/40                            -9.5    +19.5 | BE 0.8R / salvage 0.4R             -2.0     +0.5 | BE 0.6R / salvage 0.5R             -3.9     +1.5
+H1-S8              n 56/69                            +2.2     +7.9 | BE off / salvage 0.6R              +6.8     +1.9 | BE 1.25R / salvage 0.5R            +4.8     -6.9
+
+M1 catalogue (4 strategies, median stop 0.23% of price): best pair on 2021-23 BE off / salvage off: gain +0.0R, 2024-26 +0.0R, better in both halves 0/4
+      next: BE off / salvage 0.8R          -94.9R | -65.2R | both 0
+      next: BE 1.25R / salvage off         -116.0R | -37.6R | both 0
+      next: BE 0.8R / salvage off          -188.3R | -185.8R | both 0
+      next: BE 1.25R / salvage 0.8R        -228.6R | -128.0R | both 0
+M5 catalogue (4 strategies, median stop 0.27% of price): best pair on 2021-23 BE off / salvage off: gain +0.0R, 2024-26 +0.0R, better in both halves 0/4
+      next: BE 1.5R / salvage off          -19.7R | +21.8R | both 1
+      next: BE off / salvage 0.9R          -23.5R | -25.0R | both 0
+      next: BE 1.25R / salvage off         -31.0R | +26.9R | both 0
+      next: BE off / salvage 0.8R          -43.0R | -29.4R | both 0
+M5 your settings (8 strategies, median stop 0.12% of price): best pair on 2021-23 BE 0.2R / salvage off: gain +363.8R, 2024-26 +151.5R, better in both halves 4/8
+      next: BE 0.2R / salvage 0.9R         +321.6R | +146.7R | both 3
+      next: BE 0.2R / salvage 0.8R         +278.0R | +128.9R | both 3
+      next: BE 0.2R / salvage 0.7R         +224.1R | +86.7R | both 3
+      next: BE 0.2R / salvage 0.6R         +91.0R | +60.5R | both 3
+M15 catalogue (6 strategies, median stop 0.52% of price): best pair on 2021-23 BE 1.5R / salvage off: gain +32.0R, 2024-26 +46.9R, better in both halves 1/6
+      next: BE off / salvage off           +0.0R | +0.0R | both 0
+      next: BE 1.25R / salvage off         -48.4R | -64.6R | both 1
+      next: BE 1R / salvage off            -51.9R | -53.2R | both 1
+      next: BE 1.5R / salvage 0.9R         -97.1R | +15.3R | both 1
+H1 catalogue (5 strategies, median stop 0.57% of price): best pair on 2021-23 BE off / salvage off: gain +0.0R, 2024-26 +0.0R, better in both halves 0/5
+      next: BE 1.5R / salvage off          -5.2R | +2.5R | both 2
+      next: BE 1.5R / salvage 0.9R         -12.2R | -45.1R | both 0
+      next: BE off / salvage 0.8R          -14.1R | -47.1R | both 0
+      next: BE 1R / salvage off            -16.3R | -58.2R | both 1
