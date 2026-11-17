@@ -1131,6 +1131,17 @@ Other gold findings:
         not the EA.
       - Money suites on v4.9: month 1,344 runs / 1.63 M trades, rec 7,728 runs / 11.4 M, crkpr 20,544 runs / 31.3 M signals, tp1 22,484 runs / 34 M trades: 0 mismatches.
 
+42. **Confirmation entry after a loss (asked 2026-11-17).** The user's idea: instead of the limit fill, wait for a candle that closes beyond the
+   entry in the trade direction with "aggressive delta", enter at its close, stop at the entry, target extended (k x the new stop). Study
+   `conf/confirm.py` (overlay on the engine's filled setups, bese/ref_gbe engine, gold FxPro 2021-2026, costs 0.23/oz): wait K 1/3/6 candles,
+   delta off / close in the outer 40% / + tick volume above its 20-candle mean, stop at the entry / the candle's low, target TP1 / 1 / 1.5 / 2 x,
+   minimum stop 0 / 0.15 / 0.3 x the original risk; mode A = every setup this way, mode B = normal trades, after a loss confirmation trades until
+   one wins. Result (`conf/ana.txt`): the literal rule (stop at the entry) loses on all 11 bases; the win rate FALLS (30-50%) because the stop is
+   tight (median $1-3 on M5) and the 0.23 cost is a large share of it. Every good catalogue strategy makes far more as it is (M15-S7 normal
+   +97/+98R vs the best confirmation +15/+15R); mode B is also worse than normal on every profitable base. The user's own M5 settings are
+   negative as they are (-246/-101R) and stay negative in every variant. Conclusion: no, it does not give "a win or a very small loss".
+   Two trades hand-checked bar by bar.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
