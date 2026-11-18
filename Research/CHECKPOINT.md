@@ -1151,6 +1151,12 @@ Other gold findings:
    9.4 vs J 8.6). $ and % sizing are the same thing ($25 = 50%: identical rows, a check). The user's M5 settings lose with every rule (K slows it:
    -$3.5k vs ruin). The user's ladder target $50 hurts on M5-S3 / M15-S8 (net -40% to -57%, twice the losing months).
 
+44. **Variable recovery split (asked 2026-11-18, discussion only).** Crooks C over N wins with N = few parts above the month's starting balance and
+   more parts below it. `conf/split.py` (parity with recovery.py Crooks C cN = N, 24 runs), `conf/split.txt`. Result: more parts below the start
+   lower the biggest recovery trade (M15-S1 $401 -> $149) and the worst month a little, but the net falls towards fixed $50; profit / drawdown
+   ends between Off and Crooks J, never clearly better than J. The user's M5 settings are ruined with every split. Smaller final targets (0.3 /
+   0.1R) raise the win rate but lose more (M5 settings -347R -> -509R -> -750R; needed win rate 68% -> 84% -> 99%) and make recovery trades huge.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |

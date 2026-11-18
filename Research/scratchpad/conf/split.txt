@@ -1,0 +1,79 @@
+PARITY with recovery.py Crooks C over N wins: ALL OK
+
+=== M5-your settings (TP1) (final target 0.6R)
+rule                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                      -10000    -9999       -1   10000    -905  58/70      50  -1.0
+Crooks J                             -10000   -10000       -0   10033   -1444  52/70     417  -1.0
+C split: 1 above start / 1 below     -10000   -10000       -0   10425   -5957  55/70    2490  -1.0
+C split: 1 above start / 2 below     -10000   -10000       -0   10373   -6164  57/70    2425  -1.0
+C split: 1 above start / 3 below     -10000   -10000       -0   10000   -4395  60/70    1763  -1.0
+C split: 1 above start / 4 below     -10000   -10000       -0   10000   -3569  59/70    1348  -1.0
+C split: 1 above start / 5 below     -10000   -10000       -0   10000   -2570  59/70     965  -1.0
+C split: 2 above start / 3 below     -10000   -10000       -0   10000   -4395  60/70    1763  -1.0
+C split: 2 above start / 4 below     -10000   -10000       -0   10000   -3902  60/70    1348  -1.0
+C split: 3 above start / 3 below     -10000   -10000       -0   10000   -4395  59/70    1763  -1.0
+
+=== M5-S1 (final target 2.5R)
+rule                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                        5582     3347     2234    1917    -850  28/70      50   2.9
+Crooks J                               5521     3066     2455    2094    -850  24/70     100   2.6
+C split: 1 above start / 1 below       6117     2680     3437    2660   -1222  22/70     320   2.3
+C split: 1 above start / 2 below       5943     2924     3019    2006    -850  26/70     168   3.0
+C split: 1 above start / 3 below       6076     3260     2815    1930    -850  27/70     168   3.1
+C split: 1 above start / 4 below       6022     3299     2723    1917    -850  27/70     168   3.1
+C split: 1 above start / 5 below       6033     3304     2729    1917    -850  27/70     168   3.1
+C split: 2 above start / 3 below       5576     3271     2304    1930    -850  28/70      76   2.9
+C split: 2 above start / 4 below       5551     3310     2240    1917    -850  28/70      76   2.9
+C split: 3 above start / 3 below       5595     3303     2292    1930    -850  28/70      75   2.9
+
+=== M5-S3 (final target 2.0R)
+rule                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                        5638     2854     2785    1799    -711  31/70      50   3.1
+Crooks J                               6706     3172     3534    1972    -830  25/70     125   3.4
+C split: 1 above start / 1 below       8953     4423     4530    2123    -984  20/70     531   4.2
+C split: 1 above start / 2 below       6666     3079     3588    2033    -781  28/70     193   3.3
+C split: 1 above start / 3 below       6067     2739     3328    1856    -729  31/70     151   3.3
+C split: 1 above start / 4 below       5925     2690     3236    1803    -712  32/70     151   3.3
+C split: 1 above start / 5 below       5805     2692     3113    1799    -711  32/70     152   3.2
+C split: 2 above start / 3 below       5874     2796     3078    1856    -729  31/70     120   3.2
+C split: 2 above start / 4 below       5812     2820     2992    1803    -712  31/70      86   3.2
+C split: 3 above start / 3 below       5828     2806     3022    1856    -729  31/70     120   3.1
+
+=== M15-S1 (final target 2.0R)
+rule                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                        8988     4602     4386    1094    -877  21/70      50   8.2
+Crooks J                               9693     4799     4894    1127    -906  17/70     119   8.6
+C split: 1 above start / 1 below      10118     4622     5496    1466   -1228  14/70     401   6.9
+C split: 1 above start / 2 below       9425     4715     4710    1245   -1028  18/70     201   7.6
+C split: 1 above start / 3 below       9008     4542     4466    1178    -961  22/70     149   7.6
+C split: 1 above start / 4 below       9026     4572     4454    1145    -927  22/70     153   7.9
+C split: 1 above start / 5 below       9046     4592     4454    1124    -907  22/70     153   8.0
+C split: 2 above start / 3 below       9027     4625     4402    1178    -961  20/70     134   7.7
+C split: 2 above start / 4 below       9056     4655     4401    1145    -927  20/70     116   7.9
+C split: 3 above start / 3 below       8885     4521     4364    1178    -961  21/70     134   7.5
+
+=== M15-S7 (final target 2.0R)
+rule                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                        9737     4854     4883    1094    -877  17/70      50   8.9
+Crooks J                              10414     5156     5258    1127    -906  14/70     120   9.2
+C split: 1 above start / 1 below      10766     5068     5698    1466   -1228  12/70     401   7.3
+C split: 1 above start / 2 below      10214     5037     5177    1245   -1028  14/70     201   8.2
+C split: 1 above start / 3 below       9771     4846     4925    1178    -961  17/70     149   8.3
+C split: 1 above start / 4 below       9787     4876     4911    1145    -927  17/70     153   8.6
+C split: 1 above start / 5 below       9807     4896     4911    1124    -907  17/70     153   8.7
+C split: 2 above start / 3 below       9730     4878     4852    1178    -961  16/70     134   8.3
+C split: 2 above start / 4 below       9759     4908     4851    1145    -927  16/70     116   8.5
+C split: 3 above start / 3 below       9638     4773     4864    1178    -961  17/70     134   8.2
+
+=== M15-S8 (final target 2.0R)
+rule                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                        4768     2564     2205    1546   -1072  25/68      50   3.1
+Crooks J                               5036     2452     2585    1717   -1095  24/68     125   2.9
+C split: 1 above start / 1 below       5172     2105     3067    2226   -1433  22/68     411   2.3
+C split: 1 above start / 2 below       4692     2401     2291    1731   -1227  25/68     205   2.7
+C split: 1 above start / 3 below       4790     2555     2235    1633   -1159  25/68     137   2.9
+C split: 1 above start / 4 below       4875     2612     2263    1599   -1125  25/68     129   3.0
+C split: 1 above start / 5 below       4924     2647     2277    1578   -1104  25/68     129   3.1
+C split: 2 above start / 3 below       4749     2480     2268    1633   -1159  25/68     137   2.9
+C split: 2 above start / 4 below       4785     2537     2248    1599   -1125  25/68     103   3.0
+C split: 3 above start / 3 below       4645     2434     2211    1633   -1159  25/68     137   2.8
