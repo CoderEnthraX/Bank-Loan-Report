@@ -1,0 +1,216 @@
+
+=== M5-your settings (TP1)
+rule                                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                                      -10000    -9999       -1   10000    -905  58/70      50  -1.0
+Crooks C                                             -10000   -10000       -0   10425   -5957  55/70    2490  -1.0
+Crooks E                                             -10000   -10000       -0   10350   -6102  54/70    1997  -1.0
+Crooks J                                             -10000   -10000       -0   10033   -1444  52/70     417  -1.0
+Crooks J + ladder Max $50 (yours)                    -10000    -9999       -1   10273   -1483  59/70     417  -1.0
+Crooks J + ladder Max $1000                          -10000   -10000       -0   10033   -1444  52/70     417  -1.0
+Crooks K, careful $15                                 -5329    -4264    -1065    5719    -347  62/70     374  -0.9
+Crooks K, careful $15, ladder Max $50                 -5395    -4280    -1115    5919    -256  65/70     481  -0.9
+Crooks K, careful $15, ladder Max $1000               -5329    -4264    -1065    5719    -347  62/70     374  -0.9
+Crooks K, careful $25                                 -7682    -5973    -1709    8211    -349  62/70     374  -0.9
+Crooks K, careful $25, ladder Max $50                 -9091    -5992    -3099    9091    -349  67/70     455  -1.0
+Crooks K, careful $25, ladder Max $1000               -7682    -5973    -1709    8211    -349  62/70     374  -0.9
+Crooks K, careful $35                                -10000    -7172    -2828   10000    -474  62/70     374  -1.0
+Crooks K, careful $35, ladder Max $50                -10000    -7927    -2073   10000    -623  62/70     401  -1.0
+Crooks K, careful $35, ladder Max $1000              -10000    -7172    -2828   10000    -474  62/70     374  -1.0
+Crooks K, careful 25% of base                         -5093    -3856    -1237    5480    -349  63/70     374  -0.9
+Crooks K, careful 25% of base, ladder Max $50         -5722    -3564    -2157    5997    -244  67/70     481  -1.0
+Crooks K, careful 25% of base, ladder Max $1000       -5093    -3856    -1237    5480    -349  63/70     374  -0.9
+Crooks K, careful 50% of base                         -7682    -5973    -1709    8211    -349  62/70     374  -0.9
+Crooks K, careful 50% of base, ladder Max $50         -9091    -5992    -3099    9091    -349  67/70     455  -1.0
+Crooks K, careful 50% of base, ladder Max $1000       -7682    -5973    -1709    8211    -349  62/70     374  -0.9
+Crooks K, careful 75% of base                        -10000    -7508    -2492   10000    -502  60/70     364  -1.0
+Crooks K, careful 75% of base, ladder Max $50        -10000    -8203    -1797   10000    -638  61/70     401  -1.0
+Crooks K, careful 75% of base, ladder Max $1000      -10000    -7508    -2492   10000    -502  60/70     364  -1.0
+Crooks K, careful 0.02 lot                            -3535    -2743     -792    4246    -352  65/70     374  -0.8
+Crooks K, careful 0.02 lot, ladder Max $50            -3290    -2327     -963    4180    -202  66/70     481  -0.8
+Crooks K, careful 0.02 lot, ladder Max $1000          -3535    -2743     -792    4246    -352  65/70     374  -0.8
+Crooks K, careful 0.03 lot                            -3810    -2864     -947    4602    -350  62/70     374  -0.8
+Crooks K, careful 0.03 lot, ladder Max $50            -2413    -2837      424    4233    -251  65/70     481  -0.6
+Crooks K, careful 0.03 lot, ladder Max $1000          -3810    -2864     -947    4602    -350  62/70     374  -0.8
+Crooks K, careful 0.05 lot                            -5151    -3540    -1611    6139    -353  61/70     374  -0.8
+Crooks K, careful 0.05 lot, ladder Max $50            -5304    -3603    -1701    6093    -353  65/70     493  -0.9
+Crooks K, careful 0.05 lot, ladder Max $1000          -5151    -3540    -1611    6139    -353  61/70     374  -0.8
+
+=== M5-S1
+rule                                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                                        5582     3347     2234    1917    -850  28/70      50   2.9
+Crooks C                                               6117     2680     3437    2660   -1222  22/70     320   2.3
+Crooks E                                               3916      737     3179    1069    -469  31/70     221   3.7
+Crooks J                                               5521     3066     2455    2094    -850  24/70     100   2.6
+Crooks J + ladder Max $50 (yours)                      4696     2584     2111    2472    -850  43/70     290   1.9
+Crooks J + ladder Max $1000                            5521     3066     2455    2094    -850  24/70     100   2.6
+Crooks K, careful $15                                  1340     -428     1768    1357    -393  55/70      95   1.0
+Crooks K, careful $15, ladder Max $50                  1395     -615     2010    1695    -393  56/70     244   0.8
+Crooks K, careful $15, ladder Max $1000                1340     -428     1768    1357    -393  55/70      95   1.0
+Crooks K, careful $25                                  1866     -169     2035    1088    -408  45/70      95   1.7
+Crooks K, careful $25, ladder Max $50                  1566     -432     1997    1669    -408  51/70     244   0.9
+Crooks K, careful $25, ladder Max $1000                1866     -169     2035    1088    -408  45/70      95   1.7
+Crooks K, careful $35                                  1767     -376     2144    1119    -424  42/70      95   1.6
+Crooks K, careful $35, ladder Max $50                  1757     -253     2009    1688    -424  47/70     244   1.0
+Crooks K, careful $35, ladder Max $1000                1767     -376     2144    1119    -424  42/70      95   1.6
+Crooks K, careful 25% of base                          2127       85     2042    1319    -389  54/70      95   1.6
+Crooks K, careful 25% of base, ladder Max $50          2041     -449     2490    1691    -389  56/70     244   1.2
+Crooks K, careful 25% of base, ladder Max $1000        2127       85     2042    1319    -389  54/70      95   1.6
+Crooks K, careful 50% of base                          1866     -169     2035    1088    -408  45/70      95   1.7
+Crooks K, careful 50% of base, ladder Max $50          1566     -432     1997    1669    -408  51/70     244   0.9
+Crooks K, careful 50% of base, ladder Max $1000        1866     -169     2035    1088    -408  45/70      95   1.7
+Crooks K, careful 75% of base                          1781     -399     2180    1162    -428  41/70      95   1.5
+Crooks K, careful 75% of base, ladder Max $50          1907     -194     2101    1732    -428  46/70     244   1.1
+Crooks K, careful 75% of base, ladder Max $1000        1781     -399     2180    1162    -428  41/70      95   1.5
+Crooks K, careful 0.02 lot                             1794       79     1715    1051    -472  51/70      95   1.7
+Crooks K, careful 0.02 lot, ladder Max $50             2367      407     1960    1549    -472  53/70     244   1.5
+Crooks K, careful 0.02 lot, ladder Max $1000           1794       79     1715    1051    -472  51/70      95   1.7
+Crooks K, careful 0.03 lot                             1563     -483     2047    1198    -524  48/70      95   1.3
+Crooks K, careful 0.03 lot, ladder Max $50             1215     -728     1943    1780    -524  51/70     244   0.7
+Crooks K, careful 0.03 lot, ladder Max $1000           1563     -483     2047    1198    -524  48/70      95   1.3
+Crooks K, careful 0.05 lot                             2310     -210     2520    1190    -627  46/70     126   1.9
+Crooks K, careful 0.05 lot, ladder Max $50             1968     -308     2276    1663    -627  47/70     244   1.2
+Crooks K, careful 0.05 lot, ladder Max $1000           2310     -210     2520    1190    -627  46/70     126   1.9
+
+=== M5-S3
+rule                                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                                        5638     2854     2785    1799    -711  31/70      50   3.1
+Crooks C                                               8953     4423     4530    2123    -984  20/70     531   4.2
+Crooks E                                               5378     3449     1929    1823    -890  29/70     898   2.9
+Crooks J                                               6706     3172     3534    1972    -830  25/70     125   3.4
+Crooks J + ladder Max $50 (yours)                      3905     3009      896    2545    -830  54/70     600   1.5
+Crooks J + ladder Max $1000                            6511     3172     3339    1972    -830  25/70     245   3.3
+Crooks K, careful $15                                  2295     1737      558    1157    -277  52/70     110   2.0
+Crooks K, careful $15, ladder Max $50                  4312     2444     1869    1630    -277  57/70     600   2.6
+Crooks K, careful $15, ladder Max $1000                2100     1737      363    1157    -277  52/70     245   1.8
+Crooks K, careful $25                                  2577     1794      784    1019    -249  48/70     112   2.5
+Crooks K, careful $25, ladder Max $50                  4918     2708     2210    1464    -249  51/70     600   3.4
+Crooks K, careful $25, ladder Max $1000                2383     1794      589    1019    -249  48/70     245   2.3
+Crooks K, careful $35                                  2365     1754      611    1056    -279  45/70     101   2.2
+Crooks K, careful $35, ladder Max $50                  4807     2775     2032    1536    -279  48/70     600   3.1
+Crooks K, careful $35, ladder Max $1000                2171     1754      416    1056    -279  45/70     245   2.1
+Crooks K, careful 25% of base                          2166     1540      626    1074    -292  52/70     109   2.0
+Crooks K, careful 25% of base, ladder Max $50          4129     2227     1902    1513    -292  57/70     600   2.7
+Crooks K, careful 25% of base, ladder Max $1000        1971     1540      431    1074    -292  52/70     245   1.8
+Crooks K, careful 50% of base                          2577     1794      784    1019    -249  48/70     112   2.5
+Crooks K, careful 50% of base, ladder Max $50          4918     2708     2210    1464    -249  51/70     600   3.4
+Crooks K, careful 50% of base, ladder Max $1000        2383     1794      589    1019    -249  48/70     245   2.3
+Crooks K, careful 75% of base                          2686     1822      864     900    -286  44/70     100   3.0
+Crooks K, careful 75% of base, ladder Max $50          4666     2679     1987    1598    -286  49/70     600   2.9
+Crooks K, careful 75% of base, ladder Max $1000        2491     1822      670     900    -286  44/70     245   2.8
+Crooks K, careful 0.02 lot                             1982     1523      459    1115    -242  51/70     107   1.8
+Crooks K, careful 0.02 lot, ladder Max $50             3918     2146     1772    1488    -242  57/70     600   2.6
+Crooks K, careful 0.02 lot, ladder Max $1000           1787     1523      264    1115    -242  51/70     245   1.6
+Crooks K, careful 0.03 lot                             2384     1615      769     947    -276  45/70     107   2.5
+Crooks K, careful 0.03 lot, ladder Max $50             4200     2251     1948    1555    -276  51/70     600   2.7
+Crooks K, careful 0.03 lot, ladder Max $1000           2189     1615      574     947    -276  45/70     245   2.3
+Crooks K, careful 0.05 lot                             2360     1958      402    1148    -344  44/70     148   2.1
+Crooks K, careful 0.05 lot, ladder Max $50             4142     2451     1691    1600    -359  49/70     600   2.6
+Crooks K, careful 0.05 lot, ladder Max $1000           2165     1958      207    1148    -344  44/70     245   1.9
+
+=== M15-S1
+rule                                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                                        8988     4602     4386    1094    -877  21/70      50   8.2
+Crooks C                                              10118     4622     5496    1466   -1228  14/70     401   6.9
+Crooks E                                               7442     2736     4706     969    -667  19/70     216   7.7
+Crooks J                                               9693     4799     4894    1127    -906  17/70     119   8.6
+Crooks J + ladder Max $50 (yours)                      9870     5420     4449    1106    -563  27/70     388   8.9
+Crooks J + ladder Max $1000                            9693     4799     4894    1127    -906  17/70     119   8.6
+Crooks K, careful $15                                  5356     3083     2273     744    -218  39/70     111   7.2
+Crooks K, careful $15, ladder Max $50                  5552     3427     2125    1271    -218  45/70     388   4.4
+Crooks K, careful $15, ladder Max $1000                5356     3083     2273     744    -218  39/70     111   7.2
+Crooks K, careful $25                                  5798     3247     2551     775    -229  32/70     110   7.5
+Crooks K, careful $25, ladder Max $50                  6089     3390     2699    1148    -229  35/70     388   5.3
+Crooks K, careful $25, ladder Max $1000                5798     3247     2551     775    -229  32/70     110   7.5
+Crooks K, careful $35                                  6262     3179     3083     772    -272  31/70     108   8.1
+Crooks K, careful $35, ladder Max $50                  7010     3769     3241    1187    -272  34/70     388   5.9
+Crooks K, careful $35, ladder Max $1000                6262     3179     3083     772    -272  31/70     108   8.1
+Crooks K, careful 25% of base                          5104     3141     1963     715    -215  39/70     112   7.1
+Crooks K, careful 25% of base, ladder Max $50          5338     3386     1952    1246    -215  44/70     388   4.3
+Crooks K, careful 25% of base, ladder Max $1000        5104     3141     1963     715    -215  39/70     112   7.1
+Crooks K, careful 50% of base                          5798     3247     2551     775    -229  32/70     110   7.5
+Crooks K, careful 50% of base, ladder Max $50          6089     3390     2699    1148    -229  35/70     388   5.3
+Crooks K, careful 50% of base, ladder Max $1000        5798     3247     2551     775    -229  32/70     110   7.5
+Crooks K, careful 75% of base                          6435     3302     3133     762    -285  29/70     107   8.4
+Crooks K, careful 75% of base, ladder Max $50          7118     3858     3260    1172    -285  34/70     388   6.1
+Crooks K, careful 75% of base, ladder Max $1000        6435     3302     3133     762    -285  29/70     107   8.4
+Crooks K, careful 0.02 lot                             6968     3378     3590     739    -341  34/70     227   9.4
+Crooks K, careful 0.02 lot, ladder Max $50             7302     3530     3773    1149    -359  37/70     388   6.4
+Crooks K, careful 0.02 lot, ladder Max $1000           6968     3378     3590     739    -341  34/70     227   9.4
+Crooks K, careful 0.03 lot                             7443     3713     3730     822    -424  29/70     340   9.1
+Crooks K, careful 0.03 lot, ladder Max $50             8349     3904     4445    1217    -407  33/70     388   6.9
+Crooks K, careful 0.03 lot, ladder Max $1000           7443     3713     3730     822    -424  29/70     340   9.1
+Crooks K, careful 0.05 lot                             8374     3735     4639     947    -555  27/70     566   8.8
+Crooks K, careful 0.05 lot, ladder Max $50             9898     4245     5653    1357    -647  29/70     566   7.3
+Crooks K, careful 0.05 lot, ladder Max $1000           8228     3735     4493     947    -555  27/70     566   8.7
+
+=== M15-S7
+rule                                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                                        9737     4854     4883    1094    -877  17/70      50   8.9
+Crooks C                                              10766     5068     5698    1466   -1228  12/70     401   7.3
+Crooks E                                               7527     2754     4773    1101    -594  17/70     192   6.8
+Crooks J                                              10414     5156     5258    1127    -906  14/70     120   9.2
+Crooks J + ladder Max $50 (yours)                     10539     5623     4916    1128    -319  22/70     387   9.3
+Crooks J + ladder Max $1000                           10414     5156     5258    1127    -906  14/70     120   9.2
+Crooks K, careful $15                                  5476     3072     2404     651    -223  39/70     111   8.4
+Crooks K, careful $15, ladder Max $50                  6113     3257     2856    1122    -218  43/70     387   5.5
+Crooks K, careful $15, ladder Max $1000                5476     3072     2404     651    -223  39/70     111   8.4
+Crooks K, careful $25                                  5639     3146     2493     716    -247  34/70     113   7.9
+Crooks K, careful $25, ladder Max $50                  6302     3159     3143    1186    -229  36/70     387   5.3
+Crooks K, careful $25, ladder Max $1000                5639     3146     2493     716    -247  34/70     113   7.9
+Crooks K, careful $35                                  6248     3029     3220     792    -241  31/70     111   7.9
+Crooks K, careful $35, ladder Max $50                  7129     3506     3623    1279    -252  33/70     387   5.6
+Crooks K, careful $35, ladder Max $1000                6248     3029     3220     792    -241  31/70     111   7.9
+Crooks K, careful 25% of base                          5583     3102     2481     638    -217  39/70     112   8.8
+Crooks K, careful 25% of base, ladder Max $50          5999     3224     2775    1124    -216  44/70     387   5.3
+Crooks K, careful 25% of base, ladder Max $1000        5583     3102     2481     638    -217  39/70     112   8.8
+Crooks K, careful 50% of base                          5639     3146     2493     716    -247  34/70     113   7.9
+Crooks K, careful 50% of base, ladder Max $50          6302     3159     3143    1186    -229  36/70     387   5.3
+Crooks K, careful 50% of base, ladder Max $1000        5639     3146     2493     716    -247  34/70     113   7.9
+Crooks K, careful 75% of base                          6411     3114     3296     790    -253  29/70     111   8.1
+Crooks K, careful 75% of base, ladder Max $50          7003     3523     3480    1285    -261  33/70     387   5.5
+Crooks K, careful 75% of base, ladder Max $1000        6411     3114     3296     790    -253  29/70     111   8.1
+Crooks K, careful 0.02 lot                             7060     3358     3702     742    -345  34/70     227   9.5
+Crooks K, careful 0.02 lot, ladder Max $50             7388     3391     3998    1113    -305  36/70     387   6.6
+Crooks K, careful 0.02 lot, ladder Max $1000           7060     3358     3702     742    -345  34/70     227   9.5
+Crooks K, careful 0.03 lot                             7502     3649     3853     802    -404  29/70     340   9.4
+Crooks K, careful 0.03 lot, ladder Max $50             7933     3752     4180    1106    -425  32/70     387   7.2
+Crooks K, careful 0.03 lot, ladder Max $1000           7502     3649     3853     802    -404  29/70     340   9.4
+Crooks K, careful 0.05 lot                             8515     3739     4776    1042    -644  24/70     566   8.2
+Crooks K, careful 0.05 lot, ladder Max $50             9143     4028     5115    1196    -665  27/70     566   7.6
+Crooks K, careful 0.05 lot, ladder Max $1000           8369     3739     4631    1042    -644  24/70     566   8.0
+
+=== M15-S8
+rule                                                    net  2021-23  2024-26   maxDD  worstM  lossM maxRisk  n/DD
+Off (fixed $50)                                        4768     2564     2205    1546   -1072  25/68      50   3.1
+Crooks C                                               5172     2105     3067    2226   -1433  22/68     411   2.3
+Crooks E                                               3528      666     2862    1251    -561  32/68     200   2.8
+Crooks J                                               5036     2452     2585    1717   -1095  24/68     125   2.9
+Crooks J + ladder Max $50 (yours)                      2173     1631      542    1857   -1095  35/68     356   1.2
+Crooks J + ladder Max $1000                            5036     2452     2585    1717   -1095  24/68     125   2.9
+Crooks K, careful $15                                  2358      887     1472     768    -276  41/68      99   3.1
+Crooks K, careful $15, ladder Max $50                   724      577      148    1246    -276  42/68     186   0.6
+Crooks K, careful $15, ladder Max $1000                2358      887     1472     768    -276  41/68      99   3.1
+Crooks K, careful $25                                  2674     1091     1583     875    -306  38/68      95   3.1
+Crooks K, careful $25, ladder Max $50                  1528      902      626    1389    -306  42/68     246   1.1
+Crooks K, careful $25, ladder Max $1000                2674     1091     1583     875    -306  38/68      95   3.1
+Crooks K, careful $35                                  2757     1050     1707     938    -336  35/68      95   2.9
+Crooks K, careful $35, ladder Max $50                  1491      836      655    1461    -336  42/68     257   1.0
+Crooks K, careful $35, ladder Max $1000                2757     1050     1707     938    -336  35/68      95   2.9
+Crooks K, careful 25% of base                          2114      699     1415     765    -268  42/68     100   2.8
+Crooks K, careful 25% of base, ladder Max $50           443      255      187    1245    -268  42/68     184   0.4
+Crooks K, careful 25% of base, ladder Max $1000        2114      699     1415     765    -268  42/68     100   2.8
+Crooks K, careful 50% of base                          2674     1091     1583     875    -306  38/68      95   3.1
+Crooks K, careful 50% of base, ladder Max $50          1528      902      626    1389    -306  42/68     246   1.1
+Crooks K, careful 50% of base, ladder Max $1000        2674     1091     1583     875    -306  38/68      95   3.1
+Crooks K, careful 75% of base                          3001     1274     1727     930    -343  32/68      95   3.2
+Crooks K, careful 75% of base, ladder Max $50          1430      832      598    1486    -343  40/68     260   1.0
+Crooks K, careful 75% of base, ladder Max $1000        3001     1274     1727     930    -343  32/68      95   3.2
+Crooks K, careful 0.02 lot                             3158     1058     2100     736    -344  33/68     156   4.3
+Crooks K, careful 0.02 lot, ladder Max $50             1552      481     1071    1256    -344  40/68     218   1.2
+Crooks K, careful 0.02 lot, ladder Max $1000           3158     1058     2100     736    -344  33/68     156   4.3
+Crooks K, careful 0.03 lot                             3558     1540     2018     913    -489  31/68     234   3.9
+Crooks K, careful 0.03 lot, ladder Max $50             2332     1272     1060    1191    -489  38/68     243   2.0
+Crooks K, careful 0.03 lot, ladder Max $1000           3558     1540     2018     913    -489  31/68     234   3.9
+Crooks K, careful 0.05 lot                             4021     1771     2250    1584    -779  29/68     390   2.5
+Crooks K, careful 0.05 lot, ladder Max $50             2783     1351     1433    1861    -779  31/68     390   1.5
+Crooks K, careful 0.05 lot, ladder Max $1000           4021     1771     2250    1584    -779  29/68     390   2.5

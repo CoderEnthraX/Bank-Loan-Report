@@ -1142,6 +1142,15 @@ Other gold findings:
    negative as they are (-246/-101R) and stay negative in every variant. Conclusion: no, it does not give "a win or a very small loss".
    Two trades hand-checked bar by bar.
 
+43. **Crooks K money rule (asked 2026-11-18, not built yet).** Crooks J (+ ladder) while the month is at or above its starting balance; below it:
+   0.01 lot after a loss, a CAREFUL size after a win (fixed $15/25/35, 25/50/75% of base, or 0.02/0.03/0.05 lot), repeated while it wins; the
+   ladder's 0.01-lot guard is replaced. `conf/krule.py` (own simulator, parity with gold/recovery.py on 36 runs with the restart off; the monthly
+   restart = the EA's MonthRestart: zero line, ladder peak, J drawdown AND the loss owed cleared), $10,000, $50 base, 1:100, 2021-2026, six trade
+   sets. Result `conf/kana.txt`: K about halves the max drawdown and the worst month (M15-S1 worst month -$877 J / -$218 K) but cuts the net by
+   25-60% and doubles the number of (small) losing months; profit / drawdown about equal to J, best with the lot sizing (0.02-0.03 lot: M15-S1
+   9.4 vs J 8.6). $ and % sizing are the same thing ($25 = 50%: identical rows, a check). The user's M5 settings lose with every rule (K slows it:
+   -$3.5k vs ruin). The user's ladder target $50 hurts on M5-S3 / M15-S8 (net -40% to -57%, twice the losing months).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
