@@ -1,0 +1,33 @@
+
+=== final TP 0.1R: 3543 trades (2021-01 .. 2026-10), win 78.2%, closed by news / 23:55 / weekend 2, skipped {'news': 423, 'busy': 1, 'cancel': 17}, total -519.2R (1R = one stop-out incl. costs)
+money rule ($1,000 start, $10 base)                end    maxDD   worstM    bestM maxRisk  lossM  ruined
+Off (fixed $10)                                     18      982     -152      -12      10  14/14  2022-02-22 (after 737 trades)
+Crooks C                                            18     1000     -677       15     275   4/5   2021-05-11 (after 228 trades)
+Crooks E                                            16     1003     -636       16     301   4/5   2021-05-11 (after 229 trades)
+Crooks J                                            17     1000     -327       14     208  12/13  2022-01-12 (after 668 trades)
+Crooks L (default)                                  16     1004     -644       17     295   4/5   2021-05-11 (after 229 trades)
+Crooks L, base grows 5%                             16     1003     -636       16     301   4/5   2021-05-11 (after 229 trades)
+Crooks L, base grows 20%                            16     1005     -650       18     288   4/5   2021-05-11 (after 229 trades)
+Crooks L, more parts (z1 $10/part, max 10)          17     1002     -650       16     205   4/5   2021-05-11 (after 229 trades)
+
+=== final TP 0.6R: 3311 trades (2021-01 .. 2026-10), win 59.3%, closed by news / 23:55 / weekend 21, skipped {'news': 407, 'busy': 1, 'cancel': 13}, total -254.5R (1R = one stop-out incl. costs)
+money rule ($1,000 start, $10 base)                end    maxDD   worstM    bestM maxRisk  lossM  ruined
+Off (fixed $10)                                     18      984     -117       54      10  19/26  2023-02-21 (after 1255 trades)
+Crooks C                                            18     1513     -820      487     273  10/26  2023-02-21 (after 1254 trades)
+Crooks E                                            19     1830    -1134      468     411   9/31  2023-07-13 (after 1487 trades)
+Crooks J                                            18     1010     -168       54      81  19/26  2023-02-16 (after 1248 trades)
+Crooks L (default)                                  17     1133     -468       34     163  10/15  2022-03-16 (after 727 trades)
+Crooks L, base grows 5%                             16     1104     -437       50     172  12/19  2022-07-07 (after 907 trades)
+Crooks L, base grows 20%                            18     1082     -359       50     177  14/18  2022-06-02 (after 862 trades)
+Crooks L, more parts (z1 $10/part, max 10)          15     1109     -313      161     131  13/19  2022-07-12 (after 910 trades)
+
+=== final TP 2.0R: 2725 trades (2021-01 .. 2026-10), win 30.6%, closed by news / 23:55 / weekend 165, skipped {'news': 333, 'busy': 15, 'cancel': 8}, total -153.1R (1R = one stop-out incl. costs)
+money rule ($1,000 start, $10 base)                end    maxDD   worstM    bestM maxRisk  lossM  ruined
+Off (fixed $10)                                     18      982     -142       87      10  20/26  2023-02-16 (after 1025 trades)
+Crooks C                                            17      983     -714       11     205   6/7   2021-07-14 (after 268 trades)
+Crooks E                                            19      982     -602       21     159   8/11  2021-11-11 (after 445 trades)
+Crooks J                                            16      984     -147       87      23  20/24  2022-12-06 (after 917 trades)
+Crooks L (default)                                 958      844     -196      331      86  42/70  -
+Crooks L, base grows 5%                            960      844     -196      331      86  42/70  -
+Crooks L, base grows 20%                           923      844     -196      331      86  42/70  -
+Crooks L, more parts (z1 $10/part, max 10)          25      976     -181      164      35  31/45  2024-09-12 (after 1772 trades)

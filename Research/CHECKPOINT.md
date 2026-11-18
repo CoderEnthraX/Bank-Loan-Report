@@ -1157,6 +1157,15 @@ Other gold findings:
    ends between Off and Crooks J, never clearly better than J. The user's M5 settings are ruined with every split. Smaller final targets (0.3 /
    0.1R) raise the win rate but lose more (M5 settings -347R -> -509R -> -750R; needed win rate 68% -> 84% -> 99%) and make recovery trades huge.
 
+45. **Crooks L test with the user's EA settings (asked 2026-11-18, not built; with Crooks K on hold).** Crooks L: 0.01 lot after a loss until a
+   win; the recovery split by zone: below the starting balance 1 part per 2 x base of drawdown from the START (max 6), between the start and the
+   best balance 1 part per 5 x base of drawdown from the PEAK (max 3), at a new best balance the base grows (+10% of the profit, max 4x).
+   `conf/crl.py`: EA-like execution over the engine's setups (news block 17:45 IST 30 min + 30 min before, New York time; close at news start /
+   23:55 / Saturday; earn-back target; whole 0.01 lots, minimum 0.01, 1:100), $1,000, $10 base, M5 user settings, Tue-Thu, 06-23 IST, KZ Asia /
+   London / NY. Result `conf/crl.txt`: TP 0.1R: 78% wins but -519R; EVERY rule wipes the account (C / E / L by May 2021, Off Feb 2022). TP 0.6R:
+   -254R, all wiped 2022-23. TP 2R: -153R; only Crooks L survives (ends $958, it mostly trades the 0.01 lot below the start). Trade sizes
+   hand-traced; a first run counted stop-outs 7% too small (fixed before reporting).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
