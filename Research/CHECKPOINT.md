@@ -1142,7 +1142,7 @@ Other gold findings:
    negative as they are (-246/-101R) and stay negative in every variant. Conclusion: no, it does not give "a win or a very small loss".
    Two trades hand-checked bar by bar.
 
-43. **Crooks K money rule (asked 2026-11-18, not built yet).** Crooks J (+ ladder) while the month is at or above its starting balance; below it:
+43. **Crooks K money rule (asked 2026-11-18). ON HOLD: the user will ask when to add it to the EA and the strategy; do not build it before.** Crooks J (+ ladder) while the month is at or above its starting balance; below it:
    0.01 lot after a loss, a CAREFUL size after a win (fixed $15/25/35, 25/50/75% of base, or 0.02/0.03/0.05 lot), repeated while it wins; the
    ladder's 0.01-lot guard is replaced. `conf/krule.py` (own simulator, parity with gold/recovery.py on 36 runs with the restart off; the monthly
    restart = the EA's MonthRestart: zero line, ladder peak, J drawdown AND the loss owed cleared), $10,000, $50 base, 1:100, 2021-2026, six trade
