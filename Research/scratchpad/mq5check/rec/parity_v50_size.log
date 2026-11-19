@@ -1,0 +1,15 @@
+size  M1 Most profit                 runs   624, trades   459547, mismatches 0
+size  M1 Default settings            runs   624, trades   362501, mismatches 0
+size  M1 Shortest losing streak      runs   624, trades   456386, mismatches 0
+size  M5 Default settings            runs   624, trades   393943, mismatches 0
+size  M5 Most profit                 runs   624, trades   451776, mismatches 0
+size  M5 Shortest losing streak      runs   624, trades   465795, mismatches 0
+size  M15 Most profit                runs   624, trades   449985, mismatches 0
+size  M15 Default settings           runs   624, trades   449351, mismatches 0
+size  M15 Shortest losing streak     runs   624, trades   460911, mismatches 0
+size  H1 Default settings            runs   624, trades   397775, mismatches 0
+size  H1 Most profit                 runs   624, trades   111246, mismatches 0
+size  H1 Shortest losing streak      runs   624, trades   120254, mismatches 0
+size  M5 user TP1 0.1R               runs   624, trades   276832, mismatches 0
+size  M5 user TP1 0.3R               runs   624, trades   338751, mismatches 0
+SECTION size: runs 8736, trades compared 5195053, mismatches 0 -> ALL IDENTICAL

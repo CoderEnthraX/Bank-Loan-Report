@@ -8,6 +8,7 @@
 extern "C" {
 int rt_SetInput(const char* name, double v);
 double rec_next_m(double exitR, double minRisk, double eq);
+double rec_next_k(double exitR, double minRisk, double eq, double kRisk);
 void rec_take(); void rec_part(double np); void rec_close(); int rec_capstop(); void rec_init();
 void rec_mtick(long long t); int rec_mrestart(); void rec_restart();
 }
@@ -24,6 +25,7 @@ int main(int argc, char** argv)
    }
    rec_init();
    if(std::getenv("REC_RESTART")) rs_k = std::atol(std::getenv("REC_RESTART"));
+   bool km_on = std::getenv("REC_KMIN") != nullptr;
    long long t = 1609459200LL;                          // 1 Jan 2021 (any month start; only the change of month matters)
    rec_mtick(t);
    FILE* f = std::fopen(argv[1], "r");
@@ -32,12 +34,14 @@ int main(int argc, char** argv)
    while(std::fscanf(f, "%63s", tok) == 1)
    {
       if(tok[0] == 'M') { t += 32LL * 86400LL; rec_mtick(t); rp(); if(!rec_mrestart()) { std::printf("NORESTART\n"); return 4; } rp(); net = 0; continue; }
-      double res = std::atof(tok), c, rmin; int k;
-      if(std::fscanf(f, "%lf %lf %d", &c, &rmin, &k) != 3) return 3;
+      double res = std::atof(tok), c, rmin, kr = 0; int k;
+      if(std::fscanf(f, "%lf %lf", &c, &rmin) != 2) return 3;
+      if(km_on && std::fscanf(f, "%lf", &kr) != 1) return 3;   // v5.0 REC_KMIN: the Crooks K careful lots' $ risk after the 0.01-lot risk
+      if(std::fscanf(f, "%d", &k) != 1) return 3;
       std::vector<double> pr(k), pw(k);
       for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
       if(rec_capstop()) { std::printf("SKIP\n"); continue; }
-      double r = rec_next_m(exitR, rmin, eq0 + net);
+      double r = km_on ? rec_next_k(exitR, rmin, eq0 + net, kr) : rec_next_m(exitR, rmin, eq0 + net);
       if(rec_capstop()) { std::printf("STOP\n"); continue; }
       rp(); rec_take(); rp();
       if(k == 0) { double np = r * (res - c) / (1.0 + c); net += np; rec_part(np); rp(); }

@@ -1,0 +1,15 @@
+rec   M1 Most profit                 runs   372, trades   538420, mismatches 0
+rec   M1 Default settings            runs   372, trades   487474, mismatches 0
+rec   M1 Shortest losing streak      runs   372, trades   536688, mismatches 0
+rec   M5 Default settings            runs   372, trades   524546, mismatches 0
+rec   M5 Most profit                 runs   372, trades   529053, mismatches 0
+rec   M5 Shortest losing streak      runs   372, trades   535635, mismatches 0
+rec   M15 Default settings           runs   372, trades   529960, mismatches 0
+rec   M15 Most profit                runs   372, trades   485280, mismatches 0
+rec   M15 Shortest losing streak     runs   372, trades   404022, mismatches 0
+rec   H1 Default settings            runs   372, trades   312127, mismatches 0
+rec   H1 Most profit                 runs   372, trades    67448, mismatches 0
+rec   H1 Shortest losing streak      runs   372, trades    71787, mismatches 0
+rec   M5 user TP1 0.1R               runs   372, trades   719524, mismatches 0
+rec   M5 user TP1 0.3R               runs   372, trades   755191, mismatches 0
+SECTION rec: runs 5208, trades compared 6497155, mismatches 0 -> ALL IDENTICAL

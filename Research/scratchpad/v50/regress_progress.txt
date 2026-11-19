@@ -1,0 +1,4 @@
+start 10:34:15 EA md5 2cf85d3481fa
+normal rec runs 8784, trades compared 13147180, mismatches 0, worst relative difference 5.00e-12; runs where the account blew (compared up to that trade): 280 10:40:20
+normal tp1 p = 50%, exit TP1: runs 7700, trades compared 14436528 (TP1-rule trades 4802862), mismatches 0 | p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 14784, trades compared 19639267 (TP1-rule trades 6679318), mismatches 0 10:40:20
+normal crkpr runs 20544, signals compared 31277261 (skipped by the pause 4056539), mismatches 0 10:40:20

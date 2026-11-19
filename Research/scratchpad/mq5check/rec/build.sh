@@ -32,7 +32,9 @@ extern "C" void rec_init() { PresetApply(); LabReset(); gCrkPrPrev = (int)InpCrk
 extern "C" double rec_next(double exitR) { double r = NextRisk(exitR); exBase = gBase; return r; }
 // v4.5: the $ risk with the Crooks E / I small-lot risk of this trade and the equity (Crooks H); T1 mode: the EA's own MinLotRisk() of the set stop
 extern "C" double rec_next_m(double exitR, double minRisk, double eq) { rec_eq = eq; double r = NextRisk(exitR, true, minRisk); exBase = gBase; return r; }
-extern "C" double rec_next_t1(double exitR, double eq) { rec_eq = eq; double r = NextRisk(exitR, true, (InpRec == REC_CRE || InpRec == REC_CRI || LadOn()) ? MinLotRisk(trRisk) : 0); exBase = gBase; return r; }
+extern "C" double rec_next_t1(double exitR, double eq) { rec_eq = eq; double r = NextRisk(exitR, true, (InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || LadOn()) ? MinLotRisk(trRisk) : 0, InpRec == REC_CRK && InpCrkKMode == CKM_LOTS ? LotRisk(InpCrkKLots, trRisk) : 0); exBase = gBase; return r; }   // v5.0: as TakeSetup (K / L, the K careful lots)
+// v5.0: with the Crooks K careful lots' $ risk of this trade (REC_KMIN)
+extern "C" double rec_next_k(double exitR, double minRisk, double eq, double kRisk) { rec_eq = eq; double r = NextRisk(exitR, true, minRisk, kRisk); exBase = gBase; return r; }
 extern "C" void rec_take() { crkRec = CrkRecNext(); }
 extern "C" void rec_part(double np) { exPnl += np; totalNet += np; if(np != 0) carried = MathMax(0.0, carried - np); }
 extern "C" void rec_close() { BookClosed(); }
@@ -65,6 +67,7 @@ extern "C" void rec_restart()
    gPersist = true; gSvBase = "T|"; if(gLastDone <= 0) gLastDone = 1;   // as if a bar was processed (the harness has no bars)
    StateSave(true);
    rec_fresh();
+   PresetApply();                                         // v5.0 harness fix: as OnInit, the preset / input values first (rec_fresh zeroes the gp* values)
    gPersist = true; gSvBase = "T|"; gHedgeOk = hgOk;
    if(ArraySize(labSeq) == 0) LabReset();
    if(!StateLoad()) Print("restart memory: nothing saved");

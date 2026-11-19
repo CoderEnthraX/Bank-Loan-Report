@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-16 (session `21ed2550`, Auction Retest v4.9, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.0, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -1142,7 +1142,7 @@ Other gold findings:
    negative as they are (-246/-101R) and stay negative in every variant. Conclusion: no, it does not give "a win or a very small loss".
    Two trades hand-checked bar by bar.
 
-43. **Crooks K money rule (asked 2026-11-18). ON HOLD: the user will ask when to add it to the EA and the strategy; do not build it before.** Crooks J (+ ladder) while the month is at or above its starting balance; below it:
+43. **Crooks K money rule (asked 2026-11-18). BUILT in v5.0 (item 46) when the user asked on 2026-11-19.** Crooks J (+ ladder) while the month is at or above its starting balance; below it:
    0.01 lot after a loss, a CAREFUL size after a win (fixed $15/25/35, 25/50/75% of base, or 0.02/0.03/0.05 lot), repeated while it wins; the
    ladder's 0.01-lot guard is replaced. `conf/krule.py` (own simulator, parity with gold/recovery.py on 36 runs with the restart off; the monthly
    restart = the EA's MonthRestart: zero line, ladder peak, J drawdown AND the loss owed cleared), $10,000, $50 base, 1:100, 2021-2026, six trade
@@ -1157,7 +1157,7 @@ Other gold findings:
    ends between Off and Crooks J, never clearly better than J. The user's M5 settings are ruined with every split. Smaller final targets (0.3 /
    0.1R) raise the win rate but lose more (M5 settings -347R -> -509R -> -750R; needed win rate 68% -> 84% -> 99%) and make recovery trades huge.
 
-45. **Crooks L test with the user's EA settings (asked 2026-11-18, not built; with Crooks K on hold).** Crooks L: 0.01 lot after a loss until a
+45. **Crooks L test with the user's EA settings (asked 2026-11-18; BUILT in v5.0, item 46).** Crooks L: 0.01 lot after a loss until a
    win; the recovery split by zone: below the starting balance 1 part per 2 x base of drawdown from the START (max 6), between the start and the
    best balance 1 part per 5 x base of drawdown from the PEAK (max 3), at a new best balance the base grows (+10% of the profit, max 4x).
    `conf/crl.py`: EA-like execution over the engine's setups (news block 17:45 IST 30 min + 30 min before, New York time; close at news start /
@@ -1165,6 +1165,38 @@ Other gold findings:
    London / NY. Result `conf/crl.txt`: TP 0.1R: 78% wins but -519R; EVERY rule wipes the account (C / E / L by May 2021, Off Feb 2022). TP 0.6R:
    -254R, all wiped 2022-23. TP 2R: -153R; only Crooks L survives (ends $958, it mostly trades the 0.01 lot below the start). Trade sizes
    hand-traced; a first run counted stop-outs 7% too small (fixed before reporting).
+
+46. **v5.0: Size By (Risk / Profit at the final TP), Crooks K and Crooks L in the strategy and the EA (asked 2026-11-19)** (tasks #11-#15).
+    - **The ask:** a setting so the base and every loss-recovery amount are the PROFIT at the final TP (the stop-out loss follows), for every
+      recovery rule; plus Crooks K (item 43) and Crooks L (item 45), "perfect, no error / bug / warning", strategy + EA.
+    - **Spec:** `v50/SPEC_v50.md`. Profit: base / exitR (Fixed $ and % of equity; Fixed lots stays the lots); the amounts a rule adds / D
+      (All, Over N, % of losses, Step-up, Delayed, Rule C / C split carried + step base, % of equity rule); Exact and Crooks unchanged; Oscar's
+      goal = one base win; limits stay on the risk (hard cap, F / G / H / J / K, ladder, L's steps). K = J (+ ladder, no start guard) at or
+      above the zero line; below it careful size after a win (lots 0.02 / $25 / 50% of base), else the E / I lot; TP1 rule off there.
+      L = C family, E-like waiting lot, parts set at a booked loss from the drawdown after it (below the start 1 part / 2x base, max 6;
+      below the best 1 part / 5x base, max 3), base growth +10% of the profit (max 4x) at a new best (nR >= crkPk); crkCn not used.
+    - **Reference:** `v50/patch_ref_v50.py` -> `gold/recovery.py`, `gold/crooks_tp1.py` (v4.9 copies `*_v49.py`). Risk mode = v4.9:
+      `v50/ref_regress.py` 27,648 + 2,128 runs identical. Independent implementation from the spec (Sonnet agent, `v50/indep/`):
+      2,340 + 11,400 runs, 7.9 M trades, 0 differences (re-run by me: 2,340 runs, 0).
+    - **EA:** `build/patch_ea_v50.py` (from `build/bak/AuctionRetestEA_v49.mq5`): ENUM_SIZE_BY / InpSizeBy, REC_CRK 28 / REC_CRL 29,
+      ENUM_CRK_K + InpCrkK*, InpCrkL*; SizeProfit, BookBase / ShowBase / BaseTxt, KZone, KCare, LBase, LParts, LotRisk (MinLotRisk = LotRisk
+      of InpCrkELot), CrkNp / CrkParts for L, NextRisk(exitR, canTake, minRisk, kRisk), TakeSetup kR, BookClosed (Oscar goal, L parts),
+      table, OnInit checks. No new saved state. 3,019 lines, md5 2cf85d3481fa, mq5check 0 errors / 0 warnings, ASCII.
+    - **Strategy:** `build/patch_pine_v50.py` (strategy template only; indicator unchanged): sizeBy, ck* / cl* inputs, f_lParts, f_lBase,
+      kZone; inline lint 0, parse ok (797), titles unchanged (inputs_cmp: 11 added), new `pinecheck/shadow_lint.py` 0 (it caught a local
+      `st` shadowing the engine's `st`, renamed lStep), independent review (Sonnet agent) no defects.
+    - **Harness:** `mq5check/rec/build.sh` rec_next_k + rec_next_t1 with K / L; rec_driver / mrs_driver REC_KMIN (K careful-lot risk column);
+      **rec_restart now calls PresetApply() (OnInit order)**: since v4.8 a harness restart left the gp* values at 0 (only the month suite
+      had been run with restarts for v4.8 / v4.9). New suites `parity_v50.py` (rec / pr / size), `parity_month_v50.py` (restarts the harness
+      after a month in which the simulator's 1e12 account blew: the harness has no account and its totals lose precision at 1e16),
+      `parity_tp1_v50.py`.
+    - **Results (all 0 differences):** normal mode: v4.9 suites on v5.0 rec 8,784 runs / 13.1 M trades, tp1 7,700 + 14,784
+      runs / 34.1 M, crkpr 20,544 runs / 31.3 M signals; v5.0 suites rec 5,208 / 6.5 M, pr 8,960 / 10.8 M, size 8,736 / 5.2 M, month 1,840 /
+      3.1 M (228 blown months compared up to the blow-up), tp1 9,240 / 19.4 M (2.1 M TP1-rule trades). Restart mode (after the harness fix)
+      and the engine parity: running at this commit (`v50/run_restart_suites.sh` -> `v50/restart_progress.txt`, `mq5check/run/parity_v50.log`)
+    - **Broker simulator (`sim/`, sim49 / sim50, M1 data re-exported from 2026-06-01 / 2025-07-15 for the warm-up):** defaults v4.9 vs v5.0
+      SIM / BOOK lines identical (694 and 1,181 lines); 12 v5.0 runs (Profit at 0.6R / 0.3R / 0.1R, K lots / $ + ladder, L, restarts,
+      monthly restart): every position booked, 0 rejects, 0 init failures; invalid K / L / Profit inputs refused at start with the message.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
@@ -1232,6 +1264,10 @@ Pick rules:
 - Commit lines end with `Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>` and `Claude-Session: https://claude.ai/code/session_01P3FMxBMpMTf44KZrjXAvzQ`. No model IDs anywhere else.
 - `CLAUDE.md` model routing: state each agent's model and effort; mechanical work goes to haiku, deciding work stays on the session model.
 - TradingView: inputs that share an `inline` id may carry a title only on the first one; run `pinecheck/inline_lint.py` on both files before delivering.
+- The rec harness restart (`rec_restart`) must mirror OnInit: `PresetApply()` first (fixed in v5.0; before, gp* stayed 0 after a restart).
+- A money test with a $1e12 account can still blow with 0.1R targets (x11 per loss); the EA harness has no account, so compare up to the
+  blow-up and start a fresh harness after it (its totals at 1e16 lose precision).
+- Pine: a local declared with the name of a global gives TradingView's "shadowing variable" warning: run `pinecheck/shadow_lint.py`.
 - A distance from the VWAP in ATR depends on the anchor: with the Month anchor most gold signals are more than 5 ATR away, with Session about half are under 2.5 ATR.
 - EA vs TradingView comparisons: FxPro's server is EET (EU clock change), so convert with UTC+3 until the last Sunday of October and UTC+2 after;
   the EA's Orders table (armed setups, including cancelled ones) shows which TradingView-only trades were the same setup left unfilled.

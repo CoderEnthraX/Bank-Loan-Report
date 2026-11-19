@@ -1349,6 +1349,94 @@ Two new settings in **TARGETS, EXIT AND STOP MOVES**, right after "When TP3 Hits
 - **The research engine** was checked against an independent implementation of these rules: 20 cases, 0 mismatches.
 - **Compile and parse:** EA 0 errors / 0 warnings; both Pine files parse, with 0 inline-title warnings.
 
+### v5.0: amounts as the profit at the final TP, Crooks K and Crooks L (strategy and EA)
+
+Three additions to the money management. With the new setting on its default (Risk) and neither Crooks K nor L chosen, the strategy and
+the EA trade exactly as v4.9.
+
+**1. Base And Recovery Amounts Are** (strategy: RISK AND POSITION SIZE, right after Position Size; EA: "Base and recovery amounts are",
+right after "Position size")
+
+| Choice | What the Base Risk $ (or the % of equity) means |
+|---|---|
+| **Risk: the loss at the stop** (default) | What the base trade loses at its stop, as before. |
+| **Profit: the win at the final TP** | What the base trade **wins** at the final TP (the Final Exit). The stop-out loss follows from it: risk = amount ÷ the final TP's R. Example: $50 with the final TP at 0.1R → the trade risks $500 and wins $50. |
+
+With Profit, every loss-recovery rule goes for its amounts as **wins at the final TP**, whatever the stop-out loss becomes:
+
+| Rule | With Profit |
+|---|---|
+| Recover all losses on the next trade | The next trade wins all the losses plus the base win. |
+| Recover losses over N trades | Each trade wins 1/N of the losses plus the base win (N = 3: a third each time). |
+| Recover a % of losses per trade | That % of the losses plus the base win. |
+| Step-up | The base win plus the step $ per loss in a row. |
+| Delayed recovery | After N losses: the base win plus the losses ÷ N. |
+| Rule C / Rule C split | The carried losses ÷ split as a win (C split's growing base too). |
+| % of equity (rule and Position Size) | That % of the equity as the win. |
+| Oscar's Grind | A cycle ends at +1 base win. |
+| Exact at final TP, Crooks A–L | Already sized to win the loss at the final TP: the same formula, on the new base. |
+| Martingale, Fibonacci, D'Alembert, Labouchere, Grand Martingale, Paroli, Reverse D'Alembert | Multiples of the base trade, as before. |
+
+- **Stay on the loss at the stop:** the hard cap, the limits of Crooks F, G, H, J and K, the profit ladder, and Crooks L's part steps.
+- **Fixed lots:** the base trade stays the lots; the recovery amounts still follow the setting.
+- **Partial profits:** a full win brings a little less, because the parts closed at the earlier TPs make less than the final TP.
+- **Size:** a small final TP makes every trade big (0.1R → 10× the amount). The leverage limit and the broker's maximum lot can cut a
+  recovery trade, and then it wins back only part of the loss. In the gold test with your M5 settings, a 0.1R final TP won 78% of the
+  trades but lost money with every recovery rule.
+
+**2. Crooks K** (Loss Recovery, after Crooks J): Crooks J while the closed profit is at or above the start, careful below it.
+
+- **At or above the start:** exactly Crooks J, with the profit ladder if it is on.
+- **Below the start:** the trade after a win uses the **careful size**; the trades after a loss use the Crooks E / I lot (0.01) until the
+  next win. The ladder's 0.01-lot start guard is not used, and the Crooks TP1 rule is off below the start.
+- **The start:** the closed profit since the EA started (the restart memory keeps it) or the backtest start; with the monthly restart on,
+  the 1st of each month.
+
+| Setting | Default |
+|---|---|
+| Careful size below the start: Lots / Fixed $ / % of base | **Lots** |
+| Careful lots · $ · % of base | **0.02** lot · $25 · 50% |
+
+The $ is the risk, or with Profit the win at the final TP. Lots are rounded up to the lot step.
+
+**3. Crooks L** (Loss Recovery, after Crooks K): 0.01 lot until a win, then the loss is split by the drawdown.
+
+- **After a loss:** the Crooks E / I lot (0.01) until a trade wins; then the recovery trades win the loss back **in parts**.
+- **The parts are set when a loss is booked**, from where the closed profit is after it:
+  - below the start: 1 part per **2 × base** of drawdown from the start, at most **6** (e.g. $250 down with a $50 base → 3 parts);
+  - above the start but below the best: 1 part per **5 × base** below the best, at most **3**;
+  - each winning recovery trade wins one part back; a loss sets the parts again.
+- **At a new best** (and at the start), the base grows by **10% of the profit**, at most **4 × base**.
+- "Win the loss back over N wins" is not used by Crooks L; every other Crooks C setting works.
+
+| Setting | Default |
+|---|---|
+| Below the start: 1 part per (× base) · most parts | **2** · **6** |
+| Above the start: 1 part per (× base) below the best · most parts | **5** · **3** |
+| At a new best: base + % of the profit · at most (× base) | **10%** · **4** |
+
+**Gold tests behind K and L** (2021–Oct 2026, 1:100 leverage, costs included):
+- Crooks K on M15-S1 ($10,000, $50 base, monthly restart): Crooks J made $9,693 (biggest drawdown $1,127, worst month −$906); K with 0.02 lot made $6,968
+  (drawdown $739, worst month −$341). Over the five tested strategies (M5-S1, M5-S3, M15-S1, S7, S8), K with 0.02 lot cut
+  the worst month by 44–71% and the biggest drawdown by 34–57%, for 28–70% less profit. Of the careful sizes, lots worked best.
+- Crooks L with your M5 settings ($1,000, $10 base, TP 0.1R / 0.6R / 2R): at 0.1R and 0.6R every rule, L included, emptied the
+  account; at 2R L was the only rule that survived. No money rule makes a losing entry profitable.
+
+**Checks**
+- **Your settings are unchanged with Risk and the old rules:** the EA's money code gives the same $ risk as v4.9 on every trade (money
+  suites: 8,784 + 22,484 + 20,544 runs, 78 M trades and signals, 0 differences). On the broker simulator (gold M1, Aug–Oct 2026 and
+  Sep 2025–Jan 2026) every order and booking of v5.0 is identical to v4.9.
+- **The new settings in the EA match the Python reference trade for trade:** Profit on every rule (also with your M5 settings at 0.1R and
+  0.3R), Crooks K (lots / $ / %, ladder off and on) and L (three settings), the Crooks C rule after N losing recovery trades, Fixed lots
+  and % of equity, the monthly restart and the TP1 rule: 33,984 runs, 45 M trades, 0 differences.
+- **The Python reference** matches an independent implementation written only from the rules: 13,740 runs, 7.9 M trades, 0 differences.
+- **The strategy** follows the same rules line by line (independent review: no defects); it parses, with 0 inline-title and 0 shadowing
+  warnings, and every existing input keeps its title.
+- **The EA** compiles with 0 errors and 0 warnings; on the broker simulator 12 runs with the new settings (Profit at 0.6R / 0.3R / 0.1R,
+  Crooks K and L, restarts, the monthly restart) booked every trade with 0 rejected orders; wrong K / L / Profit inputs are refused at
+  start with a message.
+
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.

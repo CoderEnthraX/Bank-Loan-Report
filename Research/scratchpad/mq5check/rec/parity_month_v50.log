@@ -1,0 +1,11 @@
+M1 Shortest losing streak      runs  184, trades   329449, mismatches 0
+M1 Most profit                 runs  184, trades   357830, mismatches 0
+M5 Most profit                 runs  184, trades   269369, mismatches 0
+M5 Shortest losing streak      runs  184, trades   309951, mismatches 0
+M15 Most profit                runs  184, trades   254457, mismatches 0
+M15 Shortest losing streak     runs  184, trades   209081, mismatches 0
+H1 Most profit                 runs  184, trades    34224, mismatches 0
+H1 Shortest losing streak      runs  184, trades    35880, mismatches 0
+M5 user TP1 0.3R               runs  184, trades   673779, mismatches 0
+M5 user TP1 0.1R               runs  184, trades   643741, mismatches 0
+MONTH v5.0: runs 1840, trades compared 3117761, months stopped by the cap 3887, months where the simulator account blew (compared up to it) 228, mismatches 0 -> ALL IDENTICAL

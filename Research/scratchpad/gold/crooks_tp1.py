@@ -77,42 +77,55 @@ def trades_for(arg):
         out.append(dict(t=P['T'][x['fill']], arm=x['arm'], fill=x['fill'], exit=x['exit'], res=x['res'], c=P['SP'][x['fill']] / R1, sp=special(P, x, tp1R, tp2R),
                         R1=R1, spx=P['SP'][x['fill']]))
     return tf, cfg, out, tp1R, tp2R
-CFAM = ('Crooks C', 'Crooks E', 'Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J')   # v4.5: Crooks C and the rules built on it
+CFAM = ('Crooks C', 'Crooks E', 'Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J', 'Crooks K', 'Crooks L')   # v4.5: Crooks C and the rules built on it (v5.0: K, L)
 def simulate(tr, mode, base=50.0, cap=0.0, capAction='clamp', cSplit=3, tp1rule=True, exitR=0.6, start=10000.0, skips=True, trace=None, cN=1,
-             fK=3.0, gX=10.0, hPct=1.0, jX=20.0, lad=None, ladT=1000.0):
+             fK=3.0, gX=10.0, hPct=1.0, jX=20.0, lad=None, ladT=1000.0, sizeBy='risk', kMode='lots', kUsd=25.0, kPct=50.0,
+             lZ1=2.0, lZ1N=6, lZ2=5.0, lZ2N=3, lGrow=10.0, lGrowX=4.0):
     """Off / Crooks A / B / C / D on the trades of an exit-at-TP1 setting. tp1rule=False = the plain Crooks rule (risk max(base, T / TP1 R), engine exit).
     v4.5 Crooks E - J as in recovery.py: the limits of F / H / I cover the real stop-out loss (x m, the TP1 rule's stop multiple); E / I use the
     trade's 'rmin' (the $ risk of the small lot) while waiting.
     v4.6 profit ladder (Crooks F - J) as in recovery.py; the extra risk limit covers the real stop-out loss (gam x C / m); while the closed profit
-    is at or below 0 (the start guard) the trade is the 0.01 lot without the TP1 rule."""
+    is at or below 0 (the start guard) the trade is the 0.01 lot without the TP1 rule.
+    v5.0 (v50/SPEC_v50.md): sizeBy 'profit' (base / exitR), Crooks K (no TP1 rule below the zero line; x['krisk'] = the careful lots' $ risk),
+    Crooks L (the 0.01 lot while waiting, the parts of a loss from the drawdown when it is booked, base growth at a new best)."""
     import recovery as RC
     cfam = mode in CFAM; peakNet = 0.0
     eq = start; peak = start; maxDD = maxDDp = 0.0; net = 0.0; gp = gl = 0.0; n = 0; nsk = 0; nsp = nfb = 0; sumRisk = maxRisk = 0.0
+    cN = 1 if mode == 'Crooks L' else cN; pm = sizeBy == 'profit'; D = exitR if pm else 1.0; b = base / exitR if pm else base   # v5.0
+    def lparts(bb):
+        if net < 0: dd, st_, mx = -net, lZ1 * bb, max(1, lZ1N)
+        elif net < peakNet: dd, st_, mx = peakNet - net, lZ2 * bb, max(1, lZ2N)
+        else: return 1
+        return int(max(1, min(mx, math.ceil(dd / st_ - 1e-9)))) if st_ > 0 else 1
     crL = 0.0; crN = 0; crW = False; crP = cN; busy = -1; ruined = capStop = False; ruinAt = None; lossRun = worstRun = 0.0; kinds = {}
     for k, x in enumerate(tr):
         if skips and x['arm'] < busy: nsk += 1; continue                # still in a TP1-rule trade: this signal is skipped
         rec = ((mode in ('Crooks A', 'Crooks B') and crN >= 2 and crN % 2 == 0) or (cfam and crW and crL > 0)
                or (mode == 'Crooks D' and crN >= 2 and (crN - 2) % 3 == 0))
         X = crL / (cSplit if mode == 'Crooks B' else crP if cfam else 1)
-        lon, lguard, lB, lC = RC.lad_state(lad if mode in RC.LADFAM else None, ladT, net, peakNet, base)   # v4.6 profit ladder
-        sp = rec and tp1rule and x['sp'] is not None and not lguard
+        lon, lguard, lB, lC = RC.lad_state(lad if mode in RC.LADFAM else None, ladT, net, peakNet, b)   # v4.6 profit ladder
+        if mode == 'Crooks K': lguard = False                       # v5.0: K has no start guard ...
+        kz = mode == 'Crooks K' and net < 0                         # ... but its zone below the zero line (no TP1 rule there)
+        sp = rec and tp1rule and x['sp'] is not None and not lguard and not kz
         m = x.get('m', 1.0) if sp else 1.0                          # stop-out loss / T at the first stop (TP1-rule stop choice); the hard cap covers it
         def crk(B):
             q = max(B, X) if sp else max(B, X / exitR) if rec else B
             if cfam and rec:                                        # v4.5 Crooks F / H / I / J
                 if mode in ('Crooks F', 'Crooks I'): q = min(q, max(1.0, fK) * B / m)
                 elif mode == 'Crooks H': q = min(q, max(B, eq * hPct / 100.0) / m)
-                elif mode == 'Crooks J': q = max(B, q * max(0.0, 1.0 - max(0.0, peakNet - net) / (jX * B)))
-            elif cfam and crL > 0 and mode in ('Crooks E', 'Crooks I') and x.get('rmin') is not None: q = min(B, x['rmin'])   # v4.5 Crooks E / I
+                elif mode in ('Crooks J', 'Crooks K'): q = max(B, q * max(0.0, 1.0 - max(0.0, peakNet - net) / (jX * B)))
+            elif cfam and crL > 0 and mode in ('Crooks E', 'Crooks I', 'Crooks L') and x.get('rmin') is not None: q = min(B, x['rmin'])   # v4.5 Crooks E / I (v5.0: L)
             return q
-        r = crk(base)
-        if lon: r = min(base, x['rmin']) if lguard else min(crk(lB), r + RC.LADDER[lad][3] * lC / m)
+        bL = b + min((max(1.0, lGrowX) - 1.0) * b, max(0.0, lGrow / 100.0 * net / D)) if (mode == 'Crooks L' and net >= peakNet) else b
+        r = crk(bL)
+        if lon: r = min(b, x['rmin']) if lguard else min(crk(lB), r + RC.LADDER[lad][3] * lC / m)
+        if kz: r = ((kUsd / D) if kMode == 'usd' else (b * kPct / 100.0) if kMode == 'pct' else x.get('krisk', b)) if crW else min(b, x['rmin'])
         if cap > 0 and r * m > cap:
             if capAction == 'stop':
                 capStop = True
                 if trace is not None: trace.append((x, r, None, sp))          # the signal that stopped trading
                 break
-            elif capAction == 'reset': crL = 0.0; crN = 0; crW = False; crP = cN; rec = sp = False; r = min(base, cap)
+            elif capAction == 'reset': crL = 0.0; crN = 0; crW = False; crP = cN; rec = sp = False; r = min(b, cap)
             else: r = cap / m
         if sp:
             pnl = r * x['sp'][0]; busy = x['sp'][1]; nsp += 1; kinds[x['sp'][2]] = kinds.get(x['sp'][2], 0) + 1
@@ -127,11 +140,11 @@ def simulate(tr, mode, base=50.0, cap=0.0, capAction='clamp', cSplit=3, tp1rule=
         win = pnl > 0
         crL = max(0.0, crL - pnl)
         peakNet = max(peakNet, net)
-        if mode == 'Crooks G': crL = min(crL, gX * RC.lad_state(lad if mode in RC.LADFAM else None, ladT, net, peakNet, base)[2])   # v4.5 (v4.6: the ladder base)
+        if mode == 'Crooks G': crL = min(crL, gX * RC.lad_state(lad if mode in RC.LADFAM else None, ladT, net, peakNet, b)[2])   # v4.5 (v4.6: the ladder base)
         if crL < 0.01 or (mode in ('Crooks A', 'Crooks D') and win and rec): crL = 0.0; crN = 0; crP = cN      # C keeps a leftover
         else:
             crN += 1
-            crP = cN if not win else (max(1, crP - 1) if rec else crP)
+            crP = (lparts(b) if mode == 'Crooks L' else cN) if not win else (max(1, crP - 1) if rec else crP)
         crW = win
     return dict(mode=mode, trades=n, skipped=nsk, tp1trades=nsp, fallback=nfb, kinds=kinds, avgRisk=sumRisk / n if n else 0.0, maxRisk=maxRisk, net=net, end=eq,
                 maxDD=maxDD, maxDDpct=maxDDp, ruined=ruined, ruinAt=ruinAt, capStopped=capStop, pf=gp / gl if gl > 0 else float('inf'), worstRun=-worstRun,

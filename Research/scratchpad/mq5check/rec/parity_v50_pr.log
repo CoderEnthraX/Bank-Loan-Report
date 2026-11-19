@@ -1,0 +1,15 @@
+pr    M1 Default settings            runs   640, trades   946644, mismatches 0
+pr    M1 Most profit                 runs   640, trades   958426, mismatches 0
+pr    M1 Shortest losing streak      runs   640, trades   955909, mismatches 0
+pr    M5 Default settings            runs   640, trades   958832, mismatches 0
+pr    M5 Most profit                 runs   640, trades   938573, mismatches 0
+pr    M5 Shortest losing streak      runs   640, trades   956269, mismatches 0
+pr    M15 Most profit                runs   640, trades   869513, mismatches 0
+pr    M15 Default settings           runs   640, trades   956752, mismatches 0
+pr    M15 Shortest losing streak     runs   640, trades   711046, mismatches 0
+pr    H1 Default settings            runs   640, trades   565683, mismatches 0
+pr    H1 Most profit                 runs   640, trades   116580, mismatches 0
+pr    H1 Shortest losing streak      runs   640, trades   122866, mismatches 0
+pr    M5 user TP1 0.1R               runs   640, trades   843708, mismatches 0
+pr    M5 user TP1 0.3R               runs   640, trades   902100, mismatches 0
+SECTION pr: runs 8960, trades compared 10802901, mismatches 0 -> ALL IDENTICAL
