@@ -430,7 +430,7 @@ input double InpCrkHgSl  = 1.0;    //   ...hedge rule: stop loss of the buy and 
 input double InpCrkHgTp  = 0.6;    //   ...hedge rule: take profit of the buy and the sell (R: 0.6 = TP1)
 input ENUM_HG_UNIT InpCrkHgUnit = HGU_R; //   ...hedge rule: stop loss and take profit in R or in price
 input bool   InpCrkHgForget = true; //   ...hedge rule: forget the loss after the pair (off: Crooks C goes on from the trade that closed last)
-input double InpCrkELot  = 0.01;   // Crooks E / I / K / L: lot of the trades while a loss waits for a win (the normal size if smaller)
+input double InpCrkELot  = 0.01;   // Crooks E / I / K / L / X: lot of the trades while a loss waits for a win (the normal size if smaller)
 input double InpCrkFK    = 3.0;    // Crooks F / I: a recovery trade risks at most this many x the base risk
 input double InpCrkGX    = 10.0;   // Crooks G: the loss to win back is at most this many x the base risk (the rest is accepted)
 input double InpCrkHPct  = 1.0;    // Crooks H: a recovery trade risks at most this % of the equity

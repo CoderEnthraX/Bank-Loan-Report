@@ -1517,7 +1517,7 @@ A new Loss Recovery rule, after Crooks L. It works like **Crooks E** (after a lo
 **Checks**
 - The EA matches the Python reference trade for trade on Crooks X: Risk and Profit, N = 1 / 3 / 5, steps $1,000 / $200 / $50, hard cap
   only / $300 limit, every hard-cap choice, the Crooks C rule after N losing recovery trades: 3,136 runs, 3.9 M trades, 0 differences;
-  again with a save and reload after every step: X_RESTART. The monthly restart suite with Crooks X: identical (month by month).
+  again with a save and reload after every step: 2,016 runs, 2.6 M trades, 0 differences (with the Crooks C rule: still running). The monthly restart suite with Crooks X: identical (month by month).
 - Broker simulator (gold M1, Aug–Oct 2026, 0.2R): Crooks X with Risk and Profit, N = 3 and 5, a $300 limit: every trade booked, 0
   rejected orders; with 248 restarts of the EA the same bookings; the limit held (largest risk $299.95). Default settings: every order
   and booking identical to v5.1.

@@ -76,6 +76,7 @@ sub1('   double minR = (InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_
 sub1('   if((InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL) && InpCrkELot <= 0) { Print("Crooks E / I / K / L: the lot',
      '   if(InpRec == REC_CRX && (InpCrkXStep <= 0 || (InpCrkXLim == CXL_TRADE && InpCrkXLimUsd <= 0))) { Print("Crooks X: the step and the per-trade limit must be above 0."); return INIT_PARAMETERS_INCORRECT; }\n'
      '   if((InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || InpRec == REC_CRX) && InpCrkELot <= 0) { Print("Crooks E / I / K / L / X: the lot')
+sub1('// Crooks E / I / K / L: lot of the trades while a loss waits for a win', '// Crooks E / I / K / L / X: lot of the trades while a loss waits for a win')
 assert all(ord(ch) < 128 for ch in s), 'non-ASCII'
 open(B + 'safe/AuctionRetestEA.mq5', 'w').write(s)
 print('EA v5.2 written', s.count('\n'), 'lines')

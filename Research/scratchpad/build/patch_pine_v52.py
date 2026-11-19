@@ -57,5 +57,6 @@ sub1('''        crkP := not win ? (recMode == L_CRL ? f_lParts() : crkNp) : crkR
 sub1('    string kWait = recMode == L_CRE or recMode == L_CRI or recMode == L_CRL ? " · "', '    string kWait = recMode == L_CRE or recMode == L_CRI or recMode == L_CRL or recMode == L_CRX ? " · "')
 sub1(''' : " · at the best, base " + f_usd(f_lBase(baseRisk, sizeBy == SB_PROFIT ? f_pD(nz(trRisk)) : 1.0))) : ""''',
      ''' : " · at the best, base " + f_usd(f_lBase(baseRisk, sizeBy == SB_PROFIT ? f_pD(nz(trRisk)) : 1.0))) : recMode == L_CRX ? ((crkL <= 0 ? "" : nrT < -0.005 ? " · below the start: back to it" : " · up to " + f_usd(math.min(crkPk, (math.floor((nrT + 0.005) / math.max(0.01, cxStep)) + 1) * math.max(0.01, cxStep))) + " above the start") + (cxLim == CXL_TRADE ? ", at most " + f_usd(cxLimUsd) + " a trade" : "")) : ""''')
+sub1('tooltip = "Crooks E, I and L (and Crooks K below the start)', 'tooltip = "Crooks E, I, L and X (and Crooks K below the start)')
 open(B + 'strategy_template.pine', 'w').write(t)
 print('strategy template v5.2 written', t.count('\n'), 'lines')
