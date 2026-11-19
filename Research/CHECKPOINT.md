@@ -1246,7 +1246,7 @@ Other gold findings:
     section 6. Reference `gold/recovery.py` (MODES[30], xStep / xLim; v5.1 copy `recovery_v51.py`), EA `build/patch_ea_v52.py` (from
     `bak/AuctionRetestEA_v51.mq5`: REC_CRX, XIdx / XTarget, BookClosed, CrkRecLimit, table, OnInit; no new saved state; 3,062 lines,
     mq5check 0 / 0), strategy `build/patch_pine_v52.py` (from `bak/strategy_template_v51.pine`: L_CRX, cxStep / cxLim / cxLimUsd, f_xIdx /
-    f_xTarget). Checks: `mq5check/rec/parity_x.py` rec 2,016 + pr 1,120 runs, 0 differences; restart rec 2,016 identical; independent review (Sonnet agent) no defects; month suite with X: the
+    f_xTarget). Checks: `mq5check/rec/parity_x.py` rec 2,016 + pr 1,120 runs, 0 differences; restart rec 2,016 + pr 1,120 identical; independent review (Sonnet agent) no defects; month suite with X: the
     same chained-harness precision case only (fresh per month 4.8e-12); simulator `sim/sim52` x52_*.log: booked, 0 rejects, restarts
     identical, limit held; defaults identical to v5.1.
 

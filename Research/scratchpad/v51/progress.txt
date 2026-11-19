@@ -23,3 +23,5 @@ restart A done 16:39:43
 v5.2 start 17:38:25 EA bd4009b696bc
 normal v52 month MONTH v5.1: runs 3440, trades compared 5720006, months stopped by the cap 9367, months where the simulator account blew (compared up to it) 595, floating-point tie-breaks 0, mismatches 5 -> DIFFERENCES 17:39:03
 restart B start 17:41:09
+restart X rec CROOKS X rec: runs 2016, trades compared 2568036, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 17:47:36
+restart X pr CROOKS X pr: runs 1120, trades compared 1320906, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 17:50:36
