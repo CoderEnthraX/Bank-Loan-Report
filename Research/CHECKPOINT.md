@@ -1257,7 +1257,7 @@ Other gold findings:
     Reference `gold/recovery.py` partFix (v5.2 copy `recovery_v52.py`); EA `build/patch_ea_v53.py` (InpCrkPart, crkFx saved as "kq": "kx"
     was already gCrkPrPrev, caught before shipping; 75 saved keys unique; 3,083 lines, mq5check 0 / 0); strategy `build/patch_pine_v53.py`
     (crkPart, crkFx; parse ok 811). Checks `mq5check/rec/parity_fix.py` rec 5,488 + pr 1,680 runs identical (3,377 of 16,442 Crooks E N = 5
-    trades differ from Recalculate, so the path is exercised); regression and restart: V53_REGRESS; simulator sim53: defaults identical to
+    trades differ from Recalculate, so the path is exercised); regression (old rec / tp1 / crkpr, v51 rec / pr / size / tp1, X rec / pr) same results as v5.2; restart fixed rec + pr identical; simulator sim53: defaults identical to
     v5.2, fixed E / X booked, restarts identical. Delivered as the EA + strategy .txt only (the user asked for two files).
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)

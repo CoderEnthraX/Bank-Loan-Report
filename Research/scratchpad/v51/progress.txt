@@ -29,3 +29,16 @@ restart v51 month MONTH v5.1: runs 3440, trades compared 5720006, months stopped
 restart v51 tp1 TP1 v5.1: runs 13552, trades compared 27420181 (TP1-rule trades 3358472), floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 18:40:34
 restart v51 size SECTION size: runs 18368, trades compared 10747285, floating-point tie-breaks 8, mismatches 2 -> DIFFERENCES 19:11:46
 restart B done 19:11:46
+v5.3 start 20:18:57 EA b1710319171e
+v53 old rec runs 8832, trades compared 13211474, mismatches 0, worst relative difference 5.00e-12; runs where the account blew (compared up to that trade): 281
+v53 old tp1 p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 14784, trades compared 19639267 (TP1-rule trades 6679318), mismatches 0
+v53 old crkpr runs 20544, signals compared 31277261 (skipped by the pause 4056539), mismatches 0
+v53 v51-suite rec SECTION rec: runs 9296, trades compared 11222445, floating-point tie-breaks 0, mismatches 1 -> DIFFERENCES
+v53 v51-suite pr SECTION pr: runs 13440, trades compared 16043727, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
+v53 v51-suite size SECTION size: runs 18368, trades compared 10747285, floating-point tie-breaks 8, mismatches 2 -> DIFFERENCES
+v53 X rec CROOKS X rec: runs 2016, trades compared 2568036, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
+v53 X pr CROOKS X pr: runs 1120, trades compared 1320906, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
+v53 v51-tp1 TP1 v5.1: runs 13552, trades compared 27420181 (TP1-rule trades 3358472), floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
+v53 restart fixed rec FIXED PARTS rec: runs 5488, trades compared 7014342, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
+v53 restart fixed pr FIXED PARTS pr: runs 1680, trades compared 2031732, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
+v53 done 20:50:26

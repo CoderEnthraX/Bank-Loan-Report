@@ -22,7 +22,7 @@ def lad_state(lad, ladT, net, peakNet, base):
     return True, net <= 0, base + min((bmax - 1.0) * base, phi * C), C
 def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0, trace=None, cN=1,
              crkPr='off', crkPrN=2, crkPrPct=50.0, crkPrM=2, crkPrD=3, crkPrForget=False, fK=3.0, gX=10.0, hPct=1.0, jX=20.0, lad=None, ladT=1000.0, baseMode='usd', basePct=1.0,
-             sizeBy='risk', kMode='lots', kUsd=25.0, kPct=50.0, lZ1=2.0, lZ1N=6, lZ2=5.0, lZ2N=3, lGrow=10.0, lGrowX=4.0, xStep=1000.0, xLim=0.0):
+             sizeBy='risk', kMode='lots', kUsd=25.0, kPct=50.0, lZ1=2.0, lZ1N=6, lZ2=5.0, lZ2N=3, lGrow=10.0, lGrowX=4.0, xStep=1000.0, xLim=0.0, partFix=False):
     """trades: iterable of (R result, spread cost in R) or (R result, spread cost in R, parts) or (R, cost, parts, day events). parts = [(R of the part,
     share of the position)] for a trade with a partial close: Rule C's carried losses are then updated after each part, like the strategy (once per candle).
     v3.9 Crooks C rule after crkPrN losing recovery trades in a row (Crooks C only): crkPr 'forget' (new cycle), 'pct' (every recovery trade goes for
@@ -54,7 +54,9 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
     used for every amount (also Exact and the Crooks recovery, which divide by exitR in Risk mode).
     v5.2 Crooks X (SPEC section 6): Crooks E with the loss to win back SET after every close from the levels: below the start the gap to it,
     above it the gap to the next xStep level (at most the best); a win into another step starts N parts again; xLim > 0: a recovery trade risks
-    at most max(base, xLim)."""
+    at most max(base, xLim).
+    v5.3 partFix (SPEC section 7): the Crooks C family's recovery part is fixed at the first win (crL / parts) and kept for the N trades;
+    after the last part a leftover below the base amount is forgotten, else one more trade for exactly it."""
     eq = start; peak = start; maxDD = 0.0; maxDDp = 0.0; net = 0.0; peakNet = 0.0      # peakNet: Crooks J (the drawdown of the closed profit)
     recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
     capStop = False; n = 0; maxRisk = 0.0; maxRiskPct = 0.0; ruined = False; ruinAt = None; gp = gl = 0.0
@@ -65,6 +67,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
     pm = sizeBy == 'profit'                # v5.0 Size By profit (v5.1: D per trade, below)
     cfam = mode in CFAM
     prOn = cfam and crkPr != 'off'                               # v3.9 Crooks C rule after N losing recovery trades in a row
+    crFx = 0.0                           # v5.3: the fixed recovery part (0 = not set)
     crF = 0; crWait = False; crWW = 0; crNeedL = False; crSkip = False; crSkipLeft = 0; prevTaken = False
     def xidx(v): return -1 if v < -0.005 else math.floor((v + 0.005) / xStep)   # v5.2 Crooks X: the step the closed profit is in
     def xtarget(v):                      # v5.2 Crooks X: the loss to win back from the levels (start, steps, best)
@@ -119,7 +122,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         if cfam:                                                     # v4.5: Crooks C, and E - J built on it
             rmin = tr[5] if len(tr) > 5 else None
             def crk(B):
-                x = max(B, crL / crP * (crkPrPct / 100.0 if prOn and crkPr == 'pct' else 1.0) / XR) if crRec else B
+                x = max(B, (min(crFx, crL) if partFix and crFx > 0 else crL / crP) * (crkPrPct / 100.0 if prOn and crkPr == 'pct' else 1.0) / XR) if crRec else B
                 if crRec:
                     if mode in ('Crooks F', 'Crooks I'): x = min(x, fK * B)
                     elif mode == 'Crooks H': x = min(x, max(B, eq * hPct / 100.0))
@@ -143,7 +146,7 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
             if capAction == 'stop': capStop = True; break
             elif capAction == 'reset':
                 recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
-                crL = 0.0; crN = 0; crRec = False; crW = False; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False
+                crL = 0.0; crN = 0; crRec = False; crW = False; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False; crFx = 0.0
                 r = min(baseC, cap)
             else: r = cap
         levk = tr[4] if len(tr) > 4 else None                       # the leverage limit (the strategy's 1:100 by default)
@@ -181,11 +184,19 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         if mode == 'Crooks X': crL = xtarget(net); xNew = win and xidx(net - pnl) != xidx(net)   # v5.2: set from the levels; a new step
         if mode == 'Crooks G': crL = min(crL, gX * lad_state(lad, ladT, net, peakNet, b)[2])   # v4.5: never more than gX x b (v4.6: the ladder b)
         if crL < 0.01 or (mode in (MODES[18], MODES[21]) and win and crRec):      # less than a cent left = all won back
-            crL = 0.0; crN = 0; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False
+            crL = 0.0; crN = 0; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False; crFx = 0.0
         else:
             crN += 1
             crP = (lparts(b) if mode == 'Crooks L' else cN) if not win else (max(1, crP - 1) if crRec else crP)     # a loss starts the N parts again after the next win (v5.0 L: from the drawdown)
             if xNew: crP = cN                                          # v5.2 Crooks X: a new step is won back in N trades
+            if partFix and cfam:                                       # v5.3: the recovery part fixed at the first win
+                if not win: crFx = 0.0
+                else:
+                    if xNew: crFx = 0.0
+                    if crRec and lastPart and not xNew:                # the last part won: the leftover
+                        if crL < (b * D if pm else b): crL = 0.0; crN = 0; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False; crFx = 0.0
+                        else: crFx = crL; crP = 1
+                    elif crFx <= 0: crFx = crL / crP
             if prOn:
                 if crWait:                                             # wait rule: M wins in a row end the wait, then a loss is needed
                     crWW = crWW + 1 if win else 0
@@ -193,16 +204,16 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
                 elif crNeedL and not win: crNeedL = False
                 if crRec and win:
                     crF = 0
-                    if crkPr == 'pct' and lastPart: crL = 0.0; crN = 0; crP = cN    # the % went for is back, the rest is forgotten
+                    if crkPr == 'pct' and lastPart: crL = 0.0; crN = 0; crP = cN; crFx = 0.0    # the % went for is back, the rest is forgotten
                 elif crRec:
                     crF += 1
                     if crF >= crkPrN:
                         crF = 0
-                        if crkPr in ('forget', 'pct'): crL = 0.0; crN = 0; crP = cN
+                        if crkPr in ('forget', 'pct'): crL = 0.0; crN = 0; crP = cN; crFx = 0.0
                         elif crkPr == 'wait': crWait = True; crWW = 0; crNeedL = False
                         elif crkPr == 'skip':
                             crSkip = True; crSkipLeft = crkPrD
-                            if crkPrForget: crL = 0.0; crN = 0; crP = cN
+                            if crkPrForget: crL = 0.0; crN = 0; crP = cN; crFx = 0.0
         crW = win
     return dict(mode=mode, trades=n, avgRisk=sumRisk / n if n else 0.0, net=net, end=eq, maxDD=maxDD, maxDDpct=maxDDp, maxRisk=maxRisk, maxRiskPct=maxRiskPct, ruined=ruined, ruinAt=ruinAt,
                 pf=(gp / gl) if gl > 0 else float('inf'), worstRun=-worstRun, capStopped=capStop)

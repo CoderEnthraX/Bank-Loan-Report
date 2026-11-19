@@ -1545,7 +1545,7 @@ Example, $100 owed, N = 5, the first recovery trade wins $23: Recalculate → th
 
 **Checks:** the EA matches the Python reference trade for trade with Fixed on every one of these rules (Risk and Profit, N = 1 / 3 / 5,
 every hard-cap choice, the ladder, Crooks X steps and limit, the Crooks C rule after N losing recovery trades): 7,168 runs, 9 M trades,
-0 differences; with a save and reload after every step: FIX_RESTART. With the default (Recalculate) every earlier suite gives the same
+0 differences; with a save and reload after every step: the same 7,168 runs, 0 differences. With the default (Recalculate) every earlier suite gives the same
 results as v5.2, and the broker simulator's orders and bookings are identical to v5.2. The EA compiles with 0 errors and 0 warnings
 (its 75 saved values have unique names); the strategy parses with 0 warnings, 1 new input, no title changed.
 

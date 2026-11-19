@@ -115,3 +115,17 @@ levels, not summed from the trades.
 - The rules after N losing recovery trades (forget / % / wait / skip / hedge) and the hard cap's Start again clear the loss; with Crooks X
   it is measured again at the next close (the gap to the level is still there).
 - No new saved state (T and the step come from the closed profit, crkPk and crkL, all already saved).
+
+## 7. v5.3 (2026-11-19): recovery part size: recalculate (default) / fixed when recovery starts
+
+For the Crooks C family (C, E - L, X; N from "win the loss back over N wins", Crooks L its own parts). New input "Recovery part size":
+Recalculate after each win (default: every v5.2 number unchanged) / Fixed when recovery starts. Fixed (`fx` = the fixed part, $ to win
+back, 0 = not set; EA `crkFx`, saved as "kq"; Pine `crkFx`; reference `crFx`), at every booking in the not-new-cycle branch, after the parts
+update and Crooks X's new step:
+- a loss: `fx = 0`;
+- a win: Crooks X new step: `fx = 0` first; then if this was a recovery trade for the last part (`crRec and parts were 1`, not a new X step):
+  the leftover `crL < base amount` (Risk: the booked trade's base risk; Profit: its base win `b x D` / exBaseWin) -> a new cycle (forgotten,
+  base trades); else `fx = crL`, parts = 1 (one more trade for exactly what is left; repeated the same way); otherwise if `fx <= 0`:
+  `fx = crL / parts` (set at the first win).
+- every new cycle (all won back, cap Start again, monthly restart, forget rules): `fx = 0`; EA hedge pair kept going: `fx = 0`.
+- Sizing: the part a recovery trade goes for = `fx > 0 ? min(fx, crL) : crL / parts`, then x the % rule's %, then as before (/ XR, limits).

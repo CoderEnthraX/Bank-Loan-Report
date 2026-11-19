@@ -86,9 +86,11 @@
 //| v5.2: Crooks X: Crooks E with the loss to win back taken from    |
 //| the levels: below the start the gap to it, above it the gap to   |
 //| the next step ($1,000 by default) up to the best; N trades each. |
+//| v5.3: Recovery part size: recalculate after each win (as before) |
+//| or fixed when recovery starts (the same amount for the N trades). |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "5.20"
+#property version   "5.30"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -401,6 +403,8 @@ enum ENUM_LADDER { LAD_OFF   = 0,  // Off
                    LAD_XHIGH = 4,  // Extra high (keeps 50%, base up to 8x)
                    LAD_MAX   = 5   // Max (keeps 40%, base up to 12x)
 };
+enum ENUM_CRK_PART { CPS_RECALC = 0,   // Recalculate after each win
+                     CPS_FIXED  = 1 }; // Fixed when recovery starts
 enum ENUM_CRK_XLIM { CXL_CAP   = 0,   // Hard cap only
                      CXL_TRADE = 1 }; // Per-trade limit ($)
 enum ENUM_CRK_K { CKM_LOTS = 0,  // Lots
@@ -419,6 +423,7 @@ input double InpCrkT1Pct = 50.0;   //   ...% closed at TP1 (10-90; that part alo
 input bool   InpCrkT1Any = false;  //   ...with any final exit (not only TP1; the rest still runs to TP2)
 input bool   InpCrkCnOn  = false;  // Crooks C (and E-J): win the loss back over N wins
 input int    InpCrkCn    = 1;      //   ...N (1 = all on the trade after a win, 2 = half then the rest, ...)
+input ENUM_CRK_PART InpCrkPart = CPS_RECALC; // Crooks C (and E-X): recovery part size (fixed: set at the first win, the same for the N trades)
 input ENUM_CRK_PR InpCrkPr = CPR_OFF; // Crooks C (and E-J): after N losing recovery trades in a row
 input int    InpCrkPrN   = 2;      //   ...N losing recovery trades in a row
 input double InpCrkPrPct = 50.0;   //   ...% of the loss each recovery trade goes for (the % rule, 10-100)
@@ -644,6 +649,7 @@ int    gpTf = 0;                       // the preset's timeframe (0 = Custom)
 double gNet0 = 0;                      // v4.8 monthly restart: the closed profit at the last restart (the money rules count from it)
 double   recPool = 0; int recLosses = 0; int dUnits = 1; double carried = 0; bool capStop = false;
 double   labSeq[]; int parWins = 0; int rdUnits = 1; int oscU = 1; double oscP = 0;
+double   crkFx = 0;   // v5.3: the fixed recovery part ($ to win back; 0 = not set)
 double   crkL = 0; int crkN = 0; bool crkRec = false;   // Crooks: $ loss to win back, closed trades in the cycle, the open trade is a recovery trade
 double   crkPk = 0;                                      // v4.5 Crooks J: the highest closed profit so far (its drawdown = crkPk - totalNet)
 bool     crkW = false;                                   // Crooks C: the last closed trade was a win
@@ -1384,7 +1390,7 @@ int CrkParts()
    if(InpRec == REC_CRL) { int mx = InpCrkLZ1N > InpCrkLZ2N ? InpCrkLZ1N : InpCrkLZ2N; if(mx < 1) mx = 1; return crkP < 1 ? 1 : crkP > mx ? mx : crkP; }
    int np = CrkNp(); return (crkP < 1 || crkP > np) ? np : crkP;
 }
-void   CrkCycle() { crkL = 0; crkN = 0; crkP = CrkNp(); crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkHg = false; }   // a new cycle at the base risk
+void   CrkCycle() { crkL = 0; crkN = 0; crkP = CrkNp(); crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkHg = false; crkFx = 0; }   // a new cycle at the base risk
 //--- skip rule: a new day in your time zone while trading is paused; counted days end the pause (the day the count reaches 0 is still skipped)
 void   CrkDayCount(bool counted) { if(!crkSkip) return; if(crkSkipLeft <= 0) crkSkip = false; else if(counted) crkSkipLeft--; }
 //--- called for every live bar right after ProcessBar() (gDayOk is that bar's day filter): counted = every day, the ticked days, or Monday-Friday
@@ -1625,7 +1631,7 @@ double CrkRecLimit(double r, double base)
 //--- the risk of a Crooks rule's next trade at this base (v4.6: also at the profit ladder's base)
 double CrkRule(double base, double exitR, double minRisk)
 {
-   double x = crkL / (InpRec == REC_CRB ? InpCSplit : CrkCFam() ? CrkParts() : 1) * (CrkCFam() ? CrkPrPct() : 1.0);   // % rule: a part of the loss
+   double x = (CrkCFam() && InpCrkPart == CPS_FIXED && crkFx > 0 ? MathMin(crkFx, crkL) : crkL / (InpRec == REC_CRB ? InpCSplit : CrkCFam() ? CrkParts() : 1)) * (CrkCFam() ? CrkPrPct() : 1.0);   // v5.3: the fixed part   // % rule: a part of the loss
    bool rn = CrkRecNext();
    double r = !rn ? base : CrkT1Dist() > 0 ? MathMax(base, x) : exitR > 0 ? MathMax(base, x / exitR) : base;   // TP1 rule: a stop-out loses x
    if(rn) r = CrkRecLimit(r, base);                                  // v4.5 Crooks F / H / I / J
@@ -2144,13 +2150,14 @@ void UpdateTable()
                 InpRec == REC_CRX ? (crkL <= 0 ? "" : nrT < -0.005 ? " | below the start: back to it" : " | up to " + DoubleToString(MathMin(crkPk, (MathFloor((nrT + 0.005) / MathMax(0.01, InpCrkXStep)) + 1) * MathMax(0.01, InpCrkXStep)), 0) + " above the start") +
                                     (InpCrkXLim == CXL_TRADE ? ", at most " + DoubleToString(InpCrkXLimUsd, 0) + " a trade" : "") : "";
    string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRG ? " (at most " + DoubleToString(InpCrkGX * ShowBase(), 0) + ")" : "") +
+                 (CrkCFam() && InpCrkPart == CPS_FIXED && crkFx > 0 ? " | part fixed " + DoubleToString(crkFx, 2) : "") +
                  (CrkCFam() ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") +
                   (InpRec == REC_CRL ? ", " + IntegerToString(CrkParts()) + (CrkParts() == 1 ? " part" : " parts") + " to go" : "") + kLim : (crkL > 0 ? kWait : " | base")) + kZn : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "")
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v5.2", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v5.3", white, C'61,143,214');
    if(InpPreset != PRE_CUSTOM) TblAdd("PRESET", PresetName() + (gpTfOk ? "" : " | needs an " + TfName(gpTf) + " chart") + (InpAddMine ? " | + my filters" : ""), gpTfOk ? posC : negC, cell);
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
@@ -2330,13 +2337,27 @@ void BookClosed()
    if(exHg)                                             // the hedge pair closed (exPnl = both trades): forget the loss, or Crooks C goes on from the trade that closed last
    {
       crkF = 0; crkHg = false;
-      if(InpCrkHgForget || crkL < 0.01) CrkCycle(); else { crkN++; crkP = InpRec == REC_CRL ? LParts() : CrkNp(); }
+      if(InpCrkHgForget || crkL < 0.01) CrkCycle(); else { crkN++; crkP = InpRec == REC_CRL ? LParts() : CrkNp(); crkFx = 0; }
    }
    else if(crkL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRD) && win && crkRec)) CrkCycle();
    else
    {
       crkN++; crkP = !win ? (InpRec == REC_CRL ? LParts() : CrkNp()) : crkRec ? MathMax(1, CrkParts() - 1) : CrkParts();   // Crooks C over N wins: a loss starts the parts again (v5.0 L: from the drawdown)
       if(xNew) crkP = CrkNp();                          // v5.2 Crooks X: a new step is won back in N trades
+      if(InpCrkPart == CPS_FIXED && CrkCFam())          // v5.3: the recovery part fixed at the first win
+      {
+         if(!win) crkFx = 0;
+         else
+         {
+            if(xNew) crkFx = 0;
+            if(crkRec && lastPart && !xNew)              // the last part won: a leftover below the base amount is forgotten, else one more trade for it
+            {
+               double bAmt = SizeProfit() ? (exBaseWin > 0 ? exBaseWin : BookBase() * ExitR()) : BookBase();
+               if(crkL < bAmt) CrkCycle(); else { crkFx = crkL; crkP = 1; }
+            }
+            else if(crkFx <= 0) crkFx = crkL / CrkParts();
+         }
+      }
       if(CrkPrOn())                                     // Crooks C rule after N losing recovery trades in a row
       {
          if(crkWait) { crkWW = win ? crkWW + 1 : 0; if(crkWW >= MathMax(1, InpCrkPrM)) { crkWait = false; crkWW = 0; crkNeedL = true; } }   // M wins in a row end the wait
@@ -2548,7 +2569,7 @@ void StateIO(bool save)
    // loss recovery (every rule's state, whichever rule is chosen), total profit (Step-up rule), the hard-cap stop
    IoD("rp", recPool); IoI("rl", recLosses); IoI("du", dUnits); IoD("ca", carried); IoI("pw", parWins); IoI("rd", rdUnits);
    IoI("ou", oscU); IoD("op", oscP); IoD("tn", totalNet); IoD("pk", crkPk); IoD("rn", gNet0); IoI("ew", exW); IoI("el", exLn); IoB("cs", capStop);
-   IoD("kl", crkL); IoI("kn", crkN); IoB("kw", crkW); IoI("kp", crkP); IoI("kf", crkF); IoB("ka", crkWait); IoI("kb", crkWW);
+   IoD("kl", crkL); IoD("kq", crkFx); IoI("kn", crkN); IoB("kw", crkW); IoI("kp", crkP); IoI("kf", crkF); IoB("ka", crkWait); IoI("kb", crkWW);
    IoB("kc", crkNeedL); IoB("ks", crkSkip); IoI("kt", crkSkipLeft); IoI("ku", crkUDay); IoB("kh", crkHg); IoI("kx", gCrkPrPrev);
    // streaks and pauses; the month of the last bar (a new month while the EA was off) and a restart still waiting for a trade to close
    IoD("dp", dayPnl); IoI("lr", lossRow); IoI("wr", winRow); IoB("db", dayBlock); IoI("pl", pauseLeft); IoB("pa", paused);
@@ -2669,7 +2690,7 @@ void BookBrokerDeals()
 void MemoryFresh()
 {
    recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; totalNet = 0; crkPk = 0; gNet0 = 0; exW = 0; exLn = 0; capStop = false;
-   crkL = 0; crkN = 0; crkW = false; crkP = 0; crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false;
+   crkL = 0; crkN = 0; crkW = false; crkP = 0; crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; crkFx = 0;
    dayPnl = 0; lossRow = 0; winRow = 0; dayBlock = false; pauseLeft = 0; paused = false; monRestPend = false;
    TradeClear(); gDayPendN = 0; gRestFlat = false; gPauseArm = -1; gRestored = false;
 }
