@@ -25,3 +25,7 @@ normal v52 month MONTH v5.1: runs 3440, trades compared 5720006, months stopped 
 restart B start 17:41:09
 restart X rec CROOKS X rec: runs 2016, trades compared 2568036, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 17:47:36
 restart X pr CROOKS X pr: runs 1120, trades compared 1320906, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 17:50:36
+restart v51 month MONTH v5.1: runs 3440, trades compared 5720006, months stopped by the cap 9367, months where the simulator account blew (compared up to it) 595, floating-point tie-breaks 0, mismatches 5 -> DIFFERENCES 18:40:34
+restart v51 tp1 TP1 v5.1: runs 13552, trades compared 27420181 (TP1-rule trades 3358472), floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 18:40:34
+restart v51 size SECTION size: runs 18368, trades compared 10747285, floating-point tie-breaks 8, mismatches 2 -> DIFFERENCES 19:11:46
+restart B done 19:11:46

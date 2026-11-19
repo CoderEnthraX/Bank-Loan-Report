@@ -10,3 +10,6 @@ M15 Shortest losing streak     runs   144, trades   163728, tie-breaks 0, mismat
 H1 Most profit                 runs   144, trades    26784, tie-breaks 0, mismatches 0
 H1 Default settings            runs   144, trades   122834, tie-breaks 0, mismatches 0
 H1 Shortest losing streak      runs   144, trades    28080, tie-breaks 0, mismatches 0
+M5 user TP1 0.3R               runs   144, trades   304992, tie-breaks 0, mismatches 0
+M5 user TP1 0.1R               runs   144, trades   273504, tie-breaks 0, mismatches 0
+CROOKS X rec: runs 2016, trades compared 2568036, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL

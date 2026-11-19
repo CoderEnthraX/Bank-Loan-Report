@@ -1,0 +1,16 @@
+M1 Most profit                 runs  344, trades   667506, tie-breaks 0, mismatches 0
+M1 Shortest losing streak      runs  344, trades   614605, tie-breaks 0, mismatches 0
+M5 Most profit                 runs  344, trades   503304, tie-breaks 0, mismatches 0
+M5 Shortest losing streak      runs  344, trades   578856, tie-breaks 0, mismatches 0
+M15 Most profit                runs  344, trades   475247, tie-breaks 0, mismatches 0
+M15 Shortest losing streak     runs  344, trades   390696, tie-breaks 0, mismatches 0
+H1 Most profit                 runs  344, trades    63980, tie-breaks 0, mismatches 0
+H1 Shortest losing streak      runs  344, trades    67080, tie-breaks 0, mismatches 0
+MISMATCH month M5 user TP1 0.1R | profit eb 1 Crooks L {} cap 0.0 clamp | worst 1.52e-09
+MISMATCH month M5 user TP1 0.1R | profit eb 0 Crooks L {} cap 0.0 clamp | worst 1.93e-07
+MISMATCH month M5 user TP1 0.1R | profit eb 0 Crooks L {'lZ1': 1.0, 'lZ1N': 10, 'lZ2': 3.0, 'lZ2N': 5, 'lGrow': 20.0, 'lGrowX': 6.0} cap 0.0 clamp | worst 27.6
+MISMATCH month M5 user TP1 0.1R | profit eb 1 Crooks X {} cap 0.0 clamp | worst 2.11e-05
+MISMATCH month M5 user TP1 0.1R | profit eb 0 Crooks X {} cap 0.0 clamp | worst 4.16e-08
+M5 user TP1 0.1R               runs  344, trades  1140802, tie-breaks 0, mismatches 5
+M5 user TP1 0.3R               runs  344, trades  1217930, tie-breaks 0, mismatches 0
+MONTH v5.1: runs 3440, trades compared 5720006, months stopped by the cap 9367, months where the simulator account blew (compared up to it) 595, floating-point tie-breaks 0, mismatches 5 -> DIFFERENCES

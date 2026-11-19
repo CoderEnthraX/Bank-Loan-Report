@@ -1,0 +1,15 @@
+M1 Most profit                 runs    80, trades   120000, tie-breaks 0, mismatches 0
+M1 Default settings            runs    80, trades   113634, tie-breaks 0, mismatches 0
+M1 Shortest losing streak      runs    80, trades   120000, tie-breaks 0, mismatches 0
+M5 Default settings            runs    80, trades   120000, tie-breaks 0, mismatches 0
+M5 Most profit                 runs    80, trades   117760, tie-breaks 0, mismatches 0
+M5 Shortest losing streak      runs    80, trades   120000, tie-breaks 0, mismatches 0
+M15 Most profit                runs    80, trades   111040, tie-breaks 0, mismatches 0
+M15 Default settings           runs    80, trades   120000, tie-breaks 0, mismatches 0
+M15 Shortest losing streak     runs    80, trades    90960, tie-breaks 0, mismatches 0
+H1 Default settings            runs    80, trades    70720, tie-breaks 0, mismatches 0
+H1 Most profit                 runs    80, trades    14880, tie-breaks 0, mismatches 0
+H1 Shortest losing streak      runs    80, trades    15600, tie-breaks 0, mismatches 0
+M5 user TP1 0.3R               runs    80, trades   113370, tie-breaks 0, mismatches 0
+M5 user TP1 0.1R               runs    80, trades    72942, tie-breaks 0, mismatches 0
+CROOKS X pr: runs 1120, trades compared 1320906, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL

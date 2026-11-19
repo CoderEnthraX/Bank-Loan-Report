@@ -1468,7 +1468,8 @@ Example: gold, $50, final TP 0.1R, a $2.50 stop, spread 0.16, commission $7 a lo
   recovery win land exactly on the amount owed, so a few runs (5 of 56,896) split on a floating-point tie (a Crooks L / Oscar test landing
   exactly on its limit), or on the rounding of the test harness's impossible running totals (10¹² dollars); run a month at a time, those
   match to 5 × 10⁻¹². With a save and reload of the EA's memory after every step: 22,512 more runs, 27 M trades; one difference of
-  6 × 10⁻⁹ on the trade where a test account blows (% of equity), the same without the restart. V51_RESTART_B
+  6 × 10⁻⁹ on the trade where a test account blows (% of equity), the same without the restart. The monthly, TP1 and size suites
+  with restarts (35,360 runs, 44 M trades) give exactly the same results as without them.
 - **Risk mode and the old rules are unchanged:** the v4.9 money suites on v5.1 give 0 differences (rec 8,784 runs, TP1 22,484, Crooks C
   rule 20,544, monthly 1,536, position size 12,240: 90 M trades and signals).
 - **Broker simulator** (gold M1, Aug–Oct 2026, $50, no recovery, the commission charged): the win each trade was sized for at its TP:

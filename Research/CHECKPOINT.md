@@ -1228,7 +1228,8 @@ Other gold findings:
       runs (Crooks L, earn-back off: the closed profit back exactly at the best after a full recovery, `nR >= crkPk` a tie) and 3 month
       runs (Crooks L, M5 0.1R no cap: the chained harness's totals reach 1e12, so nR = totalNet - gNet0 loses digits; month by month in a
       fresh harness 4.8e-12). Restart: rec 9,072 (1: % of equity at 5.7e-9 on the trade where the account blows, the same without the
-      restart: start + a huge negative sum), pr 13,440 identical. RESTART_B_CHECKPOINT
+      restart: start + a huge negative sum), pr 13,440 identical. Restart month 3,440 / tp1 13,552 / size 18,368 runs: the same
+      differences as normal mode only (month 5: Crooks L / X chained-harness totals; size 2: Crooks L ties), tp1 identical.
     - **Broker simulator** (`sim/sim51`): defaults v5.0 vs v5.1 SIM / BOOK lines identical (694 and 1,181); Profit, recovery off, COMM 3.5 a
       side: planned TP win (lots x R x stop, stop from the EA's risk) v5.0 $46.22 / $47.78 / $48.17, v5.1 $47.21 / $49.07 / $49.56 at
       0.6R / 0.2R / 0.1R, max $49.99 (lots rounded down) (`sim/profit_win_check_v51.txt`); Oscar, Crooks C, K, L with Profit at 0.2R and a
