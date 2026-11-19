@@ -1525,6 +1525,30 @@ A new Loss Recovery rule, after Crooks L. It works like **Crooks E** (after a lo
 - The EA compiles with 0 errors and 0 warnings; the strategy parses with 0 inline-title and 0 shadowing warnings, every existing input
   keeps its title (3 new inputs).
 
+### v5.3: Recovery part size: recalculate or fixed (strategy and EA)
+
+For the rules that win a loss back over N wins (Crooks C, E – L and X with "Win The Loss Back Over N Wins"). New setting
+**"Crooks C: Recovery Part Size"** (strategy: Loss Recovery, under the N setting; EA: "Crooks C (and E-X): recovery part size"):
+
+| Choice | What a recovery trade goes for |
+|---|---|
+| **Recalculate after each win** (default, as before) | what is still owed ÷ the parts left, worked out again before every recovery trade |
+| **Fixed when recovery starts** | at the first win the part is set (owed ÷ N) and every recovery trade goes for that same amount |
+
+Example, $100 owed, N = 5, the first recovery trade wins $23: Recalculate → the next parts are $19.25, $19.00 …; Fixed → $20, $20, $20, $20.
+- **After the last part:** if a little is still owed and it is **less than the base amount**, it is forgotten and the next trade is the
+  base trade; if it is **the base amount or more**, one more recovery trade goes for exactly what is left. If the wins brought back
+  everything sooner, recovery ends there.
+- **A loss on the way:** 0.01 lot (Crooks E, I, L, X) or the base until a win; then new parts are fixed from everything owed ÷ N.
+- Crooks X: each new step is fixed again at its first win. Crooks L: its own number of parts. Base amount: the base risk with Risk, the
+  base win with Profit. The EA keeps the fixed part in its restart memory.
+
+**Checks:** the EA matches the Python reference trade for trade with Fixed on every one of these rules (Risk and Profit, N = 1 / 3 / 5,
+every hard-cap choice, the ladder, Crooks X steps and limit, the Crooks C rule after N losing recovery trades): 7,168 runs, 9 M trades,
+0 differences; with a save and reload after every step: FIX_RESTART. With the default (Recalculate) every earlier suite gives the same
+results as v5.2, and the broker simulator's orders and bookings are identical to v5.2. The EA compiles with 0 errors and 0 warnings
+(its 75 saved values have unique names); the strategy parses with 0 warnings, 1 new input, no title changed.
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.

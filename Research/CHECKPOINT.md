@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.2, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.3, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -1250,6 +1250,15 @@ Other gold findings:
     f_xTarget). Checks: `mq5check/rec/parity_x.py` rec 2,016 + pr 1,120 runs, 0 differences; restart rec 2,016 + pr 1,120 identical; independent review (Sonnet agent) no defects; month suite with X: the
     same chained-harness precision case only (fresh per month 4.8e-12); simulator `sim/sim52` x52_*.log: booked, 0 rejects, restarts
     identical, limit held; defaults identical to v5.1.
+
+51. **v5.3: recovery part size (asked 2026-11-19).** Spec `v50/SPEC_v50.md` section 7: Recalculate after each win (default) / Fixed when
+    recovery starts for the Crooks C family (fixed part set at the first win = crL / parts, min(fx, crL) per trade; after the last part a
+    leftover < the base amount (Risk base risk, Profit base win) -> new cycle, else one more trade for it; a loss or a new X step clears it).
+    Reference `gold/recovery.py` partFix (v5.2 copy `recovery_v52.py`); EA `build/patch_ea_v53.py` (InpCrkPart, crkFx saved as "kq": "kx"
+    was already gCrkPrPrev, caught before shipping; 75 saved keys unique; 3,083 lines, mq5check 0 / 0); strategy `build/patch_pine_v53.py`
+    (crkPart, crkFx; parse ok 811). Checks `mq5check/rec/parity_fix.py` rec 5,488 + pr 1,680 runs identical (3,377 of 16,442 Crooks E N = 5
+    trades differ from Recalculate, so the path is exercised); regression and restart: V53_REGRESS; simulator sim53: defaults identical to
+    v5.2, fixed E / X booked, restarts identical. Delivered as the EA + strategy .txt only (the user asked for two files).
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

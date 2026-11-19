@@ -38,6 +38,7 @@
 //  v5.1: with Profit a final-TP win is the amount INCLUDING the spread and commission (v5.0 came short by them). The same in the MT5 EA.
 //  v5.2: Loss Recovery Crooks X: Crooks E where the loss to win back is the gap to the start (below it) or to the next step above it
 //  ($1,000 by default, up to the best), won back over N trades; an optional per-trade limit. The same as in the MT5 EA.
+//  v5.3: Recovery Part Size: recalculate after each win (as before) or fixed when recovery starts (the same amount for the N trades).
 //
 //  LEVERAGE: set it with the "Leverage" input (default 1:100). TradingView's own margin check is off
 //  (margin 0 in Properties): with its default 100 % margin it silently rejects orders bigger than the
@@ -459,6 +460,9 @@ crkT1Pct  = input.float(50.0, "Crooks TP1 Rule: % Closed At TP1", minval = 10.0,
 crkT1Any  = input.bool(false, "Crooks TP1 Rule: Works With Any Final Exit", group = GRP_L, tooltip = "Off (default): the TP1 rule acts only with Final Exit At TP1.\nOn: it acts on the recovery trades whatever the Final Exit is: the part closes at TP1, the rest runs to TP2 with its stop at the entry after TP1 (with Final Exit TP3 / TP4 too, the rest closes at TP2). The other trades keep the normal exits. The stop moves (When TP1 / TP2 / TP3 Hits, Move Stop) and the partial profits do not apply to the TP1-rule trades.\nHalf at TP1 and the rest at TP2 with the normal stop: tick Crooks At Exit TP1, Stop Before TP1 = Normal stop, % Closed At TP1 = 50 and this.")
 crkCnOn   = input.bool(false, "Crooks C: Win The Loss Back Over N Wins", inline = "ccn", group = GRP_L)
 crkCn     = input.int(1, "", minval = 1, inline = "ccn", group = GRP_L, tooltip = "Crooks C and E - J. 1 = the trade after a win wins back the whole loss (the normal Crooks C).\n2 = it wins back half; if it wins, the next trade wins back the rest. 3 = one third, then the next third, then the rest.\nA loss at any point: back to base trades until the next win, then the N parts start again from the new loss.")
+CPS_RECALC = "Recalculate after each win"
+CPS_FIXED  = "Fixed when recovery starts"
+crkPart   = input.string(CPS_RECALC, "Crooks C: Recovery Part Size", options = [CPS_RECALC, CPS_FIXED], group = GRP_L, tooltip = "Crooks C and E - X with Win The Loss Back Over N Wins. Recalculate after each win: every recovery trade goes for what is still owed / the parts left (a win that brings back more or less changes the next part). Fixed when recovery starts: at the first win the part is set (owed / N) and every recovery trade goes for that same amount; after the last part, a leftover smaller than the base amount is forgotten (base trades), a bigger one gets one more trade for exactly what is left. A loss on the way: 0.01 lot / base until a win, then new parts from everything owed.")
 CPR_OFF    = "Off (Crooks C as now)"
 CPR_FORGET = "Forget the loss"
 CPR_PCT    = "Go for a % of the loss, forget it after N"
@@ -1102,6 +1106,7 @@ var int   rdUnits   = 1      // Reverse D'Alembert units
 var int   oscU      = 1      // Oscar's Grind units
 var float oscP      = 0.0    // Oscar's Grind cycle profit
 var float crkL      = 0.0    // Crooks: $ loss to win back in this cycle
+var float crkFx     = 0.0    // v5.3: the fixed recovery part ($ to win back; 0 = not set)
 var int   crkN      = 0      // Crooks: closed trades in this cycle
 var bool  crkRec    = false  // Crooks: the trade in progress is a recovery trade
 var bool  crkW      = false  // Crooks C: the last closed trade was a win
@@ -1373,6 +1378,20 @@ if exClosed
         crkP := not win ? (recMode == L_CRL ? f_lParts() : crkNp) : crkRec ? math.max(1, crkP - 1) : crkP    // Crooks C over N wins: a loss starts the parts again after the next win (v5.0 L: from the drawdown)
         if xNew
             crkP := crkNp                                // v5.2 Crooks X: a new step is won back in N trades
+        if crkPart == CPS_FIXED and crkCFam              // v5.3: the recovery part fixed at the first win
+            if not win
+                crkFx := 0.0
+            else
+                if xNew
+                    crkFx := 0.0
+                if crkRec and crkLast and not xNew       // the last part won: a leftover below the base amount is forgotten, else one more trade for it
+                    if crkL < (sizeBy == SB_PROFIT ? exBaseWin : exBase)
+                        crkNew := true
+                    else
+                        crkFx := crkL
+                        crkP  := 1
+                else if crkFx <= 0
+                    crkFx := crkL / crkP
         // Crooks C rule after N losing recovery trades in a row
         if crkPrOn
             if crkWait
@@ -1403,6 +1422,7 @@ if exClosed
                         crkNew      := crkPrForget
     if crkNew                    // a new cycle at the base risk
         crkL     := 0.0
+        crkFx    := 0.0
         crkN     := 0
         crkP     := crkNp
         crkF     := 0
@@ -1431,6 +1451,7 @@ if mRestPend and exState == 0 and strategy.position_size == 0
     oscU        := 1
     oscP        := 0.0
     crkL        := 0.0
+    crkFx       := 0.0
     crkN        := 0
     crkW        := false
     crkP        := crkNp
@@ -1544,7 +1565,7 @@ if evArm
     float t1S0  = crkT1Stop == T1S_TIGHT ? t1S : crkT1Stop == T1S_K45 or crkT1Stop == T1S_K60 ? (isL ? f_ceilTick(eP - t1K * rp) : f_floorTick(eP + t1K * rp)) : f_stopPx(isL)
     float t1Per = math.abs(eP - t1S) * pvf + costUnit
     float t1Mul = t1Ok and t1Per > 0 ? (math.abs(eP - t1S0) * pvf + costUnit) / t1Per : 1.0
-    float crkX  = crkL / (recMode == L_CRB ? cSplit : crkCFam ? crkP : 1) * (crkPrOn and crkPr == CPR_PCT ? crkPrPct / 100.0 : 1.0)
+    float crkX  = (crkCFam and crkPart == CPS_FIXED and crkFx > 0 ? math.min(crkFx, crkL) : crkL / (recMode == L_CRB ? cSplit : crkCFam ? crkP : 1)) * (crkPrOn and crkPr == CPR_PCT ? crkPrPct / 100.0 : 1.0)   // v5.3: the fixed part
     bool  crkRn = f_crkRecNext()
     // v4.5 Crooks F / H / I / J: the most a recovery trade risks (F / H / I: its real stop-out loss, a wider TP1-rule stop included);
     // Crooks E / I: while a loss waits for a win, the small lot (its stop-out loss incl. costs), or the base if that is smaller
@@ -1576,6 +1597,7 @@ if evArm
             oscU      := 1
             oscP      := 0.0
             crkL      := 0.0
+            crkFx     := 0.0
             crkN      := 0
             crkW      := false
             crkP      := crkNp
@@ -1682,7 +1704,7 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     float  nrT   = strategy.netprofit - rNet0      // v5.0 Crooks K / L: where the closed profit is (since the start or the monthly restart)
     string kCare = ckMode == CK_USD ? f_usd(ckUsd) + (sizeBy == SB_PROFIT ? " win" : "") : ckMode == CK_PCT ? str.tostring(ckPct) + "% of the base" : str.tostring(ckLots) + " lot"
     string kZn   = recMode == L_CRK ? (nrT < 0 ? " · below the start: " + (crkW ? "careful " + kCare + " after a win" : str.tostring(crkELot) + " lot until a win") : " · above the start (Crooks J)") : recMode == L_CRL ? (nrT < 0 ? " · below the start" : nrT < crkPk ? " · below the best" : " · at the best, base " + f_usd(f_lBase(baseRisk, sizeBy == SB_PROFIT ? f_pD(nz(trRisk)) : 1.0))) : recMode == L_CRX ? ((crkL <= 0 ? "" : nrT < -0.005 ? " · below the start: back to it" : " · up to " + f_usd(math.min(crkPk, (math.floor((nrT + 0.005) / math.max(0.01, cxStep)) + 1) * math.max(0.01, cxStep))) + " above the start") + (cxLim == CXL_TRADE ? ", at most " + f_usd(cxLimUsd) + " a trade" : "")) : ""
-    string kTxt = f_usd(crkL) + (recMode == L_CRG ? " (at most " + f_usd(crkGX * baseRisk) + ")" : "") + (crkCFam ? (kRec ? " · recovery trade" + (crkNp > 1 ? ", part " + str.tostring(crkNp - crkP + 1) + " of " + str.tostring(crkNp) : "") + (recMode == L_CRL ? ", " + str.tostring(crkP) + (crkP == 1 ? " part" : " parts") + " to go" : "") + kLim : crkL > 0 ? kWait : " · base") + kZn : " · trade " + str.tostring(crkN + 1) + (kRec ? " recovery" : " base")) + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "") + (not crkPrOn ? "" : crkPause ? " · paused, " + str.tostring(crkSkipLeft) + " days left" : crkWait ? " · waiting for " + str.tostring(crkPrM) + " wins in a row (" + str.tostring(crkWW) + ")" : crkNeedL ? " · waiting for a loss, then a win" : crkF > 0 ? " · lost recoveries in a row " + str.tostring(crkF) + "/" + str.tostring(crkPrN) : "")
+    string kTxt = f_usd(crkL) + (crkCFam and crkPart == CPS_FIXED and crkFx > 0 ? " · part fixed " + f_usd(crkFx) : "") + (recMode == L_CRG ? " (at most " + f_usd(crkGX * baseRisk) + ")" : "") + (crkCFam ? (kRec ? " · recovery trade" + (crkNp > 1 ? ", part " + str.tostring(crkNp - crkP + 1) + " of " + str.tostring(crkNp) : "") + (recMode == L_CRL ? ", " + str.tostring(crkP) + (crkP == 1 ? " part" : " parts") + " to go" : "") + kLim : crkL > 0 ? kWait : " · base") + kZn : " · trade " + str.tostring(crkN + 1) + (kRec ? " recovery" : " base")) + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "") + (not crkPrOn ? "" : crkPause ? " · paused, " + str.tostring(crkSkipLeft) + " days left" : crkWait ? " · waiting for " + str.tostring(crkPrM) + " wins in a row (" + str.tostring(crkWW) + ")" : crkNeedL ? " · waiting for a loss, then a win" : crkF > 0 ? " · lost recoveries in a row " + str.tostring(crkF) + "/" + str.tostring(crkPrN) : "")
     f_row(mon, 5, isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", recMode == L_OFF ? "off" : isC ? f_usd(carried) + " · split " + str.tostring(cSplit) : isK ? kTxt : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : recMode == L_RDALE ? " · " + str.tostring(rdUnits) + " units" : recMode == L_OSC ? " · " + str.tostring(oscU) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white)
     f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(exW) + "W/" + str.tostring(exLn) + "L", white)
     f_row(mon, 7, "DAY P&L · FILLS", f_usd(dayPnl) + " · " + str.tostring(dayFills) + "/" + str.tostring(maxFills) + (mLockOn or pLockOn ? " · month " + f_usd(mPnl) + (pLocked ? " (locked " + f_usd(pLockPct / 100.0 * mPeak) + ")" : "") : ""), dayPnl >= 0 ? posC : negC)
