@@ -1,0 +1,95 @@
+"""(parallel copy of parity_crkpr.py: the same jobs and checks, one worker per source and day mode) v3.9 Crooks C rule after N losing recovery trades in a row: the EA's own NextRisk() / CrkRecNext() / BookClosed() / CrkDayCount() / CrkPause()
+(compiled, REC_DAYS mode of rec_driver) vs gold/recovery.py, trade for trade, on real gold sequences with their day changes.
+Every rule (forget; % 50 / 75; wait M 1-3; skip D 1-3 with forget on / off and counted days Mon-Fri / every day) x N 1-3 x cap none / $500 Clamp /
+Start again / Stop x Crooks C over 1 / 2 wins. Per signal: SKIP (paused) or the $ risk; STOP where the hard cap stops trading.
+v4.5: the same for Crooks E - J (built on Crooks C) with N 1 / 2 and forget, % 50, wait M 2, skip D 2 (forget off / on, Mon-Fri).
+v4.6: and Crooks F - J with the profit ladder at Medium and Max (target $1,000) with the same rules."""
+import sys, os, subprocess, tempfile, datetime
+S = '/tmp/claude-0/-home-user-Bank-Loan-Report/21ed2550-acec-5cf1-bf01-a24cbf22fe18/scratchpad'
+sys.path.insert(0, S + '/gold')
+import recovery as RC, crooks
+H = S + '/mq5check/rec/rec_harness'
+CAPS = {'clamp': 0, 'stop': 1, 'reset': 2}; PR = {'forget': 1, 'pct': 2, 'wait': 3, 'skip': 4}
+def dayev(seq, all_days):
+    """the new days before each signal, as the EA counts them in your time zone: every calendar day after the previous signal's day up to this one"""
+    out = []; prev = None
+    for t, *_ in seq:
+        d = t.date(); ev = []
+        if prev is not None:
+            x = prev
+            while x < d:
+                x += datetime.timedelta(days=1); ev.append(all_days or x.weekday() < 5)
+        prev = d; out.append(ev)
+    return out
+def rules():
+    for N in (1, 2, 3):
+        yield dict(crkPr='forget', crkPrN=N)
+        for p in (50.0, 75.0): yield dict(crkPr='pct', crkPrN=N, crkPrPct=p)
+        for M in (1, 2, 3): yield dict(crkPr='wait', crkPrN=N, crkPrM=M)
+        for D in (1, 2, 3):
+            for fg in (False, True):
+                for al in (False, True): yield dict(crkPr='skip', crkPrN=N, crkPrD=D, crkPrForget=fg, _all=al)
+NEWM = {'Crooks E': {}, 'Crooks F': dict(fK=3.0), 'Crooks G': dict(gX=10.0), 'Crooks H': dict(hPct=1.0), 'Crooks I': dict(fK=3.0), 'Crooks J': dict(jX=20.0)}
+LADN = {'Low': 1, 'Medium': 2, 'High': 3, 'Extra high': 4, 'Max': 5}            # v4.6 ENUM_LADDER
+RECN = {'Crooks C': 20, 'Crooks E': 22, 'Crooks F': 23, 'Crooks G': 24, 'Crooks H': 25, 'Crooks I': 26, 'Crooks J': 27}
+def rules_new():
+    for N in (1, 2):
+        yield dict(crkPr='forget', crkPrN=N)
+        yield dict(crkPr='pct', crkPrN=N, crkPrPct=50.0)
+        yield dict(crkPr='wait', crkPrN=N, crkPrM=2)
+        for fg in (False, True): yield dict(crkPr='skip', crkPrN=N, crkPrD=2, crkPrForget=fg, _all=False)
+def work(arg):
+    tf, name, al_only = arg
+    tdir = tempfile.TemporaryDirectory(); runs = bad = ntr = nskip = 0; msgs = []
+    d = [x for x in crooks.sources(tf) if x['name'] == name][0]
+    if True:
+        seq = crooks.sequence(d['trades'], d['cfg'])[:3000]; xr = crooks.exit_r(d['cfg'])
+        sds = [x[5] for x in sorted(d['trades'], key=lambda x: x[0])]
+        rmin = [1.0 * sd * (1.0 + c) for (_, _, c, _), sd in zip(seq, sds)]     # v4.5 Crooks E / I: 0.01 lot = 1 oz at the stop, cost included
+        for al in (al_only,):
+            ev = dayev(seq, al)
+            path = os.path.join(tmp := tdir.name, '%s_%s_%d.txt' % (tf, d['name'].replace(' ', '_'), al))
+            with open(path, 'w') as f:
+                for (t, res, c, parts), e, rm in zip(seq, ev, rmin):
+                    f.write('%d%s %r %r %r %d%s\n' % (len(e), ''.join(' %d' % v for v in e), res, c, rm, len(parts or []), ''.join(' %r %r' % x for x in (parts or []))))
+            trs = [(res, c, parts, e, None, rm) for (t, res, c, parts), e, rm in zip(seq, ev, rmin)]
+            jobs = [('Crooks C', rl, {}) for rl in rules()] + [(m, rl, mk) for m, mk in NEWM.items() for rl in rules_new()]
+            jobs += [(m, rl, dict(mk, lad=lv, ladT=1000.0)) for m, mk in NEWM.items() if m in RC.LADFAM for lv in ('Medium', 'Max') for rl in rules_new()]
+            for mode, rl, mk in jobs:
+                if rl.get('_all', False) != al: continue
+                kw = {k: v for k, v in rl.items() if not k.startswith('_')}
+                start = 1e4 if mode == 'Crooks H' else 1e12
+                for cn in (1, 2):
+                    for cap, act in ((0.0, 'clamp'), (500.0, 'clamp'), (500.0, 'reset'), (500.0, 'stop')):
+                        tr = []; r = RC.simulate(trs, mode, cap=cap, capAction=act, exitR=xr, start=start, trace=tr, cN=cn, **kw, **mk)
+                        args = [H, path, repr(xr), 'InpRec=%d' % RECN[mode], 'InpCapOn=%d' % (1 if cap > 0 else 0), 'InpHardCap=%r' % (cap if cap > 0 else 500.0), 'InpCapAction=%d' % CAPS[act],
+                                'InpBaseRisk=50', 'InpCrkCnOn=%d' % (1 if cn > 1 else 0), 'InpCrkCn=%d' % cn, 'InpCrkPr=%d' % PR[kw['crkPr']], 'InpCrkPrN=%d' % kw['crkPrN'],
+                                'InpCrkPrPct=%r' % kw.get('crkPrPct', 50.0), 'InpCrkPrM=%d' % kw.get('crkPrM', 2), 'InpCrkPrD=%d' % kw.get('crkPrD', 3),
+                                'InpCrkPrForget=%d' % (1 if kw.get('crkPrForget') else 0), 'InpCrkPrAll=%d' % (1 if al else 0), 'InpCommLot=0', 'InpSpread=0', 'InpCrkT1=0',   # v4.0: the v3.9 cost defaults
+                                'InpCrkFK=%r' % mk.get('fK', 3.0), 'InpCrkGX=%r' % mk.get('gX', 10.0), 'InpCrkHPct=%r' % mk.get('hPct', 1.0), 'InpCrkJX=%r' % mk.get('jX', 20.0),
+                                'InpLadder=%d' % LADN.get(mk.get('lad'), 0), 'InpLadT=%r' % mk.get('ladT', 1000.0)]
+                        out = subprocess.run(args, capture_output=True, text=True, check=True, env=dict(os.environ, REC_DAYS='1', REC_MIN='1', REC_START=repr(start))).stdout.split('\n')
+                        ea = [('SKIP' if l == 'SKIP' else float(l.split()[1])) for l in out if l.startswith('R ') or l == 'SKIP']
+                        stop = any(l == 'STOP' for l in out); runs += 1
+                        n = min(len(tr), len(ea)); ntr += n; nskip += sum(1 for x in tr[:n] if x == 'SKIP')
+                        diff = [i for i in range(n) if (tr[i] == 'SKIP') != (ea[i] == 'SKIP') or (tr[i] != 'SKIP' and abs(tr[i] - ea[i]) > 1e-9 * max(1.0, abs(tr[i])))]
+                        short = len(tr) < len(ea) and r['ruined']
+                        if diff or (len(tr) != len(ea) and not short) or stop != r['capStopped']:
+                            bad += 1
+                            if bad <= 8:
+                                i = diff[0] if diff else n
+                                msgs.append('MISMATCH %s %s %s %s N/2 %d cap %d %s: py %d, EA %d; first diff %d: py %s EA %s; stop py %s EA %s' % (
+                                    tf, d['name'], mode, kw, cn, cap, act, len(tr), len(ea), i, tr[i] if i < len(tr) else None, ea[i] if i < len(ea) else None, r['capStopped'], stop))
+    return tf, name, al_only, runs, bad, ntr, nskip, msgs
+
+
+if __name__ == '__main__':
+    from multiprocessing import Pool
+    args = [(tf, d['name'], al) for tf in crooks.TFS for d in crooks.sources(tf) if d['name'] in ('Default settings', 'Most profit', 'Shortest losing streak') for al in (False, True)]
+    R = B = N = K = 0
+    with Pool(int(sys.argv[1]) if len(sys.argv) > 1 else 4) as pool:
+        for tf, name, al, runs, bad, ntr, nskip, msgs in pool.imap_unordered(work, args):
+            R += runs; B += bad; N += ntr; K += nskip
+            for m in msgs: print(m)
+            print('%-4s %-24s every-day %-5s runs %5d, signals %8d, mismatches %d' % (tf, name, al, runs, ntr, bad), flush=True)
+    print('runs %d, signals compared %d (skipped by the pause %d), mismatches %d' % (R, N, K, B))

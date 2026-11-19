@@ -1,0 +1,8 @@
+Size By Profit, base $50, recovery Off, simulator Aug-Oct 2026 (M1 + jitter), spread 0.16 / commission $7 per lot in the sizing and charged by the simulator
+planned win = what the trade nets at its TP when filled at its order price with the 0.16 spread: lots x R x stop x 100 (stop from the EA's own risk: (risk/lots - 7)/100 - 0.16)
+TP1 0.6R v5.0: trades  99 | planned win at TP: mean $ 46.22, median $ 46.19, min $ 42.88, max $ 48.95 | win per $ of risk 0.5840
+TP1 0.6R v5.1: trades  99 | planned win at TP: mean $ 47.21, median $ 47.19, min $ 43.72, max $ 49.99 | win per $ of risk 0.5840
+TP1 0.2R v5.0: trades 102 | planned win at TP: mean $ 47.78, median $ 47.81, min $ 46.30, max $ 48.86 | win per $ of risk 0.1947
+TP1 0.2R v5.1: trades 102 | planned win at TP: mean $ 49.07, median $ 49.12, min $ 47.55, max $ 49.99 | win per $ of risk 0.1947
+TP1 0.1R v5.0: trades 104 | planned win at TP: mean $ 48.17, median $ 48.16, min $ 46.66, max $ 48.88 | win per $ of risk 0.0973
+TP1 0.1R v5.1: trades 104 | planned win at TP: mean $ 49.56, median $ 49.60, min $ 48.36, max $ 49.99 | win per $ of risk 0.0973

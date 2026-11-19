@@ -86,12 +86,13 @@ def simulate(tr, mode, base=50.0, cap=0.0, capAction='clamp', cSplit=3, tp1rule=
     trade's 'rmin' (the $ risk of the small lot) while waiting.
     v4.6 profit ladder (Crooks F - J) as in recovery.py; the extra risk limit covers the real stop-out loss (gam x C / m); while the closed profit
     is at or below 0 (the start guard) the trade is the 0.01 lot without the TP1 rule.
+    v5.1: sizeBy 'profit' divides by x['pd'] (a final-TP win per $ of stop-out loss of that trade; absent: exitR).
     v5.0 (v50/SPEC_v50.md): sizeBy 'profit' (base / exitR), Crooks K (no TP1 rule below the zero line; x['krisk'] = the careful lots' $ risk),
     Crooks L (the 0.01 lot while waiting, the parts of a loss from the drawdown when it is booked, base growth at a new best)."""
     import recovery as RC
     cfam = mode in CFAM; peakNet = 0.0
     eq = start; peak = start; maxDD = maxDDp = 0.0; net = 0.0; gp = gl = 0.0; n = 0; nsk = 0; nsp = nfb = 0; sumRisk = maxRisk = 0.0
-    cN = 1 if mode == 'Crooks L' else cN; pm = sizeBy == 'profit'; D = exitR if pm else 1.0; b = base / exitR if pm else base   # v5.0
+    cN = 1 if mode == 'Crooks L' else cN; pm = sizeBy == 'profit'   # v5.0 (v5.1: D and the base per trade, below)
     def lparts(bb):
         if net < 0: dd, st_, mx = -net, lZ1 * bb, max(1, lZ1N)
         elif net < peakNet: dd, st_, mx = peakNet - net, lZ2 * bb, max(1, lZ2N)
@@ -99,6 +100,7 @@ def simulate(tr, mode, base=50.0, cap=0.0, capAction='clamp', cSplit=3, tp1rule=
         return int(max(1, min(mx, math.ceil(dd / st_ - 1e-9)))) if st_ > 0 else 1
     crL = 0.0; crN = 0; crW = False; crP = cN; busy = -1; ruined = capStop = False; ruinAt = None; lossRun = worstRun = 0.0; kinds = {}
     for k, x in enumerate(tr):
+        Dt = x.get('pd', exitR) if pm else exitR; D = Dt if pm else 1.0; XR = Dt if pm else exitR; b = base / D if pm else base   # v5.1
         if skips and x['arm'] < busy: nsk += 1; continue                # still in a TP1-rule trade: this signal is skipped
         rec = ((mode in ('Crooks A', 'Crooks B') and crN >= 2 and crN % 2 == 0) or (cfam and crW and crL > 0)
                or (mode == 'Crooks D' and crN >= 2 and (crN - 2) % 3 == 0))
@@ -109,7 +111,7 @@ def simulate(tr, mode, base=50.0, cap=0.0, capAction='clamp', cSplit=3, tp1rule=
         sp = rec and tp1rule and x['sp'] is not None and not lguard and not kz
         m = x.get('m', 1.0) if sp else 1.0                          # stop-out loss / T at the first stop (TP1-rule stop choice); the hard cap covers it
         def crk(B):
-            q = max(B, X) if sp else max(B, X / exitR) if rec else B
+            q = max(B, X) if sp else max(B, X / XR) if rec else B
             if cfam and rec:                                        # v4.5 Crooks F / H / I / J
                 if mode in ('Crooks F', 'Crooks I'): q = min(q, max(1.0, fK) * B / m)
                 elif mode == 'Crooks H': q = min(q, max(B, eq * hPct / 100.0) / m)

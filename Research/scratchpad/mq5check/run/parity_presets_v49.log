@@ -1,0 +1,127 @@
+preset   variant                ref      EA identical
+M1-S1    as tested              113     113       113 
+M1-S1    user GMT 0             113     113       113 
+M1-S1    add: my hours+kz       268     268       268 
+M1-S1    add: days only          68      68        68 
+M1-S1    wrong chart              0       0         0 
+M1-S2    as tested              108     108       108 
+M1-S2    user GMT 0             108     108       108 
+M1-S2    add: my hours+kz       236     236       236 
+M1-S2    add: days only          67      67        67 
+M1-S2    wrong chart              0       0         0 
+M1-S3    as tested              121     121       121 
+M1-S3    user GMT 0             121     121       121 
+M1-S3    add: my hours+kz       305     305       305 
+M1-S3    add: days only          74      74        74 
+M1-S3    wrong chart              0       0         0 
+M1-S4    as tested              114     114       114 
+M1-S4    user GMT 0             114     114       114 
+M1-S4    add: my hours+kz       292     292       292 
+M1-S4    add: days only          68      68        68 
+M1-S4    wrong chart              0       0         0 
+M5-S1    as tested              259     259       259 
+M5-S1    user GMT 0             259     259       259 
+M5-S1    add: my hours+kz       403     403       403 
+M5-S1    add: days only         157     157       157 
+M5-S1    wrong chart              0       0         0 
+M5-S2    as tested              291     291       291 
+M5-S2    user GMT 0             291     291       291 
+M5-S2    add: my hours+kz       467     467       467 
+M5-S2    add: days only         171     171       171 
+M5-S2    wrong chart              0       0         0 
+M5-S3    as tested              319     319       319 
+M5-S3    user GMT 0             319     319       319 
+M5-S3    add: my hours+kz       489     489       489 
+M5-S3    add: days only         194     194       194 
+M5-S3    wrong chart              0       0         0 
+M5-S4    as tested              230     230       230 
+M5-S4    user GMT 0             230     230       230 
+M5-S4    add: my hours+kz       305     305       305 
+M5-S4    add: days only         133     133       133 
+M5-S4    wrong chart              0       0         0 
+M15-S1   as tested              676     676       676 
+M15-S1   user GMT 0             676     676       676 
+M15-S1   add: my hours+kz       342     342       342 
+M15-S1   add: days only         449     449       449 
+M15-S1   wrong chart              0       0         0 
+M15-S2   as tested              398     398       398 
+M15-S2   user GMT 0             398     398       398 
+M15-S2   add: my hours+kz       187     187       187 
+M15-S2   add: days only         271     271       271 
+M15-S2   wrong chart              0       0         0 
+M15-S3   as tested              418     418       418 
+M15-S3   user GMT 0             418     418       418 
+M15-S3   add: my hours+kz       210     210       210 
+M15-S3   add: days only         292     292       292 
+M15-S3   wrong chart              0       0         0 
+M15-S4   as tested              640     640       640 
+M15-S4   user GMT 0             640     640       640 
+M15-S4   add: my hours+kz       319     319       319 
+M15-S4   add: days only         427     427       427 
+M15-S4   wrong chart              0       0         0 
+M15-S5   as tested              676     676       676 
+M15-S5   user GMT 0             676     676       676 
+M15-S5   add: my hours+kz       342     342       342 
+M15-S5   add: days only         449     449       449 
+M15-S5   wrong chart              0       0         0 
+M15-S6   as tested              822     822       822 
+M15-S6   user GMT 0             822     822       822 
+M15-S6   add: my hours+kz       374     374       374 
+M15-S6   add: days only         533     533       533 
+M15-S6   wrong chart              0       0         0 
+M15-S7   as tested              670     670       670 
+M15-S7   user GMT 0             670     670       670 
+M15-S7   add: my hours+kz       338     338       338 
+M15-S7   add: days only         446     446       446 
+M15-S7   wrong chart              0       0         0 
+M15-S8   as tested              598     598       598 
+M15-S8   user GMT 0             598     598       598 
+M15-S8   add: my hours+kz       332     332       332 
+M15-S8   add: days only         414     414       414 
+M15-S8   wrong chart              0       0         0 
+M15-S9   as tested              122     122       122 
+M15-S9   user GMT 0             122     122       122 
+M15-S9   add: my hours+kz       205     205       205 
+M15-S9   add: days only          74      74        74 
+M15-S9   wrong chart              0       0         0 
+H1-S1    as tested              549     549       549 
+H1-S1    user GMT 0             549     549       549 
+H1-S1    add: my hours+kz       227     227       227 
+H1-S1    add: days only         363     363       363 
+H1-S1    wrong chart              0       0         0 
+H1-S2    as tested              145     145       145 
+H1-S2    user GMT 0             145     145       145 
+H1-S2    add: my hours+kz        72      72        72 
+H1-S2    add: days only          85      85        85 
+H1-S2    wrong chart              0       0         0 
+H1-S3    as tested              520     520       520 
+H1-S3    user GMT 0             520     520       520 
+H1-S3    add: my hours+kz       200     200       200 
+H1-S3    add: days only         333     333       333 
+H1-S3    wrong chart              0       0         0 
+H1-S4    as tested              525     525       525 
+H1-S4    user GMT 0             525     525       525 
+H1-S4    add: my hours+kz       198     198       198 
+H1-S4    add: days only         310     310       310 
+H1-S4    wrong chart              0       0         0 
+H1-S5    as tested              146     146       146 
+H1-S5    user GMT 0             146     146       146 
+H1-S5    add: my hours+kz        72      72        72 
+H1-S5    add: days only          85      85        85 
+H1-S5    wrong chart              0       0         0 
+H1-S6    as tested              905     905       905 
+H1-S6    user GMT 0             905     905       905 
+H1-S6    add: my hours+kz       371     371       371 
+H1-S6    add: days only         579     579       579 
+H1-S6    wrong chart              0       0         0 
+H1-S7    as tested              466     466       466 
+H1-S7    user GMT 0             466     466       466 
+H1-S7    add: my hours+kz       151     151       151 
+H1-S7    add: days only         258     258       258 
+H1-S7    wrong chart              0       0         0 
+H1-S8    as tested              890     890       890 
+H1-S8    user GMT 0             890     890       890 
+H1-S8    add: my hours+kz       316     316       316 
+H1-S8    add: days only         544     544       544 
+H1-S8    wrong chart              0       0         0 
+ALL IDENTICAL

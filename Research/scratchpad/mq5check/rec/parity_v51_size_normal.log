@@ -1,0 +1,16 @@
+size  M1 Most profit                 runs  1248, trades   912827, tie-breaks 0, mismatches 0
+size  M1 Default settings            runs  1248, trades   694667, tie-breaks 0, mismatches 0
+size  M1 Shortest losing streak      runs  1248, trades   906445, tie-breaks 0, mismatches 0
+size  M5 Default settings            runs  1248, trades   774798, tie-breaks 0, mismatches 0
+size  M5 Shortest losing streak      runs  1248, trades   918191, tie-breaks 0, mismatches 0
+size  M5 Most profit                 runs  1248, trades   900123, tie-breaks 0, mismatches 0
+size  M15 Most profit                runs  1248, trades   895934, tie-breaks 0, mismatches 0
+size  M15 Default settings           runs  1248, trades   893426, tie-breaks 1, mismatches 0
+size  H1 Most profit                 runs  1248, trades   222138, tie-breaks 0, mismatches 0
+size  H1 Shortest losing streak      runs  1248, trades   240315, tie-breaks 0, mismatches 0
+size  M15 Shortest losing streak     runs  1248, trades   920086, tie-breaks 0, mismatches 0
+size  H1 Default settings            runs  1248, trades   795754, tie-breaks 0, mismatches 0
+size  M5 user TP1 0.1R               runs  1248, trades   474216, tie-breaks 0, mismatches 0
+MISMATCH size M5 user TP1 0.3R | eb 0 pct=1.0 Oscar's Grind {} N 1 cap 2000.0 reset | first diff (22, 716.7822146462554, 358.391107323, 103, 800, False, False)
+size  M5 user TP1 0.3R               runs  1248, trades   649090, tie-breaks 0, mismatches 1
+SECTION size: runs 17472, trades compared 10198010, floating-point tie-breaks 1, mismatches 1 -> DIFFERENCES

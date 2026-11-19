@@ -71,9 +71,24 @@
 //| H1 S1-S8), each on its own chart timeframe; "Add my filters"     |
 //| adds your days, hours, kill zones and news. The monthly restart  |
 //| also restarts the profit ladder and a hard-cap stop.             |
+//| v4.9: BE TRIGGER (stop to the entry once the trade is X R up)    |
+//| and SALVAGE TRIGGER (target to the entry once it is X R down),   |
+//| off by default; they work with any preset (TradingView too).     |
+//| v5.0: SIZE BY: the base and every loss-recovery amount can be    |
+//| the PROFIT at the final TP (the stop-out loss follows from it).  |
+//| Crooks K: Crooks J above the start, below it a careful size      |
+//| after a win (lots, $ or % of base) and 0.01 lot after a loss.    |
+//| Crooks L: 0.01 lot until a win, then the loss is split by the    |
+//| drawdown (below the start / below the best); at a new best the   |
+//| base grows with the profit.                                      |
+//| v5.1: Size by Profit includes the costs: a final-TP win is the   |
+//| amount itself (v5.0 came short by the spread and commission).    |
+//| v5.2: Crooks X: Crooks E with the loss to win back taken from    |
+//| the levels: below the start the gap to it, above it the gap to   |
+//| the next step ($1,000 by default) up to the best; N trades each. |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "4.80"
+#property version   "5.20"
 #property description "VWAP displacement + retest EA (same engine as the TradingView indicator/strategy) with money management."
 
 #include <Trade/Trade.mqh>
@@ -106,6 +121,8 @@ enum ENUM_SMALL_LOT { SMALLL_MIN  = 0,  // Trade the minimum lot (risks more)
 enum ENUM_SIZE_MODE { PSZ_USD = 0,     // Fixed $ risk (Base risk per trade)
                       PSZ_LOT = 1,     // Fixed lots (Base lots)
                       PSZ_PCT = 2 };   // % of equity at risk (Risk % of equity)
+enum ENUM_SIZE_BY   { SZB_RISK   = 0,  // Risk: the loss at the stop
+                      SZB_PROFIT = 1 };// Profit: the win at the final TP
 enum ENUM_REC {
    REC_OFF   = 0,  // Off
    REC_ALL   = 1,  // Recover all losses on the next trade
@@ -134,7 +151,10 @@ enum ENUM_REC {
    REC_CRG   = 24, // Crooks G (Crooks C, loss to win back at most X x base)
    REC_CRH   = 25, // Crooks H (Crooks C, recovery at most % of equity)
    REC_CRI   = 26, // Crooks I (Crooks E + recovery at most K x base)
-   REC_CRJ   = 27  // Crooks J (Crooks C, recovery shrinks in a drawdown)
+   REC_CRJ   = 27, // Crooks J (Crooks C, recovery shrinks in a drawdown)
+   REC_CRK   = 28, // Crooks K (Crooks J above the start, careful size below it)
+   REC_CRL   = 29, // Crooks L (0.01 lot until a win, the loss split by the drawdown)
+   REC_CRX   = 30  // Crooks X (Crooks E, the loss = the gap to the start / the next step)
 };
 enum ENUM_CRK_PR { CPR_OFF    = 0,   // Off (Crooks C as now)
                    CPR_FORGET = 1,   // Forget the loss
@@ -241,6 +261,10 @@ input bool   InpMv2On = false; // When TP2 hits, move stop (breakeven at +1R: on
 input double InpMv2R  = 0.6;   //   ...to (R)
 input bool   InpMv3On = false; // When TP3 hits, move stop
 input double InpMv3R  = 0.0;   //   ...to (R)
+input bool   InpBeOn  = false; // BE trigger: stop to the entry once the trade is up (R; works with any preset)
+input double InpBeR   = 1.5;   //   ...R in profit (gold test: 1.5 best on M5 and M15; early values lose)
+input bool   InpSvOn  = false; // Salvage trigger: target to the entry once the trade is down (R; any preset)
+input double InpSvR   = 0.9;   //   ...R against the trade (below 1; gold test: best off, 0.9 the least harm)
 
 input group "ACCURACY FILTERS (research, off = original)"
 input bool   InpNoChase    = false; // Don't chase: skip signals beyond N sigma from VWAP
@@ -304,6 +328,7 @@ input double InpP3   = 0.0;  // Close % at TP3
 
 input group "RISK AND POSITION SIZE"
 input ENUM_SIZE_MODE InpSizeMode = PSZ_USD; // Position size: the base trade (the loss recovery sizes every trade from it)
+input ENUM_SIZE_BY InpSizeBy = SZB_RISK;     // Base and recovery amounts are (Risk: lost at the stop; Profit: won at the final TP)
 input double InpBaseRisk = 50.0;   // Base risk per trade (account currency; Fixed $ risk)
 input double InpBaseLots = 0.01;   // Base lots (Fixed lots)
 input double InpEqPct    = 1.0;    // Risk % of equity (% of equity at risk, and the % of equity rule)
@@ -376,6 +401,11 @@ enum ENUM_LADDER { LAD_OFF   = 0,  // Off
                    LAD_XHIGH = 4,  // Extra high (keeps 50%, base up to 8x)
                    LAD_MAX   = 5   // Max (keeps 40%, base up to 12x)
 };
+enum ENUM_CRK_XLIM { CXL_CAP   = 0,   // Hard cap only
+                     CXL_TRADE = 1 }; // Per-trade limit ($)
+enum ENUM_CRK_K { CKM_LOTS = 0,  // Lots
+                  CKM_USD  = 1,  // Fixed amount (account currency)
+                  CKM_PCT  = 2 };// % of the base
 input group "LOSS RECOVERY"
 input ENUM_REC InpRec    = REC_CRC; // Loss recovery
 input int    InpRecN     = 3;      // N trades (Over N / Delayed)
@@ -400,12 +430,25 @@ input double InpCrkHgSl  = 1.0;    //   ...hedge rule: stop loss of the buy and 
 input double InpCrkHgTp  = 0.6;    //   ...hedge rule: take profit of the buy and the sell (R: 0.6 = TP1)
 input ENUM_HG_UNIT InpCrkHgUnit = HGU_R; //   ...hedge rule: stop loss and take profit in R or in price
 input bool   InpCrkHgForget = true; //   ...hedge rule: forget the loss after the pair (off: Crooks C goes on from the trade that closed last)
-input double InpCrkELot  = 0.01;   // Crooks E / I: lot of the trades while a loss waits for a win (the normal size if smaller)
+input double InpCrkELot  = 0.01;   // Crooks E / I / K / L: lot of the trades while a loss waits for a win (the normal size if smaller)
 input double InpCrkFK    = 3.0;    // Crooks F / I: a recovery trade risks at most this many x the base risk
 input double InpCrkGX    = 10.0;   // Crooks G: the loss to win back is at most this many x the base risk (the rest is accepted)
 input double InpCrkHPct  = 1.0;    // Crooks H: a recovery trade risks at most this % of the equity
-input double InpCrkJX    = 20.0;   // Crooks J: drawdown (x the base risk) at which a recovery trade is back to the base risk
-input ENUM_LADDER InpLadder = LAD_OFF; // Profit ladder (Crooks F-J): risk appetite once the profit target is reached
+input double InpCrkJX    = 20.0;   // Crooks J / K: drawdown (x the base risk) at which a recovery trade is back to the base risk
+input ENUM_CRK_K InpCrkKMode = CKM_LOTS; // Crooks K: careful size below the start, after a win (after a loss: the E / I lot)
+input double InpCrkKLots = 0.02;   //   ...lots (Lots)
+input double InpCrkKUsd  = 25.0;   //   ...amount (Fixed amount; with Size by Profit: the win at the final TP)
+input double InpCrkKPct  = 50.0;   //   ...% of the base (% of the base)
+input double InpCrkLZ1   = 2.0;    // Crooks L: below the start, 1 part per this many x base of drawdown (from the start)
+input int    InpCrkLZ1N  = 6;      //   ...most parts below the start
+input double InpCrkLZ2   = 5.0;    // Crooks L: above the start, 1 part per this many x base below the best
+input int    InpCrkLZ2N  = 3;      //   ...most parts above the start
+input double InpCrkLGrow = 10.0;   // Crooks L: at a new best the base grows by this % of the profit
+input double InpCrkLGrowX = 4.0;   //   ...base at most this many x
+input double InpCrkXStep  = 1000.0; // Crooks X: above the start, win back up to the next level every this much (account currency)
+input ENUM_CRK_XLIM InpCrkXLim = CXL_CAP; // Crooks X: limit of a recovery trade
+input double InpCrkXLimUsd = 500.0; //   ...per-trade limit: a recovery trade risks at most this (account currency, the loss at the stop)
+input ENUM_LADDER InpLadder = LAD_OFF; // Profit ladder (Crooks F-K): risk appetite once the profit target is reached
 input double InpLadT     = 1000.0; //   ...profit target before the risk goes up ($, closed profit of this EA)
 input int    InpParN     = 3;      // Paroli: wins before reset
 input int    InpDelayN   = 2;      // Delayed: losses before recovery starts
@@ -451,6 +494,7 @@ long     armBar = -1, fillBar = -1, lastExit = -1, lastFill = -1;
 int      lastDir = 0;
 double   lim = 0, stp = 0, stp0 = 0, trRisk = 0, t1 = 0, t2 = 0, t3 = 0, t4 = 0, tF = 0;
 int      tpHit = 0;
+int      trTrig = 0;                                     // v4.9: the trigger that acted in the live trade (0 none, 1 BE, 2 salvage)
 bool     trHalf = false, trGhost = false;
 int      trSkip = 0;               // why the setup is a ghost: 1 too far from VWAP, 2 choppy VWAP session, 3 1h EMA20 too fast, 4 too close to VWAP, 5 beyond max VWAP distance,
                                    // 6 stop beyond the VWAP, 7 VWAP touched recently, 8 entry too close to the VWAP
@@ -468,9 +512,11 @@ double   hE[4];                    // EMA20 of the last four completed hours, [0
 // accuracy of the shown trades (port of the shared Pine STATS block)
 int      tpHitN[4];                // closed trades that reached TP1..TP4 before the stop
 int      beN = 0, lkN = 0;         // closed at a stop moved to the entry (breakeven) / into profit
+int      svN = 0;                  // v4.9: closed at the entry by the salvage target (0R)
 datetime gFirstT = 0;              // first bar the engine processed
 // events of the last processed bar (shown setups / trades only)
 bool     evArm, evArmL, evFill, evFillL, evExit, evWin, evMove, evTp; double evRes; int evCancel; // 0 none, 1 expired, 2 replaced
+bool     evSalv; int evTrig;            // v4.9: an exit at the entry by the salvage target; a BE (1) / salvage (2) trigger acted on this bar
 bool     gNewDay = false, gDayOk = true, gHourOk = true, gKzOk = true;
 bool     gT1Seen = false;          // Crooks TP1 rule: TP1 was reached (on a bar caught up after a disconnect, or the partial close failed) and the TP1 part is still to be booked
 int      lastAnchorKey = -1;
@@ -482,6 +528,7 @@ bool     exL = true;
 double   exLots = 0, exRiskAmt = 0, exCostPx = 0, exPnl = 0;
 double   gBase = 0;    // v4.7: the base risk of the setup being sized (NextRisk); the trade keeps it in exBase
 double   exBase = 0;   // v4.7: the base risk of the EA's trade (its booking: Oscar's Grind, Crooks G)
+double   gBaseWin = 0, exBaseWin = 0;   // v5.1: the base WIN at the final TP of the setup being sized / of the EA's trade (Profit: Oscar's goal)
 long     exArm = -1;               // engine armBar of the setup the EA took
 bool     exSynced = false;         // the broker position is the engine's live trade
 bool     gRearm = false;           // re-place the engine's armed setup after a restart / catch-up
@@ -894,6 +941,7 @@ void ProcessBar(int s)
 {
    bi++;
    evArm = false; evArmL = false; evFill = false; evFillL = false; evExit = false; evWin = false; evMove = false; evTp = false; evRes = 0; evCancel = 0;
+   evSalv = false; evTrig = 0;
    datetime t = iTime(_Symbol, _Period, s);
    double o = Op(s), h = Hi(s), l = Lo(s), c = Cl(s);
    long   rv = iVolume(_Symbol, _Period, s);
@@ -1028,28 +1076,51 @@ void ProcessBar(int s)
       if(!stopHit) bestPx = isL ? MathMax(bestPx, h) : MathMin(bestPx, l);
       if(stopHit || tgtHit)
       {
-         bool win = !stopHit;
-         double res = win ? exitR : (stp == stp0 ? -1.0 : d * (stp - lim) / trRisk);
+         bool salv = !stopHit && trTrig == 2;           // v4.9: the salvage target (the entry): 0R, not a win
+         bool win = !stopHit && !salv;
+         double res = win ? exitR : (salv ? 0.0 : (stp == stp0 ? -1.0 : d * (stp - lim) / trRisk));
          if(!trGhost)
          {
             dayRiskR += res;
             lossDirBlk = res < 0 ? (isL ? 1 : -1) : (res > 0 ? 0 : lossDirBlk);
             totR += res; dayR += res;
             if(win) { totW++; dayW++; } else { totL++; dayL++; }
-            lastRes = (win ? "TP" + IntegerToString((int)gpExitAt) + " " : "STOP ") + (res >= 0 ? "+" : "") + DoubleToString(res, 2) + "R";
-            evExit = true; evWin = win; evRes = res;
+            lastRes = (win ? "TP" + IntegerToString((int)gpExitAt) + " " : (salv ? "SALVAGE " : "STOP ")) + (res >= 0 ? "+" : "") + DoubleToString(res, 2) + "R";
+            evExit = true; evWin = win; evRes = res; evSalv = salv;
          }
          else { if(win) ghW++; else ghL++; ghR += res; }
          lastExit = bi; st = 0;
       }
-      else if(tpHit > prevHit)
+      else
       {
-         double ns = stp;
-         if(gpMv1On && tpHit >= 1) ns = isL ? MathMax(ns, lim + gpMv1R * trRisk) : MathMin(ns, lim - gpMv1R * trRisk);
-         if(gpMv2On && tpHit >= 2) ns = isL ? MathMax(ns, lim + gpMv2R * trRisk) : MathMin(ns, lim - gpMv2R * trRisk);
-         if(gpMv3On && tpHit >= 3) ns = isL ? MathMax(ns, lim + gpMv3R * trRisk) : MathMin(ns, lim - gpMv3R * trRisk);
-         if(ns != stp) { stp = ns; evMove = !trGhost; }
-         evTp = !trGhost;
+         if(tpHit > prevHit)
+         {
+            double ns = stp;
+            if(gpMv1On && tpHit >= 1) ns = isL ? MathMax(ns, lim + gpMv1R * trRisk) : MathMin(ns, lim - gpMv1R * trRisk);
+            if(gpMv2On && tpHit >= 2) ns = isL ? MathMax(ns, lim + gpMv2R * trRisk) : MathMin(ns, lim - gpMv2R * trRisk);
+            if(gpMv3On && tpHit >= 3) ns = isL ? MathMax(ns, lim + gpMv3R * trRisk) : MathMin(ns, lim - gpMv3R * trRisk);
+            if(ns != stp) { stp = ns; evMove = !trGhost; }
+            evTp = !trGhost;
+         }
+         // v4.9 BE / salvage trigger: only the first acts in a trade; both on one bar: the extreme nearer the open came first (from the next bar)
+         if(trTrig == 0 && (InpBeOn || InpSvOn))
+         {
+            double beL = lim + d * InpBeR * trRisk, svL = lim - d * InpSvR * trRisk;
+            bool beH = InpBeOn && (isL ? h >= beL - tol : l <= beL + tol);
+            bool svH = InpSvOn && (isL ? l <= svL + tol : h >= svL - tol);
+            if(beH && svH)
+            {
+               bool hiFirst = MathAbs(h - o) < MathAbs(o - l);
+               if(hiFirst == isL) svH = false; else beH = false;
+            }
+            if(beH)
+            {
+               trTrig = 1; evTrig = trGhost ? 0 : 1;
+               double nb = isL ? MathMax(stp, lim) : MathMin(stp, lim);
+               if(nb != stp) { stp = nb; evMove = !trGhost; }
+            }
+            else if(svH) { trTrig = 2; evTrig = trGhost ? 0 : 2; tF = lim; evMove = !trGhost; }
+         }
       }
    }
    // 2. armed setup: fill (limit touch, or the next bar for market entries) or expiry
@@ -1060,7 +1131,7 @@ void ProcessBar(int s)
       bool touched = gpEntryMode == ENTRY_MARKET ? true : (isL ? l <= lim + mt * 0.001 : h >= lim - mt * 0.001);
       if(touched && dayFills < gpMaxFills)
       {
-         st = isL ? 2 : -2; fillBar = bi; lastFill = bi; lastDir = isL ? 1 : -1; tpHit = 0; dayFills++;
+         st = isL ? 2 : -2; fillBar = bi; lastFill = bi; lastDir = isL ? 1 : -1; tpHit = 0; trTrig = 0; dayFills++;
          bestPx = lim;
          if(!trGhost) { evFill = true; evFillL = isL; }
          if(isL ? l <= stp + mt * 0.001 : h >= stp - mt * 0.001)
@@ -1157,14 +1228,15 @@ void ProcessBar(int s)
          double lvl = k == 1 ? t1 : (k == 2 ? t2 : (k == 3 ? t3 : t4));
          if(evWin ? k <= xk : (k < xk && sd * (bestPx - lvl) >= -TickSize() * 0.001)) tpHitN[k - 1]++;
       }
-      if(!evWin && stp != stp0) { if(evRes == 0.0) beN++; else if(evRes > 0.0) lkN++; }
+      if(evSalv) svN++;
+      else if(!evWin && stp != stp0) { if(evRes == 0.0) beN++; else if(evRes > 0.0) lkN++; }
    }
    if(gFirstT == 0) gFirstT = t;
    DrawBar(t);
 }
 
 //--- v4.5: Crooks C and the rules built on it (E - J): everything of Crooks C applies to them
-bool   CrkCFam()  { return InpRec == REC_CRC || (InpRec >= REC_CRE && InpRec <= REC_CRJ); }
+bool   CrkCFam()  { return InpRec == REC_CRC || (InpRec >= REC_CRE && InpRec <= REC_CRX); }   // v5.0: + K, L; v5.2: + X
 //--- Crooks C rule after N losing recovery trades in a row (Crooks C and E - J)
 bool   CrkPrOn()  { return CrkCFam() && InpCrkPr != CPR_OFF; }
 double CrkPrPct() { return CrkPrOn() && InpCrkPr == CPR_PCT ? MathMax(10.0, MathMin(100.0, InpCrkPrPct)) / 100.0 : 1.0; }
@@ -1180,9 +1252,9 @@ bool CrkRecNext()
 }
 //--- v4.6 PROFIT LADDER (Crooks F - J): once the highest closed profit has reached InpLadT, the trades grow with the profit above a lock and the
 //--- extra risk is paid from that profit only; back at the start (closed profit 0 or less) every trade is the 0.01 lot until it is in profit again
-bool   LadFam()   { return InpRec >= REC_CRF && InpRec <= REC_CRJ; }
+bool   LadFam()   { return (InpRec >= REC_CRF && InpRec <= REC_CRJ) || InpRec == REC_CRK; }   // v5.0: + K
 bool   LadOn()    { return InpLadder != LAD_OFF && LadFam() && InpLadT > 0 && crkPk >= InpLadT; }
-bool   LadGuard() { return LadOn() && totalNet - gNet0 <= 0; }
+bool   LadGuard() { return LadOn() && InpRec != REC_CRK && totalNet - gNet0 <= 0; }   // v5.0: Crooks K has its own zone below the start instead
 //--- the level: lock (share of the best profit kept out of the extra risk), share of the cushion added to the base, most base (x), most extra loss
 void   LadPar(double &lam, double &phi, double &bmax, double &gam)
 {
@@ -1215,24 +1287,80 @@ double BaseRisk(double stopDist)
    return InpBaseRisk;
 }
 //--- the base of the EA's trade for its booking (Fixed $ risk: the input, as in v4.6)
-double BookBase() { return InpSizeMode == PSZ_USD ? InpBaseRisk : (exBase > 0 ? exBase : InpBaseRisk); }
+//--- v5.0 SIZE BY: with Profit the base and the amounts a recovery rule adds are the win at the final TP (the risk = amount / its R)
+bool   SizeProfit() { return InpSizeBy == SZB_PROFIT; }
+//--- v5.1 Size by Profit: what a final-TP win brings per $ of stop-out loss on this setup, costs included (with earn-back the target is
+//--- pushed by the costs, so a win nets the R x the stop distance); no tick value / stop distance, or a target inside the costs: the R alone
+double PDiv(double exitR)
+{
+   if(exitR <= 0) return 1.0;
+   double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
+   if(tv <= 0 || ts <= 0 || trRisk <= 0) return exitR;
+   double spr = MathMax(CostSpr(), 0), loss = (trRisk + spr) / ts * tv + InpCommLot;
+   double win = exitR * trRisk / ts * tv;
+   if(!InpEarnBack) win -= spr / ts * tv + InpCommLot;
+   return (loss > 0 && win > 0) ? win / loss : exitR;
+}
+double BookBase() { return InpSizeMode == PSZ_USD && !SizeProfit() ? InpBaseRisk : (exBase > 0 ? exBase : SizeProfit() && InpSizeMode != PSZ_LOT && ExitR() > 0 ? InpBaseRisk / ExitR() : InpBaseRisk); }
 //--- the base shown in the table (Fixed lots: on the last setup's stop)
-double ShowBase() { return InpSizeMode == PSZ_USD ? InpBaseRisk : BaseRisk(trRisk); }
+double ShowBase() { double b = InpSizeMode == PSZ_USD ? InpBaseRisk : BaseRisk(trRisk); return SizeProfit() && InpSizeMode != PSZ_LOT && ExitR() > 0 ? b / PDiv(ExitR()) : b; }
 string BaseTxt(double &cush)
 {
    cush = 0;
    if(InpSizeMode == PSZ_LOT && !LadOn()) return "base " + DoubleToString(InpBaseLots, 2) + " lot";
-   return "base " + DoubleToString(LadBase(ShowBase(), cush), 2) + (InpSizeMode == PSZ_PCT ? " (" + DoubleToString(InpEqPct, 2) + "% of equity)" : "");
+   double b = LadBase(ShowBase(), cush);
+   string pct = InpSizeMode == PSZ_PCT ? " (" + DoubleToString(InpEqPct, 2) + "% of equity" + (SizeProfit() ? " as the win" : "") + ")" : "";
+   if(SizeProfit() && InpSizeMode != PSZ_LOT) return "base risk " + DoubleToString(b, 2) + " = win " + DoubleToString(b * PDiv(ExitR()), 2) + " at TP" + IntegerToString((int)gpExitAt) + pct;   // v5.0
+   return "base " + DoubleToString(b, 2) + pct;
 }
 string LadTxt()
 {
    string lv = InpLadder == LAD_LOW ? "Low" : InpLadder == LAD_MED ? "Medium" : InpLadder == LAD_HIGH ? "High" : InpLadder == LAD_XHIGH ? "Extra high" : "Max";
-   if(!LadFam()) return lv + " | only with Crooks F, G, H, I or J";
+   if(!LadFam()) return lv + " | only with Crooks F, G, H, I, J or K";
    if(!LadOn()) return lv + " | best profit " + DoubleToString(MathMax(0.0, crkPk), 2) + " of " + DoubleToString(InpLadT, 0) + " to start";
    if(LadGuard()) return lv + " | back at the start: 0.01 lot until in profit";
    double cush = 0, lam = 0, phi = 0, bmax = 0, gam = 0;
    double b = LadBase(ShowBase(), cush); LadPar(lam, phi, bmax, gam);
    return lv + " | lock " + DoubleToString(lam * crkPk, 2) + " | cushion " + DoubleToString(cush, 2) + " | base " + DoubleToString(b, 2);
+}
+//--- v5.0 Crooks K: below the start (the closed profit since the restart is under 0): after a win the careful size, after a loss the E / I lot
+bool   KZone() { return InpRec == REC_CRK && totalNet - gNet0 < 0; }
+double KCare(double base, double dv, double kRisk)
+{
+   if(InpCrkKMode == CKM_USD) return SizeProfit() && dv > 0 ? InpCrkKUsd / dv : InpCrkKUsd;   // v5.1: dv = PDiv (Risk: 1)
+   if(InpCrkKMode == CKM_PCT) return base * InpCrkKPct / 100.0;
+   return kRisk > 0 ? kRisk : base;                     // the careful lots' stop-out loss on this setup (0 = not known: the base)
+}
+//--- v5.0 Crooks L: at a new best (the closed profit since the restart at its high; also at the start) the base grows with the profit
+double LBase(double base, double dv)
+{
+   double nr = totalNet - gNet0;
+   if(InpRec != REC_CRL || nr < crkPk) return base;
+   double g = InpCrkLGrow / 100.0 * nr / (SizeProfit() && dv > 0 ? dv : 1.0);   // v5.1: dv = PDiv (Risk: 1)
+   return base + MathMin((MathMax(1.0, InpCrkLGrowX) - 1.0) * base, MathMax(0.0, g));
+}
+//--- v5.2 Crooks X: the step the closed profit nr is in (-1 below the start), and the loss to win back from the levels: below the start the gap to it,
+//--- above it the gap to the next InpCrkXStep level (at most the best crkPk); at the best nothing (0.005: a fraction of a cent under a level counts as at it)
+int    XIdx(double nr) { return nr < -0.005 ? -1 : (int)MathFloor((nr + 0.005) / MathMax(0.01, InpCrkXStep)); }
+double XTarget(double nr)
+{
+   if(nr < -0.005) return -nr;
+   if(nr >= crkPk - 0.005) return 0;
+   double xs = MathMax(0.01, InpCrkXStep);
+   return MathMax(0.0, MathMin(crkPk, (MathFloor((nr + 0.005) / xs) + 1) * xs) - nr);
+}
+//--- v5.0 Crooks L: the parts of a loss just booked, from the drawdown after it (below the start: from the start; above it: from the best)
+int LParts()
+{
+   double b = BookBase(), nr = totalNet - gNet0, dd = 0, step = 0; int mx = 1;
+   if(nr < 0) { dd = -nr; step = InpCrkLZ1 * b; mx = InpCrkLZ1N > 1 ? InpCrkLZ1N : 1; }
+   else if(nr < crkPk) { dd = crkPk - nr; step = InpCrkLZ2 * b; mx = InpCrkLZ2N > 1 ? InpCrkLZ2N : 1; }
+   else return 1;
+   if(step <= 0) return 1;
+   double np = MathCeil(dd / step - 1e-9);
+   if(np > mx) np = mx;
+   if(np < 1) np = 1;
+   return (int)np;
 }
 
 //--- Crooks TP1 rule (exit at TP1, or any exit with InpCrkT1Any; recovery trades): the part p closed at TP1 banks the recovery amount, the rest runs to TP2.
@@ -1241,7 +1369,7 @@ string LadTxt()
 double CrkT1P() { return MathMax(10.0, MathMin(90.0, InpCrkT1Pct)) / 100.0; }
 double CrkT1Dist()
 {
-   if(!InpCrkT1 || (gpExitAt != EXIT_TP1 && !InpCrkT1Any) || !CrkRecNext() || CrkHedgeNow() || LadGuard()) return 0;   // v4.6: not while the ladder's guard is on
+   if(!InpCrkT1 || (gpExitAt != EXIT_TP1 && !InpCrkT1Any) || !CrkRecNext() || CrkHedgeNow() || LadGuard() || KZone()) return 0;   // v4.6: not while the ladder's guard is on (v5.0: nor in the Crooks K zone)
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    if(tv <= 0 || ts <= 0) return 0;
    double spr = CostSpr(), p = CrkT1P();
@@ -1250,8 +1378,12 @@ double CrkT1Dist()
 }
 
 //--- Crooks C over N wins: N, and the parts of the loss still to win back
-int CrkNp() { return InpCrkCnOn ? MathMax(1, InpCrkCn) : 1; }
-int CrkParts() { int np = CrkNp(); return (crkP < 1 || crkP > np) ? np : crkP; }
+int CrkNp() { return InpRec == REC_CRL ? 1 : InpCrkCnOn ? MathMax(1, InpCrkCn) : 1; }   // v5.0: Crooks L takes its parts from the drawdown
+int CrkParts()
+{
+   if(InpRec == REC_CRL) { int mx = InpCrkLZ1N > InpCrkLZ2N ? InpCrkLZ1N : InpCrkLZ2N; if(mx < 1) mx = 1; return crkP < 1 ? 1 : crkP > mx ? mx : crkP; }
+   int np = CrkNp(); return (crkP < 1 || crkP > np) ? np : crkP;
+}
 void   CrkCycle() { crkL = 0; crkN = 0; crkP = CrkNp(); crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkHg = false; }   // a new cycle at the base risk
 //--- skip rule: a new day in your time zone while trading is paused; counted days end the pause (the day the count reaches 0 is still skipped)
 void   CrkDayCount(bool counted) { if(!crkSkip) return; if(crkSkipLeft <= 0) crkSkip = false; else if(counted) crkSkipLeft--; }
@@ -1485,8 +1617,9 @@ double CrkRecLimit(double r, double base)
 {
    double mul = CrkT1Mult();
    if(InpRec == REC_CRF || InpRec == REC_CRI) r = MathMin(r, MathMax(1.0, InpCrkFK) * base / mul);
+   else if(InpRec == REC_CRX && InpCrkXLim == CXL_TRADE) r = MathMin(r, MathMax(base, InpCrkXLimUsd) / mul);   // v5.2 Crooks X: the per-trade limit
    else if(InpRec == REC_CRH) r = MathMin(r, MathMax(base, AccountInfoDouble(ACCOUNT_EQUITY) * InpCrkHPct / 100.0) / mul);
-   else if(InpRec == REC_CRJ && InpCrkJX > 0) r = MathMax(base, r * MathMax(0.0, 1.0 - MathMax(0.0, crkPk - (totalNet - gNet0)) / (InpCrkJX * base)));
+   else if((InpRec == REC_CRJ || InpRec == REC_CRK) && InpCrkJX > 0) r = MathMax(base, r * MathMax(0.0, 1.0 - MathMax(0.0, crkPk - (totalNet - gNet0)) / (InpCrkJX * base)));   // v5.0: K too
    return r;
 }
 //--- the risk of a Crooks rule's next trade at this base (v4.6: also at the profit ladder's base)
@@ -1496,42 +1629,49 @@ double CrkRule(double base, double exitR, double minRisk)
    bool rn = CrkRecNext();
    double r = !rn ? base : CrkT1Dist() > 0 ? MathMax(base, x) : exitR > 0 ? MathMax(base, x / exitR) : base;   // TP1 rule: a stop-out loses x
    if(rn) r = CrkRecLimit(r, base);                                  // v4.5 Crooks F / H / I / J
-   else if(crkL > 0 && (InpRec == REC_CRE || InpRec == REC_CRI) && minRisk > 0) r = MathMin(base, minRisk);   // v4.5 Crooks E / I: the small lot while waiting
+   else if(crkL > 0 && (InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRL || InpRec == REC_CRX) && minRisk > 0) r = MathMin(base, minRisk);   // v4.5 Crooks E / I (v5.0: L): the small lot while waiting
    return r;
 }
-//--- the $ risk of the next trade; minRisk: the stop-out loss of the 0.01 lot (Crooks E / I lot) on this setup (0 = not known: the base is used)
-double NextRisk(double exitR, bool canTake = true, double minRisk = 0)
+//--- the $ risk of the next trade; minRisk: the stop-out loss of the 0.01 lot (Crooks E / I lot) on this setup (0 = not known: the base is used);
+//--- kRisk: the stop-out loss of the Crooks K careful lots on this setup (0 = not known: the base)
+double NextRisk(double exitR, bool canTake = true, double minRisk = 0, double kRisk = 0)
 {
-   double base = BaseRisk(trRisk), r = base;          // v4.7: the base of this setup (Position size)
-   gBase = base;
+   double base = BaseRisk(trRisk);                    // v4.7: the base of this setup (Position size)
+   double dv = SizeProfit() ? PDiv(exitR) : 1.0;      // v5.1: Profit: a final-TP win per $ of stop-out loss here, costs included (Risk: 1)
+   double xr = SizeProfit() ? dv : exitR;             //   Exact and the Crooks recovery divide by it (Risk: the final TP's R)
+   if(SizeProfit() && InpSizeMode != PSZ_LOT && dv > 0) base = base / dv;   // v5.0: the base is the win at the final TP (v5.1: with costs)
+   double r = base;
+   gBase = base; gBaseWin = SizeProfit() ? base * dv : base;
    if(base <= 0) return 0;                            // no base: size 0 (never a zero divide below)
    double stepBase = 0;
    double netR = totalNet - gNet0;                    // v4.8: the closed profit since the monthly restart
    if(netR >= 1000) { int kk = (int)MathFloor((netR - 1000) / 500); stepBase = (1000.0 + 500.0 * kk) / (8 + kk); }
    else if(netR >= 500) stepBase = 100.0;
    else if(netR >= 200) stepBase = 200.0 / 3.0;
+   stepBase = stepBase / dv;                          // v5.0: a base amount
    double baseC = InpRec == REC_CS ? MathMax(base, InpCapOn ? MathMin(stepBase, InpHardCap) : stepBase) : base;
    double fa = 1, fb = 1;
    for(int k = 2; k <= recLosses; k++) { double fc = fa + fb; fa = fb; fb = fc; }
-   int oscNeed = exitR > 0 ? (int)MathMax(1, MathMin(1e9, MathCeil((base - oscP) / (base * exitR)))) : 1;   // v4.7: no int overflow
+   double oscGoal = SizeProfit() ? base * dv : base;   // v5.0: with Profit the cycle goal is one base win
+   int oscNeed = xr > 0 ? (int)MathMax(1, MathMin(1e9, MathCeil((oscGoal - oscP) / (base * xr)))) : 1;   // v4.7: no int overflow
    switch(InpRec)
    {
-      case REC_ALL:   r = base + recPool; break;
-      case REC_SPLIT: r = base + recPool / InpRecN; break;
-      case REC_PART:  r = base + recPool * InpRecPct / 100.0; break;
+      case REC_ALL:   r = base + recPool / dv; break;
+      case REC_SPLIT: r = base + recPool / InpRecN / dv; break;
+      case REC_PART:  r = base + recPool * InpRecPct / 100.0 / dv; break;
       case REC_MART:  r = base * MathPow(InpRecMult, recLosses); break;
-      case REC_EXACT: r = base + recPool / exitR; break;
-      case REC_STEP:  r = base + InpRecStep * recLosses; break;
+      case REC_EXACT: r = base + recPool / xr; break;
+      case REC_STEP:  r = base + InpRecStep * recLosses / dv; break;
       case REC_FIB:   r = base * (recLosses == 0 ? 1.0 : fb); break;
       case REC_DALE:  r = base * dUnits; break;
       case REC_C:
-      case REC_CS:    r = MathMax(baseC, carried / InpCSplit); break;
+      case REC_CS:    r = MathMax(baseC, carried / InpCSplit / dv); break;
       case REC_LAB:   r = base * LabUnits(); break;
       case REC_GMART: r = base * MathPow(InpRecMult, recLosses) + base * recLosses; break;
       case REC_PAR:   r = base * MathPow(2, parWins); break;
       case REC_RDALE: r = base * rdUnits; break;
-      case REC_DELAY: r = recLosses >= InpDelayN ? base + recPool / InpRecN : base; break;
-      case REC_EQPCT: r = AccountInfoDouble(ACCOUNT_EQUITY) * InpEqPct / 100.0; break;
+      case REC_DELAY: r = recLosses >= InpDelayN ? base + recPool / InpRecN / dv : base; break;
+      case REC_EQPCT: r = AccountInfoDouble(ACCOUNT_EQUITY) * InpEqPct / 100.0 / dv; break;
       case REC_OSC:   r = base * MathMin(oscU, oscNeed); break;
       case REC_CRA:
       case REC_CRB:
@@ -1543,14 +1683,18 @@ double NextRisk(double exitR, bool canTake = true, double minRisk = 0)
       case REC_CRH:
       case REC_CRI:
       case REC_CRJ:
+      case REC_CRK:
+      case REC_CRL:
+      case REC_CRX:
       {
-         r = CrkRule(base, exitR, minRisk);
+         r = CrkRule(LBase(base, dv), xr, minRisk);   // v5.0 Crooks L: the base grows at a new best (v5.1: Profit divides by dv)
          if(LadOn())                                                       // v4.6 profit ladder: the rule at the ladder's base, the extra paid from the cushion
          {
             double cush = 0, lam = 0, phi = 0, bmax = 0, gam = 0;
             double lb = LadBase(base, cush); LadPar(lam, phi, bmax, gam);
-            r = LadGuard() ? (minRisk > 0 ? MathMin(base, minRisk) : base) : MathMin(CrkRule(lb, exitR, minRisk), r + gam * cush / CrkT1Mult());
+            r = LadGuard() ? (minRisk > 0 ? MathMin(base, minRisk) : base) : MathMin(CrkRule(lb, xr, minRisk), r + gam * cush / CrkT1Mult());
          }
+         if(KZone()) r = crkW ? KCare(base, dv, kRisk) : (minRisk > 0 ? MathMin(base, minRisk) : base);   // v5.0 Crooks K below the start
          break;
       }
       default:        r = base;
@@ -1625,15 +1769,16 @@ double LotsFor(double riskAmt, double stopDist, double entry, bool isL, double l
 }
 //--- v4.5 Crooks E / I: the stop-out loss (spread and commission included, as LotsFor) of the lot used while a loss waits for a win:
 //--- InpCrkELot, at least the broker's minimum, on its lot grid (LotsFor turns this amount back into exactly that lot)
-double MinLotRisk(double stopDist)
+double LotRisk(double lotsIn, double stopDist)        // v5.0: any lot (the E / I lot, the Crooks K careful lots)
 {
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    if(tv <= 0 || ts <= 0 || stopDist <= 0) return 0;
    double step = InpLotStep > 0 ? InpLotStep : SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_STEP), vmin = SymbolInfoDouble(_Symbol, SYMBOL_VOLUME_MIN);
    if(step <= 0) step = vmin > 0 ? vmin : 0.01;
-   double lots = MathCeil(MathMax(InpCrkELot, vmin) / step - 1e-9) * step;
+   double lots = MathCeil(MathMax(lotsIn, vmin) / step - 1e-9) * step;
    return lots * ((stopDist + MathMax(CostSpr(), 0)) / ts * tv + InpCommLot);
 }
+double MinLotRisk(double stopDist) { return LotRisk(InpCrkELot, stopDist); }
 
 //--- time filters (execution only) --------------------------------------------
 bool NewsBlock(datetime ut, bool &startNow, datetime utPrev)
@@ -1670,6 +1815,7 @@ double Spr() { return InpBidChart ? MathMax(0.0, SymbolInfoDouble(_Symbol, SYMBO
 double EntryPx(bool isL) { return isL ? FloorTick(lim + TickSize() * 0.001 + Spr()) : CeilTick(lim - TickSize() * 0.001); }
 double StopPx(bool isL)  { double tl = TickSize() * 0.001; return isL ? FloorTick(stp + tl) : CeilTick(stp - tl + Spr()); }
 double TgtPx(bool isL, double lvl) { double tl = TickSize() * 0.001; return isL ? CeilTick(lvl + exCostPx - tl) : FloorTick(lvl - exCostPx + tl + Spr()); }
+double TgtPx0(bool isL, double lvl) { double tl = TickSize() * 0.001; return isL ? CeilTick(lvl - tl) : FloorTick(lvl + tl + Spr()); }   // v4.9: the salvage target (the entry), no earn-back push
 double T1StopPx(bool isL, double d) { return isL ? CeilTick(lim - d) : FloorTick(lim + d + Spr()); }   // Crooks TP1 rule stop, toward the entry
 // the TP1-rule trade's first stop (Crooks TP1 rule, stop before TP1)
 double T1Stop0Px(bool isL, double d)
@@ -1747,7 +1893,7 @@ void SetExits(bool withTarget)
 {
    ulong tk; double vol, op;
    if(!HasPosition(tk, vol, op)) return;
-   double sl = StopPx(exL), tp = withTarget ? TgtPx(exL, tF) : 0;
+   double sl = StopPx(exL), tp = withTarget ? (trTrig == 2 && exArm == armBar ? TgtPx0(exL, tF) : TgtPx(exL, tF)) : 0;   // v4.9: salvage: at the entry
    if(exT1) { sl = exT1Half ? NormalizeDouble(op, _Digits) : exT1Stop; tp = withTarget ? TgtPx(exL, exT1Tp2) : 0; }   // Crooks TP1 rule: rest to TP2, at the entry after TP1
    if(exKeepSl > 0 && (exL ? exKeepSl > sl : exKeepSl < sl)) sl = exKeepSl;   // an adopted position keeps its tighter stop
    double bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK);
@@ -1801,7 +1947,8 @@ string TpTxt()
    for(int k = 1; k <= 4; k++) s += (k > 1 ? " | " : "") + "TP" + IntegerToString(k) + " " + (k > xk ? "n/a" : Share(tpHitN[k - 1], n) + " (" + IntegerToString(tpHitN[k - 1]) + ")");
    return s;
 }
-string BeTxt() { int n = totW + totL; return "BE " + IntegerToString(beN) + " (" + Share(beN, n) + ") | locked profit " + IntegerToString(lkN) + " (" + Share(lkN, n) + ")"; }
+string BeTxt() { int n = totW + totL; return "BE " + IntegerToString(beN) + " (" + Share(beN, n) + ") | locked profit " + IntegerToString(lkN) + " (" + Share(lkN, n) + ")" +
+                 (InpSvOn ? " | salvage " + IntegerToString(svN) + " (" + Share(svN, n) + ")" : ""); }
 string FltTxt() { return IntegerToString(ghW + ghL) + " skipped | would have been " + IntegerToString(ghW) + "W/" + IntegerToString(ghL) + "L | " + SgnR(ghR); }
 string MonTxt(int m) { string a[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"}; return a[(m + 11) % 12]; }
 string DateTxt(datetime tm, bool withYear)
@@ -1988,15 +2135,22 @@ void UpdateTable()
    bool   isC = InpRec == REC_C || InpRec == REC_CS, isK = InpRec == REC_CRA || InpRec == REC_CRB || InpRec == REC_CRD || CrkCFam();
    bool   kRec = exState != 0 ? crkRec : CrkRecNext();
    string kLim = InpRec == REC_CRF || InpRec == REC_CRI ? ", at most " + DoubleToString(InpCrkFK, 1) + "x base" : InpRec == REC_CRH ? ", at most " + DoubleToString(InpCrkHPct, 1) + "% of equity" :
-                 InpRec == REC_CRJ ? ", drawdown " + DoubleToString(MathMax(0.0, crkPk - (totalNet - gNet0)), 2) : "";
-   string kWait = InpRec == REC_CRE || InpRec == REC_CRI ? " | " + DoubleToString(InpCrkELot, 2) + " lot, waiting for a win" : " | base, waiting for a win";
+                 InpRec == REC_CRJ || InpRec == REC_CRK ? ", drawdown " + DoubleToString(MathMax(0.0, crkPk - (totalNet - gNet0)), 2) : "";
+   string kWait = InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRL || InpRec == REC_CRX ? " | " + DoubleToString(InpCrkELot, 2) + " lot, waiting for a win" : " | base, waiting for a win";
+   double nrT = totalNet - gNet0;                       // v5.0 Crooks K / L: where the closed profit is (since the restart)
+   string kCare = InpCrkKMode == CKM_USD ? DoubleToString(InpCrkKUsd, 2) + (SizeProfit() ? " win" : "") : InpCrkKMode == CKM_PCT ? DoubleToString(InpCrkKPct, 0) + "% of the base" : DoubleToString(InpCrkKLots, 2) + " lot";
+   string kZn = InpRec == REC_CRK ? (KZone() ? " | below the start: " + (crkW ? "careful " + kCare + " after a win" : DoubleToString(InpCrkELot, 2) + " lot until a win") : " | above the start (Crooks J)") :
+                InpRec == REC_CRL ? (nrT < 0 ? " | below the start" : nrT < crkPk ? " | below the best" : " | at the best, base " + DoubleToString(LBase(ShowBase(), SizeProfit() ? PDiv(ExitR()) : 1.0), 2)) :
+                InpRec == REC_CRX ? (crkL <= 0 ? "" : nrT < -0.005 ? " | below the start: back to it" : " | up to " + DoubleToString(MathMin(crkPk, (MathFloor((nrT + 0.005) / MathMax(0.01, InpCrkXStep)) + 1) * MathMax(0.01, InpCrkXStep)), 0) + " above the start") +
+                                    (InpCrkXLim == CXL_TRADE ? ", at most " + DoubleToString(InpCrkXLimUsd, 0) + " a trade" : "") : "";
    string kTxt = DoubleToString(crkL, 2) + (InpRec == REC_CRG ? " (at most " + DoubleToString(InpCrkGX * ShowBase(), 0) + ")" : "") +
-                 (CrkCFam() ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") + kLim : (crkL > 0 ? kWait : " | base")) : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
+                 (CrkCFam() ? (kRec ? " | recovery trade" + (CrkNp() > 1 ? ", part " + IntegerToString(CrkNp() - CrkParts() + 1) + " of " + IntegerToString(CrkNp()) : "") +
+                  (InpRec == REC_CRL ? ", " + IntegerToString(CrkParts()) + (CrkParts() == 1 ? " part" : " parts") + " to go" : "") + kLim : (crkL > 0 ? kWait : " | base")) + kZn : " | trade " + IntegerToString(crkN + 1) + (kRec ? " recovery" : " base")) + (InpRec == REC_CRB ? " | split " + IntegerToString(InpCSplit) : "")
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "")
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd("AUCTION RETEST", "EA v4.8", white, C'61,143,214');
+   TblAdd("AUCTION RETEST", "EA v5.2", white, C'61,143,214');
    if(InpPreset != PRE_CUSTOM) TblAdd("PRESET", PresetName() + (gpTfOk ? "" : " | needs an " + TfName(gpTf) + " chart") + (InpAddMine ? " | + my filters" : ""), gpTfOk ? posC : negC, cell);
    TblAdd("STATE", gStateTxt, white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
@@ -2010,7 +2164,7 @@ void UpdateTable()
    TblAdd("SIGNALS | TAKEN | SKIPPED", IntegerToString(sigN) + " | " + IntegerToString(takenN) + " | " + IntegerToString(skipN) + (missN > 0 ? " | missed " + IntegerToString(missN) : "") + (skipWhy != "" ? " (last: " + skipWhy + ")" : ""), skipN + missN > 0 ? negC : white, cell);
    TblAdd("SIGNAL TRADES | WIN % | R", AccTxt() + " | last " + lastRes, totR >= 0 ? posC : negC, cell);
    TblAdd("TP HIT", TpTxt(), posC, cell);
-   if(gpMv1On || gpMv2On || gpMv3On) TblAdd("BREAKEVEN", BeTxt(), white, cell);
+   if(gpMv1On || gpMv2On || gpMv3On || InpBeOn || InpSvOn) TblAdd("BREAKEVEN", BeTxt(), white, cell);
    if(gpNoChase || gpChopOn || gpEmaOn || gpMinVwOn || gpMaxVwOn || gpStopVwOn || gpTouchVwOn || gpEntVwOn) TblAdd("SKIPPED BY FILTERS", FltTxt(), ghR <= 0 ? posC : negC, cell);
    TblAdd("DATA RANGE", gFirstT > 0 ? DateTxt(UserTime(gFirstT), true) + " -> " + DateTxt(UserTime(gLastDone), false) + " | " + IntegerToString(bi + 1) + " bars" : "-", white, cell);
    TblAdd("RESTART MEMORY", gPersist ? (gRestored ? "on | continued from " + DateTxt(UserTime(gSvT), true) : "on") : InpRemember ? "off in the Strategy Tester" : "off", white, cell);
@@ -2049,8 +2203,9 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    bool crkPs = CrkPause();
    bool tfHold = TfHold();                           // v4.4: the chart shows another timeframe than the one the EA trades
    bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock || crkPs || monStop || tfHold);   // the hard cap acts only on a signal that can be taken
-   double minR = (InpRec == REC_CRE || InpRec == REC_CRI || LadOn()) ? MinLotRisk(trRisk) : 0;   // v4.5 Crooks E / I, v4.6 ladder guard: the 0.01 lot on this setup
-   double rAmt = NextRisk(ExitR(), canTake, minR);
+   double minR = (InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || InpRec == REC_CRX || LadOn()) ? MinLotRisk(trRisk) : 0;   // v4.5 Crooks E / I, v4.6 ladder guard, v5.0 K / L: the 0.01 lot on this setup
+   double kR = InpRec == REC_CRK && InpCrkKMode == CKM_LOTS ? LotRisk(InpCrkKLots, trRisk) : 0;   // v5.0 Crooks K: the careful lots on this setup
+   double rAmt = NextRisk(ExitR(), canTake, minR, kR);
    bool   hg = CrkHedgeNow();                        // Crooks C hedge rule: a buy and a sell (after NextRisk: a hard-cap restart cancels it)
    double hgS = hg ? HgDist(InpCrkHgSl) : 0, hgT = hg ? HgDist(InpCrkHgTp) : 0;
    if(hg && InpCapOn && hgT > hgS) rAmt = MathMin(rAmt, InpHardCap / 2.0);   // both trades can lose: the pair stays inside the hard cap
@@ -2070,7 +2225,7 @@ void TakeSetup(bool isL, bool newsBlk, bool flatNow)
    double tv = SymbolInfoDouble(_Symbol, SYMBOL_TRADE_TICK_VALUE), ts = TickSize();
    double sprNow = CostSpr();
    exCostPx = InpEarnBack && tv > 0 && !hg ? InpCommLot / (tv / ts) + sprNow : 0;   // no earn-back on the hedge pair: its levels are the inputs
-   exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot); exBase = gBase;
+   exL = isL; exLots = v; exPnl = 0; exRiskAmt = v * ((ld + sprNow) / ts * tv + InpCommLot); exBase = gBase; exBaseWin = gBaseWin;
    exT1 = t1d > 0; exT1Half = false; exT1Be = false; exT1MvPend = false; exT1Stop = exT1 ? T1Stop0Px(isL, t1d) : 0; exT1Tight = exT1 ? T1StopPx(isL, t1d) : 0; exT1Entry = lim;
    exT1Tp1 = t1; exT1Tp2 = t2; exKeepSl = 0; exHg = false; exHgS = hgS; exHgT = hgT; gLastOutProfit = 0;
    exTpL[0] = t1; exTpL[1] = t2; exTpL[2] = t3; exLim = lim;   // the trade's own levels (partials, restart)
@@ -2163,22 +2318,25 @@ void BookClosed()
       double used = LabUnits(); int n = ArraySize(labSeq); ArrayResize(labSeq, n + 1); labSeq[n] = used;
    }
    oscP += exPnl;
-   if(oscP >= BookBase()) { oscU = 1; oscP = 0; } else if(win) oscU++;
+   if(oscP >= (SizeProfit() ? (exBaseWin > 0 ? exBaseWin : BookBase() * ExitR()) : BookBase())) { oscU = 1; oscP = 0; } else if(win) oscU++;   // v5.0: with Profit the goal is one base win (v5.1: the trade's own)
    // Crooks: losses add to the loss to win back, wins reduce it; a new cycle when it is all back, less than a cent left (A, D: also when a recovery trade wins; C keeps a leftover)
    bool lastPart = CrkParts() == 1;                     // this recovery trade went for the last part of the loss (Crooks C over N wins)
    crkL = MathMax(0.0, crkL - exPnl);
    crkPk = MathMax(crkPk, totalNet - gNet0);            // v4.5 Crooks J, v4.6 ladder: the highest closed profit (whatever the rule, so a switch knows it; v4.8: since the monthly restart)
+   bool xNew = false;                                  // v5.2 Crooks X: the loss is the gap to the level; a win into another step: N parts again
+   if(InpRec == REC_CRX) { double nrA = totalNet - gNet0; crkL = XTarget(nrA); xNew = win && XIdx(nrA - exPnl) != XIdx(nrA); }
    double gCush = 0;
    if(InpRec == REC_CRG && InpCrkGX > 0) crkL = MathMin(crkL, InpCrkGX * LadBase(BookBase(), gCush));   // v4.5 Crooks G: never more than X x base (v4.6: the ladder's base)
    if(exHg)                                             // the hedge pair closed (exPnl = both trades): forget the loss, or Crooks C goes on from the trade that closed last
    {
       crkF = 0; crkHg = false;
-      if(InpCrkHgForget || crkL < 0.01) CrkCycle(); else { crkN++; crkP = CrkNp(); }
+      if(InpCrkHgForget || crkL < 0.01) CrkCycle(); else { crkN++; crkP = InpRec == REC_CRL ? LParts() : CrkNp(); }
    }
    else if(crkL < 0.01 || ((InpRec == REC_CRA || InpRec == REC_CRD) && win && crkRec)) CrkCycle();
    else
    {
-      crkN++; crkP = !win ? CrkNp() : crkRec ? MathMax(1, CrkParts() - 1) : CrkParts();   // Crooks C over N wins: a loss starts the parts again
+      crkN++; crkP = !win ? (InpRec == REC_CRL ? LParts() : CrkNp()) : crkRec ? MathMax(1, CrkParts() - 1) : CrkParts();   // Crooks C over N wins: a loss starts the parts again (v5.0 L: from the drawdown)
+      if(xNew) crkP = CrkNp();                          // v5.2 Crooks X: a new step is won back in N trades
       if(CrkPrOn())                                     // Crooks C rule after N losing recovery trades in a row
       {
          if(crkWait) { crkWW = win ? crkWW + 1 : 0; if(crkWW >= MathMax(1, InpCrkPrM)) { crkWait = false; crkWW = 0; crkNeedL = true; } }   // M wins in a row end the wait
@@ -2396,7 +2554,7 @@ void StateIO(bool save)
    IoD("dp", dayPnl); IoI("lr", lossRow); IoI("wr", winRow); IoB("db", dayBlock); IoI("pl", pauseLeft); IoB("pa", paused);
    IoI("mk", gMonKey); IoB("mr", monRestPend); IoD("mp", monPnl); IoD("mq", monPeak); IoB("ms", monStop); IoB("ml", monLocked);
    // the trade the EA is in, or its working order: its type and what it booked so far; the broker deals already counted
-   IoI("xs", exState); IoB("xl", exL); IoD("xv", exLots); IoD("xr", exRiskAmt); IoD("xb", exBase); IoD("xc", exCostPx); IoD("xp", exPnl); IoD("xk", exKeepSl);
+   IoI("xs", exState); IoB("xl", exL); IoD("xv", exLots); IoD("xr", exRiskAmt); IoD("xb", exBase); IoD("xw", exBaseWin); IoD("xc", exCostPx); IoD("xp", exPnl); IoD("xk", exKeepSl);
    IoB("kr", crkRec); IoB("xy", exSynced);
    double xe = exLim, x1 = exTpL[0], x2 = exTpL[1], x3 = exTpL[2];   // v4.4: the trade's setup (arm bar time, entry) and its own TP1-TP3
    IoT("xa", exArmT); IoD("xe", xe); IoD("x1", x1); IoD("x2", x2); IoD("x3", x3); IoT("xt", gTakenT); IoB("xq", gExitRetry);
@@ -2542,7 +2700,7 @@ void ResetEngine()
    for(int q = 0; q < 3; q++) pDone[q] = false;
    trSkip = 0; lastRes = "-"; bestPx = 0; ghW = 0; ghL = 0; ghR = 0;
    vxSide = 0; vxN = 0; tchL = 1000000; tchS = 1000000; hK = -1; hC = 0; hSum = 0; hNum = 0; ArrayInitialize(hE, 0.0);
-   ArrayInitialize(tpHitN, 0); beN = 0; lkN = 0; gFirstT = 0;
+   ArrayInitialize(tpHitN, 0); beN = 0; lkN = 0; svN = 0; gFirstT = 0; trTrig = 0;
    gDrawT = 0; ArrayResize(gDrawn, 0); gStateTxt = "SCANNING";
    exArmT = 0; exLim = 0; ArrayInitialize(exTpL, 0.0); gExitRetry = false; gExitWhy = ""; gExitSeen = false; gGoneWait = false;
    gVwPrevT = 0; gVwPrev = 0;
@@ -2752,17 +2910,25 @@ int OnInit()
    { Print("Position size: the base risk, base lots or risk % of equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(gpTp1R > gpTp2R || gpTp2R > gpTp3R || gpTp3R > gpTp4R) { Print("Targets must be in order: TP1 <= TP2 <= TP3 <= TP4."); return INIT_PARAMETERS_INCORRECT; }
    if(gpMaxVwOn && gpMaxVwDist <= 0) { Print("Max distance from VWAP must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpBeOn && InpBeR <= 0) { Print("BE trigger: the R in profit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpSvOn && (InpSvR <= 0 || InpSvR >= 1)) { Print("Salvage trigger: the R against the trade must be above 0 and below 1 (the stop is at 1R)."); return INIT_PARAMETERS_INCORRECT; }
    if(gpTouchVwOn && gpTouchVwN < 1) { Print("VWAP touched in the last N candles: N must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
    if(InpCrkT1 && (InpCrkT1Pct < 10 || InpCrkT1Pct > 90)) { Print("Crooks TP1 rule: % closed at TP1 must be 10 to 90."); return INIT_PARAMETERS_INCORRECT; }
    if(CrkCFam() && InpCrkPr != CPR_OFF && (InpCrkPrN < 1 || InpCrkPrM < 1 || InpCrkPrD < 1)) { Print("Crooks C rule: N, M and D must be 1 or more."); return INIT_PARAMETERS_INCORRECT; }
    if((InpMLockOn && InpMLockAmt <= 0) || (InpPLockOn && (InpPLockAt <= 0 || InpPLockPct < 1 || InpPLockPct > 100))) { Print("Monthly profit lock: the amounts must be above 0 and the lock % 1 to 100."); return INIT_PARAMETERS_INCORRECT; }
    if(CrkCFam() && InpCrkPr == CPR_HEDGE && (InpCrkHgSl <= 0 || InpCrkHgTp <= 0)) { Print("Crooks C hedge rule: stop loss and take profit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(CrkCFam() && InpCrkPr == CPR_PCT && (InpCrkPrPct < 10 || InpCrkPrPct > 100)) { Print("Crooks C rule: % of the loss must be 10 to 100."); return INIT_PARAMETERS_INCORRECT; }
-   if((InpRec == REC_CRE || InpRec == REC_CRI) && InpCrkELot <= 0) { Print("Crooks E / I: the lot while waiting for a win must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpRec == REC_CRX && (InpCrkXStep <= 0 || (InpCrkXLim == CXL_TRADE && InpCrkXLimUsd <= 0))) { Print("Crooks X: the step and the per-trade limit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if((InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || InpRec == REC_CRX) && InpCrkELot <= 0) { Print("Crooks E / I / K / L / X: the lot while waiting for a win must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if((InpRec == REC_CRF || InpRec == REC_CRI) && InpCrkFK < 1) { Print("Crooks F / I: the recovery limit must be 1 x the base risk or more."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRG && InpCrkGX <= 0) { Print("Crooks G: the limit of the loss to win back must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRH && InpCrkHPct <= 0) { Print("Crooks H: the % of the equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if(InpRec == REC_CRJ && InpCrkJX <= 0) { Print("Crooks J: the drawdown must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if((InpRec == REC_CRJ || InpRec == REC_CRK) && InpCrkJX <= 0) { Print("Crooks J / K: the drawdown must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpRec == REC_CRK && ((InpCrkKMode == CKM_LOTS && InpCrkKLots <= 0) || (InpCrkKMode == CKM_USD && InpCrkKUsd <= 0) || (InpCrkKMode == CKM_PCT && InpCrkKPct <= 0)))
+   { Print("Crooks K: the careful size must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if(InpRec == REC_CRL && (InpCrkLZ1 <= 0 || InpCrkLZ2 <= 0 || InpCrkLZ1N < 1 || InpCrkLZ2N < 1 || InpCrkLGrow < 0 || InpCrkLGrowX < 1))
+   { Print("Crooks L: the part steps must be above 0, the most parts 1 or more, the growth 0 or more and its limit 1 x or more."); return INIT_PARAMETERS_INCORRECT; }
+   if(SizeProfit() && ExitR() <= 0) { Print("Size by Profit: the final TP must be above 0 R."); return INIT_PARAMETERS_INCORRECT; }
    if(InpLadder != LAD_OFF && InpLadT <= 0) { Print("Profit ladder: the profit target must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpLadder != LAD_OFF && !LadFam()) Print("Profit ladder: it works with Crooks F, G, H, I or J only; with this loss recovery it is off.");
    // warm up the engine on history (no orders): it ends in the same state as the TradingView engine would

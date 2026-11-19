@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.1, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.2, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -1221,11 +1221,34 @@ Other gold findings:
       New suites `parity_v51.py` (rec / pr / size: Profit with REC_SD, spread 0.16, commission 7, earn-back on and off; D computed like
       PDiv and given to the reference), `parity_month_v51.py`, `parity_tp1_v51.py`; runners `v51/run_normal.sh`, `v51/run_restart_a.sh`,
       `v51/run_restart_b.sh`, results in `v51/progress.txt`.
-    - **Results:** TBD_CHECKPOINT
+    - **Results:** old suites (Risk) on v5.1: rec 8,784 / tp1 22,484 / crkpr 20,544 / month 1,536 / size 12,240 runs, 0 differences.
+      v5.1 suites (normal): rec 9,072, pr 13,440, size 17,472, month 3,360, tp1 13,552 runs (70 M trades). They are tie-aware (a run that
+      differs is compared again with every D x (1 +- 1e-12)) and the earn-back-off runs use a $5 commission: with $7 (M5 sources, costs
+      0.23) or $6 (M1, 0.22) D equals the harness's own P&L ratio and every recovery / Oscar test lands exactly on its limit. Left: 2 size
+      runs (Crooks L, earn-back off: the closed profit back exactly at the best after a full recovery, `nR >= crkPk` a tie) and 3 month
+      runs (Crooks L, M5 0.1R no cap: the chained harness's totals reach 1e12, so nR = totalNet - gNet0 loses digits; month by month in a
+      fresh harness 4.8e-12). Restart: rec 9,072 (1: % of equity at 5.7e-9 on the trade where the account blows, the same without the
+      restart: start + a huge negative sum), pr 13,440 identical. RESTART_B_CHECKPOINT
     - **Broker simulator** (`sim/sim51`): defaults v5.0 vs v5.1 SIM / BOOK lines identical (694 and 1,181); Profit, recovery off, COMM 3.5 a
       side: planned TP win (lots x R x stop, stop from the EA's risk) v5.0 $46.22 / $47.78 / $48.17, v5.1 $47.21 / $49.07 / $49.56 at
       0.6R / 0.2R / 0.1R, max $49.99 (lots rounded down) (`sim/profit_win_check_v51.txt`); Oscar, Crooks C, K, L with Profit at 0.2R and a
       restart every 997 ticks: the bookings and the filled positions identical to the runs without restarts; every position booked, 0 rejects.
+
+49. **Over N = 3 on M5 and M15, Risk and Profit, months from $1,000 / $2,000 / $10,000 (asked 2026-11-19).** `nt4/nt4_test.py TF` (the nt3
+    test with the timeframe and three starts) + `nt4/build_xlsx.py START OUT` -> `Research/deliverables/Gold_OverN3_TP0.2_M5_M15_Start{1000,
+    2000,10000}.xlsx` (936 formulas each, recalc 0 errors; Summary checked against the pickles). M5 $1,000 reproduces item 47 exactly.
+    Totals (69 months): M5 Risk -13,924 / -17,228 / -19,561; M5 Profit -24,721 / -44,432 / -166,668; M15 Risk -2,152 (all three: the
+    leverage never binds); M15 Profit -9,905 / -15,018 / -20,775. A bigger start loses more: the 1:100 limit cuts the big recovery trades
+    on small accounts.
+50. **v5.2: Crooks X (asked 2026-11-19)** = Crooks E with the loss to win back SET from the levels after every close: below the start the
+    gap to it (whole, in N trades); above it the gap to the next step (InpCrkXStep / cxStep, $1,000) up to the best; a win into another
+    step: N parts again; optional per-trade limit (dropdown Hard cap only / Per-trade limit $, default $500). Spec `v50/SPEC_v50.md`
+    section 6. Reference `gold/recovery.py` (MODES[30], xStep / xLim; v5.1 copy `recovery_v51.py`), EA `build/patch_ea_v52.py` (from
+    `bak/AuctionRetestEA_v51.mq5`: REC_CRX, XIdx / XTarget, BookClosed, CrkRecLimit, table, OnInit; no new saved state; 3,062 lines,
+    mq5check 0 / 0), strategy `build/patch_pine_v52.py` (from `bak/strategy_template_v51.pine`: L_CRX, cxStep / cxLim / cxLimUsd, f_xIdx /
+    f_xTarget). Checks: `mq5check/rec/parity_x.py` rec 2,016 + pr 1,120 runs, 0 differences; restart X_RESTART_CP; month suite with X: the
+    same chained-harness precision case only (fresh per month 4.8e-12); simulator `sim/sim52` x52_*.log: booked, 0 rejects, restarts
+    identical, limit held; defaults identical to v5.1.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

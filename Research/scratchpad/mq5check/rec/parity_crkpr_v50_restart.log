@@ -1,0 +1,25 @@
+M1   Most profit              every-day True  runs   144, signals   246308, mismatches 0
+M1   Default settings         every-day True  runs   144, signals   331859, mismatches 0
+M1   Shortest losing streak   every-day True  runs   144, signals   229555, mismatches 0
+M1   Most profit              every-day False runs  1568, signals  2965068, mismatches 0
+M1   Shortest losing streak   every-day False runs  1568, signals  2736917, mismatches 0
+M5   Default settings         every-day True  runs   144, signals   372704, mismatches 0
+M5   Most profit              every-day True  runs   144, signals   190525, mismatches 0
+M5   Shortest losing streak   every-day False runs  1568, signals  2595003, mismatches 0
+M5   Shortest losing streak   every-day True  runs   144, signals   216526, mismatches 0
+M5   Most profit              every-day False runs  1568, signals  2202901, mismatches 0
+M5   Default settings         every-day False runs  1568, signals  4237739, mismatches 0
+M15  Default settings         every-day True  runs   144, signals   376947, mismatches 0
+M15  Most profit              every-day True  runs   144, signals   175384, mismatches 0
+M15  Most profit              every-day False runs  1568, signals  2028430, mismatches 0
+M15  Shortest losing streak   every-day True  runs   144, signals   149117, mismatches 0
+M15  Shortest losing streak   every-day False runs  1568, signals  1700557, mismatches 0
+H1   Default settings         every-day True  runs   144, signals   112595, mismatches 0
+H1   Most profit              every-day False runs  1568, signals   285961, mismatches 0
+H1   Most profit              every-day True  runs   144, signals    26784, mismatches 0
+H1   Shortest losing streak   every-day False runs  1568, signals   302411, mismatches 0
+H1   Shortest losing streak   every-day True  runs   144, signals    28080, mismatches 0
+H1   Default settings         every-day False runs  1568, signals  1353376, mismatches 0
+M15  Default settings         every-day False runs  1568, signals  4477632, mismatches 0
+M1   Default settings         every-day False runs  1568, signals  3934882, mismatches 0
+runs 20544, signals compared 31277261 (skipped by the pause 4056539), mismatches 0

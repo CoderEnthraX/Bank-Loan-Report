@@ -1,0 +1,17 @@
+size  M1 Most profit                 runs  1248, trades   912998, tie-breaks 0, mismatches 0
+size  M1 Default settings            runs  1248, trades   695439, tie-breaks 0, mismatches 0
+size  M1 Shortest losing streak      runs  1248, trades   906980, tie-breaks 0, mismatches 0
+size  M5 Default settings            runs  1248, trades   775344, tie-breaks 0, mismatches 0
+size  M5 Most profit                 runs  1248, trades   899844, tie-breaks 0, mismatches 0
+MISMATCH size M5 Shortest losing streak | eb 0 pct=1.0 Crooks L {} N 1 cap 0.0 clamp | first diff (697, 87.14730575236028, 348.589223009, 800, 800, False, False)
+MISMATCH size M5 Shortest losing streak | eb 0 pct=1.0 Crooks L {} N 2 cap 0.0 clamp | first diff (697, 87.14730575236028, 348.589223009, 800, 800, False, False)
+size  M5 Shortest losing streak      runs  1248, trades   918138, tie-breaks 8, mismatches 2
+size  M15 Most profit                runs  1248, trades   896293, tie-breaks 0, mismatches 0
+size  M15 Default settings           runs  1248, trades   894768, tie-breaks 0, mismatches 0
+size  M15 Shortest losing streak     runs  1248, trades   920096, tie-breaks 0, mismatches 0
+size  H1 Default settings            runs  1248, trades   795880, tie-breaks 0, mismatches 0
+size  H1 Most profit                 runs  1248, trades   222138, tie-breaks 0, mismatches 0
+size  H1 Shortest losing streak      runs  1248, trades   240315, tie-breaks 0, mismatches 0
+size  M5 user TP1 0.1R               runs  1248, trades   479391, tie-breaks 0, mismatches 0
+size  M5 user TP1 0.3R               runs  1248, trades   661941, tie-breaks 0, mismatches 0
+SECTION size: runs 17472, trades compared 10219565, floating-point tie-breaks 8, mismatches 2 -> DIFFERENCES

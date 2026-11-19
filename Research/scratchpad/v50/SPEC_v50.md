@@ -76,3 +76,42 @@ Crooks C family (not the ladder family). While a loss is owed, a trade that is n
 3. Ladder (F - J, K) when on: `r = guard ? min(B0, eRisk) : min(CrkRule(ladderBase(B0)), r + gam x C / m)`; guard never for K.
 4. K zone: replace r (section 2).
 5. Hard cap (unchanged).
+
+## 5. v5.1 (2026-11-19): Profit = the win at the final TP INCLUDING the costs
+
+v5.0 used `D = exitR`, so a final-TP win was `amount x stop / (stop + costs)` (gold M5: about 8-9% short). v5.1 sizes with the win per $ of
+stop-out loss of THIS setup:
+- `D = W / Lu`: `Lu` = the stop-out loss per unit (costs included; the sizing's per-lot loss), `W` = the win per unit at the final TP:
+  with earn-back `exitR x stop` (the target is pushed by the costs), without it `exitR x stop - costs`.
+  EA: `PDiv(exitR)`: `Lu = (trRisk + spr) / ts x tv + comm`, `W = exitR x trRisk / ts x tv` (- `spr / ts x tv + comm` without
+  earn-back); no tick value / stop, or `W <= 0` or `Lu <= 0`: `D = exitR` (the v5.0 rule). Pine: `pvf = pointvalue x fx`,
+  `Lu = rp x pvf + costUnit`, `W = exitR x rp x pvf` (- costUnit). Reference: trade element [8] = D (given by the parity script exactly as
+  the harness computes it), absent: `exitR`.
+- With Profit EVERY amount-to-risk conversion uses this D: the base (Fixed $ and % of equity), the rule add-ons (D instead of 1), Exact
+  (`pool / D`), the Crooks recovery (`x / D` instead of `x / exitR`, also on the ladder base), Crooks L's growth (`/ D`), Crooks K's
+  careful $ (`/ D`), Oscar's need `(B0 D - oscP) / (B0 D)` with the goal = one base win `B0 x D` (kept with the trade: EA `exBaseWin`,
+  saved as "xw"; Pine `exBaseWin`; booking `oscP >= base win of the booked trade`).
+- Risk mode: unchanged (v5.0 = v4.9: Exact and Crooks divide by exitR).
+- The Crooks TP1 rule is unchanged (its size already banks the amount at TP1 after the costs).
+
+## 6. v5.2 (2026-11-19): Crooks X (ENUM 30, after Crooks L)
+
+Asked by the user: Crooks E (0.01 lot while a loss waits for a win, then N recovery trades) where the loss to win back is measured from the
+levels, not summed from the trades.
+- Zero line = the start (EA start / backtest start; with the monthly restart the 1st of the month). `nR` = closed profit since it,
+  `pR` = the best closed profit since it (crkPk / peakNet, updated before this). `step` = InpCrkXStep / xStep (default $1,000).
+- After every booked trade (after crkPk / peakNet is updated) the loss to win back is SET (not reduced by the P&L):
+  - `nR < -0.005` (below the start): `T = -nR` (the whole gap to the start, however big);
+  - `nR >= pR - 0.005` (at the best): `T = 0` (a new cycle, base trades);
+  - else (above the start, below the best): the level = `min(pR, (floor((nR + 0.005) / step) + 1) x step)`, `T = max(0, level - nR)`.
+  The 0.005 makes a balance a fraction of a cent under a level count as at it (then the next level is the target).
+- Parts: N = "win the loss back over N wins" (CrkNp: N when on, else 1). As Crooks C / E: a loss sets the parts to N; a winning recovery
+  trade one fewer (at least 1); in addition a WIN that moves the closed profit into another step (index `-1` below the start, else
+  `floor((nR + 0.005) / step)`; before = nR - pnl, after = nR) sets the parts to N (a new step is won back in N trades).
+- T < 0.01: a new cycle (as Crooks C). Waiting lot: as Crooks E (min(B, the 0.01-lot risk) while T > 0 and not a recovery trade).
+- Recovery trade: as Crooks C: `max(B, T / parts / XR)` (XR = exitR with Risk, D with Profit; TP1 rule as Crooks C).
+- Limit (new): InpCrkXLim / xLim: "Hard cap only" (default; the hard cap as for every rule) or "Per-trade limit ($)": a recovery trade's
+  stop-out risk is at most max(B, InpCrkXLimUsd) (EA: / CrkT1Mult(), as Crooks F). Default limit $500.
+- The rules after N losing recovery trades (forget / % / wait / skip / hedge) and the hard cap's Start again clear the loss; with Crooks X
+  it is measured again at the next close (the gap to the level is still there).
+- No new saved state (T and the step come from the closed profit, crkPk and crkL, all already saved).

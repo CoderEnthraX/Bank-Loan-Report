@@ -1,0 +1,1381 @@
+EA 2025.09.15 01:00:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+SIM ORDER 2025.09.16 04:00:00 tk=1000 type=2 vol=0.46 px=3685.49 sl=3682.07 tp=3686.64 bid=3686.51 ask=3686.60
+SIM DEAL 2025.09.16 04:01:30 tk=1001 pos=1000 buy IN vol=0.46 px=3684.67 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.16 04:01:30 pos=1000 buy vol=0.46 px=3684.67 sl=3682.07 tp=3686.64 bid=3684.48 ask=3684.67
+SIM DEAL 2025.09.16 04:04:30 tk=1002 pos=1000 sell OUT vol=0.46 px=3680.62 profit=-186.30 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.09.16 04:04:30 pos=1000 reason=4 px=3680.62 open=3684.67 sl=3682.07 tp=3686.64
+EA 2025.09.16 04:05:00 Trade #1000 closed: 0.46 lots at 3680.62 | trade P&L -186.30 (costs included) | closed by its stop loss
+BOOK 2025.09.16 04:05:00 pnl=-186.30 hedge=0 risk=163.60 lots=0.46
+SIM ORDER 2025.09.16 06:40:00 tk=1003 type=2 vol=0.01 px=3682.87 sl=3679.04 tp=3684.15 bid=3682.82 ask=3682.90
+SIM DEAL 2025.09.16 06:40:30 tk=1004 pos=1003 buy IN vol=0.01 px=3681.40 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.16 06:40:30 pos=1003 buy vol=0.01 px=3681.40 sl=3679.04 tp=3684.15 bid=3681.14 ask=3681.40
+SIM DEAL 2025.09.16 07:52:30 tk=1005 pos=1003 sell OUT vol=0.01 px=3684.37 profit=2.97 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.16 07:52:30 pos=1003 reason=5 px=3684.37 open=3681.40 sl=3679.04 tp=3684.15
+EA 2025.09.16 07:55:00 Trade #1003 closed: 0.01 lots at 3684.37 | trade P&L +2.97 (costs included) | closed by its take profit
+BOOK 2025.09.16 07:55:00 pnl=2.97 hedge=0 risk=3.97 lots=0.01
+SIM ORDER 2025.09.16 09:40:00 tk=1006 type=2 vol=1.73 px=3687.17 sl=3683.73 tp=3688.24 bid=3687.83 ask=3687.98
+SIM DEAL 2025.09.16 09:40:30 tk=1007 pos=1006 buy IN vol=1.73 px=3687.03 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.16 09:40:30 pos=1006 buy vol=1.73 px=3687.03 sl=3683.73 tp=3688.24 bid=3686.90 ask=3687.03
+SIM DEAL 2025.09.16 09:42:30 tk=1008 pos=1006 sell OUT vol=1.73 px=3688.48 profit=250.85 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.16 09:42:30 pos=1006 reason=5 px=3688.48 open=3687.03 sl=3683.73 tp=3688.24
+EA 2025.09.16 09:45:00 Trade #1006 closed: 1.73 lots at 3688.48 | trade P&L +250.85 (costs included) | closed by its take profit
+BOOK 2025.09.16 09:45:00 pnl=250.85 hedge=0 risk=607.73 lots=1.73
+SIM ORDER 2025.09.16 11:15:00 tk=1009 type=2 vol=0.39 px=3692.75 sl=3688.13 tp=3694.27 bid=3695.83 ask=3695.91
+SIM DEAL 2025.09.16 11:33:30 tk=1010 pos=1009 buy IN vol=0.39 px=3692.25 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.16 11:33:30 pos=1009 buy vol=0.39 px=3692.25 sl=3688.13 tp=3694.27 bid=3692.07 ask=3692.25
+SIM DEAL 2025.09.16 11:41:30 tk=1011 pos=1009 sell OUT vol=0.39 px=3694.57 profit=90.48 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.16 11:41:30 pos=1009 reason=5 px=3694.57 open=3692.25 sl=3688.13 tp=3694.27
+EA 2025.09.16 11:45:00 Trade #1009 closed: 0.39 lots at 3694.57 | trade P&L +90.48 (costs included) | closed by its take profit
+BOOK 2025.09.16 11:45:00 pnl=90.48 hedge=0 risk=185.96 lots=0.39
+SIM ORDER 2025.09.16 16:30:00 tk=1012 type=2 vol=0.39 px=3693.00 sl=3687.56 tp=3694.66 bid=3694.37 ask=3694.53
+SIM DEAL 2025.09.16 16:31:15 tk=1013 pos=1012 buy IN vol=0.39 px=3692.86 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.16 16:31:15 pos=1012 buy vol=0.39 px=3692.86 sl=3687.56 tp=3694.66 bid=3692.73 ask=3692.86
+SIM DEAL 2025.09.16 16:31:30 tk=1014 pos=1012 sell OUT vol=0.39 px=3695.19 profit=90.87 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.16 16:31:30 pos=1012 reason=5 px=3695.19 open=3692.86 sl=3687.56 tp=3694.66
+EA 2025.09.16 16:35:00 Trade #1012 closed: 0.39 lots at 3695.19 | trade P&L +90.87 (costs included) | closed by its take profit
+BOOK 2025.09.16 16:35:00 pnl=90.87 hedge=0 risk=214.92 lots=0.39
+SIM ORDER 2025.09.17 04:25:00 tk=1015 type=3 vol=1.26 px=3689.34 sl=3691.23 tp=3688.73 bid=3688.36 ask=3688.51
+SIM DEAL 2025.09.17 04:25:30 tk=1016 pos=1015 sell IN vol=1.26 px=3689.40 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.17 04:25:30 pos=1015 sell vol=1.26 px=3689.40 sl=3691.23 tp=3688.73 bid=3689.40 ask=3689.66
+SIM DEAL 2025.09.17 04:26:30 tk=1017 pos=1015 buy OUT vol=1.26 px=3688.10 profit=163.80 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.17 04:26:30 pos=1015 reason=5 px=3688.10 open=3689.40 sl=3691.23 tp=3688.73
+EA 2025.09.17 04:30:00 Trade #1015 closed: 1.26 lots at 3688.10 | trade P&L +163.80 (costs included) | closed by its take profit
+BOOK 2025.09.17 04:30:00 pnl=163.80 hedge=0 risk=248.85 lots=1.26
+SIM ORDER 2025.09.17 09:40:00 tk=1018 type=3 vol=0.76 px=3674.10 sl=3677.94 tp=3672.85 bid=3673.76 ask=3673.86
+SIM DEAL 2025.09.17 09:47:15 tk=1019 pos=1018 sell IN vol=0.76 px=3674.10 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.17 09:47:15 pos=1018 sell vol=0.76 px=3674.10 sl=3677.94 tp=3672.85 bid=3674.10 ask=3674.20
+SIM DEAL 2025.09.17 09:48:30 tk=1020 pos=1018 buy OUT vol=0.76 px=3672.34 profit=133.76 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.17 09:48:30 pos=1018 reason=5 px=3672.34 open=3674.10 sl=3677.94 tp=3672.85
+EA 2025.09.17 09:50:00 Trade #1018 closed: 0.76 lots at 3672.34 | trade P&L +133.76 (costs included) | closed by its take profit
+BOOK 2025.09.17 09:50:00 pnl=133.76 hedge=0 risk=301.13 lots=0.76
+SIM ORDER 2025.09.17 10:30:00 tk=1021 type=3 vol=0.64 px=3669.30 sl=3674.57 tp=3667.58 bid=3667.54 ask=3667.62
+SIM DEAL 2025.09.17 10:33:30 tk=1022 pos=1021 sell IN vol=0.64 px=3669.54 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.17 10:33:30 pos=1021 sell vol=0.64 px=3669.54 sl=3674.57 tp=3667.58 bid=3669.54 ask=3669.60
+SIM DEAL 2025.09.17 10:57:30 tk=1023 pos=1021 buy OUT vol=0.64 px=3667.23 profit=147.84 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.17 10:57:30 pos=1021 reason=5 px=3667.23 open=3669.54 sl=3674.57 tp=3667.58
+EA 2025.09.17 11:00:00 Trade #1021 closed: 0.64 lots at 3667.23 | trade P&L +147.84 (costs included) | closed by its take profit
+BOOK 2025.09.17 11:00:00 pnl=147.84 hedge=0 risk=347.13 lots=0.64
+SIM ORDER 2025.09.18 04:20:00 tk=1024 type=3 vol=0.56 px=3655.17 sl=3662.21 tp=3653.11 bid=3653.39 ask=3653.61
+SIM DEAL 2025.09.18 04:21:30 tk=1025 pos=1024 sell IN vol=0.56 px=3655.73 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.18 04:21:30 pos=1024 sell vol=0.56 px=3655.73 sl=3662.21 tp=3653.11 bid=3655.73 ask=3655.97
+SIM MODIFY 2025.09.18 04:25:00 pos=1024 sl=3662.21->3662.07 tp=3653.11->3652.97
+SIM DEAL 2025.09.18 04:31:45 tk=1026 pos=1024 buy OUT vol=0.56 px=3652.86 profit=160.72 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.18 04:31:45 pos=1024 reason=5 px=3652.86 open=3655.73 sl=3662.07 tp=3652.97
+EA 2025.09.18 04:35:00 Trade #1024 closed: 0.56 lots at 3652.86 | trade P&L +160.72 (costs included) | closed by its take profit
+BOOK 2025.09.18 04:35:00 pnl=160.72 hedge=0 risk=394.78 lots=0.56
+SIM ORDER 2025.09.18 09:05:00 tk=1027 type=3 vol=0.86 px=3647.82 sl=3652.94 tp=3646.21 bid=3644.04 ask=3644.16
+SIM CANCEL 2025.09.18 09:30:00 tk=1027
+SIM ORDER 2025.09.18 12:00:00 tk=1028 type=2 vol=0.83 px=3664.31 sl=3659.05 tp=3666.01 bid=3665.44 ask=3665.53
+SIM CANCEL 2025.09.18 12:25:00 tk=1028
+SIM ORDER 2025.09.18 16:35:00 tk=1029 type=3 vol=0.62 px=3650.64 sl=3657.74 tp=3648.43 bid=3647.42 ask=3647.54
+SIM CANCEL 2025.09.18 17:00:00 tk=1029
+SIM ORDER 2025.09.23 11:20:00 tk=1030 type=2 vol=0.92 px=3757.04 sl=3752.21 tp=3758.52 bid=3758.75 ask=3758.91
+SIM CANCEL 2025.09.23 11:45:00 tk=1030
+SIM ORDER 2025.09.23 11:45:00 tk=1031 type=2 vol=0.81 px=3768.89 sl=3763.50 tp=3770.68 bid=3770.16 ask=3770.21
+SIM CANCEL 2025.09.23 12:10:00 tk=1031
+SIM ORDER 2025.09.24 04:10:00 tk=1032 type=2 vol=0.91 px=3766.93 sl=3762.12 tp=3768.48 bid=3767.43 ask=3767.53
+SIM DEAL 2025.09.24 04:13:30 tk=1033 pos=1032 buy IN vol=0.91 px=3764.01 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.24 04:13:30 pos=1032 buy vol=0.91 px=3764.01 sl=3762.12 tp=3768.48 bid=3763.89 ask=3764.01
+SIM DEAL 2025.09.24 04:15:30 tk=1034 pos=1032 sell OUT vol=0.91 px=3761.02 profit=-272.09 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.09.24 04:15:30 pos=1032 reason=4 px=3761.02 open=3764.01 sl=3762.12 tp=3768.48
+EA 2025.09.24 04:20:00 Trade #1032 closed: 0.91 lots at 3761.02 | trade P&L -272.09 (costs included) | closed by its stop loss
+BOOK 2025.09.24 04:20:00 pnl=-272.09 hedge=0 risk=449.53 lots=0.91
+SIM ORDER 2025.09.24 04:25:00 tk=1035 type=3 vol=0.01 px=3761.02 sl=3766.81 tp=3759.14 bid=3759.64 ask=3759.71
+SIM CANCEL 2025.09.24 04:50:00 tk=1035
+SIM ORDER 2025.09.24 04:50:00 tk=1036 type=3 vol=0.01 px=3756.96 sl=3762.89 tp=3755.25 bid=3756.33 ask=3756.56
+SIM DEAL 2025.09.24 04:50:15 tk=1037 pos=1036 sell IN vol=0.01 px=3757.15 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.24 04:50:15 pos=1036 sell vol=0.01 px=3757.15 sl=3762.89 tp=3755.25 bid=3757.15 ask=3757.39
+SIM DEAL 2025.09.24 04:50:45 tk=1038 pos=1036 buy OUT vol=0.01 px=3755.20 profit=1.95 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.24 04:50:45 pos=1036 reason=5 px=3755.20 open=3757.15 sl=3762.89 tp=3755.25
+EA 2025.09.24 04:55:00 Trade #1036 closed: 0.01 lots at 3755.20 | trade P&L +1.95 (costs included) | closed by its take profit
+BOOK 2025.09.24 04:55:00 pnl=1.95 hedge=0 risk=5.92 lots=0.01
+SIM ORDER 2025.09.24 05:35:00 tk=1039 type=3 vol=1.67 px=3751.92 sl=3757.29 tp=3750.36 bid=3751.11 ask=3751.33
+SIM DEAL 2025.09.24 05:37:30 tk=1040 pos=1039 sell IN vol=1.67 px=3752.50 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.24 05:37:30 pos=1039 sell vol=1.67 px=3752.50 sl=3757.29 tp=3750.36 bid=3752.50 ask=3752.65
+SIM MODIFY 2025.09.24 05:40:00 pos=1039 sl=3757.29->3757.15 tp=3750.36->3750.22
+SIM DEAL 2025.09.24 05:53:30 tk=1041 pos=1039 buy OUT vol=1.67 px=3757.59 profit=-850.03 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.09.24 05:53:30 pos=1039 reason=4 px=3757.59 open=3752.50 sl=3757.15 tp=3750.22
+EA 2025.09.24 05:55:00 Trade #1039 closed: 1.67 lots at 3757.59 | trade P&L -850.03 (costs included) | closed by its stop loss
+BOOK 2025.09.24 05:55:00 pnl=-850.03 hedge=0 risk=898.44 lots=1.67
+SIM ORDER 2025.09.24 10:40:00 tk=1042 type=2 vol=0.01 px=3777.16 sl=3772.65 tp=3778.59 bid=3778.13 ask=3778.25
+SIM DEAL 2025.09.24 10:45:30 tk=1043 pos=1042 buy IN vol=0.01 px=3776.74 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.24 10:45:30 pos=1042 buy vol=0.01 px=3776.74 sl=3772.65 tp=3778.59 bid=3776.58 ask=3776.74
+SIM DEAL 2025.09.24 11:14:30 tk=1044 pos=1042 sell OUT vol=0.01 px=3771.98 profit=-4.76 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.09.24 11:14:30 pos=1042 reason=4 px=3771.98 open=3776.74 sl=3772.65 tp=3778.59
+EA 2025.09.24 11:15:00 Trade #1042 closed: 0.01 lots at 3771.98 | trade P&L -4.76 (costs included) | closed by its stop loss
+BOOK 2025.09.24 11:15:00 pnl=-4.76 hedge=0 risk=4.62 lots=0.01
+SIM ORDER 2025.09.25 04:55:00 tk=1045 type=3 vol=0.01 px=3737.29 sl=3743.09 tp=3735.46 bid=3735.97 ask=3736.08
+SIM DEAL 2025.09.25 04:57:30 tk=1046 pos=1045 sell IN vol=0.01 px=3737.47 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.25 04:57:30 pos=1045 sell vol=0.01 px=3737.47 sl=3743.09 tp=3735.46 bid=3737.47 ask=3737.63
+SIM MODIFY 2025.09.25 05:00:00 pos=1045 sl=3743.09->3743.25 tp=3735.46->3735.62
+SIM DEAL 2025.09.25 05:00:30 tk=1047 pos=1045 buy OUT vol=0.01 px=3734.13 profit=3.34 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.25 05:00:30 pos=1045 reason=5 px=3734.13 open=3737.47 sl=3743.25 tp=3735.62
+EA 2025.09.25 05:05:00 Trade #1045 closed: 0.01 lots at 3734.13 | trade P&L +3.34 (costs included) | closed by its take profit
+BOOK 2025.09.25 05:05:00 pnl=3.34 hedge=0 risk=5.91 lots=0.01
+SIM ORDER 2025.09.25 09:15:00 tk=1048 type=2 vol=7.33 px=3743.66 sl=3738.68 tp=3745.24 bid=3745.88 ask=3745.99
+SIM DEAL 2025.09.25 09:37:30 tk=1049 pos=1048 buy IN vol=7.33 px=3743.19 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.25 09:37:30 pos=1048 buy vol=7.33 px=3743.19 sl=3738.68 tp=3745.24 bid=3743.06 ask=3743.19
+SIM DEAL 2025.09.25 10:27:30 tk=1050 pos=1048 sell OUT vol=7.33 px=3745.65 profit=1803.18 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.25 10:27:30 pos=1048 reason=5 px=3745.65 open=3743.19 sl=3738.68 tp=3745.24
+EA 2025.09.25 10:30:00 Trade #1048 closed: 7.33 lots at 3745.65 | trade P&L +1803.18 (costs included) | closed by its take profit
+BOOK 2025.09.25 10:30:00 pnl=1803.18 hedge=0 risk=3735.16 lots=7.33
+SIM ORDER 2025.09.25 10:35:00 tk=1051 type=2 vol=1.33 px=3746.33 sl=3741.43 tp=3747.86 bid=3747.66 ask=3747.80
+SIM CANCEL 2025.09.25 11:00:00 tk=1051
+SIM ORDER 2025.09.30 04:25:00 tk=1052 type=2 vol=1.08 px=3845.51 sl=3839.36 tp=3847.29 bid=3847.43 ask=3847.66
+SIM DEAL 2025.09.30 04:25:30 tk=1053 pos=1052 buy IN vol=1.08 px=3845.44 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.30 04:25:30 pos=1052 buy vol=1.08 px=3845.44 sl=3839.36 tp=3847.29 bid=3845.37 ask=3845.44
+SIM DEAL 2025.09.30 04:26:30 tk=1054 pos=1052 sell OUT vol=1.08 px=3847.37 profit=208.44 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.30 04:26:30 pos=1052 reason=5 px=3847.37 open=3845.44 sl=3839.36 tp=3847.29
+EA 2025.09.30 04:30:00 Trade #1052 closed: 1.08 lots at 3847.37 | trade P&L +208.44 (costs included) | closed by its take profit
+BOOK 2025.09.30 04:30:00 pnl=208.44 hedge=0 risk=663.36 lots=1.08
+SIM ORDER 2025.09.30 06:15:00 tk=1055 type=2 vol=1.12 px=3851.80 sl=3845.85 tp=3853.48 bid=3853.48 ask=3853.74
+SIM CANCEL 2025.09.30 06:40:00 tk=1055
+SIM ORDER 2025.09.30 06:45:00 tk=1056 type=2 vol=1.16 px=3861.84 sl=3856.24 tp=3863.61 bid=3863.74 ask=3863.85
+SIM CANCEL 2025.09.30 07:10:00 tk=1056
+SIM ORDER 2025.09.30 11:40:00 tk=1057 type=3 vol=0.56 px=3812.18 sl=3823.97 tp=3808.58 bid=3807.78 ask=3807.91
+SIM DEAL 2025.09.30 11:42:30 tk=1058 pos=1057 sell IN vol=0.56 px=3815.01 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.09.30 11:42:30 pos=1057 sell vol=0.56 px=3815.01 sl=3823.97 tp=3808.58 bid=3815.01 ask=3815.17
+SIM MODIFY 2025.09.30 11:45:00 pos=1057 sl=3823.97->3823.94 tp=3808.58->3808.55
+SIM DEAL 2025.09.30 12:11:30 tk=1059 pos=1057 buy OUT vol=0.56 px=3806.49 profit=477.12 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.09.30 12:11:30 pos=1057 reason=5 px=3806.49 open=3815.01 sl=3823.94 tp=3808.55
+EA 2025.09.30 12:15:00 Trade #1057 closed: 0.56 lots at 3806.49 | trade P&L +477.12 (costs included) | closed by its take profit
+BOOK 2025.09.30 12:15:00 pnl=477.12 hedge=0 risk=665.45 lots=0.56
+SIM ORDER 2025.10.01 04:10:00 tk=1060 type=3 vol=1.76 px=3859.24 sl=3863.04 tp=3858.20 bid=3859.22 ask=3859.48
+SIM DEAL 2025.10.01 04:10:30 tk=1061 pos=1060 sell IN vol=1.76 px=3860.57 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.01 04:10:30 pos=1060 sell vol=1.76 px=3860.57 sl=3863.04 tp=3858.20 bid=3860.57 ask=3860.76
+SIM DEAL 2025.10.01 04:13:15 tk=1062 pos=1060 buy OUT vol=1.76 px=3863.13 profit=-450.56 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.10.01 04:13:15 pos=1060 reason=4 px=3863.13 open=3860.57 sl=3863.04 tp=3858.20
+EA 2025.10.01 04:15:00 Trade #1060 closed: 1.76 lots at 3863.13 | trade P&L -450.56 (costs included) | closed by its stop loss
+BOOK 2025.10.01 04:15:00 pnl=-450.56 hedge=0 risk=663.27 lots=1.76
+SIM ORDER 2025.10.01 04:50:00 tk=1063 type=2 vol=0.01 px=3867.34 sl=3863.53 tp=3868.61 bid=3868.49 ask=3868.58
+SIM DEAL 2025.10.01 04:51:30 tk=1064 pos=1063 buy IN vol=0.01 px=3867.01 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.01 04:51:30 pos=1063 buy vol=0.01 px=3867.01 sl=3863.53 tp=3868.61 bid=3866.91 ask=3867.01
+SIM DEAL 2025.10.01 04:57:30 tk=1065 pos=1063 sell OUT vol=0.01 px=3868.89 profit=1.88 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.01 04:57:30 pos=1063 reason=5 px=3868.89 open=3867.01 sl=3863.53 tp=3868.61
+EA 2025.10.01 05:00:00 Trade #1063 closed: 0.01 lots at 3868.89 | trade P&L +1.88 (costs included) | closed by its take profit
+BOOK 2025.10.01 05:00:00 pnl=1.88 hedge=0 risk=3.95 lots=0.01
+SIM ORDER 2025.10.01 05:05:00 tk=1066 type=2 vol=3.63 px=3870.08 sl=3866.01 tp=3871.31 bid=3870.87 ask=3871.05
+SIM DEAL 2025.10.01 05:14:30 tk=1067 pos=1066 buy IN vol=3.63 px=3867.53 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.01 05:14:30 pos=1066 buy vol=3.63 px=3867.53 sl=3866.01 tp=3871.31 bid=3867.31 ask=3867.53
+SIM DEAL 2025.10.01 05:24:30 tk=1068 pos=1066 sell OUT vol=3.63 px=3864.84 profit=-976.47 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.10.01 05:24:30 pos=1066 reason=4 px=3864.84 open=3867.53 sl=3866.01 tp=3871.31
+EA 2025.10.01 05:25:00 Trade #1066 closed: 3.63 lots at 3864.84 | trade P&L -976.47 (costs included) | closed by its stop loss
+BOOK 2025.10.01 05:25:00 pnl=-976.47 hedge=0 risk=1494.22 lots=3.63
+SIM ORDER 2025.10.01 09:20:00 tk=1069 type=3 vol=0.01 px=3857.52 sl=3862.82 tp=3855.90 bid=3856.36 ask=3856.52
+SIM DEAL 2025.10.01 09:25:30 tk=1070 pos=1069 sell IN vol=0.01 px=3860.24 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.01 09:25:30 pos=1069 sell vol=0.01 px=3860.24 sl=3862.82 tp=3855.90 bid=3860.24 ask=3860.43
+SIM MODIFY 2025.10.01 09:30:00 pos=1069 sl=3862.82->3862.83 tp=3855.90->3855.91
+SIM DEAL 2025.10.01 09:41:30 tk=1071 pos=1069 buy OUT vol=0.01 px=3863.43 profit=-3.19 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.10.01 09:41:30 pos=1069 reason=4 px=3863.43 open=3860.24 sl=3862.83 tp=3855.91
+EA 2025.10.01 09:45:00 Trade #1069 closed: 0.01 lots at 3863.43 | trade P&L -3.19 (costs included) | closed by its stop loss
+BOOK 2025.10.01 09:45:00 pnl=-3.19 hedge=0 risk=5.36 lots=0.01
+SIM ORDER 2025.10.01 10:15:00 tk=1072 type=2 vol=0.01 px=3864.94 sl=3858.95 tp=3866.83 bid=3866.85 ask=3866.96
+SIM CANCEL 2025.10.01 10:40:00 tk=1072
+SIM ORDER 2025.10.01 10:40:00 tk=1073 type=2 vol=0.01 px=3872.23 sl=3866.41 tp=3874.13 bid=3873.39 ask=3873.45
+SIM DEAL 2025.10.01 10:40:30 tk=1074 pos=1073 buy IN vol=0.01 px=3871.98 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.01 10:40:30 pos=1073 buy vol=0.01 px=3871.98 sl=3866.41 tp=3874.13 bid=3871.81 ask=3871.98
+SIM DEAL 2025.10.01 10:48:30 tk=1075 pos=1073 sell OUT vol=0.01 px=3874.88 profit=2.90 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.01 10:48:30 pos=1073 reason=5 px=3874.88 open=3871.98 sl=3866.41 tp=3874.13
+EA 2025.10.01 10:50:00 Trade #1073 closed: 0.01 lots at 3874.88 | trade P&L +2.90 (costs included) | closed by its take profit
+BOOK 2025.10.01 10:50:00 pnl=2.90 hedge=0 risk=5.98 lots=0.01
+SIM ORDER 2025.10.01 11:05:00 tk=1076 type=2 vol=3.27 px=3882.11 sl=3874.99 tp=3884.35 bid=3884.80 ask=3884.90
+SIM CANCEL 2025.10.01 11:30:00 tk=1076
+SIM ORDER 2025.10.02 05:15:00 tk=1077 type=2 vol=4.28 px=3867.78 sl=3862.23 tp=3869.37 bid=3869.72 ask=3869.96
+SIM DEAL 2025.10.02 05:15:30 tk=1078 pos=1077 buy IN vol=4.28 px=3867.73 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.02 05:15:30 pos=1077 buy vol=4.28 px=3867.73 sl=3862.23 tp=3869.37 bid=3867.52 ask=3867.73
+SIM DEAL 2025.10.02 06:25:30 tk=1079 pos=1077 sell OUT vol=4.28 px=3869.38 profit=706.20 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.02 06:25:30 pos=1077 reason=5 px=3869.38 open=3867.73 sl=3862.23 tp=3869.37
+EA 2025.10.02 06:30:00 Trade #1077 closed: 4.28 lots at 3869.38 | trade P&L +706.20 (costs included) | closed by its take profit
+BOOK 2025.10.02 06:30:00 pnl=706.20 hedge=0 risk=2371.80 lots=4.28
+SIM ORDER 2025.10.02 09:15:00 tk=1080 type=2 vol=6.50 px=3871.47 sl=3867.91 tp=3872.64 bid=3871.87 ask=3871.97
+SIM CANCEL 2025.10.02 09:40:00 tk=1080
+SIM ORDER 2025.10.02 11:45:00 tk=1081 type=2 vol=4.13 px=3874.32 sl=3868.65 tp=3876.13 bid=3875.42 ask=3875.52
+SIM DEAL 2025.10.02 11:47:15 tk=1082 pos=1081 buy IN vol=4.13 px=3873.84 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.02 11:47:15 pos=1081 buy vol=4.13 px=3873.84 sl=3868.65 tp=3876.13 bid=3873.69 ask=3873.84
+SIM DEAL 2025.10.02 11:49:30 tk=1083 pos=1081 sell OUT vol=4.13 px=3876.58 profit=1131.62 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.02 11:49:30 pos=1081 reason=5 px=3876.58 open=3873.84 sl=3868.65 tp=3876.13
+EA 2025.10.02 11:50:00 Trade #1081 closed: 4.13 lots at 3876.58 | trade P&L +1131.62 (costs included) | closed by its take profit
+BOOK 2025.10.02 11:50:00 pnl=1131.62 hedge=0 risk=2396.76 lots=4.13
+SIM ORDER 2025.10.02 16:25:00 tk=1084 type=2 vol=1.05 px=3892.27 sl=3886.01 tp=3894.19 bid=3892.71 ask=3892.86
+SIM DEAL 2025.10.02 16:25:30 tk=1085 pos=1084 buy IN vol=1.05 px=3891.50 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.02 16:25:30 pos=1084 buy vol=1.05 px=3891.50 sl=3886.01 tp=3894.19 bid=3891.44 ask=3891.50
+SIM DEAL 2025.10.02 16:31:30 tk=1086 pos=1084 sell OUT vol=1.05 px=3896.86 profit=562.80 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.02 16:31:30 pos=1084 reason=5 px=3896.86 open=3891.50 sl=3886.01 tp=3894.19
+EA 2025.10.02 16:35:00 Trade #1084 closed: 1.05 lots at 3896.86 | trade P&L +562.80 (costs included) | closed by its take profit
+BOOK 2025.10.02 16:35:00 pnl=562.80 hedge=0 risk=665.14 lots=1.05
+SIM ORDER 2025.10.07 04:05:00 tk=1087 type=3 vol=0.92 px=3961.09 sl=3968.28 tp=3958.99 bid=3959.45 ask=3959.67
+SIM DEAL 2025.10.07 04:10:30 tk=1088 pos=1087 sell IN vol=0.92 px=3961.17 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.07 04:10:30 pos=1087 sell vol=0.92 px=3961.17 sl=3968.28 tp=3958.99 bid=3961.17 ask=3961.44
+SIM DEAL 2025.10.07 04:11:30 tk=1089 pos=1087 buy OUT vol=0.92 px=3956.02 profit=473.80 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.07 04:11:30 pos=1087 reason=5 px=3956.02 open=3961.17 sl=3968.28 tp=3958.99
+EA 2025.10.07 04:15:00 Trade #1087 closed: 0.92 lots at 3956.02 | trade P&L +473.80 (costs included) | closed by its take profit
+BOOK 2025.10.07 04:15:00 pnl=473.80 hedge=0 risk=661.81 lots=0.92
+SIM ORDER 2025.10.07 06:15:00 tk=1090 type=2 vol=1.29 px=3967.13 sl=3962.04 tp=3968.68 bid=3967.80 ask=3967.96
+SIM DEAL 2025.10.07 06:22:30 tk=1091 pos=1090 buy IN vol=1.29 px=3965.56 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.07 06:22:30 pos=1090 buy vol=1.29 px=3965.56 sl=3962.04 tp=3968.68 bid=3965.47 ask=3965.56
+SIM DEAL 2025.10.07 06:26:30 tk=1092 pos=1090 sell OUT vol=1.29 px=3960.89 profit=-602.43 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.10.07 06:26:30 pos=1090 reason=4 px=3960.89 open=3965.56 sl=3962.04 tp=3968.68
+EA 2025.10.07 06:30:00 Trade #1090 closed: 1.29 lots at 3960.89 | trade P&L -602.43 (costs included) | closed by its stop loss
+BOOK 2025.10.07 06:30:00 pnl=-602.43 hedge=0 risk=664.58 lots=1.29
+SIM ORDER 2025.10.07 06:40:00 tk=1093 type=2 vol=0.01 px=3970.00 sl=3964.31 tp=3971.78 bid=3970.47 ask=3970.59
+SIM CANCEL 2025.10.07 07:05:00 tk=1093
+SIM ORDER 2025.10.07 10:15:00 tk=1094 type=3 vol=0.01 px=3951.40 sl=3957.96 tp=3949.26 bid=3950.31 ask=3950.36
+SIM DEAL 2025.10.07 10:15:30 tk=1095 pos=1094 sell IN vol=0.01 px=3951.96 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.07 10:15:30 pos=1094 sell vol=0.01 px=3951.96 sl=3957.96 tp=3949.26 bid=3951.96 ask=3952.15
+SIM MODIFY 2025.10.07 10:20:00 pos=1094 sl=3957.96->3958.02 tp=3949.26->3949.32
+SIM DEAL 2025.10.07 10:20:30 tk=1096 pos=1094 buy OUT vol=0.01 px=3946.76 profit=5.20 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.07 10:20:30 pos=1094 reason=5 px=3946.76 open=3951.96 sl=3958.02 tp=3949.32
+EA 2025.10.07 10:25:00 Trade #1094 closed: 0.01 lots at 3946.76 | trade P&L +5.20 (costs included) | closed by its take profit
+BOOK 2025.10.07 10:25:00 pnl=5.20 hedge=0 risk=6.73 lots=0.01
+SIM ORDER 2025.10.07 16:00:00 tk=1097 type=2 vol=2.89 px=3978.48 sl=3971.74 tp=3980.61 bid=3979.44 ask=3979.54
+SIM DEAL 2025.10.07 16:23:30 tk=1098 pos=1097 buy IN vol=2.89 px=3977.68 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.07 16:23:30 pos=1097 buy vol=2.89 px=3977.68 sl=3971.74 tp=3980.61 bid=3977.59 ask=3977.68
+SIM DEAL 2025.10.07 16:25:30 tk=1099 pos=1097 sell OUT vol=2.89 px=3982.53 profit=1401.65 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.07 16:25:30 pos=1097 reason=5 px=3982.53 open=3977.68 sl=3971.74 tp=3980.61
+EA 2025.10.07 16:30:00 Trade #1097 closed: 2.89 lots at 3982.53 | trade P&L +1401.65 (costs included) | closed by its take profit
+BOOK 2025.10.07 16:30:00 pnl=1401.65 hedge=0 risk=1984.57 lots=2.89
+SIM ORDER 2025.10.08 04:55:00 tk=1100 type=2 vol=1.05 px=3997.37 sl=3991.08 tp=3999.21 bid=3998.23 ask=3998.45
+SIM DEAL 2025.10.08 05:00:30 tk=1101 pos=1100 buy IN vol=1.05 px=3995.86 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.08 05:00:30 pos=1100 buy vol=1.05 px=3995.86 sl=3991.08 tp=3999.21 bid=3995.71 ask=3995.86
+SIM DEAL 2025.10.08 05:04:30 tk=1102 pos=1100 sell OUT vol=1.05 px=3999.32 profit=363.30 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.08 05:04:30 pos=1100 reason=5 px=3999.32 open=3995.86 sl=3991.08 tp=3999.21
+EA 2025.10.08 05:05:00 Trade #1100 closed: 1.05 lots at 3999.32 | trade P&L +363.30 (costs included) | closed by its take profit
+BOOK 2025.10.08 05:05:00 pnl=363.30 hedge=0 risk=661.05 lots=1.05
+SIM ORDER 2025.10.08 05:15:00 tk=1103 type=2 vol=1.01 px=4002.28 sl=3995.74 tp=4004.20 bid=4004.58 ask=4004.80
+SIM DEAL 2025.10.08 05:18:15 tk=1104 pos=1103 buy IN vol=1.01 px=4002.24 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.08 05:18:15 pos=1103 buy vol=1.01 px=4002.24 sl=3995.74 tp=4004.20 bid=4002.05 ask=4002.24
+SIM DEAL 2025.10.08 05:18:30 tk=1105 pos=1103 sell OUT vol=1.01 px=4004.44 profit=222.20 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.08 05:18:30 pos=1103 reason=5 px=4004.44 open=4002.24 sl=3995.74 tp=4004.20
+EA 2025.10.08 05:20:00 Trade #1103 closed: 1.01 lots at 4004.44 | trade P&L +222.20 (costs included) | closed by its take profit
+BOOK 2025.10.08 05:20:00 pnl=222.20 hedge=0 risk=661.42 lots=1.01
+SIM ORDER 2025.10.08 05:35:00 tk=1106 type=2 vol=1.05 px=4006.18 sl=3999.92 tp=4008.06 bid=4006.21 ask=4006.39
+SIM DEAL 2025.10.08 05:35:30 tk=1107 pos=1106 buy IN vol=1.05 px=4005.70 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.08 05:35:30 pos=1106 buy vol=1.05 px=4005.70 sl=3999.92 tp=4008.06 bid=4005.52 ask=4005.70
+SIM DEAL 2025.10.08 05:49:30 tk=1108 pos=1106 sell OUT vol=1.05 px=4008.64 profit=308.70 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.08 05:49:30 pos=1106 reason=5 px=4008.64 open=4005.70 sl=3999.92 tp=4008.06
+EA 2025.10.08 05:50:00 Trade #1106 closed: 1.05 lots at 4008.64 | trade P&L +308.70 (costs included) | closed by its take profit
+BOOK 2025.10.08 05:50:00 pnl=308.70 hedge=0 risk=662.11 lots=1.05
+SIM ORDER 2025.10.08 05:55:00 tk=1109 type=2 vol=1.13 px=4009.21 sl=4003.43 tp=4011.00 bid=4010.31 ask=4010.45
+SIM CANCEL 2025.10.08 06:20:00 tk=1109
+SIM ORDER 2025.10.08 06:50:00 tk=1110 type=2 vol=1.24 px=4014.64 sl=4009.46 tp=4016.34 bid=4015.99 ask=4016.06
+SIM DEAL 2025.10.08 06:51:30 tk=1111 pos=1110 buy IN vol=1.24 px=4013.80 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.08 06:51:30 pos=1110 buy vol=1.24 px=4013.80 sl=4009.46 tp=4016.34 bid=4013.60 ask=4013.80
+SIM DEAL 2025.10.08 07:01:30 tk=1112 pos=1110 sell OUT vol=1.24 px=4016.57 profit=343.48 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.08 07:01:30 pos=1110 reason=5 px=4016.57 open=4013.80 sl=4009.46 tp=4016.34
+EA 2025.10.08 07:05:00 Trade #1110 closed: 1.24 lots at 4016.57 | trade P&L +343.48 (costs included) | closed by its take profit
+BOOK 2025.10.08 07:05:00 pnl=343.48 hedge=0 risk=661.96 lots=1.24
+SIM ORDER 2025.10.08 10:10:00 tk=1113 type=2 vol=0.95 px=4033.89 sl=4027.12 tp=4036.09 bid=4036.27 ask=4036.32
+SIM DEAL 2025.10.08 10:15:30 tk=1114 pos=1113 buy IN vol=0.95 px=4032.50 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.08 10:15:30 pos=1113 buy vol=0.95 px=4032.50 sl=4027.12 tp=4036.09 bid=4032.43 ask=4032.50
+SIM DEAL 2025.10.08 10:23:30 tk=1115 pos=1113 sell OUT vol=0.95 px=4036.16 profit=347.70 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.08 10:23:30 pos=1113 reason=5 px=4036.16 open=4032.50 sl=4027.12 tp=4036.09
+EA 2025.10.08 10:25:00 Trade #1113 closed: 0.95 lots at 4036.16 | trade P&L +347.70 (costs included) | closed by its take profit
+BOOK 2025.10.08 10:25:00 pnl=347.70 hedge=0 risk=659.84 lots=0.95
+SIM ORDER 2025.10.09 06:10:00 tk=1116 type=2 vol=0.63 px=4021.68 sl=4011.26 tp=4024.83 bid=4023.23 ask=4023.39
+SIM DEAL 2025.10.09 06:12:30 tk=1117 pos=1116 buy IN vol=0.63 px=4021.53 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.09 06:12:30 pos=1116 buy vol=0.63 px=4021.53 sl=4011.26 tp=4024.83 bid=4021.42 ask=4021.53
+SIM DEAL 2025.10.09 06:29:30 tk=1118 pos=1116 sell OUT vol=0.63 px=4025.18 profit=229.95 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.09 06:29:30 pos=1116 reason=5 px=4025.18 open=4021.53 sl=4011.26 tp=4024.83
+EA 2025.10.09 06:30:00 Trade #1116 closed: 0.63 lots at 4025.18 | trade P&L +229.95 (costs included) | closed by its take profit
+BOOK 2025.10.09 06:30:00 pnl=229.95 hedge=0 risk=660.53 lots=0.63
+SIM ORDER 2025.10.09 10:50:00 tk=1119 type=2 vol=0.91 px=4031.71 sl=4024.48 tp=4033.92 bid=4031.69 ask=4031.84
+SIM DEAL 2025.10.09 10:50:30 tk=1120 pos=1119 buy IN vol=0.91 px=4029.95 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.09 10:50:30 pos=1119 buy vol=0.91 px=4029.95 sl=4024.48 tp=4033.92 bid=4029.85 ask=4029.95
+SIM DEAL 2025.10.09 11:13:30 tk=1121 pos=1119 sell OUT vol=0.91 px=4035.17 profit=475.02 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.09 11:13:30 pos=1119 reason=5 px=4035.17 open=4029.95 sl=4024.48 tp=4033.92
+EA 2025.10.09 11:15:00 Trade #1119 closed: 0.91 lots at 4035.17 | trade P&L +475.02 (costs included) | closed by its take profit
+BOOK 2025.10.09 11:15:00 pnl=475.02 hedge=0 risk=664.32 lots=0.91
+SIM ORDER 2025.10.09 15:55:00 tk=1122 type=2 vol=0.98 px=4047.92 sl=4041.25 tp=4049.96 bid=4050.08 ask=4050.23
+SIM CANCEL 2025.10.09 16:20:00 tk=1122
+SIM ORDER 2025.10.14 04:05:00 tk=1123 type=2 vol=0.85 px=4130.30 sl=4122.56 tp=4132.69 bid=4131.25 ask=4131.38
+SIM DEAL 2025.10.14 04:06:30 tk=1124 pos=1123 buy IN vol=0.85 px=4128.21 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.14 04:06:30 pos=1123 buy vol=0.85 px=4128.21 sl=4122.56 tp=4132.69 bid=4128.07 ask=4128.21
+SIM DEAL 2025.10.14 04:11:30 tk=1125 pos=1123 sell OUT vol=0.85 px=4137.70 profit=806.65 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.14 04:11:30 pos=1123 reason=5 px=4137.70 open=4128.21 sl=4122.56 tp=4132.69
+EA 2025.10.14 04:15:00 Trade #1123 closed: 0.85 lots at 4137.70 | trade P&L +806.65 (costs included) | closed by its take profit
+BOOK 2025.10.14 04:15:00 pnl=806.65 hedge=0 risk=666.39 lots=0.85
+SIM ORDER 2025.10.14 05:35:00 tk=1126 type=2 vol=0.76 px=4144.13 sl=4135.56 tp=4146.79 bid=4145.68 ask=4145.80
+SIM DEAL 2025.10.14 05:46:15 tk=1127 pos=1126 buy IN vol=0.76 px=4143.07 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.14 05:46:15 pos=1126 buy vol=0.76 px=4143.07 sl=4135.56 tp=4146.79 bid=4142.96 ask=4143.07
+SIM DEAL 2025.10.14 05:47:30 tk=1128 pos=1126 sell OUT vol=0.76 px=4147.30 profit=321.48 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.14 05:47:30 pos=1126 reason=5 px=4147.30 open=4143.07 sl=4135.56 tp=4146.79
+EA 2025.10.14 05:50:00 Trade #1126 closed: 0.76 lots at 4147.30 | trade P&L +321.48 (costs included) | closed by its take profit
+BOOK 2025.10.14 05:50:00 pnl=321.48 hedge=0 risk=659.97 lots=0.76
+SIM ORDER 2025.10.14 06:10:00 tk=1129 type=2 vol=0.78 px=4150.79 sl=4142.44 tp=4153.40 bid=4153.34 ask=4153.44
+SIM CANCEL 2025.10.14 06:35:00 tk=1129
+SIM ORDER 2025.10.14 06:40:00 tk=1130 type=2 vol=0.89 px=4160.78 sl=4153.40 tp=4163.01 bid=4161.80 ask=4161.97
+SIM DEAL 2025.10.14 06:42:30 tk=1131 pos=1130 buy IN vol=0.89 px=4160.30 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.14 06:42:30 pos=1130 buy vol=0.89 px=4160.30 sl=4153.40 tp=4163.01 bid=4160.15 ask=4160.30
+SIM DEAL 2025.10.14 06:48:30 tk=1132 pos=1130 sell OUT vol=0.89 px=4164.35 profit=360.45 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.14 06:48:30 pos=1130 reason=5 px=4164.35 open=4160.30 sl=4153.40 tp=4163.01
+EA 2025.10.14 06:50:00 Trade #1130 closed: 0.89 lots at 4164.35 | trade P&L +360.45 (costs included) | closed by its take profit
+BOOK 2025.10.14 06:50:00 pnl=360.45 hedge=0 risk=661.99 lots=0.89
+SIM ORDER 2025.10.14 09:15:00 tk=1133 type=3 vol=0.47 px=4111.31 sl=4125.20 tp=4107.12 bid=4111.16 ask=4111.32
+SIM DEAL 2025.10.14 09:15:30 tk=1134 pos=1133 sell IN vol=0.47 px=4117.65 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.14 09:15:30 pos=1133 sell vol=0.47 px=4117.65 sl=4125.20 tp=4107.12 bid=4117.65 ask=4117.79
+SIM MODIFY 2025.10.14 09:20:00 pos=1133 sl=4125.20->4125.18 tp=4107.12->4107.10
+SIM DEAL 2025.10.14 09:21:30 tk=1135 pos=1133 buy OUT vol=0.47 px=4102.79 profit=698.42 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.14 09:21:30 pos=1133 reason=5 px=4102.79 open=4117.65 sl=4125.18 tp=4107.10
+EA 2025.10.14 09:25:00 Trade #1133 closed: 0.47 lots at 4102.79 | trade P&L +698.42 (costs included) | closed by its take profit
+BOOK 2025.10.14 09:25:00 pnl=698.42 hedge=0 risk=656.12 lots=0.47
+SIM ORDER 2025.10.15 04:10:00 tk=1136 type=2 vol=0.69 px=4176.65 sl=4167.06 tp=4179.53 bid=4179.20 ask=4179.38
+SIM DEAL 2025.10.15 04:10:30 tk=1137 pos=1136 buy IN vol=0.69 px=4176.38 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.15 04:10:30 pos=1136 buy vol=0.69 px=4176.38 sl=4167.06 tp=4179.53 bid=4176.31 ask=4176.38
+SIM DEAL 2025.10.15 04:11:30 tk=1138 pos=1136 sell OUT vol=0.69 px=4180.11 profit=257.37 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.15 04:11:30 pos=1136 reason=5 px=4180.11 open=4176.38 sl=4167.06 tp=4179.53
+EA 2025.10.15 04:15:00 Trade #1136 closed: 0.69 lots at 4180.11 | trade P&L +257.37 (costs included) | closed by its take profit
+BOOK 2025.10.15 04:15:00 pnl=257.37 hedge=0 risk=664.87 lots=0.69
+SIM ORDER 2025.10.15 11:10:00 tk=1139 type=2 vol=0.96 px=4211.92 sl=4205.11 tp=4214.01 bid=4214.48 ask=4214.62
+SIM DEAL 2025.10.15 11:26:30 tk=1140 pos=1139 buy IN vol=0.96 px=4208.59 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.15 11:26:30 pos=1139 buy vol=0.96 px=4208.59 sl=4205.11 tp=4214.01 bid=4208.41 ask=4208.59
+SIM DEAL 2025.10.15 11:30:30 tk=1141 pos=1139 sell OUT vol=0.96 px=4214.38 profit=555.84 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.15 11:30:30 pos=1139 reason=5 px=4214.38 open=4208.59 sl=4205.11 tp=4214.01
+EA 2025.10.15 11:35:00 Trade #1139 closed: 0.96 lots at 4214.38 | trade P&L +555.84 (costs included) | closed by its take profit
+BOOK 2025.10.15 11:35:00 pnl=555.84 hedge=0 risk=661.71 lots=0.96
+SIM ORDER 2025.10.15 16:15:00 tk=1142 type=2 vol=0.58 px=4192.70 sl=4181.46 tp=4196.16 bid=4195.40 ask=4195.51
+SIM DEAL 2025.10.15 16:22:30 tk=1143 pos=1142 buy IN vol=0.58 px=4191.82 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.15 16:22:30 pos=1142 buy vol=0.58 px=4191.82 sl=4181.46 tp=4196.16 bid=4191.65 ask=4191.82
+SIM DEAL 2025.10.15 16:42:30 tk=1144 pos=1142 sell OUT vol=0.58 px=4196.78 profit=287.68 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.15 16:42:30 pos=1142 reason=5 px=4196.78 open=4191.82 sl=4181.46 tp=4196.16
+EA 2025.10.15 16:45:00 Trade #1142 closed: 0.58 lots at 4196.78 | trade P&L +287.68 (costs included) | closed by its take profit
+BOOK 2025.10.15 16:45:00 pnl=287.68 hedge=0 risk=658.54 lots=0.58
+SIM ORDER 2025.10.16 05:45:00 tk=1145 type=2 vol=0.84 px=4234.81 sl=4227.05 tp=4237.28 bid=4235.81 ask=4235.88
+SIM DEAL 2025.10.16 05:47:30 tk=1146 pos=1145 buy IN vol=0.84 px=4234.48 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.16 05:47:30 pos=1145 buy vol=0.84 px=4234.48 sl=4227.05 tp=4237.28 bid=4234.28 ask=4234.48
+SIM DEAL 2025.10.16 05:55:30 tk=1147 pos=1145 sell OUT vol=0.84 px=4238.70 profit=354.48 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.16 05:55:30 pos=1145 reason=5 px=4238.70 open=4234.48 sl=4227.05 tp=4237.28
+EA 2025.10.16 06:00:00 Trade #1145 closed: 0.84 lots at 4238.70 | trade P&L +354.48 (costs included) | closed by its take profit
+BOOK 2025.10.16 06:00:00 pnl=354.48 hedge=0 risk=665.12 lots=0.84
+SIM ORDER 2025.10.16 16:15:00 tk=1148 type=2 vol=0.60 px=4245.61 sl=4234.73 tp=4248.91 bid=4245.76 ask=4245.91
+SIM DEAL 2025.10.16 16:15:30 tk=1149 pos=1148 buy IN vol=0.60 px=4245.28 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.16 16:15:30 pos=1148 buy vol=0.60 px=4245.28 sl=4234.73 tp=4248.91 bid=4245.22 ask=4245.28
+SIM DEAL 2025.10.16 16:19:30 tk=1150 pos=1148 sell OUT vol=0.60 px=4249.76 profit=268.80 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.16 16:19:30 pos=1148 reason=5 px=4249.76 open=4245.28 sl=4234.73 tp=4248.91
+EA 2025.10.16 16:20:00 Trade #1148 closed: 0.60 lots at 4249.76 | trade P&L +268.80 (costs included) | closed by its take profit
+BOOK 2025.10.16 16:20:00 pnl=268.80 hedge=0 risk=657.02 lots=0.60
+SIM ORDER 2025.10.21 04:25:00 tk=1151 type=3 vol=0.94 px=4354.18 sl=4361.07 tp=4351.97 bid=4351.49 ask=4351.56
+SIM CANCEL 2025.10.21 04:50:00 tk=1151
+SIM ORDER 2025.10.21 10:35:00 tk=1152 type=3 vol=0.51 px=4313.18 sl=4326.04 tp=4309.22 bid=4301.77 ask=4301.87
+SIM CANCEL 2025.10.21 11:00:00 tk=1152
+SIM ORDER 2025.10.21 11:05:00 tk=1153 type=3 vol=0.40 px=4285.58 sl=4302.14 tp=4280.55 bid=4272.68 ask=4272.82
+SIM CANCEL 2025.10.21 11:30:00 tk=1153
+SIM ORDER 2025.10.22 06:35:00 tk=1154 type=2 vol=0.79 px=4123.19 sl=4114.82 tp=4125.68 bid=4129.16 ask=4129.36
+SIM CANCEL 2025.10.22 07:00:00 tk=1154
+SIM ORDER 2025.10.22 09:45:00 tk=1155 type=2 vol=0.55 px=4154.38 sl=4142.58 tp=4158.05 bid=4159.39 ask=4159.47
+SIM DEAL 2025.10.22 09:45:30 tk=1156 pos=1155 buy IN vol=0.55 px=4153.27 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.22 09:45:30 pos=1155 buy vol=0.55 px=4153.27 sl=4142.58 tp=4158.05 bid=4153.22 ask=4153.27
+SIM DEAL 2025.10.22 09:47:30 tk=1157 pos=1155 sell OUT vol=0.55 px=4160.58 profit=402.05 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.22 09:47:30 pos=1155 reason=5 px=4160.58 open=4153.27 sl=4142.58 tp=4158.05
+EA 2025.10.22 09:50:00 Trade #1155 closed: 0.55 lots at 4160.58 | trade P&L +402.05 (costs included) | closed by its take profit
+BOOK 2025.10.22 09:50:00 pnl=402.05 hedge=0 risk=657.00 lots=0.55
+SIM ORDER 2025.10.22 11:15:00 tk=1158 type=3 vol=0.35 px=4095.24 sl=4113.79 tp=4089.58 bid=4087.70 ask=4087.81
+SIM DEAL 2025.10.22 11:20:30 tk=1159 pos=1158 sell IN vol=0.35 px=4097.77 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.22 11:20:30 pos=1158 sell vol=0.35 px=4097.77 sl=4113.79 tp=4089.58 bid=4097.77 ask=4097.91
+SIM DEAL 2025.10.22 11:23:30 tk=1160 pos=1158 buy OUT vol=0.35 px=4114.62 profit=-589.75 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.10.22 11:23:30 pos=1158 reason=4 px=4114.62 open=4097.77 sl=4113.79 tp=4089.58
+EA 2025.10.22 11:25:00 Trade #1158 closed: 0.35 lots at 4114.62 | trade P&L -589.75 (costs included) | closed by its stop loss
+BOOK 2025.10.22 11:25:00 pnl=-589.75 hedge=0 risk=653.36 lots=0.35
+SIM ORDER 2025.10.22 12:00:00 tk=1161 type=3 vol=0.01 px=4078.97 sl=4103.49 tp=4071.54 bid=4070.62 ask=4070.74
+SIM DEAL 2025.10.22 12:00:30 tk=1162 pos=1161 sell IN vol=0.01 px=4080.44 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.22 12:00:30 pos=1161 sell vol=0.01 px=4080.44 sl=4103.49 tp=4071.54 bid=4080.44 ask=4080.57
+SIM MODIFY 2025.10.22 12:05:00 pos=1161 sl=4103.49->4103.56 tp=4071.54->4071.61
+SIM DEAL 2025.10.22 12:16:30 tk=1163 pos=1161 buy OUT vol=0.01 px=4070.27 profit=10.17 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.22 12:16:30 pos=1161 reason=5 px=4070.27 open=4080.44 sl=4103.56 tp=4071.61
+EA 2025.10.22 12:20:00 Trade #1161 closed: 0.01 lots at 4070.27 | trade P&L +10.17 (costs included) | closed by its take profit
+BOOK 2025.10.22 12:20:00 pnl=10.17 hedge=0 risk=24.62 lots=0.01
+SIM ORDER 2025.10.23 06:20:00 tk=1164 type=2 vol=1.79 px=4092.39 sl=4081.62 tp=4095.59 bid=4095.89 ask=4096.10
+SIM DEAL 2025.10.23 06:32:30 tk=1165 pos=1164 buy IN vol=1.79 px=4091.41 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.23 06:32:30 pos=1164 buy vol=1.79 px=4091.41 sl=4081.62 tp=4095.59 bid=4091.32 ask=4091.41
+SIM DEAL 2025.10.23 07:26:30 tk=1166 pos=1164 sell OUT vol=1.79 px=4080.41 profit=-1969.00 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.10.23 07:26:30 pos=1164 reason=4 px=4080.41 open=4091.41 sl=4081.62 tp=4095.59
+EA 2025.10.23 07:30:00 Trade #1164 closed: 1.79 lots at 4080.41 | trade P&L -1969.00 (costs included) | closed by its stop loss
+BOOK 2025.10.23 07:30:00 pnl=-1969.00 hedge=0 risk=1931.40 lots=1.79
+SIM ORDER 2025.10.23 09:05:00 tk=1167 type=2 vol=0.01 px=4116.60 sl=4106.25 tp=4119.84 bid=4122.80 ask=4122.88
+SIM CANCEL 2025.10.23 09:30:00 tk=1167
+SIM ORDER 2025.10.23 16:25:00 tk=1168 type=2 vol=0.01 px=4143.57 sl=4131.45 tp=4147.29 bid=4146.76 ask=4146.88
+SIM DEAL 2025.10.23 16:30:30 tk=1169 pos=1168 buy IN vol=0.01 px=4142.78 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.23 16:30:30 pos=1168 buy vol=0.01 px=4142.78 sl=4131.45 tp=4147.29 bid=4142.71 ask=4142.78
+SIM DEAL 2025.10.23 16:44:30 tk=1170 pos=1168 sell OUT vol=0.01 px=4149.68 profit=6.90 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.23 16:44:30 pos=1168 reason=5 px=4149.68 open=4142.78 sl=4131.45 tp=4147.29
+EA 2025.10.23 16:45:00 Trade #1168 closed: 0.01 lots at 4149.68 | trade P&L +6.90 (costs included) | closed by its take profit
+BOOK 2025.10.23 16:45:00 pnl=6.90 hedge=0 risk=12.23 lots=0.01
+SIM ORDER 2025.10.28 03:05:00 tk=1171 type=2 vol=2.40 px=4009.66 sl=3998.07 tp=4013.25 bid=4012.17 ask=4012.26
+SIM DEAL 2025.10.28 03:29:30 tk=1172 pos=1171 buy IN vol=2.40 px=4009.62 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.28 03:29:30 pos=1171 buy vol=2.40 px=4009.62 sl=3998.07 tp=4013.25 bid=4009.38 ask=4009.62
+SIM DEAL 2025.10.28 03:46:30 tk=1173 pos=1171 sell OUT vol=2.40 px=4014.48 profit=1166.40 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.28 03:46:30 pos=1171 reason=5 px=4014.48 open=4009.62 sl=3998.07 tp=4013.25
+EA 2025.10.28 03:50:00 Trade #1171 closed: 2.40 lots at 4014.48 | trade P&L +1166.40 (costs included) | closed by its take profit
+BOOK 2025.10.28 03:50:00 pnl=1166.40 hedge=0 risk=2813.90 lots=2.40
+SIM ORDER 2025.10.28 04:55:00 tk=1174 type=3 vol=1.94 px=3986.19 sl=3997.95 tp=3982.68 bid=3983.01 ask=3983.20
+SIM DEAL 2025.10.28 05:01:30 tk=1175 pos=1174 sell IN vol=1.94 px=3986.97 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.28 05:01:30 pos=1174 sell vol=1.94 px=3986.97 sl=3997.95 tp=3982.68 bid=3986.97 ask=3987.15
+SIM DEAL 2025.10.28 06:16:30 tk=1176 pos=1174 buy OUT vol=1.94 px=3981.99 profit=966.12 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.28 06:16:30 pos=1174 reason=5 px=3981.99 open=3986.97 sl=3997.95 tp=3982.68
+EA 2025.10.28 06:20:00 Trade #1174 closed: 1.94 lots at 3981.99 | trade P&L +966.12 (costs included) | closed by its take profit
+BOOK 2025.10.28 06:20:00 pnl=966.12 hedge=0 risk=2288.22 lots=1.94
+SIM ORDER 2025.10.28 10:25:00 tk=1177 type=3 vol=1.08 px=3914.44 sl=3926.84 tp=3910.59 bid=3914.28 ask=3914.36
+SIM DEAL 2025.10.28 10:25:30 tk=1178 pos=1177 sell IN vol=1.08 px=3916.95 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.28 10:25:30 pos=1177 sell vol=1.08 px=3916.95 sl=3926.84 tp=3910.59 bid=3916.95 ask=3917.05
+SIM MODIFY 2025.10.28 10:30:00 pos=1177 sl=3926.84->3926.91 tp=3910.59->3910.66
+SIM DEAL 2025.10.28 10:36:30 tk=1179 pos=1177 buy OUT vol=1.08 px=3910.31 profit=717.12 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.28 10:36:30 pos=1177 reason=5 px=3910.31 open=3916.95 sl=3926.91 tp=3910.66
+EA 2025.10.28 10:40:00 Trade #1177 closed: 1.08 lots at 3910.31 | trade P&L +717.12 (costs included) | closed by its take profit
+BOOK 2025.10.28 10:40:00 pnl=717.12 hedge=0 risk=1354.45 lots=1.08
+SIM ORDER 2025.10.28 10:40:00 tk=1180 type=3 vol=0.52 px=3910.51 sl=3922.93 tp=3906.61 bid=3908.18 ask=3908.23
+SIM CANCEL 2025.10.28 11:05:00 tk=1180
+SIM ORDER 2025.10.29 02:45:00 tk=1181 type=2 vol=0.57 px=3978.64 sl=3966.93 tp=3982.07 bid=3981.73 ask=3981.97
+SIM DEAL 2025.10.29 02:48:30 tk=1182 pos=1181 buy IN vol=0.57 px=3978.64 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.29 02:48:30 pos=1181 buy vol=0.57 px=3978.64 sl=3966.93 tp=3982.07 bid=3978.50 ask=3978.64
+SIM DEAL 2025.10.29 03:40:30 tk=1183 pos=1181 sell OUT vol=0.57 px=3966.05 profit=-717.63 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.10.29 03:40:30 pos=1181 reason=4 px=3966.05 open=3978.64 sl=3966.93 tp=3982.07
+EA 2025.10.29 03:45:00 Trade #1181 closed: 0.57 lots at 3966.05 | trade P&L -717.63 (costs included) | closed by its stop loss
+BOOK 2025.10.29 03:45:00 pnl=-717.63 hedge=0 risk=666.49 lots=0.57
+SIM ORDER 2025.10.29 05:25:00 tk=1184 type=2 vol=0.01 px=3966.12 sl=3955.24 tp=3969.46 bid=3969.34 ask=3969.46
+SIM DEAL 2025.10.29 05:27:30 tk=1185 pos=1184 buy IN vol=0.01 px=3964.77 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.29 05:27:30 pos=1184 buy vol=0.01 px=3964.77 sl=3955.24 tp=3969.46 bid=3964.59 ask=3964.77
+SIM DEAL 2025.10.29 05:35:30 tk=1186 pos=1184 sell OUT vol=0.01 px=3969.75 profit=4.98 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.29 05:35:30 pos=1184 reason=5 px=3969.75 open=3964.77 sl=3955.24 tp=3969.46
+EA 2025.10.29 05:40:00 Trade #1184 closed: 0.01 lots at 3969.75 | trade P&L +4.98 (costs included) | closed by its take profit
+BOOK 2025.10.29 05:40:00 pnl=4.98 hedge=0 risk=10.99 lots=0.01
+SIM ORDER 2025.10.29 09:15:00 tk=1187 type=2 vol=2.24 px=3990.35 sl=3979.84 tp=3993.51 bid=3995.15 ask=3995.33
+SIM DEAL 2025.10.29 09:38:15 tk=1188 pos=1187 buy IN vol=2.24 px=3989.98 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.29 09:38:15 pos=1187 buy vol=2.24 px=3989.98 sl=3979.84 tp=3993.51 bid=3989.82 ask=3989.98
+SIM DEAL 2025.10.29 09:40:30 tk=1189 pos=1187 sell OUT vol=2.24 px=3994.01 profit=902.72 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.29 09:40:30 pos=1187 reason=5 px=3994.01 open=3989.98 sl=3979.84 tp=3993.51
+EA 2025.10.29 09:45:00 Trade #1187 closed: 2.24 lots at 3994.01 | trade P&L +902.72 (costs included) | closed by its take profit
+BOOK 2025.10.29 09:45:00 pnl=902.72 hedge=0 risk=2365.13 lots=2.24
+SIM ORDER 2025.10.29 10:00:00 tk=1190 type=2 vol=0.69 px=3999.97 sl=3990.41 tp=4002.90 bid=4001.72 ask=4001.86
+SIM CANCEL 2025.10.29 10:25:00 tk=1190
+SIM ORDER 2025.10.29 11:50:00 tk=1191 type=2 vol=0.73 px=4023.72 sl=4014.76 tp=4026.46 bid=4027.61 ask=4027.75
+SIM DEAL 2025.10.29 11:58:30 tk=1192 pos=1191 buy IN vol=0.73 px=4023.36 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.29 11:58:30 pos=1191 buy vol=0.73 px=4023.36 sl=4014.76 tp=4026.46 bid=4023.18 ask=4023.36
+SIM DEAL 2025.10.29 12:18:30 tk=1193 pos=1191 sell OUT vol=0.73 px=4027.55 profit=305.87 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.29 12:18:30 pos=1191 reason=5 px=4027.55 open=4023.36 sl=4014.76 tp=4026.46
+EA 2025.10.29 12:20:00 Trade #1191 closed: 0.73 lots at 4027.55 | trade P&L +305.87 (costs included) | closed by its take profit
+BOOK 2025.10.29 12:20:00 pnl=305.87 hedge=0 risk=660.19 lots=0.73
+SIM ORDER 2025.10.30 04:05:00 tk=1194 type=3 vol=0.91 px=3942.57 sl=3949.71 tp=3940.28 bid=3937.24 ask=3937.31
+SIM DEAL 2025.10.30 04:06:30 tk=1195 pos=1194 sell IN vol=0.91 px=3942.58 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.30 04:06:30 pos=1194 sell vol=0.91 px=3942.58 sl=3949.71 tp=3940.28 bid=3942.58 ask=3942.83
+SIM DEAL 2025.10.30 04:06:45 tk=1196 pos=1194 buy OUT vol=0.91 px=3940.06 profit=229.32 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.30 04:06:45 pos=1194 reason=5 px=3940.06 open=3942.58 sl=3949.71 tp=3940.28
+EA 2025.10.30 04:10:00 Trade #1194 closed: 0.91 lots at 3940.06 | trade P&L +229.32 (costs included) | closed by its take profit
+BOOK 2025.10.30 04:10:00 pnl=229.32 hedge=0 risk=664.25 lots=0.91
+SIM ORDER 2025.10.30 05:00:00 tk=1197 type=3 vol=0.48 px=3925.47 sl=3939.22 tp=3921.37 bid=3922.13 ask=3922.33
+SIM DEAL 2025.10.30 05:07:30 tk=1198 pos=1197 sell IN vol=0.48 px=3927.68 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.30 05:07:30 pos=1197 sell vol=0.48 px=3927.68 sl=3939.22 tp=3921.37 bid=3927.68 ask=3927.90
+SIM DEAL 2025.10.30 06:00:30 tk=1199 pos=1197 buy OUT vol=0.48 px=3940.83 profit=-631.20 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.10.30 06:00:30 pos=1197 reason=4 px=3940.83 open=3927.68 sl=3939.22 tp=3921.37
+EA 2025.10.30 06:05:00 Trade #1197 closed: 0.48 lots at 3940.83 | trade P&L -631.20 (costs included) | closed by its stop loss
+BOOK 2025.10.30 06:05:00 pnl=-631.20 hedge=0 risk=661.01 lots=0.48
+SIM ORDER 2025.10.30 10:30:00 tk=1200 type=2 vol=0.01 px=3972.23 sl=3960.88 tp=3975.67 bid=3972.80 ask=3972.95
+SIM DEAL 2025.10.30 10:30:30 tk=1201 pos=1200 buy IN vol=0.01 px=3971.80 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.10.30 10:30:30 pos=1200 buy vol=0.01 px=3971.80 sl=3960.88 tp=3975.67 bid=3971.70 ask=3971.80
+SIM DEAL 2025.10.30 10:58:30 tk=1202 pos=1200 sell OUT vol=0.01 px=3976.43 profit=4.63 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.10.30 10:58:30 pos=1200 reason=5 px=3976.43 open=3971.80 sl=3960.88 tp=3975.67
+EA 2025.10.30 11:00:00 Trade #1200 closed: 0.01 lots at 3976.43 | trade P&L +4.63 (costs included) | closed by its take profit
+BOOK 2025.10.30 11:00:00 pnl=4.63 hedge=0 risk=11.43 lots=0.01
+SIM ORDER 2025.10.30 11:05:00 tk=1203 type=2 vol=1.87 px=3983.05 sl=3971.97 tp=3986.37 bid=3989.28 ask=3989.47
+SIM CANCEL 2025.10.30 11:30:00 tk=1203
+SIM ORDER 2025.10.30 15:55:00 tk=1204 type=2 vol=1.37 px=3981.90 sl=3966.82 tp=3986.57 bid=3987.92 ask=3987.99
+SIM CANCEL 2025.10.30 16:20:00 tk=1204
+SIM ORDER 2025.11.04 02:40:00 tk=1205 type=3 vol=4.83 px=3988.04 sl=3992.27 tp=3986.71 bid=3984.41 ask=3984.55
+SIM DEAL 2025.11.04 02:49:30 tk=1206 pos=1205 sell IN vol=4.83 px=3989.16 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.04 02:49:30 pos=1205 sell vol=4.83 px=3989.16 sl=3992.27 tp=3986.71 bid=3989.16 ask=3989.33
+SIM DEAL 2025.11.04 02:50:30 tk=1207 pos=1205 buy OUT vol=4.83 px=3986.00 profit=1526.28 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.04 02:50:30 pos=1205 reason=5 px=3986.00 open=3989.16 sl=3992.27 tp=3986.71
+EA 2025.11.04 02:55:00 Trade #1205 closed: 4.83 lots at 3986.00 | trade P&L +1526.28 (costs included) | closed by its take profit
+BOOK 2025.11.04 02:55:00 pnl=1526.28 hedge=0 risk=2085.67 lots=4.83
+SIM ORDER 2025.11.04 04:50:00 tk=1208 type=3 vol=0.68 px=3977.11 sl=3986.75 tp=3974.17 bid=3976.58 ask=3976.72
+SIM DEAL 2025.11.04 04:50:30 tk=1209 pos=1208 sell IN vol=0.68 px=3980.47 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.04 04:50:30 pos=1208 sell vol=0.68 px=3980.47 sl=3986.75 tp=3974.17 bid=3980.47 ask=3980.57
+SIM MODIFY 2025.11.04 04:55:00 pos=1208 sl=3986.75->3986.87 tp=3974.17->3974.29
+SIM DEAL 2025.11.04 04:59:30 tk=1210 pos=1208 buy OUT vol=0.68 px=3986.87 profit=-435.20 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.11.04 04:59:30 pos=1208 reason=4 px=3986.87 open=3980.47 sl=3986.87 tp=3974.29
+EA 2025.11.04 05:00:00 Trade #1208 closed: 0.68 lots at 3986.87 | trade P&L -435.20 (costs included) | closed by its stop loss
+BOOK 2025.11.04 05:00:00 pnl=-435.20 hedge=0 risk=661.07 lots=0.68
+SIM ORDER 2025.11.04 05:40:00 tk=1211 type=2 vol=0.01 px=3997.86 sl=3988.62 tp=4000.67 bid=3998.33 ask=3998.48
+SIM DEAL 2025.11.04 05:40:30 tk=1212 pos=1211 buy IN vol=0.01 px=3996.81 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.04 05:40:30 pos=1211 buy vol=0.01 px=3996.81 sl=3988.62 tp=4000.67 bid=3996.57 ask=3996.81
+SIM DEAL 2025.11.04 06:11:30 tk=1213 pos=1211 sell OUT vol=0.01 px=3988.11 profit=-8.70 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.11.04 06:11:30 pos=1211 reason=4 px=3988.11 open=3996.81 sl=3988.62 tp=4000.67
+EA 2025.11.04 06:15:00 Trade #1211 closed: 0.01 lots at 3988.11 | trade P&L -8.70 (costs included) | closed by its stop loss
+BOOK 2025.11.04 06:15:00 pnl=-8.70 hedge=0 risk=9.31 lots=0.01
+SIM ORDER 2025.11.04 09:20:00 tk=1214 type=2 vol=0.01 px=3990.33 sl=3981.47 tp=3993.04 bid=3990.60 ask=3990.74
+SIM DEAL 2025.11.04 09:24:30 tk=1215 pos=1214 buy IN vol=0.01 px=3990.30 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.04 09:24:30 pos=1214 buy vol=0.01 px=3990.30 sl=3981.47 tp=3993.04 bid=3990.24 ask=3990.30
+SIM DEAL 2025.11.04 09:26:15 tk=1216 pos=1214 sell OUT vol=0.01 px=3994.28 profit=3.98 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.04 09:26:15 pos=1214 reason=5 px=3994.28 open=3990.30 sl=3981.47 tp=3993.04
+EA 2025.11.04 09:30:00 Trade #1214 closed: 0.01 lots at 3994.28 | trade P&L +3.98 (costs included) | closed by its take profit
+BOOK 2025.11.04 09:30:00 pnl=3.98 hedge=0 risk=8.94 lots=0.01
+SIM ORDER 2025.11.04 10:05:00 tk=1217 type=2 vol=1.77 px=3996.32 sl=3988.20 tp=3998.87 bid=3997.66 ask=3997.75
+SIM DEAL 2025.11.04 10:05:30 tk=1218 pos=1217 buy IN vol=1.77 px=3994.22 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.04 10:05:30 pos=1217 buy vol=1.77 px=3994.22 sl=3988.20 tp=3998.87 bid=3994.10 ask=3994.22
+SIM DEAL 2025.11.04 10:08:30 tk=1219 pos=1217 sell OUT vol=1.77 px=3999.48 profit=931.02 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.04 10:08:30 pos=1217 reason=5 px=3999.48 open=3994.22 sl=3988.20 tp=3998.87
+EA 2025.11.04 10:10:00 Trade #1217 closed: 1.77 lots at 3999.48 | trade P&L +931.02 (costs included) | closed by its take profit
+BOOK 2025.11.04 10:10:00 pnl=931.02 hedge=0 risk=1461.61 lots=1.77
+SIM ORDER 2025.11.04 16:05:00 tk=1220 type=3 vol=0.71 px=3971.83 sl=3981.09 tp=3968.99 bid=3968.72 ask=3968.85
+SIM DEAL 2025.11.04 16:07:15 tk=1221 pos=1220 sell IN vol=0.71 px=3972.31 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.04 16:07:15 pos=1220 sell vol=0.71 px=3972.31 sl=3981.09 tp=3968.99 bid=3972.31 ask=3972.36
+SIM DEAL 2025.11.04 16:08:30 tk=1222 pos=1220 buy OUT vol=0.71 px=3967.60 profit=334.41 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.04 16:08:30 pos=1220 reason=5 px=3967.60 open=3972.31 sl=3981.09 tp=3968.99
+EA 2025.11.04 16:10:00 Trade #1220 closed: 0.71 lots at 3967.60 | trade P&L +334.41 (costs included) | closed by its take profit
+BOOK 2025.11.04 16:10:00 pnl=334.41 hedge=0 risk=664.39 lots=0.71
+SIM ORDER 2025.11.04 16:30:00 tk=1223 type=3 vol=0.56 px=3959.85 sl=3971.51 tp=3956.18 bid=3951.29 ask=3951.34
+SIM CANCEL 2025.11.04 16:55:00 tk=1223
+SIM ORDER 2025.11.05 05:05:00 tk=1224 type=2 vol=0.77 px=3951.18 sl=3942.61 tp=3953.78 bid=3952.12 ask=3952.28
+SIM CANCEL 2025.11.05 05:30:00 tk=1224
+SIM ORDER 2025.11.05 05:35:00 tk=1225 type=2 vol=0.85 px=3956.42 sl=3948.65 tp=3958.78 bid=3956.98 ask=3957.14
+SIM DEAL 2025.11.05 05:35:30 tk=1226 pos=1225 buy IN vol=0.85 px=3955.69 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.05 05:35:30 pos=1225 buy vol=0.85 px=3955.69 sl=3948.65 tp=3958.78 bid=3955.58 ask=3955.69
+SIM DEAL 2025.11.05 05:44:30 tk=1227 pos=1225 sell OUT vol=0.85 px=3959.54 profit=327.25 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.05 05:44:30 pos=1225 reason=5 px=3959.54 open=3955.69 sl=3948.65 tp=3958.78
+EA 2025.11.05 05:45:00 Trade #1225 closed: 0.85 lots at 3959.54 | trade P&L +327.25 (costs included) | closed by its take profit
+BOOK 2025.11.05 05:45:00 pnl=327.25 hedge=0 risk=665.84 lots=0.85
+SIM ORDER 2025.11.05 05:50:00 tk=1228 type=2 vol=0.84 px=3962.26 sl=3954.41 tp=3964.54 bid=3964.94 ask=3965.18
+SIM DEAL 2025.11.05 05:51:30 tk=1229 pos=1228 buy IN vol=0.84 px=3962.03 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.05 05:51:30 pos=1228 buy vol=0.84 px=3962.03 sl=3954.41 tp=3964.54 bid=3961.91 ask=3962.03
+SIM DEAL 2025.11.05 06:12:15 tk=1230 pos=1228 sell OUT vol=0.84 px=3964.94 profit=244.44 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.05 06:12:15 pos=1228 reason=5 px=3964.94 open=3962.03 sl=3954.41 tp=3964.54
+EA 2025.11.05 06:15:00 Trade #1228 closed: 0.84 lots at 3964.94 | trade P&L +244.44 (costs included) | closed by its take profit
+BOOK 2025.11.05 06:15:00 pnl=244.44 hedge=0 risk=658.84 lots=0.84
+SIM ORDER 2025.11.05 10:05:00 tk=1231 type=2 vol=0.99 px=3974.94 sl=3968.32 tp=3976.98 bid=3976.29 ask=3976.43
+SIM CANCEL 2025.11.05 10:30:00 tk=1231
+SIM ORDER 2025.11.05 15:55:00 tk=1232 type=2 vol=0.81 px=3977.72 sl=3969.57 tp=3980.16 bid=3978.91 ask=3979.09
+SIM DEAL 2025.11.05 15:56:30 tk=1233 pos=1232 buy IN vol=0.81 px=3977.48 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.05 15:56:30 pos=1232 buy vol=0.81 px=3977.48 sl=3969.57 tp=3980.16 bid=3977.35 ask=3977.48
+SIM DEAL 2025.11.05 16:13:15 tk=1234 pos=1232 sell OUT vol=0.81 px=3980.71 profit=261.63 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.05 16:13:15 pos=1232 reason=5 px=3980.71 open=3977.48 sl=3969.57 tp=3980.16
+EA 2025.11.05 16:15:00 Trade #1232 closed: 0.81 lots at 3980.71 | trade P&L +261.63 (costs included) | closed by its take profit
+BOOK 2025.11.05 16:15:00 pnl=261.63 hedge=0 risk=663.56 lots=0.81
+SIM ORDER 2025.11.06 03:00:00 tk=1235 type=2 vol=1.26 px=3975.12 sl=3969.99 tp=3976.80 bid=3976.16 ask=3976.23
+SIM DEAL 2025.11.06 03:00:15 tk=1236 pos=1235 buy IN vol=1.26 px=3974.08 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.06 03:00:15 pos=1235 buy vol=1.26 px=3974.08 sl=3969.99 tp=3976.80 bid=3973.91 ask=3974.08
+SIM DEAL 2025.11.06 03:00:30 tk=1237 pos=1235 sell OUT vol=1.26 px=3976.80 profit=342.72 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.06 03:00:30 pos=1235 reason=5 px=3976.80 open=3974.08 sl=3969.99 tp=3976.80
+EA 2025.11.06 03:05:00 Trade #1235 closed: 1.26 lots at 3976.80 | trade P&L +342.72 (costs included) | closed by its take profit
+BOOK 2025.11.06 03:05:00 pnl=342.72 hedge=0 risk=666.07 lots=1.26
+SIM ORDER 2025.11.06 04:35:00 tk=1238 type=2 vol=1.01 px=3981.01 sl=3974.55 tp=3983.01 bid=3983.73 ask=3983.86
+SIM DEAL 2025.11.06 04:43:30 tk=1239 pos=1238 buy IN vol=1.01 px=3979.84 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.06 04:43:30 pos=1238 buy vol=1.01 px=3979.84 sl=3974.55 tp=3983.01 bid=3979.70 ask=3979.84
+SIM DEAL 2025.11.06 04:52:30 tk=1240 pos=1238 sell OUT vol=1.01 px=3983.84 profit=404.00 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.06 04:52:30 pos=1238 reason=5 px=3983.84 open=3979.84 sl=3974.55 tp=3983.01
+EA 2025.11.06 04:55:00 Trade #1238 closed: 1.01 lots at 3983.84 | trade P&L +404.00 (costs included) | closed by its take profit
+BOOK 2025.11.06 04:55:00 pnl=404.00 hedge=0 risk=661.72 lots=1.01
+SIM ORDER 2025.11.06 05:35:00 tk=1241 type=2 vol=1.08 px=3987.45 sl=3981.38 tp=3989.28 bid=3988.44 ask=3988.61
+SIM DEAL 2025.11.06 05:44:30 tk=1242 pos=1241 buy IN vol=1.08 px=3987.12 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.06 05:44:30 pos=1241 buy vol=1.08 px=3987.12 sl=3981.38 tp=3989.28 bid=3987.00 ask=3987.12
+SIM DEAL 2025.11.06 06:58:30 tk=1243 pos=1241 sell OUT vol=1.08 px=3989.67 profit=275.40 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.06 06:58:30 pos=1241 reason=5 px=3989.67 open=3987.12 sl=3981.38 tp=3989.28
+EA 2025.11.06 07:00:00 Trade #1241 closed: 1.08 lots at 3989.67 | trade P&L +275.40 (costs included) | closed by its take profit
+BOOK 2025.11.06 07:00:00 pnl=275.40 hedge=0 risk=660.98 lots=1.08
+SIM ORDER 2025.11.06 09:05:00 tk=1244 type=2 vol=1.15 px=3994.51 sl=3988.89 tp=3996.33 bid=3997.34 ask=3997.42
+SIM CANCEL 2025.11.06 09:30:00 tk=1244
+SIM ORDER 2025.11.06 10:30:00 tk=1245 type=2 vol=1.01 px=4014.58 sl=4008.19 tp=4016.65 bid=4015.77 ask=4015.84
+SIM DEAL 2025.11.06 10:32:30 tk=1246 pos=1245 buy IN vol=1.01 px=4014.45 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.06 10:32:30 pos=1245 buy vol=1.01 px=4014.45 sl=4008.19 tp=4016.65 bid=4014.40 ask=4014.45
+SIM DEAL 2025.11.06 12:03:30 tk=1247 pos=1245 sell OUT vol=1.01 px=4007.30 profit=-722.15 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.11.06 12:03:30 pos=1245 reason=4 px=4007.30 open=4014.45 sl=4008.19 tp=4016.65
+EA 2025.11.06 12:05:00 Trade #1245 closed: 1.01 lots at 4007.30 | trade P&L -722.15 (costs included) | closed by its stop loss
+BOOK 2025.11.06 12:05:00 pnl=-722.15 hedge=0 risk=661.82 lots=1.01
+SIM ORDER 2025.11.11 02:45:00 tk=1248 type=2 vol=0.01 px=4128.37 sl=4123.05 tp=4129.93 bid=4129.31 ask=4129.52
+SIM DEAL 2025.11.11 02:45:30 tk=1249 pos=1248 buy IN vol=0.01 px=4127.71 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.11 02:45:30 pos=1248 buy vol=0.01 px=4127.71 sl=4123.05 tp=4129.93 bid=4127.54 ask=4127.71
+SIM DEAL 2025.11.11 02:48:30 tk=1250 pos=1248 sell OUT vol=0.01 px=4130.52 profit=2.81 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.11 02:48:30 pos=1248 reason=5 px=4130.52 open=4127.71 sl=4123.05 tp=4129.93
+EA 2025.11.11 02:50:00 Trade #1248 closed: 0.01 lots at 4130.52 | trade P&L +2.81 (costs included) | closed by its take profit
+BOOK 2025.11.11 02:50:00 pnl=2.81 hedge=0 risk=5.33 lots=0.01
+SIM ORDER 2025.11.11 03:30:00 tk=1251 type=2 vol=3.53 px=4136.93 sl=4130.23 tp=4138.99 bid=4137.39 ask=4137.53
+SIM DEAL 2025.11.11 03:37:15 tk=1252 pos=1251 buy IN vol=3.53 px=4136.91 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.11 03:37:15 pos=1251 buy vol=3.53 px=4136.91 sl=4130.23 tp=4138.99 bid=4136.65 ask=4136.91
+SIM DEAL 2025.11.11 03:37:30 tk=1253 pos=1251 sell OUT vol=3.53 px=4139.48 profit=907.21 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.11 03:37:30 pos=1251 reason=5 px=4139.48 open=4136.91 sl=4130.23 tp=4138.99
+EA 2025.11.11 03:40:00 Trade #1251 closed: 3.53 lots at 4139.48 | trade P&L +907.21 (costs included) | closed by its take profit
+BOOK 2025.11.11 03:40:00 pnl=907.21 hedge=0 risk=2394.81 lots=3.53
+SIM ORDER 2025.11.11 04:45:00 tk=1254 type=2 vol=0.85 px=4137.65 sl=4129.84 tp=4139.97 bid=4139.00 ask=4139.20
+SIM DEAL 2025.11.11 04:48:30 tk=1255 pos=1254 buy IN vol=0.85 px=4137.47 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.11 04:48:30 pos=1254 buy vol=0.85 px=4137.47 sl=4129.84 tp=4139.97 bid=4137.36 ask=4137.47
+SIM DEAL 2025.11.11 05:05:30 tk=1256 pos=1254 sell OUT vol=0.85 px=4140.07 profit=221.00 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.11 05:05:30 pos=1254 reason=5 px=4140.07 open=4137.47 sl=4129.84 tp=4139.97
+EA 2025.11.11 05:10:00 Trade #1254 closed: 0.85 lots at 4140.07 | trade P&L +221.00 (costs included) | closed by its take profit
+BOOK 2025.11.11 05:10:00 pnl=221.00 hedge=0 risk=665.84 lots=0.85
+SIM ORDER 2025.11.11 05:35:00 tk=1257 type=2 vol=0.98 px=4146.24 sl=4139.60 tp=4148.34 bid=4147.89 ask=4147.99
+SIM DEAL 2025.11.11 05:39:30 tk=1258 pos=1257 buy IN vol=0.98 px=4145.94 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.11 05:39:30 pos=1257 buy vol=0.98 px=4145.94 sl=4139.60 tp=4148.34 bid=4145.79 ask=4145.94
+SIM DEAL 2025.11.11 06:02:30 tk=1259 pos=1257 sell OUT vol=0.98 px=4148.80 profit=280.28 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.11 06:02:30 pos=1257 reason=5 px=4148.80 open=4145.94 sl=4139.60 tp=4148.34
+EA 2025.11.11 06:05:00 Trade #1257 closed: 0.98 lots at 4148.80 | trade P&L +280.28 (costs included) | closed by its take profit
+BOOK 2025.11.11 06:05:00 pnl=280.28 hedge=0 risk=663.52 lots=0.98
+SIM ORDER 2025.11.11 09:05:00 tk=1260 type=3 vol=1.63 px=4127.33 sl=4131.30 tp=4126.06 bid=4126.79 ask=4126.91
+SIM DEAL 2025.11.11 09:05:15 tk=1261 pos=1260 sell IN vol=1.63 px=4127.47 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.11 09:05:15 pos=1260 sell vol=1.63 px=4127.47 sl=4131.30 tp=4126.06 bid=4127.47 ask=4127.57
+SIM MODIFY 2025.11.11 09:10:00 pos=1260 sl=4131.30->4131.36 tp=4126.06->4126.12
+SIM DEAL 2025.11.11 09:18:30 tk=1262 pos=1260 buy OUT vol=1.63 px=4131.76 profit=-699.27 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.11.11 09:18:30 pos=1260 reason=4 px=4131.76 open=4127.47 sl=4131.36 tp=4126.12
+EA 2025.11.11 09:20:00 Trade #1260 closed: 1.63 lots at 4131.76 | trade P&L -699.27 (costs included) | closed by its stop loss
+BOOK 2025.11.11 09:20:00 pnl=-699.27 hedge=0 risk=665.04 lots=1.63
+SIM ORDER 2025.11.11 10:15:00 tk=1263 type=2 vol=0.01 px=4136.20 sl=4129.02 tp=4138.43 bid=4136.89 ask=4137.01
+SIM DEAL 2025.11.11 10:16:30 tk=1264 pos=1263 buy IN vol=0.01 px=4135.96 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.11 10:16:30 pos=1263 buy vol=0.01 px=4135.96 sl=4129.02 tp=4138.43 bid=4135.82 ask=4135.96
+SIM DEAL 2025.11.11 11:02:30 tk=1265 pos=1263 sell OUT vol=0.01 px=4139.56 profit=3.60 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.11 11:02:30 pos=1263 reason=5 px=4139.56 open=4135.96 sl=4129.02 tp=4138.43
+EA 2025.11.11 11:05:00 Trade #1263 closed: 0.01 lots at 4139.56 | trade P&L +3.60 (costs included) | closed by its take profit
+BOOK 2025.11.11 11:05:00 pnl=3.60 hedge=0 risk=7.29 lots=0.01
+SIM ORDER 2025.11.11 11:50:00 tk=1266 type=2 vol=4.09 px=4145.50 sl=4139.89 tp=4147.20 bid=4145.60 ask=4145.77
+SIM DEAL 2025.11.11 11:50:30 tk=1267 pos=1266 buy IN vol=4.09 px=4143.85 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.11 11:50:30 pos=1266 buy vol=4.09 px=4143.85 sl=4139.89 tp=4147.20 bid=4143.77 ask=4143.85
+SIM DEAL 2025.11.11 12:03:30 tk=1268 pos=1266 sell OUT vol=4.09 px=4138.02 profit=-2384.47 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.11.11 12:03:30 pos=1266 reason=4 px=4138.02 open=4143.85 sl=4139.89 tp=4147.20
+EA 2025.11.11 12:05:00 Trade #1266 closed: 4.09 lots at 4138.02 | trade P&L -2384.47 (costs included) | closed by its stop loss
+BOOK 2025.11.11 12:05:00 pnl=-2384.47 hedge=0 risk=2316.48 lots=4.09
+SIM ORDER 2025.11.11 16:50:00 tk=1269 type=3 vol=0.01 px=4123.48 sl=4133.05 tp=4120.56 bid=4120.15 ask=4120.29
+SIM DEAL 2025.11.11 16:50:30 tk=1270 pos=1269 sell IN vol=0.01 px=4124.70 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.11 16:50:30 pos=1269 sell vol=0.01 px=4124.70 sl=4133.05 tp=4120.56 bid=4124.70 ask=4124.87
+SIM MODIFY 2025.11.11 16:55:00 pos=1269 sl=4133.05->4132.97 tp=4120.56->4120.48
+SIM DEAL 2025.11.11 17:06:30 tk=1271 pos=1269 buy OUT vol=0.01 px=4120.32 profit=4.38 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.11 17:06:30 pos=1269 reason=5 px=4120.32 open=4124.70 sl=4132.97 tp=4120.48
+EA 2025.11.11 17:10:00 Trade #1269 closed: 0.01 lots at 4120.32 | trade P&L +4.38 (costs included) | closed by its take profit
+BOOK 2025.11.11 17:10:00 pnl=4.38 hedge=0 risk=9.65 lots=0.01
+SIM ORDER 2025.11.12 02:55:00 tk=1272 type=3 vol=11.58 px=4137.56 sl=4140.46 tp=4136.68 bid=4136.25 ask=4136.42
+SIM DEAL 2025.11.12 02:55:30 tk=1273 pos=1272 sell IN vol=11.58 px=4137.87 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.12 02:55:30 pos=1272 sell vol=11.58 px=4137.87 sl=4140.46 tp=4136.68 bid=4137.87 ask=4137.95
+SIM DEAL 2025.11.12 02:56:30 tk=1274 pos=1272 buy OUT vol=11.58 px=4136.57 profit=1505.40 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.12 02:56:30 pos=1272 reason=5 px=4136.57 open=4137.87 sl=4140.46 tp=4136.68
+EA 2025.11.12 03:00:00 Trade #1272 closed: 11.58 lots at 4136.57 | trade P&L +1505.40 (costs included) | closed by its take profit
+BOOK 2025.11.12 03:00:00 pnl=1505.40 hedge=0 risk=3416.54 lots=11.58
+SIM ORDER 2025.11.12 03:35:00 tk=1275 type=3 vol=3.73 px=4127.79 sl=4134.82 tp=4125.77 bid=4127.32 ask=4127.57
+SIM DEAL 2025.11.12 03:35:30 tk=1276 pos=1275 sell IN vol=3.73 px=4129.97 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.12 03:35:30 pos=1275 sell vol=3.73 px=4129.97 sl=4134.82 tp=4125.77 bid=4129.97 ask=4130.15
+SIM MODIFY 2025.11.12 03:40:00 pos=1275 sl=4134.82->4134.77 tp=4125.77->4125.72
+SIM DEAL 2025.11.12 03:49:30 tk=1277 pos=1275 buy OUT vol=3.73 px=4135.52 profit=-2070.15 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.11.12 03:49:30 pos=1275 reason=4 px=4135.52 open=4129.97 sl=4134.77 tp=4125.72
+EA 2025.11.12 03:50:00 Trade #1275 closed: 3.73 lots at 4135.52 | trade P&L -2070.15 (costs included) | closed by its stop loss
+BOOK 2025.11.12 03:50:00 pnl=-2070.15 hedge=0 risk=2613.15 lots=3.73
+SIM ORDER 2025.11.12 05:50:00 tk=1278 type=3 vol=0.01 px=4117.89 sl=4124.12 tp=4116.02 bid=4117.48 ask=4117.66
+SIM CANCEL 2025.11.12 06:15:00 tk=1278
+SIM ORDER 2025.11.12 14:15:00 tk=1279 type=2 vol=0.01 px=4130.27 sl=4124.21 tp=4132.14 bid=4130.53 ask=4130.67
+SIM DEAL 2025.11.12 14:19:30 tk=1280 pos=1279 buy IN vol=0.01 px=4130.23 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.12 14:19:30 pos=1279 buy vol=0.01 px=4130.23 sl=4124.21 tp=4132.14 bid=4130.06 ask=4130.23
+SIM DEAL 2025.11.12 14:20:30 tk=1281 pos=1279 sell OUT vol=0.01 px=4132.78 profit=2.55 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.12 14:20:30 pos=1279 reason=5 px=4132.78 open=4130.23 sl=4124.21 tp=4132.14
+EA 2025.11.12 14:25:00 Trade #1279 closed: 0.01 lots at 4132.78 | trade P&L +2.55 (costs included) | closed by its take profit
+BOOK 2025.11.12 14:25:00 pnl=2.55 hedge=0 risk=6.15 lots=0.01
+SIM ORDER 2025.11.12 16:05:00 tk=1282 type=2 vol=5.12 px=4132.65 sl=4124.90 tp=4135.10 bid=4133.48 ask=4133.56
+SIM DEAL 2025.11.12 16:05:30 tk=1283 pos=1282 buy IN vol=5.12 px=4130.84 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.12 16:05:30 pos=1282 buy vol=5.12 px=4130.84 sl=4124.90 tp=4135.10 bid=4130.76 ask=4130.84
+SIM DEAL 2025.11.12 16:07:30 tk=1284 pos=1282 sell OUT vol=5.12 px=4135.34 profit=2304.00 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.12 16:07:30 pos=1282 reason=5 px=4135.34 open=4130.84 sl=4124.90 tp=4135.10
+EA 2025.11.12 16:10:00 Trade #1282 closed: 5.12 lots at 4135.34 | trade P&L +2304.00 (costs included) | closed by its take profit
+BOOK 2025.11.12 16:10:00 pnl=2304.00 hedge=0 risk=4041.01 lots=5.12
+SIM ORDER 2025.11.12 16:55:00 tk=1285 type=2 vol=2.40 px=4138.92 sl=4129.78 tp=4141.74 bid=4139.19 ask=4139.31
+SIM DEAL 2025.11.12 16:55:30 tk=1286 pos=1285 buy IN vol=2.40 px=4138.25 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.12 16:55:30 pos=1285 buy vol=2.40 px=4138.25 sl=4129.78 tp=4141.74 bid=4138.16 ask=4138.25
+SIM DEAL 2025.11.12 17:04:30 tk=1287 pos=1285 sell OUT vol=2.40 px=4141.97 profit=892.80 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.12 17:04:30 pos=1285 reason=5 px=4141.97 open=4138.25 sl=4129.78 tp=4141.74
+EA 2025.11.12 17:05:00 Trade #1285 closed: 2.40 lots at 4141.97 | trade P&L +892.80 (costs included) | closed by its take profit
+BOOK 2025.11.12 17:05:00 pnl=892.80 hedge=0 risk=2219.03 lots=2.40
+SIM ORDER 2025.11.13 02:35:00 tk=1288 type=2 vol=1.98 px=4196.16 sl=4188.75 tp=4198.31 bid=4199.20 ask=4199.44
+SIM CANCEL 2025.11.13 03:00:00 tk=1288
+SIM ORDER 2025.11.13 05:45:00 tk=1289 type=2 vol=1.55 px=4206.01 sl=4196.68 tp=4208.94 bid=4207.24 ask=4207.32
+SIM CANCEL 2025.11.13 06:10:00 tk=1289
+SIM ORDER 2025.11.13 09:25:00 tk=1290 type=2 vol=2.10 px=4213.06 sl=4206.12 tp=4215.15 bid=4215.06 ask=4215.23
+SIM CANCEL 2025.11.13 09:50:00 tk=1290
+SIM ORDER 2025.11.13 10:10:00 tk=1291 type=2 vol=1.85 px=4227.02 sl=4219.19 tp=4229.45 bid=4229.29 ask=4229.41
+SIM DEAL 2025.11.13 10:11:30 tk=1292 pos=1291 buy IN vol=1.85 px=4226.83 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.13 10:11:30 pos=1291 buy vol=1.85 px=4226.83 sl=4219.19 tp=4229.45 bid=4226.67 ask=4226.83
+SIM DEAL 2025.11.13 10:14:30 tk=1293 pos=1291 sell OUT vol=1.85 px=4230.49 profit=677.10 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.13 10:14:30 pos=1291 reason=5 px=4230.49 open=4226.83 sl=4219.19 tp=4229.45
+EA 2025.11.13 10:15:00 Trade #1291 closed: 1.85 lots at 4230.49 | trade P&L +677.10 (costs included) | closed by its take profit
+BOOK 2025.11.13 10:15:00 pnl=677.10 hedge=0 risk=1469.24 lots=1.85
+SIM ORDER 2025.11.13 14:10:00 tk=1294 type=2 vol=0.84 px=4232.79 sl=4225.02 tp=4235.19 bid=4234.22 ask=4234.35
+SIM DEAL 2025.11.13 14:12:15 tk=1295 pos=1294 buy IN vol=0.84 px=4232.55 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.13 14:12:15 pos=1294 buy vol=0.84 px=4232.55 sl=4225.02 tp=4235.19 bid=4232.41 ask=4232.55
+SIM DEAL 2025.11.13 14:19:30 tk=1296 pos=1294 sell OUT vol=0.84 px=4235.59 profit=255.36 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.13 14:19:30 pos=1294 reason=5 px=4235.59 open=4232.55 sl=4225.02 tp=4235.19
+EA 2025.11.13 14:20:00 Trade #1294 closed: 0.84 lots at 4235.59 | trade P&L +255.36 (costs included) | closed by its take profit
+BOOK 2025.11.13 14:20:00 pnl=255.36 hedge=0 risk=660.77 lots=0.84
+SIM ORDER 2025.11.13 16:45:00 tk=1297 type=3 vol=0.42 px=4199.48 sl=4215.00 tp=4194.66 bid=4187.87 ask=4187.93
+SIM DEAL 2025.11.13 16:56:30 tk=1298 pos=1297 sell IN vol=0.42 px=4201.04 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.13 16:56:30 pos=1297 sell vol=0.42 px=4201.04 sl=4215.00 tp=4194.66 bid=4201.04 ask=4201.16
+SIM MODIFY 2025.11.13 17:00:00 pos=1297 sl=4215.00->4215.11 tp=4194.66->4194.77
+SIM DEAL 2025.11.13 17:00:15 tk=1299 pos=1297 buy OUT vol=0.42 px=4193.69 profit=308.70 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.13 17:00:15 pos=1297 reason=5 px=4193.69 open=4201.04 sl=4215.11 tp=4194.77
+EA 2025.11.13 17:05:00 Trade #1297 closed: 0.42 lots at 4193.69 | trade P&L +308.70 (costs included) | closed by its take profit
+BOOK 2025.11.13 17:05:00 pnl=308.70 hedge=0 risk=659.01 lots=0.42
+SIM ORDER 2025.11.18 03:55:00 tk=1300 type=3 vol=0.57 px=4028.34 sl=4039.87 tp=4024.91 bid=4024.88 ask=4025.08
+SIM DEAL 2025.11.18 04:06:30 tk=1301 pos=1300 sell IN vol=0.57 px=4028.34 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.18 04:06:30 pos=1300 sell vol=0.57 px=4028.34 sl=4039.87 tp=4024.91 bid=4028.34 ask=4028.50
+SIM MODIFY 2025.11.18 04:10:00 pos=1300 sl=4039.87->4039.89 tp=4024.91->4024.93
+SIM DEAL 2025.11.18 04:48:30 tk=1302 pos=1300 buy OUT vol=0.57 px=4024.80 profit=201.78 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.18 04:48:30 pos=1300 reason=5 px=4024.80 open=4028.34 sl=4039.89 tp=4024.93
+EA 2025.11.18 04:50:00 Trade #1300 closed: 0.57 lots at 4024.80 | trade P&L +201.78 (costs included) | closed by its take profit
+BOOK 2025.11.18 04:50:00 pnl=201.78 hedge=0 risk=658.83 lots=0.57
+SIM ORDER 2025.11.18 05:10:00 tk=1303 type=3 vol=0.59 px=4014.67 sl=4025.88 tp=4011.42 bid=4014.30 ask=4014.57
+SIM DEAL 2025.11.18 05:14:30 tk=1304 pos=1303 sell IN vol=0.59 px=4014.78 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.18 05:14:30 pos=1303 sell vol=0.59 px=4014.78 sl=4025.88 tp=4011.42 bid=4014.78 ask=4015.04
+SIM MODIFY 2025.11.18 05:15:00 pos=1303 sl=4025.88->4025.71 tp=4011.42->4011.25
+SIM DEAL 2025.11.18 05:18:30 tk=1305 pos=1303 buy OUT vol=0.59 px=4010.34 profit=261.96 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.18 05:18:30 pos=1303 reason=5 px=4010.34 open=4014.78 sl=4025.71 tp=4011.25
+EA 2025.11.18 05:20:00 Trade #1303 closed: 0.59 lots at 4010.34 | trade P&L +261.96 (costs included) | closed by its take profit
+BOOK 2025.11.18 05:20:00 pnl=261.96 hedge=0 risk=658.82 lots=0.59
+SIM ORDER 2025.11.18 10:35:00 tk=1306 type=2 vol=0.81 px=4029.70 sl=4021.56 tp=4032.14 bid=4036.87 ask=4037.05
+SIM CANCEL 2025.11.18 11:00:00 tk=1306
+SIM ORDER 2025.11.18 11:55:00 tk=1307 type=2 vol=0.68 px=4040.16 sl=4030.54 tp=4043.06 bid=4042.54 ask=4042.71
+SIM DEAL 2025.11.18 11:58:30 tk=1308 pos=1307 buy IN vol=0.68 px=4038.60 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.18 11:58:30 pos=1307 buy vol=0.68 px=4038.60 sl=4030.54 tp=4043.06 bid=4038.55 ask=4038.60
+SIM DEAL 2025.11.18 12:09:30 tk=1309 pos=1307 sell OUT vol=0.68 px=4044.97 profit=433.16 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.18 12:09:30 pos=1307 reason=5 px=4044.97 open=4038.60 sl=4030.54 tp=4043.06
+EA 2025.11.18 12:10:00 Trade #1307 closed: 0.68 lots at 4044.97 | trade P&L +433.16 (costs included) | closed by its take profit
+BOOK 2025.11.18 12:10:00 pnl=433.16 hedge=0 risk=658.09 lots=0.68
+SIM ORDER 2025.11.18 15:50:00 tk=1310 type=2 vol=0.59 px=4068.26 sl=4057.19 tp=4071.74 bid=4068.63 ask=4068.69
+SIM DEAL 2025.11.18 15:50:30 tk=1311 pos=1310 buy IN vol=0.59 px=4068.03 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.18 15:50:30 pos=1310 buy vol=0.59 px=4068.03 sl=4057.19 tp=4071.74 bid=4067.84 ask=4068.03
+SIM DEAL 2025.11.18 16:04:30 tk=1312 pos=1310 sell OUT vol=0.59 px=4074.97 profit=409.46 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.18 16:04:30 pos=1310 reason=5 px=4074.97 open=4068.03 sl=4057.19 tp=4071.74
+EA 2025.11.18 16:05:00 Trade #1310 closed: 0.59 lots at 4074.97 | trade P&L +409.46 (costs included) | closed by its take profit
+BOOK 2025.11.18 16:05:00 pnl=409.46 hedge=0 risk=662.60 lots=0.59
+SIM ORDER 2025.11.18 16:20:00 tk=1313 type=2 vol=0.58 px=4077.21 sl=4066.01 tp=4080.67 bid=4080.29 ask=4080.40
+SIM DEAL 2025.11.18 16:21:15 tk=1314 pos=1313 buy IN vol=0.58 px=4076.79 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.18 16:21:15 pos=1313 buy vol=0.58 px=4076.79 sl=4066.01 tp=4080.67 bid=4076.68 ask=4076.79
+SIM DEAL 2025.11.18 16:40:30 tk=1315 pos=1313 sell OUT vol=0.58 px=4080.84 profit=234.90 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.18 16:40:30 pos=1313 reason=5 px=4080.84 open=4076.79 sl=4066.01 tp=4080.67
+EA 2025.11.18 16:45:00 Trade #1313 closed: 0.58 lots at 4080.84 | trade P&L +234.90 (costs included) | closed by its take profit
+BOOK 2025.11.18 16:45:00 pnl=234.90 hedge=0 risk=656.78 lots=0.58
+SIM ORDER 2025.11.19 03:10:00 tk=1316 type=3 vol=1.77 px=4064.60 sl=4068.38 tp=4063.56 bid=4061.94 ask=4062.20
+SIM DEAL 2025.11.19 03:15:30 tk=1317 pos=1316 sell IN vol=1.77 px=4065.40 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.19 03:15:30 pos=1316 sell vol=1.77 px=4065.40 sl=4068.38 tp=4063.56 bid=4065.40 ask=4065.63
+SIM DEAL 2025.11.19 03:16:30 tk=1318 pos=1316 buy OUT vol=1.77 px=4062.85 profit=451.35 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.19 03:16:30 pos=1316 reason=5 px=4062.85 open=4065.40 sl=4068.38 tp=4063.56
+EA 2025.11.19 03:20:00 Trade #1316 closed: 1.77 lots at 4062.85 | trade P&L +451.35 (costs included) | closed by its take profit
+BOOK 2025.11.19 03:20:00 pnl=451.35 hedge=0 risk=664.20 lots=1.77
+SIM ORDER 2025.11.19 04:45:00 tk=1319 type=2 vol=0.77 px=4075.30 sl=4066.69 tp=4077.80 bid=4078.37 ask=4078.62
+SIM DEAL 2025.11.19 05:00:30 tk=1320 pos=1319 buy IN vol=0.77 px=4074.04 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.19 05:00:30 pos=1319 buy vol=0.77 px=4074.04 sl=4066.69 tp=4077.80 bid=4073.96 ask=4074.04
+SIM DEAL 2025.11.19 05:05:30 tk=1321 pos=1319 sell OUT vol=0.77 px=4078.66 profit=355.74 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.19 05:05:30 pos=1319 reason=5 px=4078.66 open=4074.04 sl=4066.69 tp=4077.80
+EA 2025.11.19 05:10:00 Trade #1319 closed: 0.77 lots at 4078.66 | trade P&L +355.74 (costs included) | closed by its take profit
+BOOK 2025.11.19 05:10:00 pnl=355.74 hedge=0 risk=661.27 lots=0.77
+SIM ORDER 2025.11.19 11:15:00 tk=1322 type=2 vol=0.93 px=4088.89 sl=4081.83 tp=4091.05 bid=4089.86 ask=4090.01
+SIM DEAL 2025.11.19 11:15:30 tk=1323 pos=1322 buy IN vol=0.93 px=4086.78 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.19 11:15:30 pos=1322 buy vol=0.93 px=4086.78 sl=4081.83 tp=4091.05 bid=4086.65 ask=4086.78
+SIM DEAL 2025.11.19 11:20:30 tk=1324 pos=1322 sell OUT vol=0.93 px=4091.18 profit=409.20 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.19 11:20:30 pos=1322 reason=5 px=4091.18 open=4086.78 sl=4081.83 tp=4091.05
+EA 2025.11.19 11:25:00 Trade #1322 closed: 0.93 lots at 4091.18 | trade P&L +409.20 (costs included) | closed by its take profit
+BOOK 2025.11.19 11:25:00 pnl=409.20 hedge=0 risk=663.48 lots=0.93
+SIM ORDER 2025.11.19 11:45:00 tk=1325 type=2 vol=0.88 px=4094.28 sl=4086.86 tp=4096.64 bid=4098.54 ask=4098.62
+SIM CANCEL 2025.11.19 12:10:00 tk=1325
+SIM ORDER 2025.11.19 17:00:00 tk=1326 type=2 vol=0.57 px=4122.84 sl=4111.37 tp=4126.32 bid=4127.82 ask=4127.97
+SIM DEAL 2025.11.19 17:06:30 tk=1327 pos=1326 buy IN vol=0.57 px=4120.78 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.19 17:06:30 pos=1326 buy vol=0.57 px=4120.78 sl=4111.37 tp=4126.32 bid=4120.66 ask=4120.78
+SIM DEAL 2025.11.19 17:14:30 tk=1328 pos=1326 sell OUT vol=0.57 px=4130.25 profit=539.79 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.19 17:14:30 pos=1326 reason=5 px=4130.25 open=4120.78 sl=4111.37 tp=4126.32
+EA 2025.11.19 17:15:00 Trade #1326 closed: 0.57 lots at 4130.25 | trade P&L +539.79 (costs included) | closed by its take profit
+BOOK 2025.11.19 17:15:00 pnl=539.79 hedge=0 risk=658.13 lots=0.57
+SIM ORDER 2025.11.20 04:00:00 tk=1329 type=3 vol=1.34 px=4085.29 sl=4090.12 tp=4083.71 bid=4081.37 ask=4081.45
+SIM CANCEL 2025.11.20 04:25:00 tk=1329
+SIM ORDER 2025.11.20 10:05:00 tk=1330 type=3 vol=0.61 px=4054.32 sl=4065.02 tp=4051.10 bid=4048.82 ask=4048.99
+SIM DEAL 2025.11.20 10:05:30 tk=1331 pos=1330 sell IN vol=0.61 px=4054.74 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.20 10:05:30 pos=1330 sell vol=0.61 px=4054.74 sl=4065.02 tp=4051.10 bid=4054.74 ask=4054.85
+SIM DEAL 2025.11.20 10:08:30 tk=1332 pos=1330 buy OUT vol=0.61 px=4050.63 profit=250.71 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.20 10:08:30 pos=1330 reason=5 px=4050.63 open=4054.74 sl=4065.02 tp=4051.10
+EA 2025.11.20 10:10:00 Trade #1330 closed: 0.61 lots at 4050.63 | trade P&L +250.71 (costs included) | closed by its take profit
+BOOK 2025.11.20 10:10:00 pnl=250.71 hedge=0 risk=656.27 lots=0.61
+SIM ORDER 2025.11.20 16:50:00 tk=1333 type=2 vol=0.38 px=4095.98 sl=4078.54 tp=4101.27 bid=4103.01 ask=4103.15
+SIM DEAL 2025.11.20 16:55:30 tk=1334 pos=1333 buy IN vol=0.38 px=4094.21 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.20 16:55:30 pos=1333 buy vol=0.38 px=4094.21 sl=4078.54 tp=4101.27 bid=4094.02 ask=4094.21
+SIM DEAL 2025.11.20 17:35:00 tk=1335 pos=1333 sell OUT vol=0.38 px=4078.28 profit=-605.34 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.11.20 17:35:00 pos=1333 reason=4 px=4078.28 open=4094.21 sl=4078.54 tp=4101.27
+EA 2025.11.20 17:35:00 Trade #1333 closed: 0.38 lots at 4078.28 | trade P&L -605.34 (costs included) | closed by its stop loss
+BOOK 2025.11.20 17:35:00 pnl=-605.34 hedge=0 risk=666.20 lots=0.38
+SIM ORDER 2025.11.25 04:05:00 tk=1336 type=2 vol=0.01 px=4139.40 sl=4130.64 tp=4141.98 bid=4140.55 ask=4140.77
+SIM DEAL 2025.11.25 04:06:30 tk=1337 pos=1336 buy IN vol=0.01 px=4138.53 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.25 04:06:30 pos=1336 buy vol=0.01 px=4138.53 sl=4130.64 tp=4141.98 bid=4138.41 ask=4138.53
+SIM DEAL 2025.11.25 04:18:30 tk=1338 pos=1336 sell OUT vol=0.01 px=4142.40 profit=3.87 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.25 04:18:30 pos=1336 reason=5 px=4142.40 open=4138.53 sl=4130.64 tp=4141.98
+EA 2025.11.25 04:20:00 Trade #1336 closed: 0.01 lots at 4142.40 | trade P&L +3.87 (costs included) | closed by its take profit
+BOOK 2025.11.25 04:20:00 pnl=3.87 hedge=0 risk=8.77 lots=0.01
+SIM ORDER 2025.11.25 04:40:00 tk=1339 type=2 vol=2.20 px=4147.62 sl=4138.62 tp=4150.37 bid=4148.89 ask=4149.03
+SIM DEAL 2025.11.25 04:40:30 tk=1340 pos=1339 buy IN vol=2.20 px=4147.05 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.25 04:40:30 pos=1339 buy vol=2.20 px=4147.05 sl=4138.62 tp=4150.37 bid=4146.75 ask=4147.05
+SIM DEAL 2025.11.25 04:44:30 tk=1341 pos=1339 sell OUT vol=2.20 px=4152.49 profit=1196.80 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.25 04:44:30 pos=1339 reason=5 px=4152.49 open=4147.05 sl=4138.62 tp=4150.37
+EA 2025.11.25 04:45:00 Trade #1339 closed: 2.20 lots at 4152.49 | trade P&L +1196.80 (costs included) | closed by its take profit
+BOOK 2025.11.25 04:45:00 pnl=1196.80 hedge=0 risk=1998.15 lots=2.20
+SIM ORDER 2025.11.25 10:35:00 tk=1342 type=3 vol=1.26 px=4131.50 sl=4136.68 tp=4129.92 bid=4129.45 ask=4129.61
+SIM CANCEL 2025.11.25 11:00:00 tk=1342
+SIM ORDER 2025.11.26 04:10:00 tk=1343 type=2 vol=1.06 px=4153.01 sl=4146.82 tp=4154.92 bid=4152.98 ask=4153.12
+SIM DEAL 2025.11.26 04:10:30 tk=1344 pos=1343 buy IN vol=1.06 px=4150.99 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.26 04:10:30 pos=1343 buy vol=1.06 px=4150.99 sl=4146.82 tp=4154.92 bid=4150.77 ask=4150.99
+SIM DEAL 2025.11.26 04:18:30 tk=1345 pos=1343 sell OUT vol=1.06 px=4156.11 profit=542.72 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.26 04:18:30 pos=1343 reason=5 px=4156.11 open=4150.99 sl=4146.82 tp=4154.92
+EA 2025.11.26 04:20:00 Trade #1343 closed: 1.06 lots at 4156.11 | trade P&L +542.72 (costs included) | closed by its take profit
+BOOK 2025.11.26 04:20:00 pnl=542.72 hedge=0 risk=665.64 lots=1.06
+SIM ORDER 2025.11.26 05:10:00 tk=1346 type=2 vol=0.84 px=4166.73 sl=4158.85 tp=4169.11 bid=4166.72 ask=4166.89
+SIM DEAL 2025.11.26 05:10:30 tk=1347 pos=1346 buy IN vol=0.84 px=4166.04 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.26 05:10:30 pos=1346 buy vol=0.84 px=4166.04 sl=4158.85 tp=4169.11 bid=4165.83 ask=4166.04
+SIM DEAL 2025.11.26 05:46:30 tk=1348 pos=1346 sell OUT vol=0.84 px=4169.30 profit=273.84 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.26 05:46:30 pos=1346 reason=5 px=4169.30 open=4166.04 sl=4158.85 tp=4169.11
+EA 2025.11.26 05:50:00 Trade #1346 closed: 0.84 lots at 4169.30 | trade P&L +273.84 (costs included) | closed by its take profit
+BOOK 2025.11.26 05:50:00 pnl=273.84 hedge=0 risk=666.24 lots=0.84
+SIM ORDER 2025.11.26 09:50:00 tk=1349 type=2 vol=1.07 px=4156.75 sl=4150.69 tp=4158.72 bid=4157.86 ask=4157.93
+SIM CANCEL 2025.11.26 10:15:00 tk=1349
+SIM ORDER 2025.11.27 03:10:00 tk=1350 type=3 vol=2.57 px=4160.06 sl=4162.55 tp=4159.25 bid=4157.70 ask=4157.84
+SIM DEAL 2025.11.27 03:10:30 tk=1351 pos=1350 sell IN vol=2.57 px=4160.40 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.27 03:10:30 pos=1350 sell vol=2.57 px=4160.40 sl=4162.55 tp=4159.25 bid=4160.40 ask=4160.67
+SIM DEAL 2025.11.27 03:10:45 tk=1352 pos=1350 buy OUT vol=2.57 px=4159.05 profit=346.95 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.27 03:10:45 pos=1350 reason=5 px=4159.05 open=4160.40 sl=4162.55 tp=4159.25
+EA 2025.11.27 03:15:00 Trade #1350 closed: 2.57 lots at 4159.05 | trade P&L +346.95 (costs included) | closed by its take profit
+BOOK 2025.11.27 03:15:00 pnl=346.95 hedge=0 risk=664.34 lots=2.57
+SIM ORDER 2025.11.27 04:50:00 tk=1353 type=3 vol=1.02 px=4149.41 sl=4155.84 tp=4147.43 bid=4147.74 ask=4147.88
+SIM CANCEL 2025.11.27 05:15:00 tk=1353
+SIM ORDER 2025.11.27 09:15:00 tk=1354 type=2 vol=1.16 px=4159.43 sl=4153.75 tp=4161.15 bid=4160.61 ask=4160.78
+SIM DEAL 2025.11.27 09:19:30 tk=1355 pos=1354 buy IN vol=1.16 px=4159.13 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.27 09:19:30 pos=1354 buy vol=1.16 px=4159.13 sl=4153.75 tp=4161.15 bid=4159.02 ask=4159.13
+SIM DEAL 2025.11.27 09:20:30 tk=1356 pos=1354 sell OUT vol=1.16 px=4161.80 profit=309.72 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.27 09:20:30 pos=1354 reason=5 px=4161.80 open=4159.13 sl=4153.75 tp=4161.15
+EA 2025.11.27 09:25:00 Trade #1354 closed: 1.16 lots at 4161.80 | trade P&L +309.72 (costs included) | closed by its take profit
+BOOK 2025.11.27 09:25:00 pnl=309.72 hedge=0 risk=665.33 lots=1.16
+SIM ORDER 2025.11.27 10:30:00 tk=1357 type=2 vol=1.31 px=4164.52 sl=4159.54 tp=4166.09 bid=4165.07 ask=4165.19
+SIM DEAL 2025.11.27 10:31:30 tk=1358 pos=1357 buy IN vol=1.31 px=4163.84 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.27 10:31:30 pos=1357 buy vol=1.31 px=4163.84 sl=4159.54 tp=4166.09 bid=4163.72 ask=4163.84
+SIM DEAL 2025.11.27 10:36:30 tk=1359 pos=1357 sell OUT vol=1.31 px=4166.56 profit=356.32 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.11.27 10:36:30 pos=1357 reason=5 px=4166.56 open=4163.84 sl=4159.54 tp=4166.09
+EA 2025.11.27 10:40:00 Trade #1357 closed: 1.31 lots at 4166.56 | trade P&L +356.32 (costs included) | closed by its take profit
+BOOK 2025.11.27 10:40:00 pnl=356.32 hedge=0 risk=665.84 lots=1.31
+SIM ORDER 2025.11.27 11:20:00 tk=1360 type=3 vol=1.03 px=4152.82 sl=4159.21 tp=4150.88 bid=4150.38 ask=4150.54
+SIM DEAL 2025.11.27 11:27:30 tk=1361 pos=1360 sell IN vol=1.03 px=4154.03 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.11.27 11:27:30 pos=1360 sell vol=1.03 px=4154.03 sl=4159.21 tp=4150.88 bid=4154.03 ask=4154.10
+SIM MODIFY 2025.11.27 11:30:00 pos=1360 sl=4159.21->4159.16 tp=4150.88->4150.83
+SIM DEAL 2025.11.27 11:52:30 tk=1362 pos=1360 buy OUT vol=1.03 px=4160.10 profit=-625.21 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.11.27 11:52:30 pos=1360 reason=4 px=4160.10 open=4154.03 sl=4159.16 tp=4150.83
+EA 2025.11.27 11:55:00 Trade #1360 closed: 1.03 lots at 4160.10 | trade P&L -625.21 (costs included) | closed by its stop loss
+BOOK 2025.11.27 11:55:00 pnl=-625.21 hedge=0 risk=664.46 lots=1.03
+SIM ORDER 2025.12.02 03:05:00 tk=1363 type=3 vol=0.01 px=4221.20 sl=4228.59 tp=4218.90 bid=4215.49 ask=4215.61
+SIM CANCEL 2025.12.02 03:30:00 tk=1363
+SIM ORDER 2025.12.02 11:20:00 tk=1364 type=3 vol=0.01 px=4204.95 sl=4211.87 tp=4202.74 bid=4204.43 ask=4204.51
+SIM DEAL 2025.12.02 11:20:15 tk=1365 pos=1364 sell IN vol=0.01 px=4205.46 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.02 11:20:15 pos=1364 sell vol=0.01 px=4205.46 sl=4211.87 tp=4202.74 bid=4205.46 ask=4205.55
+SIM DEAL 2025.12.02 11:21:30 tk=1366 pos=1364 buy OUT vol=0.01 px=4200.29 profit=5.17 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.02 11:21:30 pos=1364 reason=5 px=4200.29 open=4205.46 sl=4211.87 tp=4202.74
+EA 2025.12.02 11:25:00 Trade #1364 closed: 0.01 lots at 4200.29 | trade P&L +5.17 (costs included) | closed by its take profit
+BOOK 2025.12.02 11:25:00 pnl=5.17 hedge=0 risk=7.07 lots=0.01
+SIM ORDER 2025.12.02 16:10:00 tk=1367 type=2 vol=2.48 px=4218.77 sl=4210.50 tp=4221.24 bid=4220.52 ask=4220.71
+SIM CANCEL 2025.12.02 16:35:00 tk=1367
+SIM ORDER 2025.12.03 04:05:00 tk=1368 type=2 vol=2.89 px=4219.99 sl=4212.78 tp=4222.02 bid=4220.93 ask=4221.21
+SIM DEAL 2025.12.03 04:23:30 tk=1369 pos=1368 buy IN vol=2.89 px=4219.82 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.03 04:23:30 pos=1368 buy vol=2.89 px=4219.82 sl=4212.78 tp=4222.02 bid=4219.64 ask=4219.82
+SIM DEAL 2025.12.03 04:26:30 tk=1370 pos=1368 sell OUT vol=2.89 px=4222.02 profit=635.80 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.03 04:26:30 pos=1368 reason=5 px=4222.02 open=4219.82 sl=4212.78 tp=4222.02
+EA 2025.12.03 04:30:00 Trade #1368 closed: 2.89 lots at 4222.02 | trade P&L +635.80 (costs included) | closed by its take profit
+BOOK 2025.12.03 04:30:00 pnl=635.80 hedge=0 risk=2066.72 lots=2.89
+SIM ORDER 2025.12.03 04:35:00 tk=1371 type=2 vol=0.94 px=4225.40 sl=4218.39 tp=4227.51 bid=4226.96 ask=4227.14
+SIM DEAL 2025.12.03 04:41:30 tk=1372 pos=1371 buy IN vol=0.94 px=4225.15 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.03 04:41:30 pos=1371 buy vol=0.94 px=4225.15 sl=4218.39 tp=4227.51 bid=4225.07 ask=4225.15
+SIM DEAL 2025.12.03 04:46:30 tk=1373 pos=1371 sell OUT vol=0.94 px=4227.61 profit=231.24 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.03 04:46:30 pos=1371 reason=5 px=4227.61 open=4225.15 sl=4218.39 tp=4227.51
+EA 2025.12.03 04:50:00 Trade #1371 closed: 0.94 lots at 4227.61 | trade P&L +231.24 (costs included) | closed by its take profit
+BOOK 2025.12.03 04:50:00 pnl=231.24 hedge=0 risk=664.10 lots=0.94
+SIM ORDER 2025.12.03 11:10:00 tk=1374 type=3 vol=1.01 px=4202.22 sl=4208.59 tp=4200.14 bid=4198.87 ask=4198.92
+SIM DEAL 2025.12.03 11:19:30 tk=1375 pos=1374 sell IN vol=1.01 px=4202.30 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.03 11:19:30 pos=1374 sell vol=1.01 px=4202.30 sl=4208.59 tp=4200.14 bid=4202.30 ask=4202.35
+SIM MODIFY 2025.12.03 11:20:00 pos=1374 sl=4208.59->4208.70 tp=4200.14->4200.25
+SIM DEAL 2025.12.03 11:22:30 tk=1376 pos=1374 buy OUT vol=1.01 px=4199.76 profit=256.54 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.03 11:22:30 pos=1374 reason=5 px=4199.76 open=4202.30 sl=4208.70 tp=4200.25
+EA 2025.12.03 11:25:00 Trade #1374 closed: 1.01 lots at 4199.76 | trade P&L +256.54 (costs included) | closed by its take profit
+BOOK 2025.12.03 11:25:00 pnl=256.54 hedge=0 risk=660.71 lots=1.01
+SIM ORDER 2025.12.03 15:50:00 tk=1377 type=2 vol=0.93 px=4225.84 sl=4218.85 tp=4228.05 bid=4226.66 ask=4226.75
+SIM DEAL 2025.12.03 15:50:30 tk=1378 pos=1377 buy IN vol=0.93 px=4225.73 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.03 15:50:30 pos=1377 buy vol=0.93 px=4225.73 sl=4218.85 tp=4228.05 bid=4225.55 ask=4225.73
+SIM DEAL 2025.12.03 15:52:30 tk=1379 pos=1377 sell OUT vol=0.93 px=4232.45 profit=624.96 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.03 15:52:30 pos=1377 reason=5 px=4232.45 open=4225.73 sl=4218.85 tp=4228.05
+EA 2025.12.03 15:55:00 Trade #1377 closed: 0.93 lots at 4232.45 | trade P&L +624.96 (costs included) | closed by its take profit
+BOOK 2025.12.03 15:55:00 pnl=624.96 hedge=0 risk=662.82 lots=0.93
+SIM ORDER 2025.12.04 02:35:00 tk=1380 type=2 vol=1.26 px=4213.54 sl=4208.27 tp=4215.06 bid=4214.82 ask=4215.05
+SIM DEAL 2025.12.04 02:42:30 tk=1381 pos=1380 buy IN vol=1.26 px=4213.49 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.04 02:42:30 pos=1380 buy vol=1.26 px=4213.49 sl=4208.27 tp=4215.06 bid=4213.38 ask=4213.49
+SIM DEAL 2025.12.04 03:03:30 tk=1382 pos=1380 sell OUT vol=1.26 px=4206.79 profit=-844.20 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.04 03:03:30 pos=1380 reason=4 px=4206.79 open=4213.49 sl=4208.27 tp=4215.06
+EA 2025.12.04 03:05:00 Trade #1380 closed: 1.26 lots at 4206.79 | trade P&L -844.20 (costs included) | closed by its stop loss
+BOOK 2025.12.04 03:05:00 pnl=-844.20 hedge=0 risk=663.40 lots=1.26
+SIM ORDER 2025.12.04 04:05:00 tk=1383 type=3 vol=0.01 px=4205.76 sl=4212.36 tp=4203.66 bid=4202.33 ask=4202.42
+SIM DEAL 2025.12.04 04:16:30 tk=1384 pos=1383 sell IN vol=0.01 px=4205.78 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.04 04:16:30 pos=1383 sell vol=0.01 px=4205.78 sl=4212.36 tp=4203.66 bid=4205.78 ask=4206.04
+SIM DEAL 2025.12.04 04:19:30 tk=1385 pos=1383 buy OUT vol=0.01 px=4203.10 profit=2.68 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.04 04:19:30 pos=1383 reason=5 px=4203.10 open=4205.78 sl=4212.36 tp=4203.66
+EA 2025.12.04 04:20:00 Trade #1383 closed: 0.01 lots at 4203.10 | trade P&L +2.68 (costs included) | closed by its take profit
+BOOK 2025.12.04 04:20:00 pnl=2.68 hedge=0 risk=6.74 lots=0.01
+SIM DEAL 2025.12.04 04:35:00 tk=1387 pos=1386 sell IN vol=2.14 px=4202.37 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.04 04:35:00 pos=1386 sell vol=2.14 px=4202.37 sl=4205.36 tp=4196.91 bid=4202.37 ask=4202.49
+SIM MODIFY 2025.12.04 04:40:00 pos=1386 sl=4205.36->4205.39 tp=4196.91->4196.94
+SIM DEAL 2025.12.04 05:02:30 tk=1388 pos=1386 buy OUT vol=2.14 px=4187.53 profit=3175.76 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.04 05:02:30 pos=1386 reason=5 px=4187.53 open=4202.37 sl=4205.39 tp=4196.94
+EA 2025.12.04 05:05:00 Trade #1386 closed: 2.14 lots at 4187.53 | trade P&L +3175.76 (costs included) | closed by its take profit
+BOOK 2025.12.04 05:05:00 pnl=3175.76 hedge=0 risk=1400.49 lots=2.14
+SIM ORDER 2025.12.04 11:00:00 tk=1389 type=3 vol=0.95 px=4188.31 sl=4195.11 tp=4186.14 bid=4184.94 ask=4185.02
+SIM DEAL 2025.12.04 11:03:30 tk=1390 pos=1389 sell IN vol=0.95 px=4188.39 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.04 11:03:30 pos=1389 sell vol=0.95 px=4188.39 sl=4195.11 tp=4186.14 bid=4188.39 ask=4188.53
+SIM MODIFY 2025.12.04 11:05:00 pos=1389 sl=4195.11->4195.22 tp=4186.14->4186.25
+SIM DEAL 2025.12.04 11:35:15 tk=1391 pos=1389 buy OUT vol=0.95 px=4195.46 profit=-671.65 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.04 11:35:15 pos=1389 reason=4 px=4195.46 open=4188.39 sl=4195.22 tp=4186.25
+EA 2025.12.04 11:40:00 Trade #1389 closed: 0.95 lots at 4195.46 | trade P&L -671.65 (costs included) | closed by its stop loss
+BOOK 2025.12.04 11:40:00 pnl=-671.65 hedge=0 risk=660.13 lots=0.95
+SIM ORDER 2025.12.04 14:05:00 tk=1392 type=3 vol=0.01 px=4197.20 sl=4202.78 tp=4195.44 bid=4195.92 ask=4196.03
+SIM DEAL 2025.12.04 14:06:30 tk=1393 pos=1392 sell IN vol=0.01 px=4197.23 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.04 14:06:30 pos=1392 sell vol=0.01 px=4197.23 sl=4202.78 tp=4195.44 bid=4197.23 ask=4197.37
+SIM MODIFY 2025.12.04 14:10:00 pos=1392 sl=4202.78->4202.84 tp=4195.44->4195.50
+SIM DEAL 2025.12.04 14:29:30 tk=1394 pos=1392 buy OUT vol=0.01 px=4193.36 profit=3.87 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.04 14:29:30 pos=1392 reason=5 px=4193.36 open=4197.23 sl=4202.84 tp=4195.50
+EA 2025.12.04 14:30:00 Trade #1392 closed: 0.01 lots at 4193.36 | trade P&L +3.87 (costs included) | closed by its take profit
+BOOK 2025.12.04 14:30:00 pnl=3.87 hedge=0 risk=5.69 lots=0.01
+SIM ORDER 2025.12.04 16:10:00 tk=1395 type=2 vol=2.66 px=4202.51 sl=4194.29 tp=4205.08 bid=4205.86 ask=4205.96
+SIM CANCEL 2025.12.04 16:35:00 tk=1395
+SIM ORDER 2025.12.09 05:20:00 tk=1396 type=2 vol=4.88 px=4194.70 sl=4190.28 tp=4196.14 bid=4195.23 ask=4195.33
+SIM DEAL 2025.12.09 05:39:30 tk=1397 pos=1396 buy IN vol=4.88 px=4194.65 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.09 05:39:30 pos=1396 buy vol=4.88 px=4194.65 sl=4190.28 tp=4196.14 bid=4194.42 ask=4194.65
+SIM DEAL 2025.12.09 05:56:15 tk=1398 pos=1396 sell OUT vol=4.88 px=4196.16 profit=736.88 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.09 05:56:15 pos=1396 reason=5 px=4196.16 open=4194.65 sl=4190.28 tp=4196.14
+EA 2025.12.09 06:00:00 Trade #1396 closed: 4.88 lots at 4196.16 | trade P&L +736.88 (costs included) | closed by its take profit
+BOOK 2025.12.09 06:00:00 pnl=736.88 hedge=0 risk=2221.61 lots=4.88
+SIM ORDER 2025.12.09 09:25:00 tk=1399 type=3 vol=1.17 px=4179.24 sl=4184.84 tp=4177.53 bid=4177.34 ask=4177.50
+SIM DEAL 2025.12.09 09:25:30 tk=1400 pos=1399 sell IN vol=1.17 px=4179.56 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.09 09:25:30 pos=1399 sell vol=1.17 px=4179.56 sl=4184.84 tp=4177.53 bid=4179.56 ask=4179.63
+SIM MODIFY 2025.12.09 09:30:00 pos=1399 sl=4184.84->4184.86 tp=4177.53->4177.55
+SIM DEAL 2025.12.09 10:01:30 tk=1401 pos=1399 buy OUT vol=1.17 px=4185.86 profit=-737.10 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.09 10:01:30 pos=1399 reason=4 px=4185.86 open=4179.56 sl=4184.86 tp=4177.55
+EA 2025.12.09 10:05:00 Trade #1399 closed: 1.17 lots at 4185.86 | trade P&L -737.10 (costs included) | closed by its stop loss
+BOOK 2025.12.09 10:05:00 pnl=-737.10 hedge=0 risk=663.50 lots=1.17
+SIM ORDER 2025.12.09 11:05:00 tk=1402 type=2 vol=0.01 px=4195.06 sl=4189.54 tp=4196.88 bid=4198.01 ask=4198.06
+SIM CANCEL 2025.12.09 11:30:00 tk=1402
+SIM ORDER 2025.12.10 03:15:00 tk=1403 type=2 vol=0.01 px=4213.08 sl=4208.80 tp=4214.32 bid=4214.93 ask=4215.14
+SIM DEAL 2025.12.10 03:25:30 tk=1404 pos=1403 buy IN vol=0.01 px=4213.01 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.10 03:25:30 pos=1403 buy vol=0.01 px=4213.01 sl=4208.80 tp=4214.32 bid=4212.73 ask=4213.01
+SIM DEAL 2025.12.10 03:26:30 tk=1405 pos=1403 sell OUT vol=0.01 px=4214.32 profit=1.31 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.10 03:26:30 pos=1403 reason=5 px=4214.32 open=4213.01 sl=4208.80 tp=4214.32
+EA 2025.12.10 03:30:00 Trade #1403 closed: 0.01 lots at 4214.32 | trade P&L +1.31 (costs included) | closed by its take profit
+BOOK 2025.12.10 03:30:00 pnl=1.31 hedge=0 risk=4.29 lots=0.01
+SIM ORDER 2025.12.10 05:55:00 tk=1406 type=3 vol=9.97 px=4205.79 sl=4208.11 tp=4204.97 bid=4204.54 ask=4204.63
+SIM DEAL 2025.12.10 05:58:30 tk=1407 pos=1406 sell IN vol=9.97 px=4205.97 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.10 05:58:30 pos=1406 sell vol=9.97 px=4205.97 sl=4208.11 tp=4204.97 bid=4205.97 ask=4206.21
+SIM MODIFY 2025.12.10 06:00:00 pos=1406 sl=4208.11->4208.10 tp=4204.97->4204.96
+SIM DEAL 2025.12.10 06:09:30 tk=1408 pos=1406 buy OUT vol=9.97 px=4208.33 profit=-2352.92 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.10 06:09:30 pos=1406 reason=4 px=4208.33 open=4205.97 sl=4208.10 tp=4204.96
+EA 2025.12.10 06:10:00 Trade #1406 closed: 9.97 lots at 4208.33 | trade P&L -2352.92 (costs included) | closed by its stop loss
+BOOK 2025.12.10 06:10:00 pnl=-2352.92 hedge=0 risk=2451.48 lots=9.97
+SIM ORDER 2025.12.10 10:45:00 tk=1409 type=3 vol=0.01 px=4200.26 sl=4205.07 tp=4198.80 bid=4199.64 ask=4199.81
+SIM DEAL 2025.12.10 10:46:30 tk=1410 pos=1409 sell IN vol=0.01 px=4201.05 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.10 10:46:30 pos=1409 sell vol=0.01 px=4201.05 sl=4205.07 tp=4198.80 bid=4201.05 ask=4201.12
+SIM MODIFY 2025.12.10 10:50:00 pos=1409 sl=4205.07->4204.95 tp=4198.80->4198.68
+SIM DEAL 2025.12.10 10:53:30 tk=1411 pos=1409 buy OUT vol=0.01 px=4197.60 profit=3.45 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.10 10:53:30 pos=1409 reason=5 px=4197.60 open=4201.05 sl=4204.95 tp=4198.68
+EA 2025.12.10 10:55:00 Trade #1409 closed: 0.01 lots at 4197.60 | trade P&L +3.45 (costs included) | closed by its take profit
+BOOK 2025.12.10 10:55:00 pnl=3.45 hedge=0 risk=4.87 lots=0.01
+SIM ORDER 2025.12.11 04:30:00 tk=1412 type=3 vol=5.15 px=4230.95 sl=4237.64 tp=4229.06 bid=4229.97 ask=4230.24
+SIM CANCEL 2025.12.11 04:55:00 tk=1412
+SIM ORDER 2025.12.11 05:10:00 tk=1413 type=3 vol=4.42 px=4217.27 sl=4224.99 tp=4214.99 bid=4213.60 ask=4213.81
+SIM CANCEL 2025.12.11 05:35:00 tk=1413
+SIM ORDER 2025.12.11 16:25:00 tk=1414 type=2 vol=3.95 px=4229.79 sl=4221.20 tp=4232.41 bid=4230.71 ask=4230.86
+SIM DEAL 2025.12.11 16:25:30 tk=1415 pos=1414 buy IN vol=3.95 px=4228.28 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.11 16:25:30 pos=1414 buy vol=3.95 px=4228.28 sl=4221.20 tp=4232.41 bid=4228.20 ask=4228.28
+SIM DEAL 2025.12.11 16:30:30 tk=1416 pos=1414 sell OUT vol=3.95 px=4232.73 profit=1757.75 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.11 16:30:30 pos=1414 reason=5 px=4232.73 open=4228.28 sl=4221.20 tp=4232.41
+EA 2025.12.11 16:35:00 Trade #1414 closed: 3.95 lots at 4232.73 | trade P&L +1757.75 (costs included) | closed by its take profit
+BOOK 2025.12.11 16:35:00 pnl=1757.75 hedge=0 risk=3423.40 lots=3.95
+SIM ORDER 2025.12.11 16:45:00 tk=1417 type=2 vol=2.37 px=4243.61 sl=4234.43 tp=4246.49 bid=4243.89 ask=4243.97
+SIM DEAL 2025.12.11 16:45:30 tk=1418 pos=1417 buy IN vol=2.37 px=4239.59 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.11 16:45:30 pos=1417 buy vol=2.37 px=4239.59 sl=4234.43 tp=4246.49 bid=4239.44 ask=4239.59
+SIM DEAL 2025.12.11 16:48:30 tk=1419 pos=1417 sell OUT vol=2.37 px=4233.30 profit=-1490.73 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.11 16:48:30 pos=1417 reason=4 px=4233.30 open=4239.59 sl=4234.43 tp=4246.49
+EA 2025.12.11 16:50:00 Trade #1417 closed: 2.37 lots at 4233.30 | trade P&L -1490.73 (costs included) | closed by its stop loss
+BOOK 2025.12.11 16:50:00 pnl=-1490.73 hedge=0 risk=2210.09 lots=2.37
+SIM ORDER 2025.12.16 03:05:00 tk=1420 type=3 vol=0.01 px=4305.48 sl=4311.11 tp=4303.94 bid=4303.08 ask=4303.37
+SIM DEAL 2025.12.16 03:12:30 tk=1421 pos=1420 sell IN vol=0.01 px=4305.70 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.16 03:12:30 pos=1420 sell vol=0.01 px=4305.70 sl=4311.11 tp=4303.94 bid=4305.70 ask=4305.78
+SIM DEAL 2025.12.16 03:14:30 tk=1422 pos=1420 buy OUT vol=0.01 px=4303.83 profit=1.87 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.16 03:14:30 pos=1420 reason=5 px=4303.83 open=4305.70 sl=4311.11 tp=4303.94
+EA 2025.12.16 03:15:00 Trade #1420 closed: 0.01 lots at 4303.83 | trade P&L +1.87 (costs included) | closed by its take profit
+BOOK 2025.12.16 03:15:00 pnl=1.87 hedge=0 risk=5.56 lots=0.01
+SIM ORDER 2025.12.16 04:50:00 tk=1423 type=3 vol=4.52 px=4305.62 sl=4312.50 tp=4303.57 bid=4304.55 ask=4304.74
+SIM CANCEL 2025.12.16 05:15:00 tk=1423
+SIM ORDER 2025.12.16 05:15:00 tk=1424 type=3 vol=3.23 px=4286.14 sl=4295.75 tp=4283.25 bid=4282.36 ask=4282.53
+SIM DEAL 2025.12.16 05:17:30 tk=1425 pos=1424 sell IN vol=3.23 px=4287.44 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.16 05:17:30 pos=1424 sell vol=3.23 px=4287.44 sl=4295.75 tp=4283.25 bid=4287.44 ask=4287.74
+SIM DEAL 2025.12.16 05:18:30 tk=1426 pos=1424 buy OUT vol=3.23 px=4281.52 profit=1912.16 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.16 05:18:30 pos=1424 reason=5 px=4281.52 open=4287.44 sl=4295.75 tp=4283.25
+EA 2025.12.16 05:20:00 Trade #1424 closed: 3.23 lots at 4281.52 | trade P&L +1912.16 (costs included) | closed by its take profit
+BOOK 2025.12.16 05:20:00 pnl=1912.16 hedge=0 risk=3120.96 lots=3.23
+SIM ORDER 2025.12.16 16:00:00 tk=1427 type=2 vol=1.74 px=4312.79 sl=4304.31 tp=4315.48 bid=4312.97 ask=4313.04
+SIM DEAL 2025.12.16 16:00:30 tk=1428 pos=1427 buy IN vol=1.74 px=4311.90 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.16 16:00:30 pos=1427 buy vol=1.74 px=4311.90 sl=4304.31 tp=4315.48 bid=4311.81 ask=4311.90
+SIM DEAL 2025.12.16 16:02:30 tk=1429 pos=1427 sell OUT vol=1.74 px=4316.51 profit=802.14 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.16 16:02:30 pos=1427 reason=5 px=4316.51 open=4311.90 sl=4304.31 tp=4315.48
+EA 2025.12.16 16:05:00 Trade #1427 closed: 1.74 lots at 4316.51 | trade P&L +802.14 (costs included) | closed by its take profit
+BOOK 2025.12.16 16:05:00 pnl=802.14 hedge=0 risk=1502.70 lots=1.74
+SIM ORDER 2025.12.16 16:20:00 tk=1430 type=2 vol=0.35 px=4323.28 sl=4313.77 tp=4326.26 bid=4327.01 ask=4327.10
+SIM DEAL 2025.12.16 16:38:30 tk=1431 pos=1430 buy IN vol=0.35 px=4323.25 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.16 16:38:30 pos=1430 buy vol=0.35 px=4323.25 sl=4313.77 tp=4326.26 bid=4323.17 ask=4323.25
+SIM DEAL 2025.12.16 16:39:30 tk=1432 pos=1430 sell OUT vol=0.35 px=4330.23 profit=244.30 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.16 16:39:30 pos=1430 reason=5 px=4330.23 open=4323.25 sl=4313.77 tp=4326.26
+EA 2025.12.16 16:40:00 Trade #1430 closed: 0.35 lots at 4330.23 | trade P&L +244.30 (costs included) | closed by its take profit
+BOOK 2025.12.16 16:40:00 pnl=244.30 hedge=0 risk=337.88 lots=0.35
+SIM ORDER 2025.12.17 03:35:00 tk=1433 type=2 vol=1.21 px=4320.53 sl=4315.01 tp=4322.09 bid=4322.02 ask=4322.27
+SIM CANCEL 2025.12.17 04:00:00 tk=1433
+SIM ORDER 2025.12.17 05:35:00 tk=1434 type=2 vol=0.98 px=4320.27 sl=4313.64 tp=4322.36 bid=4320.70 ask=4320.80
+SIM CANCEL 2025.12.17 06:00:00 tk=1434
+SIM ORDER 2025.12.17 12:00:00 tk=1435 type=3 vol=1.06 px=4318.52 sl=4324.61 tp=4316.54 bid=4316.91 ask=4316.97
+SIM DEAL 2025.12.17 12:13:30 tk=1436 pos=1435 sell IN vol=1.06 px=4319.40 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.17 12:13:30 pos=1435 sell vol=1.06 px=4319.40 sl=4324.61 tp=4316.54 bid=4319.40 ask=4319.51
+SIM MODIFY 2025.12.17 12:15:00 pos=1435 sl=4324.61->4324.62 tp=4316.54->4316.55
+SIM DEAL 2025.12.17 12:32:30 tk=1437 pos=1435 buy OUT vol=1.06 px=4316.13 profit=346.62 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.17 12:32:30 pos=1435 reason=5 px=4316.13 open=4319.40 sl=4324.62 tp=4316.55
+EA 2025.12.17 12:35:00 Trade #1435 closed: 1.06 lots at 4316.13 | trade P&L +346.62 (costs included) | closed by its take profit
+BOOK 2025.12.17 12:35:00 pnl=346.62 hedge=0 risk=663.26 lots=1.06
+SIM ORDER 2025.12.18 02:45:00 tk=1438 type=3 vol=1.28 px=4336.89 sl=4342.14 tp=4335.43 bid=4336.69 ask=4336.96
+SIM DEAL 2025.12.18 02:45:30 tk=1439 pos=1438 sell IN vol=1.28 px=4337.16 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.18 02:45:30 pos=1438 sell vol=1.28 px=4337.16 sl=4342.14 tp=4335.43 bid=4337.16 ask=4337.35
+SIM DEAL 2025.12.18 02:49:30 tk=1440 pos=1438 buy OUT vol=1.28 px=4333.98 profit=407.04 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.18 02:49:30 pos=1438 reason=5 px=4333.98 open=4337.16 sl=4342.14 tp=4335.43
+EA 2025.12.18 02:50:00 Trade #1438 closed: 1.28 lots at 4333.98 | trade P&L +407.04 (costs included) | closed by its take profit
+BOOK 2025.12.18 02:50:00 pnl=407.04 hedge=0 risk=665.74 lots=1.28
+SIM ORDER 2025.12.18 03:05:00 tk=1441 type=3 vol=1.16 px=4332.77 sl=4338.44 tp=4331.05 bid=4330.69 ask=4330.86
+SIM DEAL 2025.12.18 03:08:15 tk=1442 pos=1441 sell IN vol=1.16 px=4332.79 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.18 03:08:15 pos=1441 sell vol=1.16 px=4332.79 sl=4338.44 tp=4331.05 bid=4332.79 ask=4333.02
+SIM MODIFY 2025.12.18 03:10:00 pos=1441 sl=4338.44->4338.36 tp=4331.05->4330.97
+SIM DEAL 2025.12.18 03:11:30 tk=1443 pos=1441 buy OUT vol=1.16 px=4330.35 profit=283.04 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.18 03:11:30 pos=1441 reason=5 px=4330.35 open=4332.79 sl=4338.36 tp=4330.97
+EA 2025.12.18 03:15:00 Trade #1441 closed: 1.16 lots at 4330.35 | trade P&L +283.04 (costs included) | closed by its take profit
+BOOK 2025.12.18 03:15:00 pnl=283.04 hedge=0 risk=664.32 lots=1.16
+SIM ORDER 2025.12.18 04:40:00 tk=1444 type=2 vol=1.18 px=4336.47 sl=4330.88 tp=4338.12 bid=4337.23 ask=4337.43
+SIM DEAL 2025.12.18 04:40:30 tk=1445 pos=1444 buy IN vol=1.18 px=4335.54 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.18 04:40:30 pos=1444 buy vol=1.18 px=4335.54 sl=4330.88 tp=4338.12 bid=4335.44 ask=4335.54
+SIM DEAL 2025.12.18 04:50:15 tk=1446 pos=1444 sell OUT vol=1.18 px=4330.70 profit=-571.12 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.18 04:50:15 pos=1444 reason=4 px=4330.70 open=4335.54 sl=4330.88 tp=4338.12
+EA 2025.12.18 04:55:00 Trade #1444 closed: 1.18 lots at 4330.70 | trade P&L -571.12 (costs included) | closed by its stop loss
+BOOK 2025.12.18 04:55:00 pnl=-571.12 hedge=0 risk=662.32 lots=1.18
+SIM ORDER 2025.12.18 09:10:00 tk=1447 type=3 vol=0.01 px=4331.93 sl=4336.37 tp=4330.57 bid=4331.41 ask=4331.57
+SIM DEAL 2025.12.18 09:10:30 tk=1448 pos=1447 sell IN vol=0.01 px=4332.26 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.18 09:10:30 pos=1447 sell vol=0.01 px=4332.26 sl=4336.37 tp=4330.57 bid=4332.26 ask=4332.41
+SIM DEAL 2025.12.18 09:12:30 tk=1449 pos=1447 buy OUT vol=0.01 px=4330.26 profit=2.00 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.18 09:12:30 pos=1447 reason=5 px=4330.26 open=4332.26 sl=4336.37 tp=4330.57
+EA 2025.12.18 09:15:00 Trade #1447 closed: 0.01 lots at 4330.26 | trade P&L +2.00 (costs included) | closed by its take profit
+BOOK 2025.12.18 09:15:00 pnl=2.00 hedge=0 risk=4.51 lots=0.01
+SIM ORDER 2025.12.18 10:05:00 tk=1450 type=3 vol=3.86 px=4329.40 sl=4334.21 tp=4327.90 bid=4327.10 ask=4327.24
+SIM DEAL 2025.12.18 10:06:30 tk=1451 pos=1450 sell IN vol=3.86 px=4329.47 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.18 10:06:30 pos=1450 sell vol=3.86 px=4329.47 sl=4334.21 tp=4327.90 bid=4329.47 ask=4329.66
+SIM MODIFY 2025.12.18 10:10:00 pos=1450 sl=4334.21->4334.17 tp=4327.90->4327.86
+SIM DEAL 2025.12.18 10:17:30 tk=1452 pos=1450 buy OUT vol=3.86 px=4327.25 profit=856.92 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.18 10:17:30 pos=1450 reason=5 px=4327.25 open=4329.47 sl=4334.17 tp=4327.86
+EA 2025.12.18 10:20:00 Trade #1450 closed: 3.86 lots at 4327.25 | trade P&L +856.92 (costs included) | closed by its take profit
+BOOK 2025.12.18 10:20:00 pnl=856.92 hedge=0 risk=1893.00 lots=3.86
+SIM ORDER 2025.12.18 11:40:00 tk=1453 type=3 vol=1.29 px=4323.70 sl=4328.74 tp=4322.12 bid=4322.70 ask=4322.83
+SIM DEAL 2025.12.18 11:40:30 tk=1454 pos=1453 sell IN vol=1.29 px=4324.08 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.18 11:40:30 pos=1453 sell vol=1.29 px=4324.08 sl=4328.74 tp=4322.12 bid=4324.08 ask=4324.19
+SIM DEAL 2025.12.18 11:42:30 tk=1455 pos=1453 buy OUT vol=1.29 px=4321.37 profit=349.59 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.18 11:42:30 pos=1453 reason=5 px=4321.37 open=4324.08 sl=4328.74 tp=4322.12
+EA 2025.12.18 11:45:00 Trade #1453 closed: 1.29 lots at 4321.37 | trade P&L +349.59 (costs included) | closed by its take profit
+BOOK 2025.12.18 11:45:00 pnl=349.59 hedge=0 risk=661.96 lots=1.29
+SIM ORDER 2025.12.18 14:05:00 tk=1456 type=3 vol=1.74 px=4324.11 sl=4327.87 tp=4322.96 bid=4322.78 ask=4322.94
+SIM DEAL 2025.12.18 14:09:30 tk=1457 pos=1456 sell IN vol=1.74 px=4324.38 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.18 14:09:30 pos=1456 sell vol=1.74 px=4324.38 sl=4327.87 tp=4322.96 bid=4324.38 ask=4324.56
+SIM MODIFY 2025.12.18 14:10:00 pos=1456 sl=4327.87->4327.89 tp=4322.96->4322.98
+SIM DEAL 2025.12.18 14:18:30 tk=1458 pos=1456 buy OUT vol=1.74 px=4322.63 profit=304.50 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.18 14:18:30 pos=1456 reason=5 px=4322.63 open=4324.38 sl=4327.89 tp=4322.98
+EA 2025.12.18 14:20:00 Trade #1456 closed: 1.74 lots at 4322.63 | trade P&L +304.50 (costs included) | closed by its take profit
+BOOK 2025.12.18 14:20:00 pnl=304.50 hedge=0 risk=665.46 lots=1.74
+SIM ORDER 2025.12.18 15:50:00 tk=1459 type=2 vol=0.83 px=4338.57 sl=4330.63 tp=4341.00 bid=4339.73 ask=4339.87
+SIM DEAL 2025.12.18 15:50:30 tk=1460 pos=1459 buy IN vol=0.83 px=4338.10 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.18 15:50:30 pos=1459 buy vol=0.83 px=4338.10 sl=4330.63 tp=4341.00 bid=4337.91 ask=4338.10
+SIM DEAL 2025.12.18 15:51:30 tk=1461 pos=1459 sell OUT vol=0.83 px=4341.75 profit=302.95 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.18 15:51:30 pos=1459 reason=5 px=4341.75 open=4338.10 sl=4330.63 tp=4341.00
+EA 2025.12.18 15:55:00 Trade #1459 closed: 0.83 lots at 4341.75 | trade P&L +302.95 (costs included) | closed by its take profit
+BOOK 2025.12.18 15:55:00 pnl=302.95 hedge=0 risk=665.99 lots=0.83
+SIM ORDER 2025.12.18 16:45:00 tk=1462 type=3 vol=0.58 px=4321.43 sl=4332.77 tp=4317.89 bid=4314.15 ask=4314.22
+SIM DEAL 2025.12.18 16:51:30 tk=1463 pos=1462 sell IN vol=0.58 px=4322.25 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.18 16:51:30 pos=1462 sell vol=0.58 px=4322.25 sl=4332.77 tp=4317.89 bid=4322.25 ask=4322.37
+SIM MODIFY 2025.12.18 16:55:00 pos=1462 sl=4332.77->4332.83 tp=4317.89->4317.95
+SIM DEAL 2025.12.18 17:01:30 tk=1464 pos=1462 buy OUT vol=0.58 px=4333.75 profit=-667.00 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.18 17:01:30 pos=1462 reason=4 px=4333.75 open=4322.25 sl=4332.83 tp=4317.95
+EA 2025.12.18 17:05:00 Trade #1462 closed: 0.58 lots at 4333.75 | trade P&L -667.00 (costs included) | closed by its stop loss
+BOOK 2025.12.18 17:05:00 pnl=-667.00 hedge=0 risk=666.44 lots=0.58
+SIM ORDER 2025.12.23 03:05:00 tk=1465 type=2 vol=0.01 px=4474.53 sl=4468.10 tp=4476.56 bid=4478.33 ask=4478.43
+SIM DEAL 2025.12.23 03:21:15 tk=1466 pos=1465 buy IN vol=0.01 px=4474.27 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.23 03:21:15 pos=1465 buy vol=0.01 px=4474.27 sl=4468.10 tp=4476.56 bid=4474.10 ask=4474.27
+SIM DEAL 2025.12.23 03:26:30 tk=1467 pos=1465 sell OUT vol=0.01 px=4478.34 profit=4.07 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.23 03:26:30 pos=1465 reason=5 px=4478.34 open=4474.27 sl=4468.10 tp=4476.56
+EA 2025.12.23 03:30:00 Trade #1465 closed: 0.01 lots at 4478.34 | trade P&L +4.07 (costs included) | closed by its take profit
+BOOK 2025.12.23 03:30:00 pnl=4.07 hedge=0 risk=6.56 lots=0.01
+SIM DEAL 2025.12.23 03:35:00 tk=1469 pos=1468 buy IN vol=2.30 px=4482.78 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.23 03:35:00 pos=1468 buy vol=2.30 px=4482.78 sl=4477.30 tp=4489.69 bid=4482.65 ask=4482.78
+SIM DEAL 2025.12.23 03:55:15 tk=1470 pos=1468 sell OUT vol=2.30 px=4490.92 profit=1872.20 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.23 03:55:15 pos=1468 reason=5 px=4490.92 open=4482.78 sl=4477.30 tp=4489.69
+EA 2025.12.23 04:00:00 Trade #1468 closed: 2.30 lots at 4490.92 | trade P&L +1872.20 (costs included) | closed by its take profit
+BOOK 2025.12.23 04:00:00 pnl=1872.20 hedge=0 risk=2203.17 lots=2.30
+SIM ORDER 2025.12.23 09:20:00 tk=1471 type=2 vol=1.08 px=4483.48 sl=4477.38 tp=4485.35 bid=4485.03 ask=4485.18
+SIM CANCEL 2025.12.23 09:45:00 tk=1471
+SIM ORDER 2025.12.23 09:50:00 tk=1472 type=2 vol=1.16 px=4486.84 sl=4481.27 tp=4488.65 bid=4487.83 ask=4487.90
+SIM CANCEL 2025.12.23 09:55:00 tk=1472
+SIM ORDER 2025.12.23 16:05:00 tk=1473 type=3 vol=0.98 px=4473.32 sl=4480.05 tp=4471.29 bid=4471.56 ask=4471.73
+SIM CANCEL 2025.12.23 16:30:00 tk=1473
+SIM ORDER 2025.12.24 03:25:00 tk=1474 type=2 vol=0.62 px=4521.02 sl=4510.39 tp=4524.22 bid=4524.39 ask=4524.56
+SIM DEAL 2025.12.24 03:28:30 tk=1475 pos=1474 buy IN vol=0.62 px=4520.83 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.24 03:28:30 pos=1474 buy vol=0.62 px=4520.83 sl=4510.39 tp=4524.22 bid=4520.64 ask=4520.83
+SIM DEAL 2025.12.24 04:06:30 tk=1476 pos=1474 sell OUT vol=0.62 px=4510.36 profit=-649.14 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.24 04:06:30 pos=1474 reason=4 px=4510.36 open=4520.83 sl=4510.39 tp=4524.22
+EA 2025.12.24 04:10:00 Trade #1474 closed: 0.62 lots at 4510.36 | trade P&L -649.14 (costs included) | closed by its stop loss
+BOOK 2025.12.24 04:10:00 pnl=-649.14 hedge=0 risk=662.45 lots=0.62
+SIM ORDER 2025.12.24 05:00:00 tk=1477 type=3 vol=0.01 px=4493.08 sl=4505.46 tp=4489.26 bid=4477.35 ask=4477.45
+SIM DEAL 2025.12.24 05:19:30 tk=1478 pos=1477 sell IN vol=0.01 px=4495.96 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.24 05:19:30 pos=1477 sell vol=0.01 px=4495.96 sl=4505.46 tp=4489.26 bid=4495.96 ask=4496.08
+SIM DEAL 2025.12.24 07:10:30 tk=1479 pos=1477 buy OUT vol=0.01 px=4488.54 profit=7.42 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.24 07:10:30 pos=1477 reason=5 px=4488.54 open=4495.96 sl=4505.46 tp=4489.26
+EA 2025.12.24 07:15:00 Trade #1477 closed: 0.01 lots at 4488.54 | trade P&L +7.42 (costs included) | closed by its take profit
+BOOK 2025.12.24 07:15:00 pnl=7.42 hedge=0 risk=12.51 lots=0.01
+SIM ORDER 2025.12.24 10:00:00 tk=1480 type=3 vol=3.28 px=4484.19 sl=4490.55 tp=4482.13 bid=4483.92 ask=4483.98
+SIM DEAL 2025.12.24 10:05:30 tk=1481 pos=1480 sell IN vol=3.28 px=4484.21 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.24 10:05:30 pos=1480 sell vol=3.28 px=4484.21 sl=4490.55 tp=4482.13 bid=4484.21 ask=4484.38
+SIM MODIFY 2025.12.24 10:10:00 pos=1480 sl=4490.55->4490.64 tp=4482.13->4482.22
+SIM DEAL 2025.12.24 10:26:30 tk=1482 pos=1480 buy OUT vol=3.28 px=4490.70 profit=-2128.72 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.24 10:26:30 pos=1480 reason=4 px=4490.70 open=4484.21 sl=4490.64 tp=4482.22
+EA 2025.12.24 10:30:00 Trade #1480 closed: 3.28 lots at 4490.70 | trade P&L -2128.72 (costs included) | closed by its stop loss
+BOOK 2025.12.24 10:30:00 pnl=-2128.72 hedge=0 risk=2139.03 lots=3.28
+SIM ORDER 2025.12.24 16:40:00 tk=1483 type=3 vol=0.01 px=4478.30 sl=4488.13 tp=4475.33 bid=4472.88 ask=4473.04
+SIM DEAL 2025.12.24 16:42:30 tk=1484 pos=1483 sell IN vol=0.01 px=4481.12 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.24 16:42:30 pos=1483 sell vol=0.01 px=4481.12 sl=4488.13 tp=4475.33 bid=4481.12 ask=4481.30
+SIM MODIFY 2025.12.24 16:45:00 pos=1483 sl=4488.13->4488.06 tp=4475.33->4475.26
+SIM DEAL 2025.12.24 16:47:15 tk=1485 pos=1483 buy OUT vol=0.01 px=4473.53 profit=7.59 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.24 16:47:15 pos=1483 reason=5 px=4473.53 open=4481.12 sl=4488.06 tp=4475.26
+EA 2025.12.24 16:50:00 Trade #1483 closed: 0.01 lots at 4473.53 | trade P&L +7.59 (costs included) | closed by its take profit
+BOOK 2025.12.24 16:50:00 pnl=7.59 hedge=0 risk=9.90 lots=0.01
+SIM ORDER 2025.12.30 03:05:00 tk=1486 type=3 vol=2.88 px=4333.73 sl=4344.36 tp=4330.59 bid=4327.97 ask=4328.19
+SIM DEAL 2025.12.30 03:07:30 tk=1487 pos=1486 sell IN vol=2.88 px=4336.80 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.30 03:07:30 pos=1486 sell vol=2.88 px=4336.80 sl=4344.36 tp=4330.59 bid=4336.80 ask=4337.02
+SIM MODIFY 2025.12.30 03:10:00 pos=1486 sl=4344.36->4344.43 tp=4330.59->4330.66
+SIM DEAL 2025.12.30 03:42:30 tk=1488 pos=1486 buy OUT vol=2.88 px=4346.00 profit=-2649.60 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.30 03:42:30 pos=1486 reason=4 px=4346.00 open=4336.80 sl=4344.43 tp=4330.66
+EA 2025.12.30 03:45:00 Trade #1486 closed: 2.88 lots at 4346.00 | trade P&L -2649.60 (costs included) | closed by its stop loss
+BOOK 2025.12.30 03:45:00 pnl=-2649.60 hedge=0 risk=3065.25 lots=2.88
+SIM ORDER 2025.12.30 03:55:00 tk=1489 type=2 vol=0.01 px=4354.42 sl=4342.32 tp=4357.95 bid=4357.37 ask=4357.63
+SIM DEAL 2025.12.30 04:05:30 tk=1490 pos=1489 buy IN vol=0.01 px=4354.37 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.30 04:05:30 pos=1489 buy vol=0.01 px=4354.37 sl=4342.32 tp=4357.95 bid=4354.09 ask=4354.37
+SIM DEAL 2025.12.30 04:45:30 tk=1491 pos=1489 sell OUT vol=0.01 px=4358.14 profit=3.77 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.30 04:45:30 pos=1489 reason=5 px=4358.14 open=4354.37 sl=4342.32 tp=4357.95
+EA 2025.12.30 04:50:00 Trade #1489 closed: 0.01 lots at 4358.14 | trade P&L +3.77 (costs included) | closed by its take profit
+BOOK 2025.12.30 04:50:00 pnl=3.77 hedge=0 risk=12.07 lots=0.01
+SIM ORDER 2025.12.30 04:55:00 tk=1492 type=2 vol=5.74 px=4361.33 sl=4350.96 tp=4364.51 bid=4363.33 ask=4363.46
+SIM DEAL 2025.12.30 04:57:30 tk=1493 pos=1492 buy IN vol=5.74 px=4360.95 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.30 04:57:30 pos=1492 buy vol=5.74 px=4360.95 sl=4350.96 tp=4364.51 bid=4360.72 ask=4360.95
+SIM DEAL 2025.12.30 05:01:30 tk=1494 pos=1492 sell OUT vol=5.74 px=4365.16 profit=2416.54 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.30 05:01:30 pos=1492 reason=5 px=4365.16 open=4360.95 sl=4350.96 tp=4364.51
+EA 2025.12.30 05:05:00 Trade #1492 closed: 5.74 lots at 4365.16 | trade P&L +2416.54 (costs included) | closed by its take profit
+BOOK 2025.12.30 05:05:00 pnl=2416.54 hedge=0 risk=6006.90 lots=5.74
+SIM ORDER 2025.12.30 09:45:00 tk=1495 type=2 vol=5.60 px=4375.53 sl=4366.79 tp=4378.30 bid=4377.04 ask=4377.11
+SIM DEAL 2025.12.30 09:53:30 tk=1496 pos=1495 buy IN vol=5.60 px=4373.64 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.30 09:53:30 pos=1495 buy vol=5.60 px=4373.64 sl=4366.79 tp=4378.30 bid=4373.59 ask=4373.64
+SIM DEAL 2025.12.30 10:02:30 tk=1497 pos=1495 sell OUT vol=5.60 px=4365.44 profit=-4592.00 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.30 10:02:30 pos=1495 reason=4 px=4365.44 open=4373.64 sl=4366.79 tp=4378.30
+EA 2025.12.30 10:05:00 Trade #1495 closed: 5.60 lots at 4365.44 | trade P&L -4592.00 (costs included) | closed by its stop loss
+BOOK 2025.12.30 10:05:00 pnl=-4592.00 hedge=0 risk=4982.83 lots=5.60
+SIM ORDER 2025.12.30 14:15:00 tk=1498 type=2 vol=0.01 px=4392.60 sl=4384.96 tp=4394.93 bid=4396.29 ask=4396.44
+SIM CANCEL 2025.12.30 14:20:00 tk=1498
+SIM ORDER 2025.12.30 16:30:00 tk=1499 type=2 vol=0.01 px=4390.65 sl=4380.01 tp=4393.96 bid=4390.66 ask=4390.75
+SIM DEAL 2025.12.30 16:30:15 tk=1500 pos=1499 buy IN vol=0.01 px=4387.66 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.30 16:30:15 pos=1499 buy vol=0.01 px=4387.66 sl=4380.01 tp=4393.96 bid=4387.55 ask=4387.66
+SIM DEAL 2025.12.30 16:33:15 tk=1501 pos=1499 sell OUT vol=0.01 px=4379.69 profit=-7.97 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.30 16:33:15 pos=1499 reason=4 px=4379.69 open=4387.66 sl=4380.01 tp=4393.96
+EA 2025.12.30 16:35:00 Trade #1499 closed: 0.01 lots at 4379.69 | trade P&L -7.97 (costs included) | closed by its stop loss
+BOOK 2025.12.30 16:35:00 pnl=-7.97 hedge=0 risk=10.78 lots=0.01
+SIM ORDER 2025.12.31 03:10:00 tk=1502 type=2 vol=0.01 px=4350.57 sl=4339.41 tp=4353.92 bid=4353.02 ask=4353.20
+SIM DEAL 2025.12.31 03:16:15 tk=1503 pos=1502 buy IN vol=0.01 px=4350.46 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.31 03:16:15 pos=1502 buy vol=0.01 px=4350.46 sl=4339.41 tp=4353.92 bid=4350.24 ask=4350.46
+SIM DEAL 2025.12.31 03:19:30 tk=1504 pos=1502 sell OUT vol=0.01 px=4354.75 profit=4.29 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.31 03:19:30 pos=1502 reason=5 px=4354.75 open=4350.46 sl=4339.41 tp=4353.92
+EA 2025.12.31 03:20:00 Trade #1502 closed: 0.01 lots at 4354.75 | trade P&L +4.29 (costs included) | closed by its take profit
+BOOK 2025.12.31 03:20:00 pnl=4.29 hedge=0 risk=11.21 lots=0.01
+SIM ORDER 2025.12.31 03:35:00 tk=1505 type=2 vol=7.39 px=4361.10 sl=4349.63 tp=4364.40 bid=4363.90 ask=4364.19
+SIM DEAL 2025.12.31 03:37:15 tk=1506 pos=1505 buy IN vol=7.39 px=4361.06 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.31 03:37:15 pos=1505 buy vol=7.39 px=4361.06 sl=4349.63 tp=4364.40 bid=4360.98 ask=4361.06
+SIM DEAL 2025.12.31 03:38:30 tk=1507 pos=1505 sell OUT vol=7.39 px=4367.53 profit=4781.33 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.31 03:38:30 pos=1505 reason=5 px=4367.53 open=4361.06 sl=4349.63 tp=4364.40
+EA 2025.12.31 03:40:00 Trade #1505 closed: 7.39 lots at 4367.53 | trade P&L +4781.33 (costs included) | closed by its take profit
+BOOK 2025.12.31 03:40:00 pnl=4781.33 hedge=0 risk=8426.54 lots=7.39
+SIM ORDER 2025.12.31 10:10:00 tk=1508 type=3 vol=4.03 px=4325.31 sl=4336.77 tp=4321.76 bid=4322.23 ask=4322.32
+SIM DEAL 2025.12.31 10:17:30 tk=1509 pos=1508 sell IN vol=4.03 px=4325.92 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.31 10:17:30 pos=1508 sell vol=4.03 px=4325.92 sl=4336.77 tp=4321.76 bid=4325.92 ask=4326.08
+SIM MODIFY 2025.12.31 10:20:00 pos=1508 sl=4336.77->4336.87 tp=4321.76->4321.86
+SIM DEAL 2025.12.31 10:36:30 tk=1510 pos=1508 buy OUT vol=4.03 px=4321.75 profit=1680.51 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.31 10:36:30 pos=1508 reason=5 px=4321.75 open=4325.92 sl=4336.87 tp=4321.86
+EA 2025.12.31 10:40:00 Trade #1508 closed: 4.03 lots at 4321.75 | trade P&L +1680.51 (costs included) | closed by its take profit
+BOOK 2025.12.31 10:40:00 pnl=1680.51 hedge=0 risk=4671.10 lots=4.03
+SIM ORDER 2025.12.31 10:45:00 tk=1511 type=3 vol=3.72 px=4319.82 sl=4329.85 tp=4316.80 bid=4317.32 ask=4317.49
+SIM CANCEL 2025.12.31 11:10:00 tk=1511
+SIM ORDER 2025.12.31 15:50:00 tk=1512 type=2 vol=3.70 px=4336.43 sl=4326.37 tp=4339.48 bid=4339.50 ask=4339.66
+SIM DEAL 2025.12.31 16:05:30 tk=1513 pos=1512 buy IN vol=3.70 px=4336.27 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.31 16:05:30 pos=1512 buy vol=3.70 px=4336.27 sl=4326.37 tp=4339.48 bid=4336.10 ask=4336.27
+SIM DEAL 2025.12.31 16:08:30 tk=1514 pos=1512 sell OUT vol=3.70 px=4340.87 profit=1702.00 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2025.12.31 16:08:30 pos=1512 reason=5 px=4340.87 open=4336.27 sl=4326.37 tp=4339.48
+EA 2025.12.31 16:10:00 Trade #1512 closed: 3.70 lots at 4340.87 | trade P&L +1702.00 (costs included) | closed by its take profit
+BOOK 2025.12.31 16:10:00 pnl=1702.00 hedge=0 risk=3749.42 lots=3.70
+SIM DEAL 2025.12.31 16:35:00 tk=1516 pos=1515 buy IN vol=0.56 px=4346.81 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2025.12.31 16:35:00 pos=1515 buy vol=0.56 px=4346.81 sl=4337.08 tp=4352.32 bid=4346.63 ask=4346.81
+SIM DEAL 2025.12.31 16:39:30 tk=1517 pos=1515 sell OUT vol=0.56 px=4336.30 profit=-588.56 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2025.12.31 16:39:30 pos=1515 reason=4 px=4336.30 open=4346.81 sl=4337.08 tp=4352.32
+EA 2025.12.31 16:40:00 Trade #1515 closed: 0.56 lots at 4336.30 | trade P&L -588.56 (costs included) | closed by its stop loss
+BOOK 2025.12.31 16:40:00 pnl=-588.56 hedge=0 risk=659.11 lots=0.56
+SIM ORDER 2026.01.06 02:40:00 tk=1518 type=3 vol=0.01 px=4435.56 sl=4442.94 tp=4433.35 bid=4434.58 ask=4434.77
+SIM DEAL 2026.01.06 02:43:30 tk=1519 pos=1518 sell IN vol=0.01 px=4436.73 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.06 02:43:30 pos=1518 sell vol=0.01 px=4436.73 sl=4442.94 tp=4433.35 bid=4436.73 ask=4436.86
+SIM MODIFY 2026.01.06 02:45:00 pos=1518 sl=4442.94->4443.03 tp=4433.35->4433.44
+SIM DEAL 2026.01.06 03:02:30 tk=1520 pos=1518 buy OUT vol=0.01 px=4431.10 profit=5.63 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.06 03:02:30 pos=1518 reason=5 px=4431.10 open=4436.73 sl=4443.03 tp=4433.44
+EA 2026.01.06 03:05:00 Trade #1518 closed: 0.01 lots at 4431.10 | trade P&L +5.63 (costs included) | closed by its take profit
+BOOK 2026.01.06 03:05:00 pnl=5.63 hedge=0 risk=7.42 lots=0.01
+SIM ORDER 2026.01.06 03:55:00 tk=1521 type=2 vol=2.10 px=4444.28 sl=4435.09 tp=4447.03 bid=4447.65 ask=4447.84
+SIM CANCEL 2026.01.06 04:20:00 tk=1521
+SIM ORDER 2026.01.06 09:10:00 tk=1522 type=2 vol=2.69 px=4468.43 sl=4461.35 tp=4470.67 bid=4469.19 ask=4469.28
+SIM DEAL 2026.01.06 09:14:30 tk=1523 pos=1522 buy IN vol=2.69 px=4467.71 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.06 09:14:30 pos=1522 buy vol=2.69 px=4467.71 sl=4461.35 tp=4470.67 bid=4467.59 ask=4467.71
+SIM DEAL 2026.01.06 09:52:30 tk=1524 pos=1522 sell OUT vol=2.69 px=4460.47 profit=-1947.56 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.01.06 09:52:30 pos=1522 reason=4 px=4460.47 open=4467.71 sl=4461.35 tp=4470.67
+EA 2026.01.06 09:55:00 Trade #1522 closed: 2.69 lots at 4460.47 | trade P&L -1947.56 (costs included) | closed by its stop loss
+BOOK 2026.01.06 09:55:00 pnl=-1947.56 hedge=0 risk=1942.04 lots=2.69
+SIM ORDER 2026.01.06 11:50:00 tk=1525 type=3 vol=0.01 px=4451.88 sl=4459.66 tp=4449.48 bid=4447.75 ask=4447.88
+SIM DEAL 2026.01.06 11:56:15 tk=1526 pos=1525 sell IN vol=0.01 px=4451.96 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.06 11:56:15 pos=1525 sell vol=0.01 px=4451.96 sl=4459.66 tp=4449.48 bid=4451.96 ask=4452.03
+SIM DEAL 2026.01.06 11:56:30 tk=1527 pos=1525 buy OUT vol=0.01 px=4446.78 profit=5.18 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.06 11:56:30 pos=1525 reason=5 px=4446.78 open=4451.96 sl=4459.66 tp=4449.48
+EA 2026.01.06 12:00:00 Trade #1525 closed: 0.01 lots at 4446.78 | trade P&L +5.18 (costs included) | closed by its take profit
+BOOK 2026.01.06 12:00:00 pnl=5.18 hedge=0 risk=7.88 lots=0.01
+SIM ORDER 2026.01.06 16:35:00 tk=1528 type=2 vol=2.88 px=4473.39 sl=4463.80 tp=4476.38 bid=4479.15 ask=4479.24
+SIM CANCEL 2026.01.06 17:00:00 tk=1528
+SIM ORDER 2026.01.07 03:35:00 tk=1529 type=3 vol=2.60 px=4469.28 sl=4479.93 tp=4466.01 bid=4466.76 ask=4466.88
+SIM DEAL 2026.01.07 03:38:30 tk=1530 pos=1529 sell IN vol=2.60 px=4470.04 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.07 03:38:30 pos=1529 sell vol=2.60 px=4470.04 sl=4479.93 tp=4466.01 bid=4470.04 ask=4470.17
+SIM MODIFY 2026.01.07 03:40:00 pos=1529 sl=4479.93->4479.95 tp=4466.01->4466.03
+SIM DEAL 2026.01.07 03:48:30 tk=1531 pos=1529 buy OUT vol=2.60 px=4465.42 profit=1201.20 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.07 03:48:30 pos=1529 reason=5 px=4465.42 open=4470.04 sl=4479.95 tp=4466.03
+EA 2026.01.07 03:50:00 Trade #1529 closed: 2.60 lots at 4465.42 | trade P&L +1201.20 (costs included) | closed by its take profit
+BOOK 2026.01.07 03:50:00 pnl=1201.20 hedge=0 risk=2795.97 lots=2.60
+SIM ORDER 2026.01.08 02:50:00 tk=1532 type=3 vol=3.52 px=4449.41 sl=4455.52 tp=4447.45 bid=4447.27 ask=4447.35
+SIM DEAL 2026.01.08 02:51:30 tk=1533 pos=1532 sell IN vol=3.52 px=4450.34 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.08 02:51:30 pos=1532 sell vol=3.52 px=4450.34 sl=4455.52 tp=4447.45 bid=4450.34 ask=4450.56
+SIM MODIFY 2026.01.08 02:55:00 pos=1532 sl=4455.52->4455.71 tp=4447.45->4447.64
+SIM DEAL 2026.01.08 03:00:30 tk=1534 pos=1532 buy OUT vol=3.52 px=4444.82 profit=1943.04 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.08 03:00:30 pos=1532 reason=5 px=4444.82 open=4450.34 sl=4455.71 tp=4447.64
+EA 2026.01.08 03:05:00 Trade #1532 closed: 3.52 lots at 4444.82 | trade P&L +1943.04 (costs included) | closed by its take profit
+BOOK 2026.01.08 03:05:00 pnl=1943.04 hedge=0 risk=2203.41 lots=3.52
+SIM ORDER 2026.01.08 04:35:00 tk=1535 type=3 vol=0.75 px=4439.01 sl=4447.71 tp=4436.27 bid=4436.82 ask=4436.90
+SIM DEAL 2026.01.08 04:36:15 tk=1536 pos=1535 sell IN vol=0.75 px=4439.10 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.08 04:36:15 pos=1535 sell vol=0.75 px=4439.10 sl=4447.71 tp=4436.27 bid=4439.10 ask=4439.29
+SIM DEAL 2026.01.08 04:36:30 tk=1537 pos=1535 buy OUT vol=0.75 px=4436.10 profit=225.00 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.08 04:36:30 pos=1535 reason=5 px=4436.10 open=4439.10 sl=4447.71 tp=4436.27
+EA 2026.01.08 04:40:00 Trade #1535 closed: 0.75 lots at 4436.10 | trade P&L +225.00 (costs included) | closed by its take profit
+BOOK 2026.01.08 04:40:00 pnl=225.00 hedge=0 risk=663.46 lots=0.75
+SIM ORDER 2026.01.08 10:05:00 tk=1538 type=3 vol=0.78 px=4428.40 sl=4436.79 tp=4425.82 bid=4425.76 ask=4425.89
+SIM DEAL 2026.01.08 10:05:30 tk=1539 pos=1538 sell IN vol=0.78 px=4429.81 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.08 10:05:30 pos=1538 sell vol=0.78 px=4429.81 sl=4436.79 tp=4425.82 bid=4429.81 ask=4429.93
+SIM MODIFY 2026.01.08 10:10:00 pos=1538 sl=4436.79->4436.77 tp=4425.82->4425.80
+SIM DEAL 2026.01.08 10:15:15 tk=1540 pos=1538 buy OUT vol=0.78 px=4425.42 profit=342.42 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.08 10:15:15 pos=1538 reason=5 px=4425.42 open=4429.81 sl=4436.77 tp=4425.80
+EA 2026.01.08 10:20:00 Trade #1538 closed: 0.78 lots at 4425.42 | trade P&L +342.42 (costs included) | closed by its take profit
+BOOK 2026.01.08 10:20:00 pnl=342.42 hedge=0 risk=661.70 lots=0.78
+SIM ORDER 2026.01.08 14:05:00 tk=1541 type=3 vol=0.99 px=4419.95 sl=4426.54 tp=4417.89 bid=4417.06 ask=4417.18
+SIM CANCEL 2026.01.08 14:20:00 tk=1541
+SIM ORDER 2026.01.13 03:35:00 tk=1542 type=3 vol=0.62 px=4579.62 sl=4590.24 tp=4576.40 bid=4577.35 ask=4577.50
+SIM DEAL 2026.01.13 03:36:30 tk=1543 pos=1542 sell IN vol=0.62 px=4581.68 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.13 03:36:30 pos=1542 sell vol=0.62 px=4581.68 sl=4590.24 tp=4576.40 bid=4581.68 ask=4581.83
+SIM MODIFY 2026.01.13 03:40:00 pos=1542 sl=4590.24->4590.34 tp=4576.40->4576.50
+SIM DEAL 2026.01.13 04:07:30 tk=1544 pos=1542 buy OUT vol=0.62 px=4590.70 profit=-559.24 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.01.13 04:07:30 pos=1542 reason=4 px=4590.70 open=4581.68 sl=4590.34 tp=4576.50
+EA 2026.01.13 04:10:00 Trade #1542 closed: 0.62 lots at 4590.70 | trade P&L -559.24 (costs included) | closed by its stop loss
+BOOK 2026.01.13 04:10:00 pnl=-559.24 hedge=0 risk=663.18 lots=0.62
+SIM ORDER 2026.01.13 10:35:00 tk=1545 type=2 vol=0.01 px=4592.70 sl=4585.42 tp=4594.90 bid=4593.73 ask=4593.90
+SIM DEAL 2026.01.13 10:45:30 tk=1546 pos=1545 buy IN vol=0.01 px=4592.55 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.13 10:45:30 pos=1545 buy vol=0.01 px=4592.55 sl=4585.42 tp=4594.90 bid=4592.44 ask=4592.55
+SIM DEAL 2026.01.13 10:48:30 tk=1547 pos=1545 sell OUT vol=0.01 px=4595.50 profit=2.95 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.13 10:48:30 pos=1545 reason=5 px=4595.50 open=4592.55 sl=4585.42 tp=4594.90
+EA 2026.01.13 10:50:00 Trade #1545 closed: 0.01 lots at 4595.50 | trade P&L +2.95 (costs included) | closed by its take profit
+BOOK 2026.01.13 10:50:00 pnl=2.95 hedge=0 risk=7.33 lots=0.01
+SIM ORDER 2026.01.13 11:55:00 tk=1548 type=3 vol=2.99 px=4586.69 sl=4592.72 tp=4584.74 bid=4585.93 ask=4586.00
+SIM DEAL 2026.01.13 11:56:30 tk=1549 pos=1548 sell IN vol=2.99 px=4587.50 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.13 11:56:30 pos=1548 sell vol=2.99 px=4587.50 sl=4592.72 tp=4584.74 bid=4587.50 ask=4587.57
+SIM DEAL 2026.01.13 12:03:30 tk=1550 pos=1548 buy OUT vol=2.99 px=4583.97 profit=1055.47 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.13 12:03:30 pos=1548 reason=5 px=4583.97 open=4587.50 sl=4592.72 tp=4584.74
+EA 2026.01.13 12:05:00 Trade #1548 closed: 2.99 lots at 4583.97 | trade P&L +1055.47 (costs included) | closed by its take profit
+BOOK 2026.01.13 12:05:00 pnl=1055.47 hedge=0 risk=1848.72 lots=2.99
+SIM ORDER 2026.01.13 16:25:00 tk=1551 type=2 vol=0.62 px=4619.20 sl=4608.69 tp=4622.39 bid=4622.19 ask=4622.34
+SIM DEAL 2026.01.13 16:28:30 tk=1552 pos=1551 buy IN vol=0.62 px=4619.14 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.13 16:28:30 pos=1551 buy vol=0.62 px=4619.14 sl=4608.69 tp=4622.39 bid=4619.01 ask=4619.14
+SIM DEAL 2026.01.13 16:43:30 tk=1553 pos=1551 sell OUT vol=0.62 px=4623.34 profit=260.40 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.13 16:43:30 pos=1551 reason=5 px=4623.34 open=4619.14 sl=4608.69 tp=4622.39
+EA 2026.01.13 16:45:00 Trade #1551 closed: 0.62 lots at 4623.34 | trade P&L +260.40 (costs included) | closed by its take profit
+BOOK 2026.01.13 16:45:00 pnl=260.40 hedge=0 risk=656.20 lots=0.62
+SIM ORDER 2026.01.13 16:50:00 tk=1554 type=2 vol=0.55 px=4629.86 sl=4617.95 tp=4633.58 bid=4633.79 ask=4633.86
+SIM DEAL 2026.01.13 16:52:30 tk=1555 pos=1554 buy IN vol=0.55 px=4625.68 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.13 16:52:30 pos=1554 buy vol=0.55 px=4625.68 sl=4617.95 tp=4633.58 bid=4625.54 ask=4625.68
+SIM DEAL 2026.01.13 17:03:30 tk=1556 pos=1554 sell OUT vol=0.55 px=4615.44 profit=-563.20 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.01.13 17:03:30 pos=1554 reason=4 px=4615.44 open=4625.68 sl=4617.95 tp=4633.58
+EA 2026.01.13 17:05:00 Trade #1554 closed: 0.55 lots at 4615.44 | trade P&L -563.20 (costs included) | closed by its stop loss
+BOOK 2026.01.13 17:05:00 pnl=-563.20 hedge=0 risk=663.74 lots=0.55
+SIM ORDER 2026.01.14 03:05:00 tk=1557 type=2 vol=0.01 px=4612.59 sl=4605.02 tp=4614.74 bid=4615.40 ask=4615.68
+SIM DEAL 2026.01.14 03:05:30 tk=1558 pos=1557 buy IN vol=0.01 px=4612.03 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.14 03:05:30 pos=1557 buy vol=0.01 px=4612.03 sl=4605.02 tp=4614.74 bid=4611.74 ask=4612.03
+SIM DEAL 2026.01.14 03:06:30 tk=1559 pos=1557 sell OUT vol=0.01 px=4616.19 profit=4.16 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.14 03:06:30 pos=1557 reason=5 px=4616.19 open=4612.03 sl=4605.02 tp=4614.74
+EA 2026.01.14 03:10:00 Trade #1557 closed: 0.01 lots at 4616.19 | trade P&L +4.16 (costs included) | closed by its take profit
+BOOK 2026.01.14 03:10:00 pnl=4.16 hedge=0 risk=7.52 lots=0.01
+SIM ORDER 2026.01.14 04:25:00 tk=1560 type=2 vol=2.38 px=4620.98 sl=4613.18 tp=4623.26 bid=4620.84 ask=4621.07
+SIM DEAL 2026.01.14 04:25:30 tk=1561 pos=1560 buy IN vol=2.38 px=4620.32 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.14 04:25:30 pos=1560 buy vol=2.38 px=4620.32 sl=4613.18 tp=4623.26 bid=4620.17 ask=4620.32
+SIM DEAL 2026.01.14 04:47:30 tk=1562 pos=1560 sell OUT vol=2.38 px=4623.43 profit=740.18 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.14 04:47:30 pos=1560 reason=5 px=4623.43 open=4620.32 sl=4613.18 tp=4623.26
+EA 2026.01.14 04:50:00 Trade #1560 closed: 2.38 lots at 4623.43 | trade P&L +740.18 (costs included) | closed by its take profit
+BOOK 2026.01.14 04:50:00 pnl=740.18 hedge=0 risk=1855.85 lots=2.38
+SIM ORDER 2026.01.14 05:55:00 tk=1563 type=2 vol=0.95 px=4625.75 sl=4618.92 tp=4627.92 bid=4627.45 ask=4627.54
+SIM DEAL 2026.01.14 05:56:15 tk=1564 pos=1563 buy IN vol=0.95 px=4625.69 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.14 05:56:15 pos=1563 buy vol=0.95 px=4625.69 sl=4618.92 tp=4627.92 bid=4625.48 ask=4625.69
+SIM DEAL 2026.01.14 05:57:30 tk=1565 pos=1563 sell OUT vol=0.95 px=4629.75 profit=385.70 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.14 05:57:30 pos=1563 reason=5 px=4629.75 open=4625.69 sl=4618.92 tp=4627.92
+EA 2026.01.14 06:00:00 Trade #1563 closed: 0.95 lots at 4629.75 | trade P&L +385.70 (costs included) | closed by its take profit
+BOOK 2026.01.14 06:00:00 pnl=385.70 hedge=0 risk=662.02 lots=0.95
+SIM ORDER 2026.01.14 11:10:00 tk=1566 type=2 vol=0.92 px=4638.08 sl=4630.88 tp=4640.24 bid=4638.04 ask=4638.22
+SIM DEAL 2026.01.14 11:10:30 tk=1567 pos=1566 buy IN vol=0.92 px=4635.55 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.14 11:10:30 pos=1566 buy vol=0.92 px=4635.55 sl=4630.88 tp=4640.24 bid=4635.44 ask=4635.55
+SIM DEAL 2026.01.14 11:36:15 tk=1568 pos=1566 sell OUT vol=0.92 px=4630.71 profit=-445.28 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.01.14 11:36:15 pos=1566 reason=4 px=4630.71 open=4635.55 sl=4630.88 tp=4640.24
+EA 2026.01.14 11:40:00 Trade #1566 closed: 0.92 lots at 4630.71 | trade P&L -445.28 (costs included) | closed by its stop loss
+BOOK 2026.01.14 11:40:00 pnl=-445.28 hedge=0 risk=666.36 lots=0.92
+SIM ORDER 2026.01.14 16:50:00 tk=1569 type=3 vol=0.01 px=4613.28 sl=4625.16 tp=4609.68 bid=4607.87 ask=4608.03
+SIM DEAL 2026.01.14 16:51:30 tk=1570 pos=1569 sell IN vol=0.01 px=4613.34 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.14 16:51:30 pos=1569 sell vol=0.01 px=4613.34 sl=4625.16 tp=4609.68 bid=4613.34 ask=4613.41
+SIM MODIFY 2026.01.14 16:55:00 pos=1569 sl=4625.16->4625.17 tp=4609.68->4609.69
+SIM DEAL 2026.01.14 17:01:30 tk=1571 pos=1569 buy OUT vol=0.01 px=4608.38 profit=4.96 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.14 17:01:30 pos=1569 reason=5 px=4608.38 open=4613.34 sl=4625.17 tp=4609.69
+EA 2026.01.14 17:05:00 Trade #1569 closed: 0.01 lots at 4608.38 | trade P&L +4.96 (costs included) | closed by its take profit
+BOOK 2026.01.14 17:05:00 pnl=4.96 hedge=0 risk=11.95 lots=0.01
+SIM ORDER 2026.01.15 03:20:00 tk=1572 type=3 vol=1.43 px=4606.35 sl=4616.59 tp=4603.39 bid=4603.56 ask=4603.83
+SIM CANCEL 2026.01.15 03:45:00 tk=1572
+SIM ORDER 2026.01.15 05:15:00 tk=1573 type=3 vol=1.19 px=4594.06 sl=4606.20 tp=4590.36 bid=4591.31 ask=4591.45
+SIM DEAL 2026.01.15 05:16:30 tk=1574 pos=1573 sell IN vol=1.19 px=4594.84 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.15 05:16:30 pos=1573 sell vol=1.19 px=4594.84 sl=4606.20 tp=4590.36 bid=4594.84 ask=4595.07
+SIM MODIFY 2026.01.15 05:20:00 pos=1573 sl=4606.20->4606.23 tp=4590.36->4590.39
+SIM DEAL 2026.01.15 05:20:30 tk=1575 pos=1573 buy OUT vol=1.19 px=4587.54 profit=868.70 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.15 05:20:30 pos=1573 reason=5 px=4587.54 open=4594.84 sl=4606.23 tp=4590.39
+EA 2026.01.15 05:25:00 Trade #1573 closed: 1.19 lots at 4587.54 | trade P&L +868.70 (costs included) | closed by its take profit
+BOOK 2026.01.15 05:25:00 pnl=868.70 hedge=0 risk=1455.91 lots=1.19
+SIM ORDER 2026.01.15 09:20:00 tk=1576 type=2 vol=0.76 px=4612.02 sl=4603.43 tp=4614.77 bid=4612.42 ask=4612.47
+SIM DEAL 2026.01.15 09:20:30 tk=1577 pos=1576 buy IN vol=0.76 px=4608.73 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.15 09:20:30 pos=1576 buy vol=0.76 px=4608.73 sl=4603.43 tp=4614.77 bid=4608.62 ask=4608.73
+SIM DEAL 2026.01.15 09:40:15 tk=1578 pos=1576 sell OUT vol=0.76 px=4603.08 profit=-429.40 comm=-0.00 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.01.15 09:40:15 pos=1576 reason=4 px=4603.08 open=4608.73 sl=4603.43 tp=4614.77
+EA 2026.01.15 09:45:00 Trade #1576 closed: 0.76 lots at 4603.08 | trade P&L -429.40 (costs included) | closed by its stop loss
+BOOK 2026.01.15 09:45:00 pnl=-429.40 hedge=0 risk=666.21 lots=0.76
+SIM ORDER 2026.01.15 11:40:00 tk=1579 type=2 vol=0.01 px=4607.38 sl=4600.78 tp=4609.53 bid=4609.05 ask=4609.10
+SIM CANCEL 2026.01.15 12:05:00 tk=1579
+SIM ORDER 2026.01.15 16:55:00 tk=1580 type=2 vol=0.01 px=4612.00 sl=4600.19 tp=4615.63 bid=4613.03 ask=4613.14
+SIM DEAL 2026.01.15 16:56:30 tk=1581 pos=1580 buy IN vol=0.01 px=4610.29 profit=0.00 comm=-0.00 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.01.15 16:56:30 pos=1580 buy vol=0.01 px=4610.29 sl=4600.19 tp=4615.63 bid=4610.10 ask=4610.29
+SIM DEAL 2026.01.15 17:15:30 tk=1582 pos=1580 sell OUT vol=0.01 px=4616.92 profit=6.63 comm=-0.00 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.01.15 17:15:30 pos=1580 reason=5 px=4616.92 open=4610.29 sl=4600.19 tp=4615.63
+EA 2026.01.15 17:20:00 Trade #1580 closed: 0.01 lots at 4616.92 | trade P&L +6.63 (costs included) | closed by its take profit
+BOOK 2026.01.15 17:20:00 pnl=6.63 hedge=0 risk=11.92 lots=0.01
+VWLINE segments 1500 (created 25808, deleted 24308) | gaps 0 | backwards 0 | first 2026.01.12 11:05:00 | last 2026.01.19 21:00:00 | last point 4668.11041 | engine VWAP 4668.11041
+END ticks 485875 bars 36420 inits 1 trades opened 175

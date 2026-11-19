@@ -35,6 +35,9 @@
 //  are what the trade WINS at the final TP (the stop-out loss follows from it). Loss Recovery: Crooks K (Crooks J above the start, a
 //  careful size below it) and Crooks L (0.01 lot until a win, then the loss split by the drawdown; the base grows at a new best).
 //  The same as in the MT5 EA.
+//  v5.1: with Profit a final-TP win is the amount INCLUDING the spread and commission (v5.0 came short by them). The same in the MT5 EA.
+//  v5.2: Loss Recovery Crooks X: Crooks E where the loss to win back is the gap to the start (below it) or to the next step above it
+//  ($1,000 by default, up to the best), won back over N trades; an optional per-trade limit. The same as in the MT5 EA.
 //
 //  LEVERAGE: set it with the "Leverage" input (default 1:100). TradingView's own margin check is off
 //  (margin 0 in Properties): with its default 100 % margin it silently rejects orders bigger than the
@@ -69,7 +72,7 @@ SZ_PCT = "% of equity at risk"
 sizeMode   = input.string(SZ_USD, "Position Size", options = [SZ_USD, SZ_LOT, SZ_PCT], group = GRP_R, tooltip = "The base trade. The loss recovery rule sizes every trade from it; with No recovery every trade is the base trade.\nFixed $ risk: the base trade loses the Base Risk $ at its stop (commission and spread included).\nFixed lots: the base trade is the Base Lots, whatever its stop (at its stop it loses lots x units per lot x (stop distance x point value + costs per unit)).\n% of equity at risk: the base trade loses this % of the equity at its stop (commission and spread included).")
 SB_RISK    = "Risk: the loss at the stop"
 SB_PROFIT  = "Profit: the win at the final TP"
-sizeBy     = input.string(SB_RISK, "Base And Recovery Amounts Are", options = [SB_RISK, SB_PROFIT], group = GRP_R, tooltip = "Risk (default): the Base Risk $ (or the % of equity) is what the base trade LOSES at its stop, as before.\nProfit: it is what the base trade WINS at the final TP (Final Exit); the stop-out loss follows from it, e.g. $50 with the final TP at 0.1R -> the trade risks $500. Every loss-recovery rule then goes for its amounts as wins at the final TP: Recover all losses on the next trade wins all the losses plus the base win, Recover losses over N trades wins 1/N of them on each trade, % of losses that %, Step-up adds the step to the win, Rule C wins the carried losses / split, Oscar's Grind ends a cycle at +1 base win; Exact at final TP and the Crooks rules already size this way. Rules that multiply the base (Martingale, Fibonacci, D'Alembert ...) multiply the base trade.\nThe hard cap, the limits of Crooks F / G / H / J / K and the profit ladder stay on the loss at the stop. Fixed lots: the base trade stays the lots. With partial profits a full win brings a little less (the parts closed at the earlier TPs). Same as the MT5 EA.")
+sizeBy     = input.string(SB_RISK, "Base And Recovery Amounts Are", options = [SB_RISK, SB_PROFIT], group = GRP_R, tooltip = "Risk (default): the Base Risk $ (or the % of equity) is what the base trade LOSES at its stop, as before.\nProfit: it is what the base trade WINS at the final TP (Final Exit); the stop-out loss follows from it, e.g. $50 with the final TP at 0.1R -> the trade risks about $500 plus the costs (with a $2.50 gold stop $546) and wins $50. Every loss-recovery rule then goes for its amounts as wins at the final TP: Recover all losses on the next trade wins all the losses plus the base win, Recover losses over N trades wins 1/N of them on each trade, % of losses that %, Step-up adds the step to the win, Rule C wins the carried losses / split, Oscar's Grind ends a cycle at +1 base win; Exact at final TP and the Crooks rules already size this way. Rules that multiply the base (Martingale, Fibonacci, D'Alembert ...) multiply the base trade.\nThe hard cap, the limits of Crooks F / G / H / J / K and the profit ladder stay on the loss at the stop. Fixed lots: the base trade stays the lots. With partial profits a full win brings a little less (the parts closed at the earlier TPs). Same as the MT5 EA.")
 baseRiskIn = input.float(50.0, "Base Risk Per Trade ($)", minval = 0.01, step = 5.0, group = GRP_R, tooltip = "Fixed $ risk: every base trade risks this amount, whatever the stop size: quantity = risk / (stop distance x point value + costs per unit), converted to the account currency.\nWith Base And Recovery Amounts Are = Profit: the amount the base trade wins at the final TP (it risks this / the final TP's R).")
 baseLot    = input.float(0.01, "Base Lots (Fixed lots)", minval = 0.000001, step = 0.01, group = GRP_R, tooltip = "Fixed lots: the base trade's size in lots (units per lot: Lot Size below; gold 0.01 lot = 1 oz). Rounded like every size (Lot Step, Lot Rounding).")
 eqPct      = input.float(1.0, "Risk % Of Equity (% of equity at risk)", minval = 0.01, step = 0.1, group = GRP_R, tooltip = "% of equity at risk: the base trade loses this % of the equity at its stop. Also used by the loss recovery rule % of equity.")
@@ -180,7 +183,8 @@ L_CRI   = "Crooks I (Crooks E + recovery at most K x base)"
 L_CRJ   = "Crooks J (Crooks C, recovery shrinks in a drawdown)"
 L_CRK   = "Crooks K (Crooks J above the start, careful size below it)"
 L_CRL   = "Crooks L (0.01 lot until a win, the loss split by the drawdown)"
-recMode  = input.string(L_CRC, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE, L_C, L_CS, L_LAB, L_GMART, L_PAR, L_RDALE, L_DELAY, L_EQPCT, L_OSC, L_CRA, L_CRB, L_CRC, L_CRD, L_CRE, L_CRF, L_CRG, L_CRH, L_CRI, L_CRJ, L_CRK, L_CRL], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nExact at final TP: base + losses / final target R, so a final-target win repays the losses plus a normal win (risks less than 'All').\nStep-up: base + step $ x losses in a row.\nFibonacci: base x 1, 1, 2, 3, 5, 8... by losses in a row.\nD'Alembert: base x units; +1 unit after a loss, -1 after a win (minimum 1).\nRule C: carried = how far closed-trade equity is below its last high (updated once per candle from that candle's closed P&L incl. commission); next risk = max(base, carried / split).\nRule C split: as Rule C, but the base steps up with total profit: 200 -> 200/3, 500 -> 500/5, 1000 -> 1000/8, then every +500 adds one part (1500/9, 2000/10 ...); base = max(base risk, min(step base, hard cap)).\nLabouchere: units list 1-2-3; risk = base x (first + last); a loss adds that sum to the list, a win removes both ends; empty list starts again.\nGrand Martingale: base x mult ^ losses + base x losses.\nParoli: base x 2 ^ wins in a row, back to base after N wins or any loss.\nReverse D'Alembert: +1 unit after a win, -1 after a loss (minimum 1).\nDelayed recovery: base until N losses in a row, then base + losses / N trades.\n% of equity: risk this % of current equity.\nOscar's Grind: units +1 after each win (never more than needed to finish +1 base for the cycle), unchanged after a loss; the cycle ends at +1 base profit.\nCrooks A: trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (3, 5, 7 ...) is a recovery trade risking max(base, loss to win back / final target R), e.g. $250 with TP4 (2R) as the final target -> $125; the trades between risk the base. Losses add to the loss to win back, wins reduce it; a winning recovery trade starts a new cycle.\nCrooks B: as Crooks A, but the recovery trade risks max(base, loss / split / final target R) (split = the Rule C split setting) and a new cycle starts only when the whole loss is won back.\nCrooks C: every trade risks the base until a trade wins; the trade right after a win is a recovery trade (sized like Crooks A) while a loss is still owed. A losing recovery trade -> base trades again until the next win. A new cycle starts only when the whole loss is won back: a recovery trade that wins but leaves part of the loss (leverage limit, hard cap, costs) is followed by another recovery trade for the rest.\nCrooks D: like Crooks A, but two base trades between recovery trades: base, base, recovery, base, base, recovery (trades 3, 6, 9 ...).\nCrooks E - J = Crooks C with one change (all Crooks C settings apply):\nE: while waiting for a win, 0.01 lot (or the normal size if smaller).\nF: a recovery trade risks at most K x base.\nG: the loss to win back is at most X x base; the rest is accepted.\nH: a recovery trade risks at most a % of the equity.\nI: E + the F limit.\nJ: the recovery trade shrinks with the drawdown.\nK: Crooks J (and the profit ladder) while the closed profit is at or above the start (the monthly restart, if on, makes each month a new start); below it the trade after a win uses the careful size (lots, $ or % of base) and the trades after a loss the Crooks E / I lot.\nL: after a loss the Crooks E / I lot until a win; then the loss is won back in parts set by the drawdown when the loss is booked: below the start 1 part per 2x base from the start (at most 6), above the start 1 part per 5x base below the best (at most 3); at a new best the base grows by 10% of the profit (at most 4x). All settings below.\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use the Hard Cap to limit it. With Base And Recovery Amounts Are = Profit every amount above is a win at the final TP.")
+L_CRX   = "Crooks X (Crooks E, the loss = the gap to the start / the next step)"
+recMode  = input.string(L_CRC, "Loss Recovery", options = [L_OFF, L_ALL, L_SPLIT, L_PART, L_MART, L_EXACT, L_STEP, L_FIB, L_DALE, L_C, L_CS, L_LAB, L_GMART, L_PAR, L_RDALE, L_DELAY, L_EQPCT, L_OSC, L_CRA, L_CRB, L_CRC, L_CRD, L_CRE, L_CRF, L_CRG, L_CRH, L_CRI, L_CRJ, L_CRK, L_CRL, L_CRX], group = GRP_L, tooltip = "All: next risk = base + every unrecovered $ lost (e.g. $50 lost twice -> next trade risks $150).\nOver N trades: base + losses / N.\n% of losses: base + that % of the losses.\nMartingale: base x multiplier ^ losses in a row.\nExact at final TP: base + losses / final target R, so a final-target win repays the losses plus a normal win (risks less than 'All').\nStep-up: base + step $ x losses in a row.\nFibonacci: base x 1, 1, 2, 3, 5, 8... by losses in a row.\nD'Alembert: base x units; +1 unit after a loss, -1 after a win (minimum 1).\nRule C: carried = how far closed-trade equity is below its last high (updated once per candle from that candle's closed P&L incl. commission); next risk = max(base, carried / split).\nRule C split: as Rule C, but the base steps up with total profit: 200 -> 200/3, 500 -> 500/5, 1000 -> 1000/8, then every +500 adds one part (1500/9, 2000/10 ...); base = max(base risk, min(step base, hard cap)).\nLabouchere: units list 1-2-3; risk = base x (first + last); a loss adds that sum to the list, a win removes both ends; empty list starts again.\nGrand Martingale: base x mult ^ losses + base x losses.\nParoli: base x 2 ^ wins in a row, back to base after N wins or any loss.\nReverse D'Alembert: +1 unit after a win, -1 after a loss (minimum 1).\nDelayed recovery: base until N losses in a row, then base + losses / N trades.\n% of equity: risk this % of current equity.\nOscar's Grind: units +1 after each win (never more than needed to finish +1 base for the cycle), unchanged after a loss; the cycle ends at +1 base profit.\nCrooks A: trades 1 and 2 of a cycle risk the base; from trade 3 every other trade (3, 5, 7 ...) is a recovery trade risking max(base, loss to win back / final target R), e.g. $250 with TP4 (2R) as the final target -> $125; the trades between risk the base. Losses add to the loss to win back, wins reduce it; a winning recovery trade starts a new cycle.\nCrooks B: as Crooks A, but the recovery trade risks max(base, loss / split / final target R) (split = the Rule C split setting) and a new cycle starts only when the whole loss is won back.\nCrooks C: every trade risks the base until a trade wins; the trade right after a win is a recovery trade (sized like Crooks A) while a loss is still owed. A losing recovery trade -> base trades again until the next win. A new cycle starts only when the whole loss is won back: a recovery trade that wins but leaves part of the loss (leverage limit, hard cap, costs) is followed by another recovery trade for the rest.\nCrooks D: like Crooks A, but two base trades between recovery trades: base, base, recovery, base, base, recovery (trades 3, 6, 9 ...).\nCrooks E - J = Crooks C with one change (all Crooks C settings apply):\nE: while waiting for a win, 0.01 lot (or the normal size if smaller).\nF: a recovery trade risks at most K x base.\nG: the loss to win back is at most X x base; the rest is accepted.\nH: a recovery trade risks at most a % of the equity.\nI: E + the F limit.\nJ: the recovery trade shrinks with the drawdown.\nK: Crooks J (and the profit ladder) while the closed profit is at or above the start (the monthly restart, if on, makes each month a new start); below it the trade after a win uses the careful size (lots, $ or % of base) and the trades after a loss the Crooks E / I lot.\nL: after a loss the Crooks E / I lot until a win; then the loss is won back in parts set by the drawdown when the loss is booked: below the start 1 part per 2x base from the start (at most 6), above the start 1 part per 5x base below the best (at most 3); at a new best the base grows by 10% of the profit (at most 4x). All settings below.\nX: Crooks E (0.01 lot after a loss until a win), but the loss to win back is taken from the balance: below the start it is the gap to the start; above it, the gap to the next step (every $1,000 above the start by default) up to the best balance; won back over N trades (Crooks C: Win The Loss Back Over N Wins); each new step starts N trades again.\nLosses stay in the pool until profits pay them back, then sizing returns to the base risk. Use the Hard Cap to limit it. With Base And Recovery Amounts Are = Profit every amount above is a win at the final TP.")
 recN     = input.int(3, "N Trades (Over N)", minval = 1, group = GRP_L)
 recPct   = input.float(50.0, "% Of Losses (% mode)", minval = 1.0, maxval = 100.0, step = 5.0, group = GRP_L)
 recMult  = input.float(2.0, "Multiplier (Martingale)", minval = 1.0, step = 0.25, group = GRP_L)
@@ -236,6 +240,11 @@ clZ2    = input.float(5.0, "Crooks L Above The Start: 1 Part Per x Base Below Th
 clZ2N   = input.int(3, "", minval = 1, inline = "cl2", group = GRP_L, tooltip = "Crooks L only. A loss booked while the closed profit is above the start but below its best: 1 part per this many base risks below the best, at most this many parts (it is profit at risk, so fewer parts).")
 clGrow  = input.float(10.0, "Crooks L At A New Best: Base + % Of The Profit · At Most x Base", minval = 0.0, step = 5.0, inline = "cl3", group = GRP_L)
 clGrowX = input.float(4.0, "", minval = 1.0, step = 0.5, inline = "cl3", group = GRP_L, tooltip = "Crooks L only. While the closed profit is at its best (a new high, and at the start), the base grows by this % of the profit (with Profit: the base win grows), at most this many times the base. 0 = no growth.")
+cxStep    = input.float(1000.0, "Crooks X: Step Above The Start ($)", minval = 0.01, step = 100.0, group = GRP_L, tooltip = "Crooks X only. Above the start the loss to win back is the gap up to the next level, every this many $ above the start (e.g. start $1,000, best $5,000, balance $1,100 -> win back $900 up to $2,000, then $1,000 up to $3,000 ...), never above the best. Below the start it is the whole gap to the start. Each is won back over N trades (Crooks C: Win The Loss Back Over N Wins).")
+CXL_CAP   = "Hard cap only"
+CXL_TRADE = "Per-trade limit ($)"
+cxLim     = input.string(CXL_CAP, "Crooks X: Limit Of A Recovery Trade", options = [CXL_CAP, CXL_TRADE], inline = "cx", group = GRP_L)
+cxLimUsd  = input.float(500.0, "", minval = 0.01, step = 50.0, inline = "cx", group = GRP_L, tooltip = "Crooks X only. Hard cap only: a recovery trade is limited by the Hard Cap (if on), like every rule. Per-trade limit: also, a recovery trade risks at most this $ (the loss at its stop; never less than the base); the rest is won back by the next trades.")
 crkPrAll  = input.bool(false, "Crooks C Rule: Count Every Day, Not Only The Trading Days", group = GRP_L, tooltip = "Only for 'Skip D trading days'. On: every day counts toward D, also days that are not ticked (e.g. Monday and Friday) and weekend days with candles.")
 parN     = input.int(3, "Wins Before Reset (Paroli)", minval = 1, group = GRP_L)
 delayN   = input.int(2, "Losses Before Recovery Starts (Delayed)", minval = 1, group = GRP_L)
@@ -279,6 +288,7 @@ var bool  exL       = true
 var float exQty     = na
 var float exRiskUsd = na
 var float exBase    = baseRiskIn   // the base risk of the open trade (for its booking)
+var float exBaseWin = 0.0          // v5.1: the base win at the final TP of the open trade (Profit: Oscar's goal)
 var float exCostPx  = 0.0    // earn-back: target push in price
 var float exPnl     = 0.0    // realised P&L of the executed trade (partials included)
 var int   nClosed   = 0
@@ -325,7 +335,7 @@ var float mPeak     = 0.0    //   this month's highest closed profit
 var bool  mStop     = false  //   no new trades until next month (monthly lock or profit lock)
 var bool  pLocked   = false  //   profit lock: the month reached the lock amount
 var bool  mRestPend = false  //   monthly restart of the loss recovery, once no trade of the old month is left
-bool      crkCFam   = recMode == L_CRC or recMode == L_CRE or recMode == L_CRF or recMode == L_CRG or recMode == L_CRH or recMode == L_CRI or recMode == L_CRJ or recMode == L_CRK or recMode == L_CRL   // v4.5: Crooks C and E - J (v5.0: K, L)
+bool      crkCFam   = recMode == L_CRC or recMode == L_CRE or recMode == L_CRF or recMode == L_CRG or recMode == L_CRH or recMode == L_CRI or recMode == L_CRJ or recMode == L_CRK or recMode == L_CRL or recMode == L_CRX   // v4.5: Crooks C and E - J (v5.0: K, L; v5.2: X)
 bool      crkPrOn   = crkCFam and crkPr != CPR_OFF
 var float crkPk     = 0.0    // v4.5 Crooks J: the highest closed profit (at each booked trade)
 bool      ladFam    = recMode == L_CRF or recMode == L_CRG or recMode == L_CRH or recMode == L_CRI or recMode == L_CRJ or recMode == L_CRK   // v4.6 profit ladder: Crooks F - J (v5.0: K)
@@ -351,17 +361,31 @@ var int   exLn      = 0
 f_crkRecNext() => ((recMode == L_CRA or recMode == L_CRB) and crkN >= 2 and crkN % 2 == 0) or (crkCFam and crkW and crkL > 0 and not (crkPrOn and crkPr == CPR_WAIT and (crkWait or crkNeedL))) or (recMode == L_CRD and crkN >= 2 and (crkN - 2) % 3 == 0)
 // the risk of a Crooks rule's next trade at base B (v4.6: also at the profit ladder's base): x = the part of the loss it goes for, rn = a recovery
 // trade, useT1 = the TP1 rule, mul = its stop-out multiple, eRisk = the stop-out loss of the Crooks E / I lot (0.01)
-f_crkRule(float B, float x, bool rn, bool useT1, float mul, float eRisk) =>
-    float q = rn ? (useT1 ? math.max(B, x) : math.max(B, x / exitR)) : B
+f_crkRule(float B, float x, bool rn, bool useT1, float mul, float eRisk, float xr) =>
+    float q = rn ? (useT1 ? math.max(B, x) : math.max(B, x / xr)) : B
     if rn and (recMode == L_CRF or recMode == L_CRI)
         q := math.min(q, math.max(1.0, crkFK) * B / mul)
     else if rn and recMode == L_CRH
         q := math.min(q, math.max(B, strategy.equity * crkHPct / 100.0) / mul)
     else if rn and (recMode == L_CRJ or recMode == L_CRK)
         q := math.max(B, q * math.max(0.0, 1.0 - math.max(0.0, crkPk - (strategy.netprofit - rNet0)) / (crkJX * B)))
-    else if not rn and crkL > 0 and (recMode == L_CRE or recMode == L_CRI or recMode == L_CRL)
+    else if rn and recMode == L_CRX and cxLim == CXL_TRADE
+        q := math.min(q, math.max(B, cxLimUsd) / mul)   // v5.2 Crooks X: the per-trade limit
+    else if not rn and crkL > 0 and (recMode == L_CRE or recMode == L_CRI or recMode == L_CRL or recMode == L_CRX)
         q := math.min(B, eRisk)
     q
+// v5.1 Size By Profit: what a final-TP win brings per $ of stop-out loss for a stop of rp, costs included (earn-back pushes the target by
+// them, so a win nets exitR x rp); a stop of 0 or a target inside the costs: the R alone
+f_pD(float rp) =>
+    float lu = rp * syminfo.pointvalue * fx + costUnit
+    float wn = earnBack ? exitR * rp * syminfo.pointvalue * fx : exitR * rp * syminfo.pointvalue * fx - costUnit
+    lu > 0 and wn > 0 ? wn / lu : exitR
+// v5.2 Crooks X: the step the closed profit v is in (-1 below the start), and the loss to win back from the levels: below the start the gap to
+// it, above it the gap to the next cxStep level (at most the best crkPk); at the best nothing (0.005: a fraction of a cent under a level counts as at it)
+f_xIdx(float v) => v < -0.005 ? -1 : int(math.floor((v + 0.005) / math.max(0.01, cxStep)))
+f_xTarget(float v) =>
+    float xs = math.max(0.01, cxStep)
+    v < -0.005 ? -v : v >= crkPk - 0.005 ? 0.0 : math.max(0.0, math.min(crkPk, (math.floor((v + 0.005) / xs) + 1) * xs) - v)
 // v5.0 Crooks L: the parts of a loss just booked, from the closed profit after it (below the start: the drawdown from the start; above it:
 // the drawdown from the best), in steps of the booked trade's base
 f_lParts() =>
@@ -542,7 +566,7 @@ if exClosed
         float used = array.size(labSeq) > 1 ? array.first(labSeq) + array.last(labSeq) : array.first(labSeq)
         array.push(labSeq, used)
     oscP += exPnl
-    if oscP >= (sizeBy == SB_PROFIT ? exBase * exitR : exBase)    // v5.0: with Profit the cycle goal is one base win
+    if oscP >= (sizeBy == SB_PROFIT ? exBaseWin : exBase)    // v5.0: with Profit the cycle goal is one base win (v5.1: the trade's own)
         oscU := 1
         oscP := 0.0
     else if win
@@ -551,6 +575,11 @@ if exClosed
     bool crkLast = crkP == 1     // this recovery trade went for the last part of the loss (Crooks C over N wins)
     crkL := math.max(0.0, crkL - exPnl)
     crkPk := math.max(crkPk, strategy.netprofit - rNet0) // v4.5 Crooks J, v4.6 ladder: the highest closed profit (v4.8: since the monthly restart)
+    bool xNew = false                                    // v5.2 Crooks X: the loss is the gap to the level; a win into another step: N parts again
+    if recMode == L_CRX
+        float nrA = strategy.netprofit - rNet0
+        crkL := f_xTarget(nrA)
+        xNew := win and f_xIdx(nrA - exPnl) != f_xIdx(nrA)
     if recMode == L_CRG                                  // v4.5 Crooks G: never more than X x base to win back (v4.6: the ladder's base)
         [gOn, gGuard, gB, gC] = f_lad(exBase)
         crkL := math.min(crkL, crkGX * gB)
@@ -558,6 +587,8 @@ if exClosed
     if not crkNew
         crkN += 1
         crkP := not win ? (recMode == L_CRL ? f_lParts() : crkNp) : crkRec ? math.max(1, crkP - 1) : crkP    // Crooks C over N wins: a loss starts the parts again after the next win (v5.0 L: from the drawdown)
+        if xNew
+            crkP := crkNp                                // v5.2 Crooks X: a new step is won back in N trades
         // Crooks C rule after N losing recovery trades in a row
         if crkPrOn
             if crkWait
@@ -686,11 +717,12 @@ if evArm
     float d   = isL ? 1.0 : -1.0
     float rp  = trRisk
     // the base risk of this trade: Fixed $ risk, the Fixed lots' stop-out loss (commission and spread included), or % of the equity
-    // v5.0: with Profit the base and the amounts a rule adds are wins at the final TP (risk = amount / its R); Risk: / 1
-    float pD  = sizeBy == SB_PROFIT ? exitR : 1.0
+    // v5.0: with Profit the base and the amounts a rule adds are wins at the final TP; Risk: / 1. v5.1: a win per $ of risk WITH the costs
+    float pD  = sizeBy == SB_PROFIT ? f_pD(rp) : 1.0
+    float pXR = sizeBy == SB_PROFIT ? pD : exitR      // Exact and the Crooks recovery divide by it (Risk: the final TP's R)
     baseRisk := sizeMode == SZ_LOT ? baseLot * unitsPer * (rp * syminfo.pointvalue * fx + costUnit) : sizeMode == SZ_PCT ? math.max(0.0, strategy.equity) * eqPct / 100.0 / pD : baseRiskIn / pD
     // risk $ for this trade: base + loss recovery, capped
-    float add = recMode == L_ALL ? recPool / pD : recMode == L_SPLIT ? recPool / recN / pD : recMode == L_PART ? recPool * recPct / 100.0 / pD : recMode == L_EXACT ? recPool / exitR : recMode == L_STEP ? recStep * recLosses / pD : 0.0
+    float add = recMode == L_ALL ? recPool / pD : recMode == L_SPLIT ? recPool / recN / pD : recMode == L_PART ? recPool * recPct / 100.0 / pD : recMode == L_EXACT ? recPool / pXR : recMode == L_STEP ? recStep * recLosses / pD : 0.0
     // Fibonacci number for the current losing run: 1, 1, 2, 3, 5 ...
     float fa = 1.0
     float fb = 1.0
@@ -711,7 +743,7 @@ if evArm
         stepBase := 200.0 / 3
     float baseC = recMode == L_CS ? math.max(baseRisk, capOn ? math.min(stepBase / pD, hardCap) : stepBase / pD) : baseRisk
     float labU  = array.size(labSeq) > 1 ? array.first(labSeq) + array.last(labSeq) : array.first(labSeq)
-    int   oscNeed = int(math.max(1, math.ceil(((sizeBy == SB_PROFIT ? baseRisk * exitR : baseRisk) - oscP) / (baseRisk * exitR))))   // v5.0: Profit: the goal is one base win
+    int   oscNeed = int(math.max(1, math.ceil(((sizeBy == SB_PROFIT ? baseRisk * pD : baseRisk) - oscP) / (baseRisk * pXR))))   // v5.0: Profit: the goal is one base win
     // Crooks: trades 1 and 2 of a cycle risk the base, then trades 3, 5, 7 ... are recovery trades (C: the trade after a win; D: 3, 6, 9 ...)
     // TP1 rule (Final Exit At TP1, or any with crkT1Any): the part p closed at TP1 banks the recovery amount, the rest runs to TP2; the size is
     // the one whose stop-out at t1D loses exactly that amount: p x TP1 - (1 + p) x costs from the entry (half: TP1 / 2 - 1.5 x costs), on the tick grid toward the entry
@@ -736,10 +768,10 @@ if evArm
     float eRisk = eLots * unitsPer * (rp * syminfo.pointvalue * fx + costUnit)
     float kLots = math.ceil(math.max(ckLots, stepLots) / stepLots - 1e-9) * stepLots      // v5.0 Crooks K: the careful lots and their stop-out loss
     float kRisk = kLots * unitsPer * (rp * syminfo.pointvalue * fx + costUnit)
-    float crkR  = f_crkRule(recMode == L_CRL ? f_lBase(baseRisk, pD) : baseRisk, crkX, crkRn, t1Ok, t1Mul, eRisk)   // v5.0 Crooks L: the base grows at a new best
+    float crkR  = f_crkRule(recMode == L_CRL ? f_lBase(baseRisk, pD) : baseRisk, crkX, crkRn, t1Ok, t1Mul, eRisk, pXR)   // v5.0 Crooks L: the base grows at a new best
     // v4.6 profit ladder: the rule at the ladder's base, the extra risk paid only from the cushion; back at the start, the 0.01 lot
     if ladOn
-        crkR := ladGuard ? math.min(baseRisk, eRisk) : math.min(f_crkRule(ladB, crkX, crkRn, t1Ok, t1Mul, eRisk), crkR + ladGam * ladC / t1Mul)
+        crkR := ladGuard ? math.min(baseRisk, eRisk) : math.min(f_crkRule(ladB, crkX, crkRn, t1Ok, t1Mul, eRisk, pXR), crkR + ladGam * ladC / t1Mul)
     // v5.0 Crooks K below the start: after a win the careful size, after a loss the Crooks E / I lot
     if kZone
         crkR := crkW ? (ckMode == CK_USD ? ckUsd / pD : ckMode == CK_PCT ? baseRisk * ckPct / 100.0 : kRisk) : math.min(baseRisk, eRisk)
@@ -798,6 +830,7 @@ if evArm
         exQty     := q
         exRiskUsd := q * perLoss
         exBase    := baseRisk
+        exBaseWin := sizeBy == SB_PROFIT ? baseRisk * pD : baseRisk
         exCostPx  := earnBack and syminfo.pointvalue * fx > 0 ? costUnit / (syminfo.pointvalue * fx) : 0.0
         exPnl     := 0.0
         exArm     := bar_index
@@ -856,15 +889,15 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     f_row(mon, 2, "ENTRY / STOP", has ? f_px(lim) + " / " + f_px(stp) + (trHalf ? " ½" : "") : "—", white)
     f_row(mon, 3, "TP1 · TP2 · TP3 · TP4 (exit " + exitAt + ")", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC)
     [lOn, lGuard, lB, lC] = f_lad(baseRisk)
-    f_row(mon, 4, "RISK · QTY · LOTS", exState != 0 ? f_usd(exRiskUsd) + " · " + str.tostring(exQty, "#,##0.##") + " · " + str.tostring(lots, "#,##0.##") : sizeBy == SB_PROFIT and sizeMode != SZ_LOT ? "base risk " + f_usd(lB) + " = win " + f_usd(lB * exitR) + " at TP" + str.tostring(exitK) : "base " + f_usd(lB), white)
+    f_row(mon, 4, "RISK · QTY · LOTS", exState != 0 ? f_usd(exRiskUsd) + " · " + str.tostring(exQty, "#,##0.##") + " · " + str.tostring(lots, "#,##0.##") : sizeBy == SB_PROFIT and sizeMode != SZ_LOT ? "base risk " + f_usd(lB) + " = win " + f_usd(lB * f_pD(nz(trRisk))) + " at TP" + str.tostring(exitK) : "base " + f_usd(lB), white)
     bool   isC = recMode == L_C or recMode == L_CS
     bool   isK = recMode == L_CRA or recMode == L_CRB or recMode == L_CRD or crkCFam
     bool   kRec = exState != 0 ? crkRec : f_crkRecNext()
     string kLim = recMode == L_CRF or recMode == L_CRI ? ", at most " + str.tostring(crkFK) + "x base" : recMode == L_CRH ? ", at most " + str.tostring(crkHPct) + "% of equity" : recMode == L_CRJ or recMode == L_CRK ? ", drawdown " + f_usd(math.max(0.0, crkPk - (strategy.netprofit - rNet0))) : ""
-    string kWait = recMode == L_CRE or recMode == L_CRI or recMode == L_CRL ? " · " + str.tostring(crkELot) + " lot, waiting for a win" : " · base, waiting for a win"
+    string kWait = recMode == L_CRE or recMode == L_CRI or recMode == L_CRL or recMode == L_CRX ? " · " + str.tostring(crkELot) + " lot, waiting for a win" : " · base, waiting for a win"
     float  nrT   = strategy.netprofit - rNet0      // v5.0 Crooks K / L: where the closed profit is (since the start or the monthly restart)
     string kCare = ckMode == CK_USD ? f_usd(ckUsd) + (sizeBy == SB_PROFIT ? " win" : "") : ckMode == CK_PCT ? str.tostring(ckPct) + "% of the base" : str.tostring(ckLots) + " lot"
-    string kZn   = recMode == L_CRK ? (nrT < 0 ? " · below the start: " + (crkW ? "careful " + kCare + " after a win" : str.tostring(crkELot) + " lot until a win") : " · above the start (Crooks J)") : recMode == L_CRL ? (nrT < 0 ? " · below the start" : nrT < crkPk ? " · below the best" : " · at the best, base " + f_usd(f_lBase(baseRisk, sizeBy == SB_PROFIT ? exitR : 1.0))) : ""
+    string kZn   = recMode == L_CRK ? (nrT < 0 ? " · below the start: " + (crkW ? "careful " + kCare + " after a win" : str.tostring(crkELot) + " lot until a win") : " · above the start (Crooks J)") : recMode == L_CRL ? (nrT < 0 ? " · below the start" : nrT < crkPk ? " · below the best" : " · at the best, base " + f_usd(f_lBase(baseRisk, sizeBy == SB_PROFIT ? f_pD(nz(trRisk)) : 1.0))) : recMode == L_CRX ? ((crkL <= 0 ? "" : nrT < -0.005 ? " · below the start: back to it" : " · up to " + f_usd(math.min(crkPk, (math.floor((nrT + 0.005) / math.max(0.01, cxStep)) + 1) * math.max(0.01, cxStep))) + " above the start") + (cxLim == CXL_TRADE ? ", at most " + f_usd(cxLimUsd) + " a trade" : "")) : ""
     string kTxt = f_usd(crkL) + (recMode == L_CRG ? " (at most " + f_usd(crkGX * baseRisk) + ")" : "") + (crkCFam ? (kRec ? " · recovery trade" + (crkNp > 1 ? ", part " + str.tostring(crkNp - crkP + 1) + " of " + str.tostring(crkNp) : "") + (recMode == L_CRL ? ", " + str.tostring(crkP) + (crkP == 1 ? " part" : " parts") + " to go" : "") + kLim : crkL > 0 ? kWait : " · base") + kZn : " · trade " + str.tostring(crkN + 1) + (kRec ? " recovery" : " base")) + (recMode == L_CRB ? " · split " + str.tostring(cSplit) : "") + (exState != 0 and exT1 ? " · TP1 rule, stop " + f_px(exT1Half ? strategy.position_avg_price : exT1Stop) : "") + (not crkPrOn ? "" : crkPause ? " · paused, " + str.tostring(crkSkipLeft) + " days left" : crkWait ? " · waiting for " + str.tostring(crkPrM) + " wins in a row (" + str.tostring(crkWW) + ")" : crkNeedL ? " · waiting for a loss, then a win" : crkF > 0 ? " · lost recoveries in a row " + str.tostring(crkF) + "/" + str.tostring(crkPrN) : "")
     f_row(mon, 5, isC ? "LOSSES CARRIED" : isK ? "CROOKS: LOSS TO WIN BACK" : "RECOVERY POOL", recMode == L_OFF ? "off" : isC ? f_usd(carried) + " · split " + str.tostring(cSplit) : isK ? kTxt : f_usd(recPool) + (recMode == L_DALE ? " · " + str.tostring(dUnits) + " units" : recMode == L_RDALE ? " · " + str.tostring(rdUnits) + " units" : recMode == L_OSC ? " · " + str.tostring(oscU) + " units" : " · " + str.tostring(recLosses) + " losses in a row"), (isC ? carried : isK ? crkL : recPool) > 0 ? negC : white)
     f_row(mon, 6, "STREAK W · L", str.tostring(winRow) + " · " + str.tostring(lossRow) + " · total " + str.tostring(exW) + "W/" + str.tostring(exLn) + "L", white)

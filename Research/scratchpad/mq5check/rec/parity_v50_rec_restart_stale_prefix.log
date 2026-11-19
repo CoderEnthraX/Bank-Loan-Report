@@ -1,0 +1,5 @@
+MISMATCH rec M1 Most profit | profit Oscar's Grind {} N 1 cap 0.0 clamp | first diff (6, 50.0, 25.0, 1500, 1500, False, False)
+MISMATCH rec M1 Most profit | profit Oscar's Grind {} N 1 cap 500.0 clamp | first diff (6, 50.0, 25.0, 1500, 1500, False, False)
+MISMATCH rec M1 Most profit | profit Oscar's Grind {} N 1 cap 500.0 reset | first diff (6, 50.0, 25.0, 1500, 1500, False, False)
+MISMATCH rec M1 Most profit | profit Oscar's Grind {} N 1 cap 500.0 stop | first diff (6, 50.0, 25.0, 1500, 1500, False, False)
+rec   M1 Most profit                 runs   372, trades   538420, mismatches 4

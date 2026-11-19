@@ -1,0 +1,11 @@
+restart (harness with PresetApply, rec_harness built 10:52:02, EA 2cf85d3481fa)
+restart old rec: runs 8784, trades compared 13147180, mismatches 0, worst relative difference 5.00e-12; runs where the account blew (compared up to that trade): 280
+restart old tp1: p = 50%, exit TP1: runs 7700, trades compared 14436528 (TP1-rule trades 4802862), mismatches 0 | p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 14784, trades compared 19639267 (TP1-rule trades 6679318), mismatches 0
+restart old crkpr: runs 20544, signals compared 31277261 (skipped by the pause 4056539), mismatches 0
+restart v50 rec: SECTION rec: runs 5208, trades compared 6497155, mismatches 0 -> ALL IDENTICAL
+restart v50 pr: SECTION pr: runs 8960, trades compared 10802901, mismatches 0 -> ALL IDENTICAL
+restart v50 month: MONTH v5.0: runs 1840, trades compared 3117761, months stopped by the cap 3887, months where the simulator account blew (compared up to it) 228, mismatches 0 -> ALL IDENTICAL
+restart old month: runs 1536, trades compared 1862952, months stopped by the cap 1894, worst relative difference 4.97e-12 -> ALL IDENTICAL
+normal old month: runs 1536, trades compared 1862952, months stopped by the cap 1894, worst relative difference 4.97e-12 -> ALL IDENTICAL
+normal old size: position size: runs 12240, trades compared 11751470, mismatches 0, worst relative difference 1.10e-10; runs where the account blew (compared up to it): 1083
+restart v50 tp1: TP1 v5.0: runs 9240, trades compared 19449025 (TP1-rule trades 2099380), mismatches 0 -> ALL IDENTICAL

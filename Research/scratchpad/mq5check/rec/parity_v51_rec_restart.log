@@ -1,0 +1,16 @@
+rec   M1 Most profit                 runs   648, trades   929544, tie-breaks 0, mismatches 0
+rec   M1 Shortest losing streak      runs   648, trades   928009, tie-breaks 0, mismatches 0
+rec   M1 Default settings            runs   648, trades   800093, tie-breaks 0, mismatches 0
+rec   M5 Default settings            runs   648, trades   904349, tie-breaks 0, mismatches 0
+rec   M5 Most profit                 runs   648, trades   915553, tie-breaks 0, mismatches 0
+rec   M5 Shortest losing streak      runs   648, trades   928291, tie-breaks 0, mismatches 0
+rec   M15 Most profit                runs   648, trades   839127, tie-breaks 0, mismatches 0
+rec   M15 Default settings           runs   648, trades   914939, tie-breaks 0, mismatches 0
+rec   M15 Shortest losing streak     runs   648, trades   700965, tie-breaks 0, mismatches 0
+rec   H1 Most profit                 runs   648, trades   117306, tie-breaks 0, mismatches 0
+rec   H1 Shortest losing streak      runs   648, trades   125437, tie-breaks 0, mismatches 0
+rec   H1 Default settings            runs   648, trades   539159, tie-breaks 0, mismatches 0
+MISMATCH rec M5 user TP1 0.3R | profit eb 0 % of equity {} N 1 cap 0.0 clamp | first diff (1311, 375653943.20613676, 375653945.333, 1312, 2500, False, False)
+rec   M5 user TP1 0.3R               runs   648, trades  1202025, tie-breaks 0, mismatches 1
+rec   M5 user TP1 0.1R               runs   648, trades  1127241, tie-breaks 0, mismatches 0
+SECTION rec: runs 9072, trades compared 10972038, floating-point tie-breaks 0, mismatches 1 -> DIFFERENCES

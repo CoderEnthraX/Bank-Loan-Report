@@ -1,0 +1,1565 @@
+EA 2026.08.03 01:00:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+DRIVER restart at tick 997 (off 0 ticks)
+EA 2026.08.03 05:09:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.03 05:09:15 Restart memory: continued from 03 Aug 26 | loss to win back 0.00 | streak 0W / 0L
+DRIVER restart at tick 1994 (off 0 ticks)
+EA 2026.08.03 09:18:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.03 09:18:30 Restart memory: continued from 03 Aug 26 | loss to win back 0.00 | streak 0W / 0L
+DRIVER restart at tick 2991 (off 0 ticks)
+EA 2026.08.03 13:27:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.03 13:27:45 Restart memory: continued from 03 Aug 26 | loss to win back 0.00 | streak 0W / 0L
+DRIVER restart at tick 3988 (off 0 ticks)
+EA 2026.08.03 17:37:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.03 17:37:00 Restart memory: continued from 03 Aug 26 | loss to win back 0.00 | streak 0W / 0L
+DRIVER restart at tick 4985 (off 0 ticks)
+EA 2026.08.03 21:46:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.03 21:46:15 Restart memory: continued from 04 Aug 26 | loss to win back 0.00 | streak 0W / 0L
+DRIVER restart at tick 5982 (off 0 ticks)
+EA 2026.08.04 02:55:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.04 02:55:30 Restart memory: continued from 04 Aug 26 | loss to win back 0.00 | streak 0W / 0L
+SIM ORDER 2026.08.04 04:00:00 tk=1000 type=3 vol=0.40 px=4052.11 sl=4058.53 tp=4050.87 bid=4049.13 ask=4049.36
+SIM CANCEL 2026.08.04 04:25:00 tk=1000
+SIM ORDER 2026.08.04 05:40:00 tk=1001 type=2 vol=0.35 px=4060.90 sl=4053.59 tp=4062.31 bid=4063.54 ask=4063.78
+SIM DEAL 2026.08.04 05:42:30 tk=1002 pos=1001 buy IN vol=0.35 px=4060.29 profit=0.00 comm=-1.22 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.04 05:42:30 pos=1001 buy vol=0.35 px=4060.29 sl=4053.59 tp=4062.31 bid=4060.18 ask=4060.29
+SIM DEAL 2026.08.04 05:44:15 tk=1003 pos=1001 sell OUT vol=0.35 px=4063.41 profit=109.20 comm=-1.22 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.04 05:44:15 pos=1001 reason=5 px=4063.41 open=4060.29 sl=4053.59 tp=4062.31
+EA 2026.08.04 05:45:00 Trade #1001 closed: 0.35 lots at 4063.41 | trade P&L +106.75 (costs included) | closed by its take profit
+BOOK 2026.08.04 05:45:00 pnl=106.75 hedge=0 risk=255.49 lots=0.35
+DRIVER restart at tick 6979 (off 0 ticks)
+EA 2026.08.04 07:04:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.04 07:04:45 Restart memory: continued from 04 Aug 26 | loss to win back 0.00 | streak 1W / 0L
+DRIVER restart at tick 7976 (off 0 ticks)
+EA 2026.08.04 11:14:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.04 11:14:00 Restart memory: continued from 04 Aug 26 | loss to win back 0.00 | streak 1W / 0L
+DRIVER restart at tick 8973 (off 0 ticks)
+EA 2026.08.04 15:23:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.04 15:23:15 Restart memory: continued from 04 Aug 26 | loss to win back 0.00 | streak 1W / 0L
+SIM ORDER 2026.08.04 16:50:00 tk=1004 type=2 vol=0.18 px=4091.76 sl=4078.47 tp=4094.56 bid=4092.65 ask=4092.73
+SIM DEAL 2026.08.04 16:50:30 tk=1005 pos=1004 buy IN vol=0.18 px=4091.07 profit=0.00 comm=-0.63 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.04 16:50:30 pos=1004 buy vol=0.18 px=4091.07 sl=4078.47 tp=4094.56 bid=4090.88 ask=4091.07
+SIM DEAL 2026.08.04 17:34:30 tk=1006 pos=1004 sell OUT vol=0.18 px=4077.07 profit=-252.00 comm=-0.63 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.08.04 17:34:30 pos=1004 reason=4 px=4077.07 open=4091.07 sl=4078.47 tp=4094.56
+EA 2026.08.04 17:35:00 Trade #1004 closed: 0.18 lots at 4077.07 | trade P&L -253.26 (costs included) | closed by its stop loss
+BOOK 2026.08.04 17:35:00 pnl=-253.26 hedge=0 risk=241.87 lots=0.18
+DRIVER restart at tick 9970 (off 0 ticks)
+EA 2026.08.04 19:32:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.04 19:32:30 Restart memory: continued from 04 Aug 26 | loss to win back 146.51 | streak 0W / 1L
+DRIVER restart at tick 10967 (off 0 ticks)
+EA 2026.08.04 23:41:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.04 23:41:45 Restart memory: continued from 05 Aug 26 | loss to win back 146.51 | streak 0W / 1L
+SIM ORDER 2026.08.05 03:35:00 tk=1007 type=2 vol=0.01 px=4079.78 sl=4074.43 tp=4080.87 bid=4080.54 ask=4080.72
+SIM DEAL 2026.08.05 03:41:30 tk=1008 pos=1007 buy IN vol=0.01 px=4079.51 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.05 03:41:30 pos=1007 buy vol=0.01 px=4079.51 sl=4074.43 tp=4080.87 bid=4079.41 ask=4079.51
+SIM DEAL 2026.08.05 03:51:30 tk=1009 pos=1007 sell OUT vol=0.01 px=4081.25 profit=1.74 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.05 03:51:30 pos=1007 reason=5 px=4081.25 open=4079.51 sl=4074.43 tp=4080.87
+EA 2026.08.05 03:55:00 Trade #1007 closed: 0.01 lots at 4081.25 | trade P&L +1.67 (costs included) | closed by its take profit
+BOOK 2026.08.05 03:55:00 pnl=1.67 hedge=0 risk=5.40 lots=0.01
+SIM ORDER 2026.08.05 04:15:00 tk=1010 type=2 vol=0.40 px=4085.70 sl=4079.44 tp=4087.02 bid=4085.88 ask=4086.02
+SIM DEAL 2026.08.05 04:15:15 tk=1011 pos=1010 buy IN vol=0.40 px=4085.13 profit=0.00 comm=-1.40 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.05 04:15:15 pos=1010 buy vol=0.40 px=4085.13 sl=4079.44 tp=4087.02 bid=4085.01 ask=4085.13
+SIM DEAL 2026.08.05 04:15:30 tk=1012 pos=1010 sell OUT vol=0.40 px=4087.10 profit=78.80 comm=-1.40 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.05 04:15:30 pos=1010 reason=5 px=4087.10 open=4085.13 sl=4079.44 tp=4087.02
+EA 2026.08.05 04:20:00 Trade #1010 closed: 0.40 lots at 4087.10 | trade P&L +76.00 (costs included) | closed by its take profit
+BOOK 2026.08.05 04:20:00 pnl=76.00 hedge=0 risk=253.97 lots=0.40
+SIM ORDER 2026.08.05 04:40:00 tk=1013 type=2 vol=0.37 px=4088.80 sl=4081.93 tp=4090.22 bid=4089.88 ask=4090.04
+DRIVER restart at tick 11964 (off 0 ticks)
+EA 2026.08.05 04:51:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+SIM CANCEL 2026.08.05 04:51:00 tk=1013
+EA 2026.08.05 04:51:00 Restart memory: continued from 05 Aug 26 | loss to win back 68.84 | streak 2W / 0L
+SIM ORDER 2026.08.05 04:51:15 tk=1014 type=2 vol=0.37 px=4088.72 sl=4081.93 tp=4090.22 bid=4094.38 ask=4094.46
+SIM CANCEL 2026.08.05 05:05:00 tk=1014
+SIM ORDER 2026.08.05 05:40:00 tk=1015 type=2 vol=0.27 px=4114.23 sl=4104.91 tp=4116.07 bid=4120.29 ask=4120.51
+SIM CANCEL 2026.08.05 06:05:00 tk=1015
+DRIVER restart at tick 12961 (off 0 ticks)
+EA 2026.08.05 09:00:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.05 09:00:15 Restart memory: continued from 05 Aug 26 | loss to win back 68.84 | streak 2W / 0L
+SIM ORDER 2026.08.05 09:15:00 tk=1016 type=2 vol=0.22 px=4173.25 sl=4162.07 tp=4175.46 bid=4173.14 ask=4173.36
+SIM DEAL 2026.08.05 09:15:30 tk=1017 pos=1016 buy IN vol=0.22 px=4171.53 profit=0.00 comm=-0.77 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.05 09:15:30 pos=1016 buy vol=0.22 px=4171.53 sl=4162.07 tp=4175.46 bid=4171.36 ask=4171.53
+SIM DEAL 2026.08.05 09:22:15 tk=1018 pos=1016 sell OUT vol=0.22 px=4160.95 profit=-232.76 comm=-0.77 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.08.05 09:22:15 pos=1016 reason=4 px=4160.95 open=4171.53 sl=4162.07 tp=4175.46
+EA 2026.08.05 09:25:00 Trade #1016 closed: 0.22 lots at 4160.95 | trade P&L -234.30 (costs included) | closed by its stop loss
+BOOK 2026.08.05 09:25:00 pnl=-234.30 hedge=0 risk=246.00 lots=0.22
+DRIVER restart at tick 13958 (off 0 ticks)
+EA 2026.08.05 13:09:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.05 13:09:30 Restart memory: continued from 05 Aug 26 | loss to win back 303.14 | streak 0W / 1L
+SIM ORDER 2026.08.05 14:05:00 tk=1019 type=2 vol=0.01 px=4163.01 sl=4156.33 tp=4164.30 bid=4164.11 ask=4164.34
+SIM CANCEL 2026.08.05 14:20:00 tk=1019
+SIM ORDER 2026.08.05 17:00:00 tk=1020 type=2 vol=0.01 px=4205.11 sl=4191.66 tp=4207.76 bid=4205.84 ask=4206.07
+SIM DEAL 2026.08.05 17:00:15 tk=1021 pos=1020 buy IN vol=0.01 px=4203.90 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.05 17:00:15 pos=1020 buy vol=0.01 px=4203.90 sl=4191.66 tp=4207.76 bid=4203.74 ask=4203.90
+SIM DEAL 2026.08.05 17:01:30 tk=1022 pos=1020 sell OUT vol=0.01 px=4208.91 profit=5.01 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.05 17:01:30 pos=1020 reason=5 px=4208.91 open=4203.90 sl=4191.66 tp=4207.76
+EA 2026.08.05 17:05:00 Trade #1020 closed: 0.01 lots at 4208.91 | trade P&L +4.94 (costs included) | closed by its take profit
+BOOK 2026.08.05 17:05:00 pnl=4.94 hedge=0 risk=13.44 lots=0.01
+DRIVER restart at tick 14955 (off 0 ticks)
+EA 2026.08.05 17:18:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.05 17:18:45 Restart memory: continued from 05 Aug 26 | loss to win back 298.20 | streak 1W / 0L
+DRIVER restart at tick 15952 (off 0 ticks)
+EA 2026.08.05 21:28:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.05 21:28:00 Restart memory: continued from 05 Aug 26 | loss to win back 298.20 | streak 1W / 0L
+DRIVER restart at tick 16949 (off 0 ticks)
+EA 2026.08.06 02:37:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.06 02:37:15 Restart memory: continued from 06 Aug 26 | loss to win back 298.20 | streak 1W / 0L
+SIM ORDER 2026.08.06 03:55:00 tk=1023 type=2 vol=0.37 px=4295.46 sl=4281.82 tp=4298.15 bid=4296.72 ask=4296.95
+SIM DEAL 2026.08.06 03:56:30 tk=1024 pos=1023 buy IN vol=0.37 px=4294.77 profit=0.00 comm=-1.29 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.06 03:56:30 pos=1023 buy vol=0.37 px=4294.77 sl=4281.82 tp=4298.15 bid=4294.65 ask=4294.77
+SIM DEAL 2026.08.06 03:59:30 tk=1025 pos=1023 sell OUT vol=0.37 px=4298.47 profit=136.90 comm=-1.29 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.06 03:59:30 pos=1023 reason=5 px=4298.47 open=4294.77 sl=4281.82 tp=4298.15
+EA 2026.08.06 04:00:00 Trade #1023 closed: 0.37 lots at 4298.47 | trade P&L +134.31 (costs included) | closed by its take profit
+BOOK 2026.08.06 04:00:00 pnl=134.31 hedge=0 risk=504.45 lots=0.37
+DRIVER restart at tick 17946 (off 0 ticks)
+EA 2026.08.06 06:46:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.06 06:46:30 Restart memory: continued from 06 Aug 26 | loss to win back 163.89 | streak 2W / 0L
+DRIVER restart at tick 18943 (off 0 ticks)
+EA 2026.08.06 10:55:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.06 10:55:45 Restart memory: continued from 06 Aug 26 | loss to win back 163.89 | streak 2W / 0L
+SIM ORDER 2026.08.06 11:35:00 tk=1026 type=2 vol=0.47 px=4270.88 sl=4262.04 tp=4272.64 bid=4273.60 ask=4273.81
+SIM DEAL 2026.08.06 11:41:30 tk=1027 pos=1026 buy IN vol=0.47 px=4270.76 profit=0.00 comm=-1.65 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.06 11:41:30 pos=1026 buy vol=0.47 px=4270.76 sl=4262.04 tp=4272.64 bid=4270.63 ask=4270.76
+SIM DEAL 2026.08.06 11:43:30 tk=1028 pos=1026 sell OUT vol=0.47 px=4272.87 profit=99.17 comm=-1.65 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.06 11:43:30 pos=1026 reason=5 px=4272.87 open=4270.76 sl=4262.04 tp=4272.64
+EA 2026.08.06 11:45:00 Trade #1026 closed: 0.47 lots at 4272.87 | trade P&L +95.88 (costs included) | closed by its take profit
+BOOK 2026.08.06 11:45:00 pnl=95.88 hedge=0 risk=416.54 lots=0.47
+SIM ORDER 2026.08.06 12:00:00 tk=1029 type=2 vol=0.40 px=4277.44 sl=4268.86 tp=4279.15 bid=4278.23 ask=4278.43
+SIM DEAL 2026.08.06 12:00:15 tk=1030 pos=1029 buy IN vol=0.40 px=4277.42 profit=0.00 comm=-1.40 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.06 12:00:15 pos=1029 buy vol=0.40 px=4277.42 sl=4268.86 tp=4279.15 bid=4277.35 ask=4277.42
+SIM DEAL 2026.08.06 12:00:30 tk=1031 pos=1029 sell OUT vol=0.40 px=4280.48 profit=122.40 comm=-1.40 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.06 12:00:30 pos=1029 reason=5 px=4280.48 open=4277.42 sl=4268.86 tp=4279.15
+EA 2026.08.06 12:05:00 Trade #1029 closed: 0.40 lots at 4280.48 | trade P&L +119.60 (costs included) | closed by its take profit
+BOOK 2026.08.06 12:05:00 pnl=119.60 hedge=0 risk=344.01 lots=0.40
+DRIVER restart at tick 19940 (off 0 ticks)
+EA 2026.08.06 15:05:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.06 15:05:00 Restart memory: continued from 06 Aug 26 | loss to win back 55.16 | streak 4W / 0L
+SIM ORDER 2026.08.06 15:55:00 tk=1032 type=3 vol=0.24 px=4253.36 sl=4263.75 tp=4251.26 bid=4251.28 ask=4251.46
+SIM DEAL 2026.08.06 15:55:30 tk=1033 pos=1032 sell IN vol=0.24 px=4254.74 profit=0.00 comm=-0.84 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.06 15:55:30 pos=1032 sell vol=0.24 px=4254.74 sl=4263.75 tp=4251.26 bid=4254.74 ask=4254.95
+SIM DEAL 2026.08.06 15:56:30 tk=1034 pos=1032 buy OUT vol=0.24 px=4249.84 profit=117.60 comm=-0.84 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.06 15:56:30 pos=1032 reason=5 px=4249.84 open=4254.74 sl=4263.75 tp=4251.26
+EA 2026.08.06 16:00:00 Trade #1032 closed: 0.24 lots at 4249.84 | trade P&L +115.92 (costs included) | closed by its take profit
+BOOK 2026.08.06 16:00:00 pnl=115.92 hedge=0 risk=250.53 lots=0.24
+SIM ORDER 2026.08.06 16:10:00 tk=1035 type=3 vol=0.20 px=4242.05 sl=4254.64 tp=4239.59 bid=4231.66 ask=4231.90
+SIM DEAL 2026.08.06 16:19:30 tk=1036 pos=1035 sell IN vol=0.20 px=4244.30 profit=0.00 comm=-0.70 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.06 16:19:30 pos=1035 sell vol=0.20 px=4244.30 sl=4254.64 tp=4239.59 bid=4244.30 ask=4244.44
+SIM MODIFY 2026.08.06 16:20:00 pos=1035 sl=4254.64->4254.51 tp=4239.59->4239.46
+SIM DEAL 2026.08.06 16:35:30 tk=1037 pos=1035 buy OUT vol=0.20 px=4254.60 profit=-206.00 comm=-0.70 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.08.06 16:35:30 pos=1035 reason=4 px=4254.60 open=4244.30 sl=4254.51 tp=4239.46
+EA 2026.08.06 16:40:00 Trade #1035 closed: 0.20 lots at 4254.60 | trade P&L -207.40 (costs included) | closed by its stop loss
+BOOK 2026.08.06 16:40:00 pnl=-207.40 hedge=0 risk=251.47 lots=0.20
+DRIVER restart at tick 20937 (off 0 ticks)
+EA 2026.08.06 19:14:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.06 19:14:15 Restart memory: continued from 06 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 21934 (off 0 ticks)
+EA 2026.08.06 23:23:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.06 23:23:30 Restart memory: continued from 07 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 22931 (off 0 ticks)
+EA 2026.08.07 04:32:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.07 04:32:45 Restart memory: continued from 07 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 23928 (off 0 ticks)
+EA 2026.08.07 08:42:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.07 08:42:00 Restart memory: continued from 07 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 24925 (off 0 ticks)
+EA 2026.08.07 12:51:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.07 12:51:15 Restart memory: continued from 07 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 25922 (off 0 ticks)
+EA 2026.08.07 17:00:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.07 17:00:30 Restart memory: continued from 07 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 26919 (off 0 ticks)
+EA 2026.08.07 21:09:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.07 21:09:45 Restart memory: continued from 07 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 27916 (off 0 ticks)
+EA 2026.08.10 02:19:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.10 02:19:00 Restart memory: continued from 10 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 28913 (off 0 ticks)
+EA 2026.08.10 06:28:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.10 06:28:15 Restart memory: continued from 10 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 29910 (off 0 ticks)
+EA 2026.08.10 10:37:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.10 10:37:30 Restart memory: continued from 10 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 30907 (off 0 ticks)
+EA 2026.08.10 14:46:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.10 14:46:45 Restart memory: continued from 10 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 31904 (off 0 ticks)
+EA 2026.08.10 18:56:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.10 18:56:00 Restart memory: continued from 10 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 32901 (off 0 ticks)
+EA 2026.08.10 23:05:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.10 23:05:15 Restart memory: continued from 11 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+DRIVER restart at tick 33898 (off 0 ticks)
+EA 2026.08.11 04:14:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.11 04:14:30 Restart memory: continued from 11 Aug 26 | loss to win back 39.89 | streak 0W / 1L
+SIM ORDER 2026.08.11 04:50:00 tk=1038 type=2 vol=0.01 px=4422.69 sl=4411.76 tp=4424.98 bid=4426.44 ask=4426.55
+SIM DEAL 2026.08.11 05:09:30 tk=1039 pos=1038 buy IN vol=0.01 px=4421.91 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.11 05:09:30 pos=1038 buy vol=0.01 px=4421.91 sl=4411.76 tp=4424.98 bid=4421.69 ask=4421.91
+SIM DEAL 2026.08.11 05:10:30 tk=1040 pos=1038 sell OUT vol=0.01 px=4426.00 profit=4.09 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.11 05:10:30 pos=1038 reason=5 px=4426.00 open=4421.91 sl=4411.76 tp=4424.98
+EA 2026.08.11 05:15:00 Trade #1038 closed: 0.01 lots at 4426.00 | trade P&L +4.02 (costs included) | closed by its take profit
+BOOK 2026.08.11 05:15:00 pnl=4.02 hedge=0 risk=11.05 lots=0.01
+DRIVER restart at tick 34895 (off 0 ticks)
+EA 2026.08.11 08:23:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.11 08:23:45 Restart memory: continued from 11 Aug 26 | loss to win back 35.87 | streak 1W / 0L
+SIM ORDER 2026.08.11 09:30:00 tk=1041 type=3 vol=0.20 px=4367.56 sl=4380.11 tp=4364.91 bid=4363.45 ask=4363.53
+SIM DEAL 2026.08.11 09:30:30 tk=1042 pos=1041 sell IN vol=0.20 px=4367.79 profit=0.00 comm=-0.70 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.11 09:30:30 pos=1041 sell vol=0.20 px=4367.79 sl=4380.11 tp=4364.91 bid=4367.79 ask=4367.86
+SIM DEAL 2026.08.11 09:31:30 tk=1043 pos=1041 buy OUT vol=0.20 px=4362.01 profit=115.60 comm=-0.70 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.11 09:31:30 pos=1041 reason=5 px=4362.01 open=4367.79 sl=4380.11 tp=4364.91
+EA 2026.08.11 09:35:00 Trade #1041 closed: 0.20 lots at 4362.01 | trade P&L +114.20 (costs included) | closed by its take profit
+BOOK 2026.08.11 09:35:00 pnl=114.20 hedge=0 risk=253.97 lots=0.20
+DRIVER restart at tick 35892 (off 0 ticks)
+EA 2026.08.11 12:33:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.11 12:33:00 Restart memory: continued from 11 Aug 26 | loss to win back 89.18 | streak 2W / 0L
+DRIVER restart at tick 36889 (off 0 ticks)
+EA 2026.08.11 16:42:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.11 16:42:15 Restart memory: continued from 11 Aug 26 | loss to win back 89.18 | streak 2W / 0L
+DRIVER restart at tick 37886 (off 0 ticks)
+EA 2026.08.11 20:51:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.11 20:51:30 Restart memory: continued from 11 Aug 26 | loss to win back 89.18 | streak 2W / 0L
+DRIVER restart at tick 38883 (off 0 ticks)
+EA 2026.08.12 02:00:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.12 02:00:45 Restart memory: continued from 12 Aug 26 | loss to win back 89.18 | streak 2W / 0L
+SIM ORDER 2026.08.12 04:05:00 tk=1044 type=2 vol=0.35 px=4383.77 sl=4376.72 tp=4385.29 bid=4384.37 ask=4384.47
+SIM DEAL 2026.08.12 04:05:15 tk=1045 pos=1044 buy IN vol=0.35 px=4382.45 profit=0.00 comm=-1.22 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.12 04:05:15 pos=1044 buy vol=0.35 px=4382.45 sl=4376.72 tp=4385.29 bid=4382.18 ask=4382.45
+SIM DEAL 2026.08.12 04:05:30 tk=1046 pos=1044 sell OUT vol=0.35 px=4386.42 profit=138.95 comm=-1.22 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.12 04:05:30 pos=1044 reason=5 px=4386.42 open=4382.45 sl=4376.72 tp=4385.29
+EA 2026.08.12 04:10:00 Trade #1044 closed: 0.35 lots at 4386.42 | trade P&L +136.50 (costs included) | closed by its take profit
+BOOK 2026.08.12 04:10:00 pnl=136.50 hedge=0 risk=251.17 lots=0.35
+SIM ORDER 2026.08.12 05:50:00 tk=1047 type=2 vol=0.31 px=4408.30 sl=4400.27 tp=4410.04 bid=4409.76 ask=4409.84
+DRIVER restart at tick 39880 (off 0 ticks)
+EA 2026.08.12 06:10:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+SIM CANCEL 2026.08.12 06:10:00 tk=1047
+EA 2026.08.12 06:10:00 Restart memory: continued from 12 Aug 26 | loss to win back 0.00 | streak 3W / 0L
+SIM ORDER 2026.08.12 06:10:15 tk=1048 type=2 vol=0.31 px=4408.38 sl=4400.27 tp=4410.04 bid=4413.47 ask=4413.63
+SIM CANCEL 2026.08.12 06:15:00 tk=1048
+SIM ORDER 2026.08.12 09:40:00 tk=1049 type=2 vol=0.34 px=4391.82 sl=4384.51 tp=4393.37 bid=4393.93 ask=4394.06
+SIM CANCEL 2026.08.12 10:05:00 tk=1049
+DRIVER restart at tick 40877 (off 0 ticks)
+EA 2026.08.12 10:19:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.12 10:19:15 Restart memory: continued from 12 Aug 26 | loss to win back 0.00 | streak 3W / 0L
+SIM ORDER 2026.08.12 10:40:00 tk=1050 type=2 vol=0.35 px=4406.08 sl=4398.85 tp=4407.53 bid=4407.37 ask=4407.56
+SIM DEAL 2026.08.12 10:40:30 tk=1051 pos=1050 buy IN vol=0.35 px=4405.98 profit=0.00 comm=-1.22 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.12 10:40:30 pos=1050 buy vol=0.35 px=4405.98 sl=4398.85 tp=4407.53 bid=4405.80 ask=4405.98
+SIM DEAL 2026.08.12 10:42:30 tk=1052 pos=1050 sell OUT vol=0.35 px=4408.48 profit=87.50 comm=-1.22 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.12 10:42:30 pos=1050 reason=5 px=4408.48 open=4405.98 sl=4398.85 tp=4407.53
+EA 2026.08.12 10:45:00 Trade #1050 closed: 0.35 lots at 4408.48 | trade P&L +85.05 (costs included) | closed by its take profit
+BOOK 2026.08.12 10:45:00 pnl=85.05 hedge=0 risk=254.12 lots=0.35
+DRIVER restart at tick 41874 (off 0 ticks)
+EA 2026.08.12 14:28:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.12 14:28:30 Restart memory: continued from 12 Aug 26 | loss to win back 0.00 | streak 4W / 0L
+DRIVER restart at tick 42871 (off 0 ticks)
+EA 2026.08.12 18:37:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.12 18:37:45 Restart memory: continued from 12 Aug 26 | loss to win back 0.00 | streak 4W / 0L
+DRIVER restart at tick 43868 (off 0 ticks)
+EA 2026.08.12 22:47:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.12 22:47:00 Restart memory: continued from 13 Aug 26 | loss to win back 0.00 | streak 4W / 0L
+SIM ORDER 2026.08.13 03:35:00 tk=1053 type=2 vol=0.24 px=4437.77 sl=4427.54 tp=4439.81 bid=4444.23 ask=4444.43
+SIM DEAL 2026.08.13 03:38:30 tk=1054 pos=1053 buy IN vol=0.24 px=4437.52 profit=0.00 comm=-0.84 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.13 03:38:30 pos=1053 buy vol=0.24 px=4437.52 sl=4427.54 tp=4439.81 bid=4437.24 ask=4437.52
+SIM DEAL 2026.08.13 03:43:30 tk=1055 pos=1053 sell OUT vol=0.24 px=4440.39 profit=68.88 comm=-0.84 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.13 03:43:30 pos=1053 reason=5 px=4440.39 open=4437.52 sl=4427.54 tp=4439.81
+EA 2026.08.13 03:45:00 Trade #1053 closed: 0.24 lots at 4440.39 | trade P&L +67.20 (costs included) | closed by its take profit
+BOOK 2026.08.13 03:45:00 pnl=67.20 hedge=0 risk=246.08 lots=0.24
+DRIVER restart at tick 44865 (off 0 ticks)
+EA 2026.08.13 03:56:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.13 03:56:15 Restart memory: continued from 13 Aug 26 | loss to win back 0.00 | streak 5W / 0L
+SIM ORDER 2026.08.13 05:00:00 tk=1056 type=3 vol=0.20 px=4409.40 sl=4422.10 tp=4406.91 bid=4408.40 ask=4408.64
+SIM DEAL 2026.08.13 05:00:30 tk=1057 pos=1056 sell IN vol=0.20 px=4409.93 profit=0.00 comm=-0.70 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.13 05:00:30 pos=1056 sell vol=0.20 px=4409.93 sl=4422.10 tp=4406.91 bid=4409.93 ask=4410.20
+SIM DEAL 2026.08.13 05:01:30 tk=1058 pos=1056 buy OUT vol=0.20 px=4406.26 profit=73.40 comm=-0.70 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.13 05:01:30 pos=1056 reason=5 px=4406.26 open=4409.93 sl=4422.10 tp=4406.91
+EA 2026.08.13 05:05:00 Trade #1056 closed: 0.20 lots at 4406.26 | trade P&L +72.00 (costs included) | closed by its take profit
+BOOK 2026.08.13 05:05:00 pnl=72.00 hedge=0 risk=253.66 lots=0.20
+DRIVER restart at tick 45862 (off 0 ticks)
+EA 2026.08.13 08:05:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.13 08:05:30 Restart memory: continued from 13 Aug 26 | loss to win back 0.00 | streak 6W / 0L
+SIM ORDER 2026.08.13 10:50:00 tk=1059 type=3 vol=0.30 px=4372.15 sl=4380.56 tp=4370.41 bid=4371.81 ask=4371.96
+SIM DEAL 2026.08.13 10:50:30 tk=1060 pos=1059 sell IN vol=0.30 px=4373.54 profit=0.00 comm=-1.05 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.13 10:50:30 pos=1059 sell vol=0.30 px=4373.54 sl=4380.56 tp=4370.41 bid=4373.54 ask=4373.74
+SIM MODIFY 2026.08.13 10:55:00 pos=1059 sl=4380.56->4380.55 tp=4370.41->4370.40
+SIM DEAL 2026.08.13 10:55:30 tk=1061 pos=1059 buy OUT vol=0.30 px=4369.88 profit=109.80 comm=-1.05 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.13 10:55:30 pos=1059 reason=5 px=4369.88 open=4373.54 sl=4380.55 tp=4370.40
+EA 2026.08.13 11:00:00 Trade #1059 closed: 0.30 lots at 4369.88 | trade P&L +107.70 (costs included) | closed by its take profit
+BOOK 2026.08.13 11:00:00 pnl=107.70 hedge=0 risk=254.51 lots=0.30
+SIM ORDER 2026.08.13 11:05:00 tk=1062 type=3 vol=0.30 px=4368.39 sl=4376.67 tp=4366.74 bid=4367.01 ask=4367.21
+SIM DEAL 2026.08.13 11:05:30 tk=1063 pos=1062 sell IN vol=0.30 px=4368.43 profit=0.00 comm=-1.05 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.13 11:05:30 pos=1062 sell vol=0.30 px=4368.43 sl=4376.67 tp=4366.74 bid=4368.43 ask=4368.63
+SIM DEAL 2026.08.13 11:08:15 tk=1064 pos=1062 buy OUT vol=0.30 px=4366.13 profit=69.00 comm=-1.05 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.13 11:08:15 pos=1062 reason=5 px=4366.13 open=4368.43 sl=4376.67 tp=4366.74
+EA 2026.08.13 11:10:00 Trade #1062 closed: 0.30 lots at 4366.13 | trade P&L +66.90 (costs included) | closed by its take profit
+BOOK 2026.08.13 11:10:00 pnl=66.90 hedge=0 risk=249.09 lots=0.30
+DRIVER restart at tick 46859 (off 0 ticks)
+EA 2026.08.13 12:14:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.13 12:14:45 Restart memory: continued from 13 Aug 26 | loss to win back 0.00 | streak 8W / 0L
+SIM ORDER 2026.08.13 16:00:00 tk=1065 type=2 vol=0.24 px=4401.20 sl=4390.94 tp=4403.39 bid=4401.87 ask=4401.95
+SIM DEAL 2026.08.13 16:00:30 tk=1066 pos=1065 buy IN vol=0.24 px=4394.02 profit=0.00 comm=-0.84 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.13 16:00:30 pos=1065 buy vol=0.24 px=4394.02 sl=4390.94 tp=4403.39 bid=4393.95 ask=4394.02
+SIM DEAL 2026.08.13 16:18:30 tk=1067 pos=1065 sell OUT vol=0.24 px=4390.72 profit=-79.20 comm=-0.84 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.08.13 16:18:30 pos=1065 reason=4 px=4390.72 open=4394.02 sl=4390.94 tp=4403.39
+EA 2026.08.13 16:20:00 Trade #1065 closed: 0.24 lots at 4390.72 | trade P&L -80.88 (costs included) | closed by its stop loss
+BOOK 2026.08.13 16:20:00 pnl=-80.88 hedge=0 risk=249.84 lots=0.24
+DRIVER restart at tick 47856 (off 0 ticks)
+EA 2026.08.13 16:24:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.13 16:24:00 Restart memory: continued from 13 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 48853 (off 0 ticks)
+EA 2026.08.13 20:33:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.13 20:33:15 Restart memory: continued from 13 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 49850 (off 0 ticks)
+EA 2026.08.14 01:42:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.14 01:42:30 Restart memory: continued from 14 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 50847 (off 0 ticks)
+EA 2026.08.14 05:51:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.14 05:51:45 Restart memory: continued from 14 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 51844 (off 0 ticks)
+EA 2026.08.14 10:01:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.14 10:01:00 Restart memory: continued from 14 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 52841 (off 0 ticks)
+EA 2026.08.14 14:10:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.14 14:10:15 Restart memory: continued from 14 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 53838 (off 0 ticks)
+EA 2026.08.14 18:19:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.14 18:19:30 Restart memory: continued from 14 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 54835 (off 0 ticks)
+EA 2026.08.14 22:28:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.14 22:28:45 Restart memory: continued from 15 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 55832 (off 0 ticks)
+EA 2026.08.17 03:38:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.17 03:38:00 Restart memory: continued from 17 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 56829 (off 0 ticks)
+EA 2026.08.17 07:47:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.17 07:47:15 Restart memory: continued from 17 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 57826 (off 0 ticks)
+EA 2026.08.17 11:56:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.17 11:56:30 Restart memory: continued from 17 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 58823 (off 0 ticks)
+EA 2026.08.17 16:05:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.17 16:05:45 Restart memory: continued from 17 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 59820 (off 0 ticks)
+EA 2026.08.17 20:15:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.17 20:15:00 Restart memory: continued from 17 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+DRIVER restart at tick 60817 (off 0 ticks)
+EA 2026.08.18 01:24:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.18 01:24:15 Restart memory: continued from 18 Aug 26 | loss to win back 67.20 | streak 0W / 1L
+SIM ORDER 2026.08.18 04:00:00 tk=1068 type=2 vol=0.01 px=4433.63 sl=4426.52 tp=4435.15 bid=4434.78 ask=4434.89
+SIM DEAL 2026.08.18 04:00:30 tk=1069 pos=1068 buy IN vol=0.01 px=4429.35 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.18 04:00:30 pos=1068 buy vol=0.01 px=4429.35 sl=4426.52 tp=4435.15 bid=4429.27 ask=4429.35
+SIM DEAL 2026.08.18 04:01:30 tk=1070 pos=1068 sell OUT vol=0.01 px=4436.19 profit=6.84 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.18 04:01:30 pos=1068 reason=5 px=4436.19 open=4429.35 sl=4426.52 tp=4435.15
+EA 2026.08.18 04:05:00 Trade #1068 closed: 0.01 lots at 4436.19 | trade P&L +6.77 (costs included) | closed by its take profit
+BOOK 2026.08.18 04:05:00 pnl=6.77 hedge=0 risk=7.23 lots=0.01
+SIM ORDER 2026.08.18 04:45:00 tk=1071 type=3 vol=0.28 px=4416.15 sl=4425.17 tp=4414.36 bid=4411.92 ask=4412.13
+SIM CANCEL 2026.08.18 05:10:00 tk=1071
+DRIVER restart at tick 61814 (off 0 ticks)
+EA 2026.08.18 05:33:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.18 05:33:30 Restart memory: continued from 18 Aug 26 | loss to win back 60.43 | streak 1W / 0L
+SIM ORDER 2026.08.18 05:35:00 tk=1072 type=3 vol=0.28 px=4398.55 sl=4407.50 tp=4396.86 bid=4396.32 ask=4396.60
+SIM DEAL 2026.08.18 05:37:30 tk=1073 pos=1072 sell IN vol=0.28 px=4398.71 profit=0.00 comm=-0.98 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.18 05:37:30 pos=1072 sell vol=0.28 px=4398.71 sl=4407.50 tp=4396.86 bid=4398.71 ask=4398.87
+SIM DEAL 2026.08.18 05:39:30 tk=1074 pos=1072 buy OUT vol=0.28 px=4396.59 profit=59.36 comm=-0.98 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.18 05:39:30 pos=1072 reason=5 px=4396.59 open=4398.71 sl=4407.50 tp=4396.86
+EA 2026.08.18 05:40:00 Trade #1072 closed: 0.28 lots at 4396.59 | trade P&L +57.40 (costs included) | closed by its take profit
+BOOK 2026.08.18 05:40:00 pnl=57.40 hedge=0 risk=248.97 lots=0.28
+DRIVER restart at tick 62811 (off 0 ticks)
+EA 2026.08.18 09:42:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.18 09:42:45 Restart memory: continued from 18 Aug 26 | loss to win back 3.03 | streak 2W / 0L
+SIM ORDER 2026.08.18 11:10:00 tk=1075 type=3 vol=0.41 px=4392.74 sl=4398.99 tp=4391.50 bid=4390.94 ask=4391.15
+SIM DEAL 2026.08.18 11:12:30 tk=1076 pos=1075 sell IN vol=0.41 px=4394.55 profit=0.00 comm=-1.43 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.18 11:12:30 pos=1075 sell vol=0.41 px=4394.55 sl=4398.99 tp=4391.50 bid=4394.55 ask=4394.61
+SIM MODIFY 2026.08.18 11:15:00 pos=1075 sl=4398.99->4398.91 tp=4391.50->4391.42
+SIM DEAL 2026.08.18 11:21:30 tk=1077 pos=1075 buy OUT vol=0.41 px=4390.63 profit=160.72 comm=-1.43 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.18 11:21:30 pos=1075 reason=5 px=4390.63 open=4394.55 sl=4398.91 tp=4391.42
+EA 2026.08.18 11:25:00 Trade #1075 closed: 0.41 lots at 4390.63 | trade P&L +157.85 (costs included) | closed by its take profit
+BOOK 2026.08.18 11:25:00 pnl=157.85 hedge=0 risk=257.17 lots=0.41
+DRIVER restart at tick 63808 (off 0 ticks)
+EA 2026.08.18 13:52:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.18 13:52:00 Restart memory: continued from 18 Aug 26 | loss to win back 0.00 | streak 3W / 0L
+DRIVER restart at tick 64805 (off 0 ticks)
+EA 2026.08.18 18:01:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.18 18:01:15 Restart memory: continued from 18 Aug 26 | loss to win back 0.00 | streak 3W / 0L
+DRIVER restart at tick 65802 (off 0 ticks)
+EA 2026.08.18 22:10:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.18 22:10:30 Restart memory: continued from 19 Aug 26 | loss to win back 0.00 | streak 3W / 0L
+DRIVER restart at tick 66799 (off 0 ticks)
+EA 2026.08.19 03:19:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.19 03:19:45 Restart memory: continued from 19 Aug 26 | loss to win back 0.00 | streak 3W / 0L
+SIM ORDER 2026.08.19 04:40:00 tk=1078 type=2 vol=0.21 px=4353.17 sl=4341.52 tp=4355.54 bid=4355.37 ask=4355.54
+SIM DEAL 2026.08.19 04:46:30 tk=1079 pos=1078 buy IN vol=0.21 px=4352.97 profit=0.00 comm=-0.73 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.19 04:46:30 pos=1078 buy vol=0.21 px=4352.97 sl=4341.52 tp=4355.54 bid=4352.74 ask=4352.97
+SIM DEAL 2026.08.19 04:47:30 tk=1080 pos=1078 sell OUT vol=0.21 px=4356.62 profit=76.65 comm=-0.73 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.19 04:47:30 pos=1078 reason=5 px=4356.62 open=4352.97 sl=4341.52 tp=4355.54
+EA 2026.08.19 04:50:00 Trade #1078 closed: 0.21 lots at 4356.62 | trade P&L +75.18 (costs included) | closed by its take profit
+BOOK 2026.08.19 04:50:00 pnl=75.18 hedge=0 risk=245.85 lots=0.21
+SIM ORDER 2026.08.19 05:20:00 tk=1081 type=2 vol=0.24 px=4357.50 sl=4346.84 tp=4359.51 bid=4358.81 ask=4359.11
+SIM DEAL 2026.08.19 05:31:30 tk=1082 pos=1081 buy IN vol=0.24 px=4356.67 profit=0.00 comm=-0.84 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.19 05:31:30 pos=1081 buy vol=0.24 px=4356.67 sl=4346.84 tp=4359.51 bid=4356.57 ask=4356.67
+SIM DEAL 2026.08.19 06:38:30 tk=1083 pos=1081 sell OUT vol=0.24 px=4360.33 profit=87.84 comm=-0.84 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.19 06:38:30 pos=1081 reason=5 px=4360.33 open=4356.67 sl=4346.84 tp=4359.51
+EA 2026.08.19 06:40:00 Trade #1081 closed: 0.24 lots at 4360.33 | trade P&L +86.16 (costs included) | closed by its take profit
+BOOK 2026.08.19 06:40:00 pnl=86.16 hedge=0 risk=254.05 lots=0.24
+DRIVER restart at tick 67796 (off 0 ticks)
+EA 2026.08.19 07:29:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.19 07:29:00 Restart memory: continued from 19 Aug 26 | loss to win back 0.00 | streak 5W / 0L
+SIM ORDER 2026.08.19 10:10:00 tk=1084 type=2 vol=0.30 px=4351.44 sl=4343.04 tp=4353.10 bid=4352.95 ask=4353.16
+SIM DEAL 2026.08.19 10:11:30 tk=1085 pos=1084 buy IN vol=0.30 px=4351.30 profit=0.00 comm=-1.05 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.19 10:11:30 pos=1084 buy vol=0.30 px=4351.30 sl=4343.04 tp=4353.10 bid=4351.20 ask=4351.30
+SIM DEAL 2026.08.19 10:23:30 tk=1086 pos=1084 sell OUT vol=0.30 px=4354.74 profit=103.20 comm=-1.05 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.19 10:23:30 pos=1084 reason=5 px=4354.74 open=4351.30 sl=4343.04 tp=4353.10
+EA 2026.08.19 10:25:00 Trade #1084 closed: 0.30 lots at 4354.74 | trade P&L +101.10 (costs included) | closed by its take profit
+BOOK 2026.08.19 10:25:00 pnl=101.10 hedge=0 risk=252.52 lots=0.30
+DRIVER restart at tick 68793 (off 0 ticks)
+EA 2026.08.19 11:38:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.19 11:38:15 Restart memory: continued from 19 Aug 26 | loss to win back 0.00 | streak 6W / 0L
+SIM ORDER 2026.08.19 14:05:00 tk=1087 type=2 vol=0.47 px=4369.58 sl=4364.26 tp=4370.81 bid=4370.93 ask=4370.99
+SIM CANCEL 2026.08.19 14:20:00 tk=1087
+DRIVER restart at tick 69790 (off 0 ticks)
+EA 2026.08.19 15:47:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.19 15:47:30 Restart memory: continued from 19 Aug 26 | loss to win back 0.00 | streak 6W / 0L
+SIM ORDER 2026.08.19 16:00:00 tk=1088 type=2 vol=0.16 px=4433.81 sl=4418.14 tp=4436.93 bid=4438.79 ask=4439.00
+SIM DEAL 2026.08.19 16:02:30 tk=1089 pos=1088 buy IN vol=0.16 px=4431.12 profit=0.00 comm=-0.56 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.19 16:02:30 pos=1088 buy vol=0.16 px=4431.12 sl=4418.14 tp=4436.93 bid=4430.90 ask=4431.12
+SIM DEAL 2026.08.19 16:09:30 tk=1090 pos=1088 sell OUT vol=0.16 px=4441.40 profit=164.48 comm=-0.56 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.19 16:09:30 pos=1088 reason=5 px=4441.40 open=4431.12 sl=4418.14 tp=4436.93
+EA 2026.08.19 16:10:00 Trade #1088 closed: 0.16 lots at 4441.40 | trade P&L +163.36 (costs included) | closed by its take profit
+BOOK 2026.08.19 16:10:00 pnl=163.36 hedge=0 risk=251.04 lots=0.16
+SIM ORDER 2026.08.19 16:15:00 tk=1091 type=2 vol=0.13 px=4448.93 sl=4430.25 tp=4452.80 bid=4456.19 ask=4456.27
+SIM DEAL 2026.08.19 16:36:30 tk=1092 pos=1091 buy IN vol=0.13 px=4442.36 profit=0.00 comm=-0.46 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.19 16:36:30 pos=1091 buy vol=0.13 px=4442.36 sl=4430.25 tp=4452.80 bid=4442.25 ask=4442.36
+SIM DEAL 2026.08.19 16:37:30 tk=1093 pos=1091 sell OUT vol=0.13 px=4454.13 profit=153.01 comm=-0.46 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.19 16:37:30 pos=1091 reason=5 px=4454.13 open=4442.36 sl=4430.25 tp=4452.80
+EA 2026.08.19 16:40:00 Trade #1091 closed: 0.13 lots at 4454.13 | trade P&L +152.10 (costs included) | closed by its take profit
+BOOK 2026.08.19 16:40:00 pnl=152.10 hedge=0 risk=244.78 lots=0.13
+DRIVER restart at tick 70787 (off 0 ticks)
+EA 2026.08.19 19:56:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.19 19:56:45 Restart memory: continued from 19 Aug 26 | loss to win back 0.00 | streak 8W / 0L
+DRIVER restart at tick 71784 (off 0 ticks)
+EA 2026.08.20 01:06:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.20 01:06:00 Restart memory: continued from 20 Aug 26 | loss to win back 0.00 | streak 8W / 0L
+SIM ORDER 2026.08.20 04:05:00 tk=1094 type=3 vol=0.26 px=4498.89 sl=4508.43 tp=4496.87 bid=4493.08 ask=4493.19
+SIM DEAL 2026.08.20 04:08:30 tk=1095 pos=1094 sell IN vol=0.26 px=4499.68 profit=0.00 comm=-0.91 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.20 04:08:30 pos=1094 sell vol=0.26 px=4499.68 sl=4508.43 tp=4496.87 bid=4499.68 ask=4499.93
+SIM MODIFY 2026.08.20 04:10:00 pos=1094 sl=4508.43->4508.53 tp=4496.87->4496.97
+SIM DEAL 2026.08.20 04:10:30 tk=1096 pos=1094 buy OUT vol=0.26 px=4494.33 profit=139.10 comm=-0.91 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.20 04:10:30 pos=1094 reason=5 px=4494.33 open=4499.68 sl=4508.53 tp=4496.97
+EA 2026.08.20 04:15:00 Trade #1094 closed: 0.26 lots at 4494.33 | trade P&L +137.28 (costs included) | closed by its take profit
+BOOK 2026.08.20 04:15:00 pnl=137.28 hedge=0 risk=251.09 lots=0.26
+SIM ORDER 2026.08.20 04:50:00 tk=1097 type=3 vol=0.24 px=4491.79 sl=4502.17 tp=4489.71 bid=4489.72 ask=4489.92
+SIM DEAL 2026.08.20 05:01:30 tk=1098 pos=1097 sell IN vol=0.24 px=4493.45 profit=0.00 comm=-0.84 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.20 05:01:30 pos=1097 sell vol=0.24 px=4493.45 sl=4502.17 tp=4489.71 bid=4493.45 ask=4493.63
+SIM MODIFY 2026.08.20 05:05:00 pos=1097 sl=4502.17->4502.09 tp=4489.71->4489.63
+DRIVER restart at tick 72781 (off 0 ticks)
+EA 2026.08.20 05:15:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.20 05:15:15 Adopted open position #1097 (engine is in the same trade).
+SIM MODIFY 2026.08.20 05:15:15 pos=1097 sl=4502.09->4502.09 tp=4489.63->4489.75
+EA 2026.08.20 05:15:15 Restart memory: continued from 20 Aug 26 | loss to win back 0.00 | streak 9W / 0L | trade still open
+SIM DEAL 2026.08.20 05:19:15 tk=1099 pos=1097 buy OUT vol=0.24 px=4489.56 profit=93.36 comm=-0.84 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.20 05:19:15 pos=1097 reason=5 px=4489.56 open=4493.45 sl=4502.09 tp=4489.75
+EA 2026.08.20 05:20:00 Trade #1097 closed: 0.24 lots at 4489.56 | trade P&L +91.68 (costs included) | closed by its take profit
+BOOK 2026.08.20 05:20:00 pnl=91.68 hedge=0 risk=249.76 lots=0.24
+DRIVER restart at tick 73778 (off 0 ticks)
+EA 2026.08.20 09:24:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.20 09:24:30 Restart memory: continued from 20 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+SIM ORDER 2026.08.20 10:05:00 tk=1100 type=3 vol=0.38 px=4491.14 sl=4497.64 tp=4489.68 bid=4488.69 ask=4488.75
+SIM CANCEL 2026.08.20 10:30:00 tk=1100
+DRIVER restart at tick 74775 (off 0 ticks)
+EA 2026.08.20 13:33:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.20 13:33:45 Restart memory: continued from 20 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 75772 (off 0 ticks)
+EA 2026.08.20 17:43:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.20 17:43:00 Restart memory: continued from 20 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 76769 (off 0 ticks)
+EA 2026.08.20 21:52:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.20 21:52:15 Restart memory: continued from 21 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 77766 (off 0 ticks)
+EA 2026.08.21 03:01:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.21 03:01:30 Restart memory: continued from 21 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 78763 (off 0 ticks)
+EA 2026.08.21 07:10:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.21 07:10:45 Restart memory: continued from 21 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 79760 (off 0 ticks)
+EA 2026.08.21 11:20:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.21 11:20:00 Restart memory: continued from 21 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 80757 (off 0 ticks)
+EA 2026.08.21 15:30:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.21 15:30:15 Restart memory: continued from 21 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 81754 (off 0 ticks)
+EA 2026.08.21 19:39:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.21 19:39:30 Restart memory: continued from 21 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 82751 (off 0 ticks)
+EA 2026.08.21 23:48:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.21 23:48:45 Restart memory: continued from 22 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 83748 (off 0 ticks)
+EA 2026.08.24 04:58:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.24 04:58:00 Restart memory: continued from 24 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 84745 (off 0 ticks)
+EA 2026.08.24 09:07:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.24 09:07:15 Restart memory: continued from 24 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 85742 (off 0 ticks)
+EA 2026.08.24 13:16:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.24 13:16:30 Restart memory: continued from 24 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 86739 (off 0 ticks)
+EA 2026.08.24 17:25:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.24 17:25:45 Restart memory: continued from 24 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 87736 (off 0 ticks)
+EA 2026.08.24 21:35:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.24 21:35:00 Restart memory: continued from 25 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 88733 (off 0 ticks)
+EA 2026.08.25 02:44:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.25 02:44:15 Restart memory: continued from 25 Aug 26 | loss to win back 0.00 | streak 10W / 0L
+SIM ORDER 2026.08.25 03:40:00 tk=1101 type=2 vol=0.22 px=4693.30 sl=4682.24 tp=4695.65 bid=4695.43 ask=4695.51
+SIM DEAL 2026.08.25 03:40:30 tk=1102 pos=1101 buy IN vol=0.22 px=4692.43 profit=0.00 comm=-0.77 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.25 03:40:30 pos=1101 buy vol=0.22 px=4692.43 sl=4682.24 tp=4695.65 bid=4692.17 ask=4692.43
+SIM DEAL 2026.08.25 03:41:30 tk=1103 pos=1101 sell OUT vol=0.22 px=4696.33 profit=85.80 comm=-0.77 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.25 03:41:30 pos=1101 reason=5 px=4696.33 open=4692.43 sl=4682.24 tp=4695.65
+EA 2026.08.25 03:45:00 Trade #1101 closed: 0.22 lots at 4696.33 | trade P&L +84.26 (costs included) | closed by its take profit
+BOOK 2026.08.25 03:45:00 pnl=84.26 hedge=0 risk=246.50 lots=0.22
+SIM ORDER 2026.08.25 05:00:00 tk=1104 type=3 vol=0.17 px=4661.47 sl=4675.74 tp=4658.55 bid=4657.76 ask=4657.90
+SIM CANCEL 2026.08.25 05:25:00 tk=1104
+SIM ORDER 2026.08.25 05:45:00 tk=1105 type=3 vol=0.15 px=4637.47 sl=4653.60 tp=4634.23 bid=4630.90 ask=4631.09
+SIM DEAL 2026.08.25 05:48:15 tk=1106 pos=1105 sell IN vol=0.15 px=4637.51 profit=0.00 comm=-0.53 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.25 05:48:15 pos=1105 sell vol=0.15 px=4637.51 sl=4653.60 tp=4634.23 bid=4637.51 ask=4637.73
+SIM DEAL 2026.08.25 05:48:30 tk=1107 pos=1105 buy OUT vol=0.15 px=4632.92 profit=68.85 comm=-0.53 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.25 05:48:30 pos=1105 reason=5 px=4632.92 open=4637.51 sl=4653.60 tp=4634.23
+EA 2026.08.25 05:50:00 Trade #1105 closed: 0.15 lots at 4632.92 | trade P&L +67.80 (costs included) | closed by its take profit
+BOOK 2026.08.25 05:50:00 pnl=67.80 hedge=0 risk=242.52 lots=0.15
+DRIVER restart at tick 89730 (off 0 ticks)
+EA 2026.08.25 06:53:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.25 06:53:30 Restart memory: continued from 25 Aug 26 | loss to win back 0.00 | streak 12W / 0L
+SIM ORDER 2026.08.25 10:30:00 tk=1108 type=3 vol=0.28 px=4636.48 sl=4645.61 tp=4634.68 bid=4634.50 ask=4634.72
+SIM DEAL 2026.08.25 10:30:30 tk=1109 pos=1108 sell IN vol=0.28 px=4637.98 profit=0.00 comm=-0.98 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.25 10:30:30 pos=1108 sell vol=0.28 px=4637.98 sl=4645.61 tp=4634.68 bid=4637.98 ask=4638.21
+SIM DEAL 2026.08.25 10:33:30 tk=1110 pos=1108 buy OUT vol=0.28 px=4634.21 profit=105.56 comm=-0.98 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.25 10:33:30 pos=1108 reason=5 px=4634.21 open=4637.98 sl=4645.61 tp=4634.68
+EA 2026.08.25 10:35:00 Trade #1108 closed: 0.28 lots at 4634.21 | trade P&L +103.60 (costs included) | closed by its take profit
+BOOK 2026.08.25 10:35:00 pnl=103.60 hedge=0 risk=255.85 lots=0.28
+SIM ORDER 2026.08.25 10:55:00 tk=1111 type=3 vol=0.27 px=4633.65 sl=4642.75 tp=4631.77 bid=4631.50 ask=4631.65
+DRIVER restart at tick 90727 (off 0 ticks)
+EA 2026.08.25 11:02:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+SIM CANCEL 2026.08.25 11:02:45 tk=1111
+EA 2026.08.25 11:02:45 Restart memory: continued from 25 Aug 26 | loss to win back 0.00 | streak 13W / 0L
+SIM ORDER 2026.08.25 11:03:00 tk=1112 type=3 vol=0.27 px=4633.65 sl=4642.71 tp=4631.73 bid=4627.33 ask=4627.44
+SIM CANCEL 2026.08.25 11:20:00 tk=1112
+DRIVER restart at tick 91724 (off 0 ticks)
+EA 2026.08.25 15:12:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.25 15:12:00 Restart memory: continued from 25 Aug 26 | loss to win back 0.00 | streak 13W / 0L
+SIM ORDER 2026.08.25 16:15:00 tk=1113 type=3 vol=0.22 px=4627.06 sl=4638.13 tp=4624.76 bid=4623.12 ask=4623.24
+SIM DEAL 2026.08.25 16:17:30 tk=1114 pos=1113 sell IN vol=0.22 px=4628.04 profit=0.00 comm=-0.77 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.25 16:17:30 pos=1113 sell vol=0.22 px=4628.04 sl=4638.13 tp=4624.76 bid=4628.04 ask=4628.23
+SIM MODIFY 2026.08.25 16:20:00 pos=1113 sl=4638.13->4638.08 tp=4624.76->4624.71
+SIM DEAL 2026.08.25 16:20:30 tk=1115 pos=1113 buy OUT vol=0.22 px=4623.34 profit=103.40 comm=-0.77 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.25 16:20:30 pos=1113 reason=5 px=4623.34 open=4628.04 sl=4638.08 tp=4624.71
+EA 2026.08.25 16:25:00 Trade #1113 closed: 0.22 lots at 4623.34 | trade P&L +101.86 (costs included) | closed by its take profit
+BOOK 2026.08.25 16:25:00 pnl=101.86 hedge=0 risk=245.79 lots=0.22
+SIM ORDER 2026.08.25 16:50:00 tk=1116 type=3 vol=0.17 px=4608.91 sl=4623.75 tp=4605.98 bid=4607.07 ask=4607.30
+SIM DEAL 2026.08.25 16:50:30 tk=1117 pos=1116 sell IN vol=0.17 px=4610.55 profit=0.00 comm=-0.60 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.25 16:50:30 pos=1116 sell vol=0.17 px=4610.55 sl=4623.75 tp=4605.98 bid=4610.55 ask=4610.72
+SIM MODIFY 2026.08.25 16:55:00 pos=1116 sl=4623.75->4623.60 tp=4605.98->4605.83
+SIM DEAL 2026.08.25 17:06:30 tk=1118 pos=1116 buy OUT vol=0.17 px=4625.08 profit=-247.01 comm=-0.60 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.08.25 17:06:30 pos=1116 reason=4 px=4625.08 open=4610.55 sl=4623.60 tp=4605.83
+EA 2026.08.25 17:10:00 Trade #1116 closed: 0.17 lots at 4625.08 | trade P&L -248.20 (costs included) | closed by its stop loss
+BOOK 2026.08.25 17:10:00 pnl=-248.20 hedge=0 risk=252.27 lots=0.17
+DRIVER restart at tick 92721 (off 0 ticks)
+EA 2026.08.25 19:21:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.25 19:21:15 Restart memory: continued from 25 Aug 26 | loss to win back 129.00 | streak 0W / 1L
+DRIVER restart at tick 93718 (off 0 ticks)
+EA 2026.08.25 23:30:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.25 23:30:30 Restart memory: continued from 26 Aug 26 | loss to win back 129.00 | streak 0W / 1L
+SIM ORDER 2026.08.26 03:40:00 tk=1119 type=3 vol=0.01 px=4642.34 sl=4649.69 tp=4640.92 bid=4639.75 ask=4639.99
+SIM DEAL 2026.08.26 04:03:15 tk=1120 pos=1119 sell IN vol=0.01 px=4642.56 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.26 04:03:15 pos=1119 sell vol=0.01 px=4642.56 sl=4649.69 tp=4640.92 bid=4642.56 ask=4642.72
+SIM DEAL 2026.08.26 04:03:30 tk=1121 pos=1119 buy OUT vol=0.01 px=4639.51 profit=3.05 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.26 04:03:30 pos=1119 reason=5 px=4639.51 open=4642.56 sl=4649.69 tp=4640.92
+EA 2026.08.26 04:05:00 Trade #1119 closed: 0.01 lots at 4639.51 | trade P&L +2.98 (costs included) | closed by its take profit
+BOOK 2026.08.26 04:05:00 pnl=2.98 hedge=0 risk=7.33 lots=0.01
+DRIVER restart at tick 94715 (off 0 ticks)
+EA 2026.08.26 04:39:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.26 04:39:45 Restart memory: continued from 26 Aug 26 | loss to win back 126.02 | streak 1W / 0L
+SIM ORDER 2026.08.26 05:35:00 tk=1122 type=2 vol=0.27 px=4662.03 sl=4652.73 tp=4663.82 bid=4663.71 ask=4663.96
+SIM DEAL 2026.08.26 05:36:30 tk=1123 pos=1122 buy IN vol=0.27 px=4661.63 profit=0.00 comm=-0.95 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.26 05:36:30 pos=1122 buy vol=0.27 px=4661.63 sl=4652.73 tp=4663.82 bid=4661.34 ask=4661.63
+SIM DEAL 2026.08.26 05:38:30 tk=1124 pos=1122 sell OUT vol=0.27 px=4664.12 profit=67.23 comm=-0.95 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.26 05:38:30 pos=1122 reason=5 px=4664.12 open=4661.63 sl=4652.73 tp=4663.82
+EA 2026.08.26 05:40:00 Trade #1122 closed: 0.27 lots at 4664.12 | trade P&L +65.34 (costs included) | closed by its take profit
+BOOK 2026.08.26 05:40:00 pnl=65.34 hedge=0 risk=250.50 lots=0.27
+SIM ORDER 2026.08.26 06:10:00 tk=1125 type=3 vol=0.25 px=4653.45 sl=4663.35 tp=4651.53 bid=4650.16 ask=4650.41
+SIM CANCEL 2026.08.26 06:35:00 tk=1125
+SIM ORDER 2026.08.26 06:45:00 tk=1126 type=3 vol=0.30 px=4645.90 sl=4654.22 tp=4644.23 bid=4645.26 ask=4645.45
+SIM CANCEL 2026.08.26 07:10:00 tk=1126
+DRIVER restart at tick 95712 (off 0 ticks)
+EA 2026.08.26 08:49:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.26 08:49:00 Restart memory: continued from 26 Aug 26 | loss to win back 60.68 | streak 2W / 0L
+SIM ORDER 2026.08.26 09:25:00 tk=1127 type=3 vol=0.31 px=4630.67 sl=4638.80 tp=4629.00 bid=4627.13 ask=4627.29
+SIM DEAL 2026.08.26 09:34:30 tk=1128 pos=1127 sell IN vol=0.31 px=4630.96 profit=0.00 comm=-1.08 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.26 09:34:30 pos=1127 sell vol=0.31 px=4630.96 sl=4638.80 tp=4629.00 bid=4630.96 ask=4631.10
+SIM MODIFY 2026.08.26 09:35:00 pos=1127 sl=4638.80->4638.78 tp=4629.00->4628.98
+SIM DEAL 2026.08.26 09:35:30 tk=1129 pos=1127 buy OUT vol=0.31 px=4628.73 profit=69.13 comm=-1.08 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.26 09:35:30 pos=1127 reason=5 px=4628.73 open=4630.96 sl=4638.78 tp=4628.98
+EA 2026.08.26 09:40:00 Trade #1127 closed: 0.31 lots at 4628.73 | trade P&L +66.96 (costs included) | closed by its take profit
+BOOK 2026.08.26 09:40:00 pnl=66.96 hedge=0 risk=254.31 lots=0.31
+SIM ORDER 2026.08.26 10:55:00 tk=1130 type=3 vol=0.32 px=4628.92 sl=4636.84 tp=4627.33 bid=4628.48 ask=4628.67
+SIM DEAL 2026.08.26 10:58:30 tk=1131 pos=1130 sell IN vol=0.32 px=4629.47 profit=0.00 comm=-1.12 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.26 10:58:30 pos=1130 sell vol=0.32 px=4629.47 sl=4636.84 tp=4627.33 bid=4629.47 ask=4629.61
+SIM MODIFY 2026.08.26 11:00:00 pos=1130 sl=4636.84->4636.88 tp=4627.33->4627.37
+SIM DEAL 2026.08.26 11:00:30 tk=1132 pos=1130 buy OUT vol=0.32 px=4627.25 profit=71.04 comm=-1.12 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.26 11:00:30 pos=1130 reason=5 px=4627.25 open=4629.47 sl=4636.88 tp=4627.37
+EA 2026.08.26 11:05:00 Trade #1130 closed: 0.32 lots at 4627.25 | trade P&L +68.80 (costs included) | closed by its take profit
+BOOK 2026.08.26 11:05:00 pnl=68.80 hedge=0 risk=254.53 lots=0.32
+DRIVER restart at tick 96709 (off 0 ticks)
+EA 2026.08.26 12:58:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.26 12:58:15 Restart memory: continued from 26 Aug 26 | loss to win back 44.12 | streak 4W / 0L
+DRIVER restart at tick 97706 (off 0 ticks)
+EA 2026.08.26 17:07:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.26 17:07:30 Restart memory: continued from 26 Aug 26 | loss to win back 44.12 | streak 4W / 0L
+DRIVER restart at tick 98703 (off 0 ticks)
+EA 2026.08.26 21:16:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.26 21:16:45 Restart memory: continued from 26 Aug 26 | loss to win back 44.12 | streak 4W / 0L
+DRIVER restart at tick 99700 (off 0 ticks)
+EA 2026.08.27 02:26:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.27 02:26:00 Restart memory: continued from 27 Aug 26 | loss to win back 44.12 | streak 4W / 0L
+SIM ORDER 2026.08.27 03:45:00 tk=1133 type=3 vol=0.30 px=4609.42 sl=4617.57 tp=4607.65 bid=4606.25 ask=4606.33
+SIM DEAL 2026.08.27 03:46:15 tk=1134 pos=1133 sell IN vol=0.30 px=4611.06 profit=0.00 comm=-1.05 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.27 03:46:15 pos=1133 sell vol=0.30 px=4611.06 sl=4617.57 tp=4607.65 bid=4611.06 ask=4611.32
+SIM DEAL 2026.08.27 03:46:30 tk=1135 pos=1133 buy OUT vol=0.30 px=4607.43 profit=108.90 comm=-1.05 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.27 03:46:30 pos=1133 reason=5 px=4607.43 open=4611.06 sl=4617.57 tp=4607.65
+EA 2026.08.27 03:50:00 Trade #1133 closed: 0.30 lots at 4607.43 | trade P&L +106.80 (costs included) | closed by its take profit
+BOOK 2026.08.27 03:50:00 pnl=106.80 hedge=0 risk=248.93 lots=0.30
+SIM ORDER 2026.08.27 04:40:00 tk=1136 type=2 vol=0.22 px=4625.34 sl=4614.03 tp=4627.60 bid=4628.48 ask=4628.68
+SIM DEAL 2026.08.27 04:42:30 tk=1137 pos=1136 buy IN vol=0.22 px=4625.33 profit=0.00 comm=-0.77 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.27 04:42:30 pos=1136 buy vol=0.22 px=4625.33 sl=4614.03 tp=4627.60 bid=4625.15 ask=4625.33
+SIM DEAL 2026.08.27 04:46:30 tk=1138 pos=1136 sell OUT vol=0.22 px=4631.29 profit=131.12 comm=-0.77 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.27 04:46:30 pos=1136 reason=5 px=4631.29 open=4625.33 sl=4614.03 tp=4627.60
+EA 2026.08.27 04:50:00 Trade #1136 closed: 0.22 lots at 4631.29 | trade P&L +129.58 (costs included) | closed by its take profit
+BOOK 2026.08.27 04:50:00 pnl=129.58 hedge=0 risk=249.31 lots=0.22
+SIM ORDER 2026.08.27 04:55:00 tk=1139 type=2 vol=0.21 px=4632.48 sl=4620.61 tp=4634.88 bid=4634.88 ask=4635.05
+SIM CANCEL 2026.08.27 05:20:00 tk=1139
+SIM ORDER 2026.08.27 06:25:00 tk=1140 type=2 vol=0.26 px=4635.88 sl=4626.49 tp=4637.86 bid=4638.04 ask=4638.15
+SIM DEAL 2026.08.27 06:29:30 tk=1141 pos=1140 buy IN vol=0.26 px=4634.80 profit=0.00 comm=-0.91 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.27 06:29:30 pos=1140 buy vol=0.26 px=4634.80 sl=4626.49 tp=4637.86 bid=4634.66 ask=4634.80
+DRIVER restart at tick 100697 (off 0 ticks)
+EA 2026.08.27 06:35:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.27 06:35:15 Adopted open position #1140 (engine is in the same trade).
+EA 2026.08.27 06:35:15 Restart memory: continued from 27 Aug 26 | loss to win back 0.00 | streak 6W / 0L | trade still open
+SIM DEAL 2026.08.27 06:52:30 tk=1142 pos=1140 sell OUT vol=0.26 px=4626.05 profit=-227.50 comm=-0.91 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.08.27 06:52:30 pos=1140 reason=4 px=4626.05 open=4634.80 sl=4626.49 tp=4637.86
+EA 2026.08.27 06:55:00 Trade #1140 closed: 0.26 lots at 4626.05 | trade P&L -229.32 (costs included) | closed by its stop loss
+BOOK 2026.08.27 06:55:00 pnl=-229.32 hedge=0 risk=247.07 lots=0.26
+SIM ORDER 2026.08.27 10:20:00 tk=1143 type=3 vol=0.01 px=4597.96 sl=4606.53 tp=4596.18 bid=4597.54 ask=4597.68
+SIM DEAL 2026.08.27 10:20:30 tk=1144 pos=1143 sell IN vol=0.01 px=4598.07 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.27 10:20:30 pos=1143 sell vol=0.01 px=4598.07 sl=4606.53 tp=4596.18 bid=4598.07 ask=4598.20
+SIM DEAL 2026.08.27 10:23:30 tk=1145 pos=1143 buy OUT vol=0.01 px=4596.12 profit=1.95 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.27 10:23:30 pos=1143 reason=5 px=4596.12 open=4598.07 sl=4606.53 tp=4596.18
+EA 2026.08.27 10:25:00 Trade #1143 closed: 0.01 lots at 4596.12 | trade P&L +1.88 (costs included) | closed by its take profit
+BOOK 2026.08.27 10:25:00 pnl=1.88 hedge=0 risk=8.66 lots=0.01
+DRIVER restart at tick 101694 (off 0 ticks)
+EA 2026.08.27 10:44:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.27 10:44:30 Restart memory: continued from 27 Aug 26 | loss to win back 115.98 | streak 1W / 0L
+DRIVER restart at tick 102691 (off 0 ticks)
+EA 2026.08.27 14:53:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.27 14:53:45 Restart memory: continued from 27 Aug 26 | loss to win back 115.98 | streak 1W / 0L
+SIM ORDER 2026.08.27 16:35:00 tk=1146 type=3 vol=0.23 px=4579.48 sl=4590.26 tp=4577.37 bid=4575.74 ask=4575.97
+SIM DEAL 2026.08.27 16:35:30 tk=1147 pos=1146 sell IN vol=0.23 px=4579.86 profit=0.00 comm=-0.81 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.08.27 16:35:30 pos=1146 sell vol=0.23 px=4579.86 sl=4590.26 tp=4577.37 bid=4579.86 ask=4580.04
+SIM DEAL 2026.08.27 16:37:30 tk=1148 pos=1146 buy OUT vol=0.23 px=4577.05 profit=64.63 comm=-0.81 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.08.27 16:37:30 pos=1146 reason=5 px=4577.05 open=4579.86 sl=4590.26 tp=4577.37
+EA 2026.08.27 16:40:00 Trade #1146 closed: 0.23 lots at 4577.05 | trade P&L +63.02 (costs included) | closed by its take profit
+BOOK 2026.08.27 16:40:00 pnl=63.02 hedge=0 risk=247.78 lots=0.23
+DRIVER restart at tick 103688 (off 0 ticks)
+EA 2026.08.27 19:03:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.27 19:03:00 Restart memory: continued from 27 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 104685 (off 0 ticks)
+EA 2026.08.27 23:12:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.27 23:12:15 Restart memory: continued from 28 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 105682 (off 0 ticks)
+EA 2026.08.28 04:21:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.28 04:21:30 Restart memory: continued from 28 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 106679 (off 0 ticks)
+EA 2026.08.28 08:30:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.28 08:30:45 Restart memory: continued from 28 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 107676 (off 0 ticks)
+EA 2026.08.28 12:40:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.28 12:40:00 Restart memory: continued from 28 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 108673 (off 0 ticks)
+EA 2026.08.28 16:49:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.28 16:49:15 Restart memory: continued from 28 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 109670 (off 0 ticks)
+EA 2026.08.28 20:58:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.28 20:58:30 Restart memory: continued from 28 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 110667 (off 0 ticks)
+EA 2026.08.31 02:07:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.31 02:07:45 Restart memory: continued from 31 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 111664 (off 0 ticks)
+EA 2026.08.31 06:17:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.31 06:17:00 Restart memory: continued from 31 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 112661 (off 0 ticks)
+EA 2026.08.31 10:26:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.31 10:26:15 Restart memory: continued from 31 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 113658 (off 0 ticks)
+EA 2026.08.31 14:35:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.31 14:35:30 Restart memory: continued from 31 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 114655 (off 0 ticks)
+EA 2026.08.31 18:44:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.31 18:44:45 Restart memory: continued from 31 Aug 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 115652 (off 0 ticks)
+EA 2026.08.31 22:54:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.08.31 22:54:00 Restart memory: continued from 01 Sep 26 | loss to win back 52.96 | streak 2W / 0L
+DRIVER restart at tick 116649 (off 0 ticks)
+EA 2026.09.01 04:03:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.01 04:03:15 Restart memory: continued from 01 Sep 26 | loss to win back 52.96 | streak 2W / 0L
+SIM ORDER 2026.09.01 04:20:00 tk=1149 type=3 vol=0.31 px=4444.90 sl=4453.10 tp=4443.24 bid=4443.40 ask=4443.58
+SIM DEAL 2026.09.01 04:37:30 tk=1150 pos=1149 sell IN vol=0.31 px=4445.69 profit=0.00 comm=-1.08 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.01 04:37:30 pos=1149 sell vol=0.31 px=4445.69 sl=4453.10 tp=4443.24 bid=4445.69 ask=4445.83
+SIM DEAL 2026.09.01 04:38:30 tk=1151 pos=1149 buy OUT vol=0.31 px=4441.19 profit=139.50 comm=-1.08 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.01 04:38:30 pos=1149 reason=5 px=4441.19 open=4445.69 sl=4453.10 tp=4443.24
+EA 2026.09.01 04:40:00 Trade #1149 closed: 0.31 lots at 4441.19 | trade P&L +137.33 (costs included) | closed by its take profit
+BOOK 2026.09.01 04:40:00 pnl=137.33 hedge=0 risk=255.45 lots=0.31
+SIM ORDER 2026.09.01 05:40:00 tk=1152 type=3 vol=0.28 px=4435.15 sl=4443.99 tp=4433.40 bid=4433.59 ask=4433.80
+SIM DEAL 2026.09.01 05:40:30 tk=1153 pos=1152 sell IN vol=0.28 px=4435.96 profit=0.00 comm=-0.98 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.01 05:40:30 pos=1152 sell vol=0.28 px=4435.96 sl=4443.99 tp=4433.40 bid=4435.96 ask=4436.13
+SIM DEAL 2026.09.01 05:43:30 tk=1154 pos=1152 buy OUT vol=0.28 px=4432.10 profit=108.08 comm=-0.98 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.01 05:43:30 pos=1152 reason=5 px=4432.10 open=4435.96 sl=4443.99 tp=4433.40
+EA 2026.09.01 05:45:00 Trade #1152 closed: 0.28 lots at 4432.10 | trade P&L +106.12 (costs included) | closed by its take profit
+BOOK 2026.09.01 05:45:00 pnl=106.12 hedge=0 risk=247.86 lots=0.28
+DRIVER restart at tick 117646 (off 0 ticks)
+EA 2026.09.01 08:12:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.01 08:12:30 Restart memory: continued from 01 Sep 26 | loss to win back 0.00 | streak 4W / 0L
+SIM ORDER 2026.09.01 09:30:00 tk=1155 type=3 vol=0.30 px=4430.94 sl=4439.15 tp=4429.22 bid=4429.04 ask=4429.17
+SIM DEAL 2026.09.01 09:35:30 tk=1156 pos=1155 sell IN vol=0.30 px=4431.66 profit=0.00 comm=-1.05 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.01 09:35:30 pos=1155 sell vol=0.30 px=4431.66 sl=4439.15 tp=4429.22 bid=4431.66 ask=4431.75
+SIM MODIFY 2026.09.01 09:40:00 pos=1155 sl=4439.15->4439.21 tp=4429.22->4429.28
+SIM DEAL 2026.09.01 09:50:30 tk=1157 pos=1155 buy OUT vol=0.30 px=4429.16 profit=75.00 comm=-1.05 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.01 09:50:30 pos=1155 reason=5 px=4429.16 open=4431.66 sl=4439.21 tp=4429.28
+EA 2026.09.01 09:55:00 Trade #1155 closed: 0.30 lots at 4429.16 | trade P&L +72.90 (costs included) | closed by its take profit
+BOOK 2026.09.01 09:55:00 pnl=72.90 hedge=0 risk=249.30 lots=0.30
+SIM ORDER 2026.09.01 10:40:00 tk=1158 type=3 vol=0.27 px=4419.44 sl=4428.76 tp=4417.43 bid=4413.08 ask=4413.15
+SIM DEAL 2026.09.01 10:41:30 tk=1159 pos=1158 sell IN vol=0.27 px=4420.09 profit=0.00 comm=-0.95 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.01 10:41:30 pos=1158 sell vol=0.27 px=4420.09 sl=4428.76 tp=4417.43 bid=4420.09 ask=4420.17
+SIM MODIFY 2026.09.01 10:45:00 pos=1158 sl=4428.76->4428.81 tp=4417.43->4417.48
+SIM DEAL 2026.09.01 10:45:30 tk=1160 pos=1158 buy OUT vol=0.27 px=4417.13 profit=79.92 comm=-0.95 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.01 10:45:30 pos=1158 reason=5 px=4417.13 open=4420.09 sl=4428.81 tp=4417.48
+EA 2026.09.01 10:50:00 Trade #1158 closed: 0.27 lots at 4417.13 | trade P&L +78.03 (costs included) | closed by its take profit
+BOOK 2026.09.01 10:50:00 pnl=78.03 hedge=0 risk=255.82 lots=0.27
+SIM ORDER 2026.09.01 11:05:00 tk=1161 type=3 vol=0.24 px=4412.17 sl=4422.54 tp=4409.98 bid=4411.28 ask=4411.38
+SIM DEAL 2026.09.01 11:05:15 tk=1162 pos=1161 sell IN vol=0.24 px=4418.74 profit=0.00 comm=-0.84 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.01 11:05:15 pos=1161 sell vol=0.24 px=4418.74 sl=4422.54 tp=4409.98 bid=4418.74 ask=4418.87
+SIM DEAL 2026.09.01 11:06:30 tk=1163 pos=1161 buy OUT vol=0.24 px=4404.95 profit=330.96 comm=-0.84 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.01 11:06:30 pos=1161 reason=5 px=4404.95 open=4418.74 sl=4422.54 tp=4409.98
+EA 2026.09.01 11:10:00 Trade #1161 closed: 0.24 lots at 4404.95 | trade P&L +329.28 (costs included) | closed by its take profit
+BOOK 2026.09.01 11:10:00 pnl=329.28 hedge=0 risk=251.95 lots=0.24
+SIM ORDER 2026.09.01 11:25:00 tk=1164 type=3 vol=0.16 px=4389.47 sl=4404.87 tp=4386.34 bid=4385.23 ask=4385.38
+SIM CANCEL 2026.09.01 11:50:00 tk=1164
+DRIVER restart at tick 118643 (off 0 ticks)
+EA 2026.09.01 12:21:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.01 12:21:45 Restart memory: continued from 01 Sep 26 | loss to win back 0.00 | streak 7W / 0L
+SIM ORDER 2026.09.01 16:05:00 tk=1165 type=3 vol=0.19 px=4347.86 sl=4360.99 tp=4345.19 bid=4339.50 ask=4339.66
+SIM CANCEL 2026.09.01 16:30:00 tk=1165
+DRIVER restart at tick 119640 (off 0 ticks)
+EA 2026.09.01 16:31:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.01 16:31:00 Restart memory: continued from 01 Sep 26 | loss to win back 0.00 | streak 7W / 0L
+DRIVER restart at tick 120637 (off 0 ticks)
+EA 2026.09.01 20:40:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.01 20:40:15 Restart memory: continued from 01 Sep 26 | loss to win back 0.00 | streak 7W / 0L
+DRIVER restart at tick 121634 (off 0 ticks)
+EA 2026.09.02 01:49:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.02 01:49:30 Restart memory: continued from 02 Sep 26 | loss to win back 0.00 | streak 7W / 0L
+SIM ORDER 2026.09.02 03:55:00 tk=1166 type=3 vol=0.22 px=4319.20 sl=4330.61 tp=4316.87 bid=4314.71 ask=4314.87
+SIM DEAL 2026.09.02 03:58:30 tk=1167 pos=1166 sell IN vol=0.22 px=4320.07 profit=0.00 comm=-0.77 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.02 03:58:30 pos=1166 sell vol=0.22 px=4320.07 sl=4330.61 tp=4316.87 bid=4320.07 ask=4320.24
+SIM DEAL 2026.09.02 03:59:30 tk=1168 pos=1166 buy OUT vol=0.22 px=4315.25 profit=106.04 comm=-0.77 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.02 03:59:30 pos=1166 reason=5 px=4315.25 open=4320.07 sl=4330.61 tp=4316.87
+EA 2026.09.02 04:00:00 Trade #1166 closed: 0.22 lots at 4315.25 | trade P&L +104.50 (costs included) | closed by its take profit
+BOOK 2026.09.02 04:00:00 pnl=104.50 hedge=0 risk=252.66 lots=0.22
+DRIVER restart at tick 122631 (off 0 ticks)
+EA 2026.09.02 05:58:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.02 05:58:45 Restart memory: continued from 02 Sep 26 | loss to win back 0.00 | streak 8W / 0L
+SIM ORDER 2026.09.02 06:35:00 tk=1169 type=3 vol=0.20 px=4289.33 sl=4301.62 tp=4286.80 bid=4285.08 ask=4285.22
+SIM DEAL 2026.09.02 06:38:30 tk=1170 pos=1169 sell IN vol=0.20 px=4290.58 profit=0.00 comm=-0.70 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.02 06:38:30 pos=1169 sell vol=0.20 px=4290.58 sl=4301.62 tp=4286.80 bid=4290.58 ask=4290.83
+SIM MODIFY 2026.09.02 06:40:00 pos=1169 sl=4301.62->4301.70 tp=4286.80->4286.88
+SIM DEAL 2026.09.02 06:42:30 tk=1171 pos=1169 buy OUT vol=0.20 px=4286.37 profit=84.20 comm=-0.70 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.02 06:42:30 pos=1169 reason=5 px=4286.37 open=4290.58 sl=4301.70 tp=4286.88
+EA 2026.09.02 06:45:00 Trade #1169 closed: 0.20 lots at 4286.37 | trade P&L +82.80 (costs included) | closed by its take profit
+BOOK 2026.09.02 06:45:00 pnl=82.80 hedge=0 risk=247.51 lots=0.20
+DRIVER restart at tick 123628 (off 0 ticks)
+EA 2026.09.02 10:08:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.02 10:08:00 Restart memory: continued from 02 Sep 26 | loss to win back 0.00 | streak 9W / 0L
+DRIVER restart at tick 124625 (off 0 ticks)
+EA 2026.09.02 14:17:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.02 14:17:15 Restart memory: continued from 02 Sep 26 | loss to win back 0.00 | streak 9W / 0L
+SIM ORDER 2026.09.02 16:25:00 tk=1172 type=2 vol=0.21 px=4345.40 sl=4333.50 tp=4347.82 bid=4348.08 ask=4348.25
+SIM CANCEL 2026.09.02 16:50:00 tk=1172
+SIM ORDER 2026.09.02 17:00:00 tk=1173 type=2 vol=0.16 px=4381.13 sl=4365.89 tp=4384.29 bid=4385.25 ask=4385.35
+SIM DEAL 2026.09.02 17:01:30 tk=1174 pos=1173 buy IN vol=0.16 px=4379.17 profit=0.00 comm=-0.56 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.02 17:01:30 pos=1173 buy vol=0.16 px=4379.17 sl=4365.89 tp=4384.29 bid=4378.95 ask=4379.17
+SIM DEAL 2026.09.02 17:02:30 tk=1175 pos=1173 sell OUT vol=0.16 px=4385.05 profit=94.08 comm=-0.56 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.02 17:02:30 pos=1173 reason=5 px=4385.05 open=4379.17 sl=4365.89 tp=4384.29
+EA 2026.09.02 17:05:00 Trade #1173 closed: 0.16 lots at 4385.05 | trade P&L +92.96 (costs included) | closed by its take profit
+BOOK 2026.09.02 17:05:00 pnl=92.96 hedge=0 risk=245.79 lots=0.16
+DRIVER restart at tick 125622 (off 0 ticks)
+EA 2026.09.02 18:26:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.02 18:26:30 Restart memory: continued from 02 Sep 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 126619 (off 0 ticks)
+EA 2026.09.02 22:35:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.02 22:35:45 Restart memory: continued from 03 Sep 26 | loss to win back 0.00 | streak 10W / 0L
+DRIVER restart at tick 127616 (off 0 ticks)
+EA 2026.09.03 03:45:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.03 03:45:00 Restart memory: continued from 03 Sep 26 | loss to win back 0.00 | streak 10W / 0L
+SIM ORDER 2026.09.03 04:10:00 tk=1176 type=2 vol=0.29 px=4399.21 sl=4390.56 tp=4400.96 bid=4402.52 ask=4402.70
+SIM DEAL 2026.09.03 04:17:30 tk=1177 pos=1176 buy IN vol=0.29 px=4398.78 profit=0.00 comm=-1.01 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.03 04:17:30 pos=1176 buy vol=0.29 px=4398.78 sl=4390.56 tp=4400.96 bid=4398.64 ask=4398.78
+SIM DEAL 2026.09.03 04:20:30 tk=1178 pos=1176 sell OUT vol=0.29 px=4401.17 profit=69.31 comm=-1.01 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.03 04:20:30 pos=1176 reason=5 px=4401.17 open=4398.78 sl=4390.56 tp=4400.96
+EA 2026.09.03 04:25:00 Trade #1176 closed: 0.29 lots at 4401.17 | trade P&L +67.28 (costs included) | closed by its take profit
+BOOK 2026.09.03 04:25:00 pnl=67.28 hedge=0 risk=252.23 lots=0.29
+SIM DEAL 2026.09.03 04:35:00 tk=1180 pos=1179 buy IN vol=0.24 px=4409.33 profit=0.00 comm=-0.84 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.03 04:35:00 pos=1179 buy vol=0.24 px=4409.33 sl=4399.12 tp=4411.65 bid=4409.09 ask=4409.33
+SIM DEAL 2026.09.03 04:58:30 tk=1181 pos=1179 sell OUT vol=0.24 px=4411.81 profit=59.52 comm=-0.84 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.03 04:58:30 pos=1179 reason=5 px=4411.81 open=4409.33 sl=4399.12 tp=4411.65
+EA 2026.09.03 05:00:00 Trade #1179 closed: 0.24 lots at 4411.81 | trade P&L +57.84 (costs included) | closed by its take profit
+BOOK 2026.09.03 05:00:00 pnl=57.84 hedge=0 risk=251.51 lots=0.24
+SIM ORDER 2026.09.03 06:05:00 tk=1182 type=2 vol=0.27 px=4422.56 sl=4413.25 tp=4424.40 bid=4424.34 ask=4424.55
+SIM CANCEL 2026.09.03 06:30:00 tk=1182
+DRIVER restart at tick 128613 (off 0 ticks)
+EA 2026.09.03 07:54:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.03 07:54:15 Restart memory: continued from 03 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 129610 (off 0 ticks)
+EA 2026.09.03 12:03:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.03 12:03:30 Restart memory: continued from 03 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+SIM ORDER 2026.09.03 14:10:00 tk=1183 type=2 vol=0.35 px=4429.35 sl=4422.22 tp=4430.87 bid=4430.84 ask=4430.96
+SIM CANCEL 2026.09.03 14:20:00 tk=1183
+DRIVER restart at tick 130607 (off 0 ticks)
+EA 2026.09.03 16:12:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.03 16:12:45 Restart memory: continued from 03 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 131604 (off 0 ticks)
+EA 2026.09.03 20:22:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.03 20:22:00 Restart memory: continued from 03 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 132601 (off 0 ticks)
+EA 2026.09.04 01:31:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.04 01:31:15 Restart memory: continued from 04 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 133598 (off 0 ticks)
+EA 2026.09.04 05:40:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.04 05:40:30 Restart memory: continued from 04 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 134595 (off 0 ticks)
+EA 2026.09.04 09:49:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.04 09:49:45 Restart memory: continued from 04 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 135592 (off 0 ticks)
+EA 2026.09.04 13:59:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.04 13:59:00 Restart memory: continued from 04 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 136589 (off 0 ticks)
+EA 2026.09.04 18:08:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.04 18:08:15 Restart memory: continued from 04 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 137586 (off 0 ticks)
+EA 2026.09.04 22:17:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.04 22:17:30 Restart memory: continued from 05 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 138583 (off 0 ticks)
+EA 2026.09.07 03:26:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.07 03:26:45 Restart memory: continued from 07 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 139580 (off 0 ticks)
+EA 2026.09.07 07:36:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.07 07:36:00 Restart memory: continued from 07 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 140577 (off 0 ticks)
+EA 2026.09.07 11:45:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.07 11:45:15 Restart memory: continued from 07 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 141574 (off 0 ticks)
+EA 2026.09.07 15:54:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.07 15:54:30 Restart memory: continued from 07 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 142571 (off 0 ticks)
+EA 2026.09.07 20:03:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.07 20:03:45 Restart memory: continued from 07 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+DRIVER restart at tick 143568 (off 0 ticks)
+EA 2026.09.08 04:48:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.08 04:48:00 Restart memory: continued from 08 Sep 26 | loss to win back 0.00 | streak 12W / 0L
+SIM ORDER 2026.09.08 04:50:00 tk=1184 type=2 vol=0.25 px=4437.23 sl=4427.09 tp=4439.28 bid=4440.66 ask=4440.84
+SIM DEAL 2026.09.08 04:51:30 tk=1185 pos=1184 buy IN vol=0.25 px=4436.36 profit=0.00 comm=-0.88 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.08 04:51:30 pos=1184 buy vol=0.25 px=4436.36 sl=4427.09 tp=4439.28 bid=4436.08 ask=4436.36
+SIM DEAL 2026.09.08 04:56:30 tk=1186 pos=1184 sell OUT vol=0.25 px=4439.70 profit=83.50 comm=-0.88 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.08 04:56:30 pos=1184 reason=5 px=4439.70 open=4436.36 sl=4427.09 tp=4439.28
+EA 2026.09.08 05:00:00 Trade #1184 closed: 0.25 lots at 4439.70 | trade P&L +81.75 (costs included) | closed by its take profit
+BOOK 2026.09.08 05:00:00 pnl=81.75 hedge=0 risk=254.75 lots=0.25
+SIM ORDER 2026.09.08 06:20:00 tk=1187 type=2 vol=0.29 px=4432.68 sl=4423.95 tp=4434.31 bid=4435.24 ask=4435.54
+SIM DEAL 2026.09.08 06:28:30 tk=1188 pos=1187 buy IN vol=0.29 px=4431.32 profit=0.00 comm=-1.01 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.08 06:28:30 pos=1187 buy vol=0.29 px=4431.32 sl=4423.95 tp=4434.31 bid=4431.02 ask=4431.32
+SIM DEAL 2026.09.08 06:30:30 tk=1189 pos=1187 sell OUT vol=0.29 px=4435.05 profit=108.17 comm=-1.01 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.08 06:30:30 pos=1187 reason=5 px=4435.05 open=4431.32 sl=4423.95 tp=4434.31
+EA 2026.09.08 06:35:00 Trade #1187 closed: 0.29 lots at 4435.05 | trade P&L +106.14 (costs included) | closed by its take profit
+BOOK 2026.09.08 06:35:00 pnl=106.14 hedge=0 risk=251.22 lots=0.29
+DRIVER restart at tick 144565 (off 0 ticks)
+EA 2026.09.08 08:57:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.08 08:57:15 Restart memory: continued from 08 Sep 26 | loss to win back 0.00 | streak 14W / 0L
+SIM ORDER 2026.09.08 09:20:00 tk=1190 type=3 vol=0.28 px=4406.66 sl=4415.79 tp=4404.89 bid=4401.67 ask=4401.91
+SIM DEAL 2026.09.08 09:43:30 tk=1191 pos=1190 sell IN vol=0.28 px=4407.14 profit=0.00 comm=-0.98 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.08 09:43:30 pos=1190 sell vol=0.28 px=4407.14 sl=4415.79 tp=4404.89 bid=4407.14 ask=4407.30
+SIM MODIFY 2026.09.08 09:45:00 pos=1190 sl=4415.79->4415.65 tp=4404.89->4404.75
+SIM DEAL 2026.09.08 09:53:30 tk=1192 pos=1190 buy OUT vol=0.28 px=4403.97 profit=88.76 comm=-0.98 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.08 09:53:30 pos=1190 reason=5 px=4403.97 open=4407.14 sl=4415.65 tp=4404.75
+EA 2026.09.08 09:55:00 Trade #1190 closed: 0.28 lots at 4403.97 | trade P&L +86.80 (costs included) | closed by its take profit
+BOOK 2026.09.08 09:55:00 pnl=86.80 hedge=0 risk=255.17 lots=0.28
+SIM ORDER 2026.09.08 10:40:00 tk=1193 type=3 vol=0.29 px=4395.88 sl=4404.69 tp=4394.15 bid=4393.71 ask=4393.94
+SIM DEAL 2026.09.08 10:40:30 tk=1194 pos=1193 sell IN vol=0.29 px=4396.56 profit=0.00 comm=-1.01 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.08 10:40:30 pos=1193 sell vol=0.29 px=4396.56 sl=4404.69 tp=4394.15 bid=4396.56 ask=4396.72
+SIM DEAL 2026.09.08 10:42:30 tk=1195 pos=1193 buy OUT vol=0.29 px=4391.28 profit=153.12 comm=-1.01 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.08 10:42:30 pos=1193 reason=5 px=4391.28 open=4396.56 sl=4404.69 tp=4394.15
+EA 2026.09.08 10:45:00 Trade #1193 closed: 0.29 lots at 4391.28 | trade P&L +151.09 (costs included) | closed by its take profit
+BOOK 2026.09.08 10:45:00 pnl=151.09 hedge=0 risk=255.61 lots=0.29
+DRIVER restart at tick 145562 (off 0 ticks)
+EA 2026.09.08 13:06:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.08 13:06:30 Restart memory: continued from 08 Sep 26 | loss to win back 0.00 | streak 16W / 0L
+DRIVER restart at tick 146559 (off 0 ticks)
+EA 2026.09.08 17:15:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.08 17:15:45 Restart memory: continued from 08 Sep 26 | loss to win back 0.00 | streak 16W / 0L
+DRIVER restart at tick 147556 (off 0 ticks)
+EA 2026.09.08 21:25:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.08 21:25:00 Restart memory: continued from 08 Sep 26 | loss to win back 0.00 | streak 16W / 0L
+DRIVER restart at tick 148553 (off 0 ticks)
+EA 2026.09.09 02:34:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.09 02:34:15 Restart memory: continued from 09 Sep 26 | loss to win back 0.00 | streak 16W / 0L
+SIM ORDER 2026.09.09 03:55:00 tk=1196 type=2 vol=0.30 px=4357.94 sl=4349.66 tp=4359.72 bid=4359.68 ask=4359.78
+SIM DEAL 2026.09.09 04:01:30 tk=1197 pos=1196 buy IN vol=0.30 px=4354.31 profit=0.00 comm=-1.05 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.09 04:01:30 pos=1196 buy vol=0.30 px=4354.31 sl=4349.66 tp=4359.72 bid=4354.09 ask=4354.31
+SIM DEAL 2026.09.09 04:06:30 tk=1198 pos=1196 sell OUT vol=0.30 px=4364.11 profit=294.00 comm=-1.05 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.09 04:06:30 pos=1196 reason=5 px=4364.11 open=4354.31 sl=4349.66 tp=4359.72
+EA 2026.09.09 04:10:00 Trade #1196 closed: 0.30 lots at 4364.11 | trade P&L +291.90 (costs included) | closed by its take profit
+BOOK 2026.09.09 04:10:00 pnl=291.90 hedge=0 risk=252.36 lots=0.30
+SIM ORDER 2026.09.09 04:25:00 tk=1199 type=2 vol=0.26 px=4369.32 sl=4359.51 tp=4371.29 bid=4369.51 ask=4369.70
+SIM DEAL 2026.09.09 04:25:30 tk=1200 pos=1199 buy IN vol=0.26 px=4368.63 profit=0.00 comm=-0.91 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.09 04:25:30 pos=1199 buy vol=0.26 px=4368.63 sl=4359.51 tp=4371.29 bid=4368.46 ask=4368.63
+SIM DEAL 2026.09.09 04:27:30 tk=1201 pos=1199 sell OUT vol=0.26 px=4371.64 profit=78.26 comm=-0.91 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.09 04:27:30 pos=1199 reason=5 px=4371.64 open=4368.63 sl=4359.51 tp=4371.29
+EA 2026.09.09 04:30:00 Trade #1199 closed: 0.26 lots at 4371.64 | trade P&L +76.44 (costs included) | closed by its take profit
+BOOK 2026.09.09 04:30:00 pnl=76.44 hedge=0 risk=255.94 lots=0.26
+DRIVER restart at tick 149550 (off 0 ticks)
+EA 2026.09.09 06:43:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.09 06:43:30 Restart memory: continued from 09 Sep 26 | loss to win back 0.00 | streak 18W / 0L
+SIM ORDER 2026.09.09 09:05:00 tk=1202 type=2 vol=0.36 px=4401.07 sl=4394.11 tp=4402.54 bid=4403.07 ask=4403.20
+SIM DEAL 2026.09.09 09:07:30 tk=1203 pos=1202 buy IN vol=0.36 px=4400.37 profit=0.00 comm=-1.26 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.09 09:07:30 pos=1202 buy vol=0.36 px=4400.37 sl=4394.11 tp=4402.54 bid=4400.14 ask=4400.37
+SIM DEAL 2026.09.09 09:15:30 tk=1204 pos=1202 sell OUT vol=0.36 px=4402.75 profit=85.68 comm=-1.26 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.09 09:15:30 pos=1202 reason=5 px=4402.75 open=4400.37 sl=4394.11 tp=4402.54
+EA 2026.09.09 09:20:00 Trade #1202 closed: 0.36 lots at 4402.75 | trade P&L +83.16 (costs included) | closed by its take profit
+BOOK 2026.09.09 09:20:00 pnl=83.16 hedge=0 risk=254.14 lots=0.36
+SIM ORDER 2026.09.09 10:40:00 tk=1205 type=2 vol=0.38 px=4408.86 sl=4402.31 tp=4410.30 bid=4410.16 ask=4410.25
+SIM DEAL 2026.09.09 10:40:30 tk=1206 pos=1205 buy IN vol=0.38 px=4408.48 profit=0.00 comm=-1.33 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.09 10:40:30 pos=1205 buy vol=0.38 px=4408.48 sl=4402.31 tp=4410.30 bid=4408.39 ask=4408.48
+SIM DEAL 2026.09.09 10:42:15 tk=1207 pos=1205 sell OUT vol=0.38 px=4410.42 profit=73.72 comm=-1.33 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.09 10:42:15 pos=1205 reason=5 px=4410.42 open=4408.48 sl=4402.31 tp=4410.30
+EA 2026.09.09 10:45:00 Trade #1205 closed: 0.38 lots at 4410.42 | trade P&L +71.06 (costs included) | closed by its take profit
+BOOK 2026.09.09 10:45:00 pnl=71.06 hedge=0 risk=253.91 lots=0.38
+DRIVER restart at tick 150547 (off 0 ticks)
+EA 2026.09.09 10:52:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.09 10:52:45 Restart memory: continued from 09 Sep 26 | loss to win back 0.00 | streak 20W / 0L
+SIM ORDER 2026.09.09 14:05:00 tk=1208 type=2 vol=0.39 px=4403.33 sl=4396.86 tp=4404.73 bid=4403.57 ask=4403.68
+SIM DEAL 2026.09.09 14:06:30 tk=1209 pos=1208 buy IN vol=0.39 px=4403.31 profit=0.00 comm=-1.36 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.09 14:06:30 pos=1208 buy vol=0.39 px=4403.31 sl=4396.86 tp=4404.73 bid=4403.14 ask=4403.31
+SIM DEAL 2026.09.09 14:23:30 tk=1210 pos=1208 sell OUT vol=0.39 px=4404.97 profit=64.74 comm=-1.36 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.09 14:23:30 pos=1208 reason=5 px=4404.97 open=4403.31 sl=4396.86 tp=4404.73
+EA 2026.09.09 14:25:00 Trade #1208 closed: 0.39 lots at 4404.97 | trade P&L +62.01 (costs included) | closed by its take profit
+BOOK 2026.09.09 14:25:00 pnl=62.01 hedge=0 risk=256.63 lots=0.39
+DRIVER restart at tick 151544 (off 0 ticks)
+EA 2026.09.09 15:02:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.09 15:02:00 Restart memory: continued from 09 Sep 26 | loss to win back 0.00 | streak 21W / 0L
+SIM ORDER 2026.09.09 16:05:00 tk=1211 type=2 vol=0.29 px=4403.74 sl=4395.09 tp=4405.60 bid=4407.18 ask=4407.27
+SIM CANCEL 2026.09.09 16:30:00 tk=1211
+DRIVER restart at tick 152541 (off 0 ticks)
+EA 2026.09.09 19:11:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.09 19:11:15 Restart memory: continued from 09 Sep 26 | loss to win back 0.00 | streak 21W / 0L
+DRIVER restart at tick 153538 (off 0 ticks)
+EA 2026.09.09 23:20:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.09 23:20:30 Restart memory: continued from 10 Sep 26 | loss to win back 0.00 | streak 21W / 0L
+SIM ORDER 2026.09.10 04:10:00 tk=1212 type=2 vol=0.29 px=4413.77 sl=4405.06 tp=4415.62 bid=4418.01 ask=4418.12
+SIM DEAL 2026.09.10 04:12:30 tk=1213 pos=1212 buy IN vol=0.29 px=4413.36 profit=0.00 comm=-1.01 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.10 04:12:30 pos=1212 buy vol=0.29 px=4413.36 sl=4405.06 tp=4415.62 bid=4413.07 ask=4413.36
+SIM DEAL 2026.09.10 04:18:30 tk=1214 pos=1212 sell OUT vol=0.29 px=4415.84 profit=71.92 comm=-1.01 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.10 04:18:30 pos=1212 reason=5 px=4415.84 open=4413.36 sl=4405.06 tp=4415.62
+EA 2026.09.10 04:20:00 Trade #1212 closed: 0.29 lots at 4415.84 | trade P&L +69.89 (costs included) | closed by its take profit
+BOOK 2026.09.10 04:20:00 pnl=69.89 hedge=0 risk=256.18 lots=0.29
+DRIVER restart at tick 154535 (off 0 ticks)
+EA 2026.09.10 04:29:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.10 04:29:45 Restart memory: continued from 10 Sep 26 | loss to win back 0.00 | streak 22W / 0L
+DRIVER restart at tick 155532 (off 0 ticks)
+EA 2026.09.10 08:39:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.10 08:39:00 Restart memory: continued from 10 Sep 26 | loss to win back 0.00 | streak 22W / 0L
+SIM ORDER 2026.09.10 10:35:00 tk=1215 type=3 vol=0.29 px=4406.54 sl=4415.31 tp=4404.78 bid=4404.66 ask=4404.85
+SIM DEAL 2026.09.10 10:35:30 tk=1216 pos=1215 sell IN vol=0.29 px=4407.24 profit=0.00 comm=-1.01 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.10 10:35:30 pos=1215 sell vol=0.29 px=4407.24 sl=4415.31 tp=4404.78 bid=4407.24 ask=4407.36
+SIM MODIFY 2026.09.10 10:40:00 pos=1215 sl=4415.31->4415.29 tp=4404.78->4404.76
+SIM DEAL 2026.09.10 10:52:30 tk=1217 pos=1215 buy OUT vol=0.29 px=4415.57 profit=-241.57 comm=-1.01 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.09.10 10:52:30 pos=1215 reason=4 px=4415.57 open=4407.24 sl=4415.29 tp=4404.76
+EA 2026.09.10 10:55:00 Trade #1215 closed: 0.29 lots at 4415.57 | trade P&L -243.60 (costs included) | closed by its stop loss
+BOOK 2026.09.10 10:55:00 pnl=-243.60 hedge=0 risk=255.21 lots=0.29
+SIM ORDER 2026.09.10 11:35:00 tk=1218 type=3 vol=0.01 px=4402.87 sl=4410.57 tp=4401.28 bid=4399.98 ask=4400.14
+SIM CANCEL 2026.09.10 12:00:00 tk=1218
+DRIVER restart at tick 156529 (off 0 ticks)
+EA 2026.09.10 12:48:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.10 12:48:15 Restart memory: continued from 10 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 157526 (off 0 ticks)
+EA 2026.09.10 16:57:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.10 16:57:30 Restart memory: continued from 10 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 158523 (off 0 ticks)
+EA 2026.09.10 21:06:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.10 21:06:45 Restart memory: continued from 10 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 159520 (off 0 ticks)
+EA 2026.09.11 02:16:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.11 02:16:00 Restart memory: continued from 11 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 160517 (off 0 ticks)
+EA 2026.09.11 06:25:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.11 06:25:15 Restart memory: continued from 11 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 161514 (off 0 ticks)
+EA 2026.09.11 10:34:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.11 10:34:30 Restart memory: continued from 11 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 162511 (off 0 ticks)
+EA 2026.09.11 14:43:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.11 14:43:45 Restart memory: continued from 11 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 163508 (off 0 ticks)
+EA 2026.09.11 18:53:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.11 18:53:00 Restart memory: continued from 11 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 164505 (off 0 ticks)
+EA 2026.09.11 23:02:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.11 23:02:15 Restart memory: continued from 12 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 165502 (off 0 ticks)
+EA 2026.09.14 04:11:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.14 04:11:30 Restart memory: continued from 14 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 166499 (off 0 ticks)
+EA 2026.09.14 08:20:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.14 08:20:45 Restart memory: continued from 14 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 167496 (off 0 ticks)
+EA 2026.09.14 12:30:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.14 12:30:00 Restart memory: continued from 14 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 168493 (off 0 ticks)
+EA 2026.09.14 16:39:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.14 16:39:15 Restart memory: continued from 14 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 169490 (off 0 ticks)
+EA 2026.09.14 20:48:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.14 20:48:30 Restart memory: continued from 14 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+DRIVER restart at tick 170487 (off 0 ticks)
+EA 2026.09.15 01:57:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.15 01:57:45 Restart memory: continued from 15 Sep 26 | loss to win back 87.28 | streak 0W / 1L
+SIM ORDER 2026.09.15 04:15:00 tk=1219 type=2 vol=0.01 px=4298.85 sl=4293.73 tp=4299.81 bid=4299.67 ask=4299.92
+SIM DEAL 2026.09.15 04:37:30 tk=1220 pos=1219 buy IN vol=0.01 px=4297.96 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.15 04:37:30 pos=1219 buy vol=0.01 px=4297.96 sl=4293.73 tp=4299.81 bid=4297.71 ask=4297.96
+SIM DEAL 2026.09.15 04:46:30 tk=1221 pos=1219 sell OUT vol=0.01 px=4300.75 profit=2.79 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.15 04:46:30 pos=1219 reason=5 px=4300.75 open=4297.96 sl=4293.73 tp=4299.81
+EA 2026.09.15 04:50:00 Trade #1219 closed: 0.01 lots at 4300.75 | trade P&L +2.72 (costs included) | closed by its take profit
+BOOK 2026.09.15 04:50:00 pnl=2.72 hedge=0 risk=5.10 lots=0.01
+SIM DEAL 2026.09.15 05:00:00 tk=1223 pos=1222 buy IN vol=0.29 px=4304.66 profit=0.00 comm=-1.01 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.15 05:00:00 pos=1222 buy vol=0.29 px=4304.66 sl=4297.98 tp=4308.32 bid=4304.52 ask=4304.66
+SIM DEAL 2026.09.15 05:01:30 tk=1224 pos=1222 sell OUT vol=0.29 px=4310.73 profit=176.03 comm=-1.01 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.15 05:01:30 pos=1222 reason=5 px=4310.73 open=4304.66 sl=4297.98 tp=4308.32
+EA 2026.09.15 05:05:00 Trade #1222 closed: 0.29 lots at 4310.73 | trade P&L +174.00 (costs included) | closed by its take profit
+BOOK 2026.09.15 05:05:00 pnl=174.00 hedge=0 risk=250.57 lots=0.29
+DRIVER restart at tick 171484 (off 0 ticks)
+EA 2026.09.15 06:07:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.15 06:07:00 Restart memory: continued from 15 Sep 26 | loss to win back 66.88 | streak 2W / 0L
+DRIVER restart at tick 172481 (off 0 ticks)
+EA 2026.09.15 10:16:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.15 10:16:15 Restart memory: continued from 15 Sep 26 | loss to win back 66.88 | streak 2W / 0L
+SIM ORDER 2026.09.15 10:40:00 tk=1225 type=3 vol=0.34 px=4286.71 sl=4294.08 tp=4285.21 bid=4285.76 ask=4285.93
+SIM DEAL 2026.09.15 10:40:15 tk=1226 pos=1225 sell IN vol=0.34 px=4286.81 profit=0.00 comm=-1.19 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.15 10:40:15 pos=1225 sell vol=0.34 px=4286.81 sl=4294.08 tp=4285.21 bid=4286.81 ask=4287.01
+SIM DEAL 2026.09.15 10:40:30 tk=1227 pos=1225 buy OUT vol=0.34 px=4284.45 profit=80.24 comm=-1.19 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.15 10:40:30 pos=1225 reason=5 px=4284.45 open=4286.81 sl=4294.08 tp=4285.21
+EA 2026.09.15 10:45:00 Trade #1225 closed: 0.34 lots at 4284.45 | trade P&L +77.86 (costs included) | closed by its take profit
+BOOK 2026.09.15 10:45:00 pnl=77.86 hedge=0 risk=252.59 lots=0.34
+SIM ORDER 2026.09.15 10:55:00 tk=1228 type=3 vol=0.30 px=4280.93 sl=4289.40 tp=4279.19 bid=4277.74 ask=4277.90
+SIM CANCEL 2026.09.15 11:20:00 tk=1228
+DRIVER restart at tick 173478 (off 0 ticks)
+EA 2026.09.15 14:25:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.15 14:25:30 Restart memory: continued from 15 Sep 26 | loss to win back 0.00 | streak 3W / 0L
+DRIVER restart at tick 174475 (off 0 ticks)
+EA 2026.09.15 18:34:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.15 18:34:45 Restart memory: continued from 15 Sep 26 | loss to win back 0.00 | streak 3W / 0L
+DRIVER restart at tick 175472 (off 0 ticks)
+EA 2026.09.15 22:44:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.15 22:44:00 Restart memory: continued from 16 Sep 26 | loss to win back 0.00 | streak 3W / 0L
+DRIVER restart at tick 176469 (off 0 ticks)
+EA 2026.09.16 03:53:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.16 03:53:15 Restart memory: continued from 16 Sep 26 | loss to win back 0.00 | streak 3W / 0L
+SIM ORDER 2026.09.16 04:25:00 tk=1229 type=2 vol=0.69 px=4290.37 sl=4286.49 tp=4291.07 bid=4290.52 ask=4290.78
+SIM DEAL 2026.09.16 04:25:15 tk=1230 pos=1229 buy IN vol=0.69 px=4289.26 profit=0.00 comm=-2.42 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.16 04:25:15 pos=1229 buy vol=0.69 px=4289.26 sl=4286.49 tp=4291.07 bid=4288.99 ask=4289.26
+SIM DEAL 2026.09.16 04:25:30 tk=1231 pos=1229 sell OUT vol=0.69 px=4292.04 profit=191.82 comm=-2.42 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.16 04:25:30 pos=1229 reason=5 px=4292.04 open=4289.26 sl=4286.49 tp=4291.07
+EA 2026.09.16 04:30:00 Trade #1229 closed: 0.69 lots at 4292.04 | trade P&L +186.99 (costs included) | closed by its take profit
+BOOK 2026.09.16 04:30:00 pnl=186.99 hedge=0 risk=265.45 lots=0.69
+SIM ORDER 2026.09.16 05:25:00 tk=1232 type=2 vol=0.30 px=4295.24 sl=4286.71 tp=4296.84 bid=4295.58 ask=4295.86
+SIM CANCEL 2026.09.16 05:50:00 tk=1232
+SIM ORDER 2026.09.16 06:00:00 tk=1233 type=2 vol=0.26 px=4319.37 sl=4309.75 tp=4321.29 bid=4321.63 ask=4321.83
+SIM CANCEL 2026.09.16 06:25:00 tk=1233
+DRIVER restart at tick 177466 (off 0 ticks)
+EA 2026.09.16 08:02:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.16 08:02:30 Restart memory: continued from 16 Sep 26 | loss to win back 0.00 | streak 4W / 0L
+SIM ORDER 2026.09.16 10:00:00 tk=1234 type=2 vol=0.36 px=4330.92 sl=4323.96 tp=4332.45 bid=4332.77 ask=4332.85
+SIM DEAL 2026.09.16 10:06:30 tk=1235 pos=1234 buy IN vol=0.36 px=4330.23 profit=0.00 comm=-1.26 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.16 10:06:30 pos=1234 buy vol=0.36 px=4330.23 sl=4323.96 tp=4332.45 bid=4330.00 ask=4330.23
+SIM DEAL 2026.09.16 10:07:00 tk=1236 pos=1234 sell OUT vol=0.36 px=4332.64 profit=86.76 comm=-1.26 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.16 10:07:00 pos=1234 reason=5 px=4332.64 open=4330.23 sl=4323.96 tp=4332.45
+EA 2026.09.16 10:10:00 Trade #1234 closed: 0.36 lots at 4332.64 | trade P&L +84.24 (costs included) | closed by its take profit
+BOOK 2026.09.16 10:10:00 pnl=84.24 hedge=0 risk=255.62 lots=0.36
+SIM ORDER 2026.09.16 10:40:00 tk=1237 type=2 vol=0.36 px=4337.80 sl=4330.69 tp=4339.23 bid=4338.28 ask=4338.47
+SIM DEAL 2026.09.16 10:40:30 tk=1238 pos=1237 buy IN vol=0.36 px=4337.57 profit=0.00 comm=-1.26 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.16 10:40:30 pos=1237 buy vol=0.36 px=4337.57 sl=4330.69 tp=4339.23 bid=4337.43 ask=4337.57
+SIM DEAL 2026.09.16 10:53:30 tk=1239 pos=1237 sell OUT vol=0.36 px=4330.08 profit=-269.64 comm=-1.26 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.09.16 10:53:30 pos=1237 reason=4 px=4330.08 open=4337.57 sl=4330.69 tp=4339.23
+EA 2026.09.16 10:55:00 Trade #1237 closed: 0.36 lots at 4330.08 | trade P&L -272.16 (costs included) | closed by its stop loss
+BOOK 2026.09.16 10:55:00 pnl=-272.16 hedge=0 risk=257.19 lots=0.36
+DRIVER restart at tick 178463 (off 0 ticks)
+EA 2026.09.16 12:11:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.16 12:11:45 Restart memory: continued from 16 Sep 26 | loss to win back 33.63 | streak 0W / 1L
+SIM ORDER 2026.09.16 16:15:00 tk=1240 type=2 vol=0.01 px=4352.58 sl=4343.70 tp=4354.45 bid=4356.62 ask=4356.74
+SIM DEAL 2026.09.16 16:20:30 tk=1241 pos=1240 buy IN vol=0.01 px=4349.45 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.16 16:20:30 pos=1240 buy vol=0.01 px=4349.45 sl=4343.70 tp=4354.45 bid=4349.35 ask=4349.45
+DRIVER restart at tick 179460 (off 0 ticks)
+EA 2026.09.16 16:21:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.16 16:21:00 Open position #1240 kept: it filled before the engine's fill (bid chart); the engine's setup is still armed.
+EA 2026.09.16 16:21:00 Restart memory: continued from 16 Sep 26 | loss to win back 33.63 | streak 0W / 1L | trade still open
+SIM DEAL 2026.09.16 16:22:30 tk=1242 pos=1240 sell OUT vol=0.01 px=4355.96 profit=6.51 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.16 16:22:30 pos=1240 reason=5 px=4355.96 open=4349.45 sl=4343.70 tp=4354.45
+EA 2026.09.16 16:25:00 Trade #1240 closed: 0.01 lots at 4355.96 | trade P&L +6.44 (costs included) | closed by its take profit
+BOOK 2026.09.16 16:25:00 pnl=6.44 hedge=0 risk=8.99 lots=0.01
+DRIVER restart at tick 180457 (off 0 ticks)
+EA 2026.09.16 20:30:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.16 20:30:15 Restart memory: continued from 16 Sep 26 | loss to win back 27.19 | streak 1W / 0L
+DRIVER restart at tick 181454 (off 0 ticks)
+EA 2026.09.17 01:39:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.17 01:39:30 Restart memory: continued from 17 Sep 26 | loss to win back 27.19 | streak 1W / 0L
+SIM ORDER 2026.09.17 04:05:00 tk=1243 type=2 vol=0.21 px=4292.56 sl=4280.78 tp=4294.81 bid=4297.32 ask=4297.60
+SIM CANCEL 2026.09.17 04:30:00 tk=1243
+SIM ORDER 2026.09.17 04:35:00 tk=1244 type=2 vol=0.19 px=4312.81 sl=4299.90 tp=4315.33 bid=4314.13 ask=4314.38
+SIM DEAL 2026.09.17 04:39:30 tk=1245 pos=1244 buy IN vol=0.19 px=4311.20 profit=0.00 comm=-0.67 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.17 04:39:30 pos=1244 buy vol=0.19 px=4311.20 sl=4299.90 tp=4315.33 bid=4311.11 ask=4311.20
+SIM DEAL 2026.09.17 04:58:30 tk=1246 pos=1244 sell OUT vol=0.19 px=4298.97 profit=-232.37 comm=-0.67 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.09.17 04:58:30 pos=1244 reason=4 px=4298.97 open=4311.20 sl=4299.90 tp=4315.33
+EA 2026.09.17 05:00:00 Trade #1244 closed: 0.19 lots at 4298.97 | trade P&L -233.70 (costs included) | closed by its stop loss
+BOOK 2026.09.17 05:00:00 pnl=-233.70 hedge=0 risk=244.88 lots=0.19
+DRIVER restart at tick 182451 (off 0 ticks)
+EA 2026.09.17 05:48:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.17 05:48:45 Restart memory: continued from 17 Sep 26 | loss to win back 60.89 | streak 0W / 1L
+SIM ORDER 2026.09.17 06:45:00 tk=1247 type=2 vol=0.01 px=4294.28 sl=4284.15 tp=4296.45 bid=4295.95 ask=4296.03
+SIM DEAL 2026.09.17 06:47:30 tk=1248 pos=1247 buy IN vol=0.01 px=4293.94 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.17 06:47:30 pos=1247 buy vol=0.01 px=4293.94 sl=4284.15 tp=4296.45 bid=4293.77 ask=4293.94
+SIM DEAL 2026.09.17 06:49:15 tk=1249 pos=1247 sell OUT vol=0.01 px=4296.52 profit=2.58 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.17 06:49:15 pos=1247 reason=5 px=4296.52 open=4293.94 sl=4284.15 tp=4296.45
+EA 2026.09.17 06:50:00 Trade #1247 closed: 0.01 lots at 4296.52 | trade P&L +2.51 (costs included) | closed by its take profit
+BOOK 2026.09.17 06:50:00 pnl=2.51 hedge=0 risk=10.28 lots=0.01
+SIM ORDER 2026.09.17 09:10:00 tk=1250 type=2 vol=0.33 px=4309.00 sl=4301.29 tp=4310.58 bid=4310.11 ask=4310.27
+SIM CANCEL 2026.09.17 09:15:00 tk=1250
+DRIVER restart at tick 183448 (off 0 ticks)
+EA 2026.09.17 09:58:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.17 09:58:00 Restart memory: continued from 17 Sep 26 | loss to win back 58.38 | streak 1W / 0L
+SIM ORDER 2026.09.17 10:10:00 tk=1251 type=2 vol=0.31 px=4313.75 sl=4305.64 tp=4315.32 bid=4314.93 ask=4315.17
+SIM CANCEL 2026.09.17 10:35:00 tk=1251
+SIM ORDER 2026.09.17 14:05:00 tk=1252 type=2 vol=0.33 px=4327.39 sl=4319.66 tp=4328.91 bid=4330.21 ask=4330.43
+DRIVER restart at tick 184445 (off 0 ticks)
+EA 2026.09.17 14:07:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+SIM CANCEL 2026.09.17 14:07:15 tk=1252
+EA 2026.09.17 14:07:15 Restart memory: continued from 17 Sep 26 | loss to win back 58.38 | streak 1W / 0L
+SIM ORDER 2026.09.17 14:07:30 tk=1253 type=2 vol=0.33 px=4327.29 sl=4319.66 tp=4328.91 bid=4332.80 ask=4332.92
+SIM DEAL 2026.09.17 14:19:30 tk=1254 pos=1253 buy IN vol=0.33 px=4327.25 profit=0.00 comm=-1.16 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.17 14:19:30 pos=1253 buy vol=0.33 px=4327.25 sl=4319.66 tp=4328.91 bid=4327.09 ask=4327.25
+SIM DEAL 2026.09.17 14:20:30 tk=1255 pos=1253 sell OUT vol=0.33 px=4331.54 profit=141.57 comm=-1.16 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.17 14:20:30 pos=1253 reason=5 px=4331.54 open=4327.25 sl=4319.66 tp=4328.91
+EA 2026.09.17 14:25:00 Trade #1253 closed: 0.33 lots at 4331.54 | trade P&L +139.26 (costs included) | closed by its take profit
+BOOK 2026.09.17 14:25:00 pnl=139.26 hedge=0 risk=255.43 lots=0.33
+DRIVER restart at tick 185442 (off 0 ticks)
+EA 2026.09.17 18:16:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.17 18:16:30 Restart memory: continued from 17 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 186439 (off 0 ticks)
+EA 2026.09.17 22:25:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.17 22:25:45 Restart memory: continued from 18 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 187436 (off 0 ticks)
+EA 2026.09.18 03:35:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.18 03:35:00 Restart memory: continued from 18 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 188433 (off 0 ticks)
+EA 2026.09.18 07:44:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.18 07:44:15 Restart memory: continued from 18 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 189430 (off 0 ticks)
+EA 2026.09.18 11:53:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.18 11:53:30 Restart memory: continued from 18 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 190427 (off 0 ticks)
+EA 2026.09.18 16:02:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.18 16:02:45 Restart memory: continued from 18 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 191424 (off 0 ticks)
+EA 2026.09.18 20:12:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.18 20:12:00 Restart memory: continued from 18 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 192421 (off 0 ticks)
+EA 2026.09.21 01:21:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.21 01:21:15 Restart memory: continued from 21 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 193418 (off 0 ticks)
+EA 2026.09.21 05:30:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.21 05:30:30 Restart memory: continued from 21 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 194415 (off 0 ticks)
+EA 2026.09.21 09:39:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.21 09:39:45 Restart memory: continued from 21 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 195412 (off 0 ticks)
+EA 2026.09.21 13:49:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.21 13:49:00 Restart memory: continued from 21 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 196409 (off 0 ticks)
+EA 2026.09.21 17:58:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.21 17:58:15 Restart memory: continued from 21 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 197406 (off 0 ticks)
+EA 2026.09.21 22:07:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.21 22:07:30 Restart memory: continued from 22 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+DRIVER restart at tick 198403 (off 0 ticks)
+EA 2026.09.22 03:16:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.22 03:16:45 Restart memory: continued from 22 Sep 26 | loss to win back 119.12 | streak 2W / 0L
+SIM ORDER 2026.09.22 03:40:00 tk=1256 type=3 vol=0.29 px=4353.34 sl=4361.91 tp=4351.48 bid=4349.37 ask=4349.45
+SIM DEAL 2026.09.22 03:44:30 tk=1257 pos=1256 sell IN vol=0.29 px=4355.69 profit=0.00 comm=-1.01 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.22 03:44:30 pos=1256 sell vol=0.29 px=4355.69 sl=4361.91 tp=4351.48 bid=4355.69 ask=4355.86
+SIM MODIFY 2026.09.22 03:45:00 pos=1256 sl=4361.91->4362.10 tp=4351.48->4351.67
+SIM DEAL 2026.09.22 04:03:30 tk=1258 pos=1256 buy OUT vol=0.29 px=4363.29 profit=-220.40 comm=-1.01 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.09.22 04:03:30 pos=1256 reason=4 px=4363.29 open=4355.69 sl=4362.10 tp=4351.67
+EA 2026.09.22 04:05:00 Trade #1256 closed: 0.29 lots at 4363.29 | trade P&L -222.43 (costs included) | closed by its stop loss
+BOOK 2026.09.22 04:05:00 pnl=-222.43 hedge=0 risk=252.80 lots=0.29
+SIM ORDER 2026.09.22 04:45:00 tk=1259 type=3 vol=0.01 px=4349.82 sl=4359.68 tp=4347.85 bid=4349.29 ask=4349.49
+SIM DEAL 2026.09.22 04:45:30 tk=1260 pos=1259 sell IN vol=0.01 px=4351.19 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.22 04:45:30 pos=1259 sell vol=0.01 px=4351.19 sl=4359.68 tp=4347.85 bid=4351.19 ask=4351.40
+SIM DEAL 2026.09.22 04:47:30 tk=1261 pos=1259 buy OUT vol=0.01 px=4347.22 profit=3.97 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.22 04:47:30 pos=1259 reason=5 px=4347.22 open=4351.19 sl=4359.68 tp=4347.85
+EA 2026.09.22 04:50:00 Trade #1259 closed: 0.01 lots at 4347.22 | trade P&L +3.90 (costs included) | closed by its take profit
+BOOK 2026.09.22 04:50:00 pnl=3.90 hedge=0 risk=9.88 lots=0.01
+SIM ORDER 2026.09.22 05:10:00 tk=1262 type=3 vol=0.24 px=4343.51 sl=4353.84 tp=4341.40 bid=4343.28 ask=4343.44
+SIM DEAL 2026.09.22 05:11:30 tk=1263 pos=1262 sell IN vol=0.24 px=4344.70 profit=0.00 comm=-0.84 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.22 05:11:30 pos=1262 sell vol=0.24 px=4344.70 sl=4353.84 tp=4341.40 bid=4344.70 ask=4344.82
+SIM MODIFY 2026.09.22 05:15:00 pos=1262 sl=4353.84->4353.88 tp=4341.40->4341.44
+SIM DEAL 2026.09.22 05:16:30 tk=1264 pos=1262 buy OUT vol=0.24 px=4341.29 profit=81.84 comm=-0.84 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.22 05:16:30 pos=1262 reason=5 px=4341.29 open=4344.70 sl=4353.88 tp=4341.44
+EA 2026.09.22 05:20:00 Trade #1262 closed: 0.24 lots at 4341.29 | trade P&L +80.16 (costs included) | closed by its take profit
+BOOK 2026.09.22 05:20:00 pnl=80.16 hedge=0 risk=249.38 lots=0.24
+DRIVER restart at tick 199400 (off 0 ticks)
+EA 2026.09.22 07:26:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.22 07:26:00 Restart memory: continued from 22 Sep 26 | loss to win back 57.49 | streak 2W / 0L
+SIM ORDER 2026.09.22 10:55:00 tk=1265 type=3 vol=0.26 px=4305.61 sl=4315.33 tp=4303.71 bid=4301.98 ask=4302.22
+SIM DEAL 2026.09.22 11:05:30 tk=1266 pos=1265 sell IN vol=0.26 px=4306.91 profit=0.00 comm=-0.91 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.22 11:05:30 pos=1265 sell vol=0.26 px=4306.91 sl=4315.33 tp=4303.71 bid=4306.91 ask=4307.04
+SIM MODIFY 2026.09.22 11:10:00 pos=1265 sl=4315.33->4315.18 tp=4303.71->4303.56
+SIM DEAL 2026.09.22 11:15:30 tk=1267 pos=1265 buy OUT vol=0.26 px=4302.23 profit=121.68 comm=-0.91 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.22 11:15:30 pos=1265 reason=5 px=4302.23 open=4306.91 sl=4315.18 tp=4303.56
+EA 2026.09.22 11:20:00 Trade #1265 closed: 0.26 lots at 4302.23 | trade P&L +119.86 (costs included) | closed by its take profit
+BOOK 2026.09.22 11:20:00 pnl=119.86 hedge=0 risk=252.35 lots=0.26
+DRIVER restart at tick 200397 (off 0 ticks)
+EA 2026.09.22 11:35:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.22 11:35:15 Restart memory: continued from 22 Sep 26 | loss to win back 137.63 | streak 3W / 0L
+SIM ORDER 2026.09.22 14:10:00 tk=1268 type=3 vol=0.23 px=4314.64 sl=4325.53 tp=4312.34 bid=4310.36 ask=4310.46
+SIM DEAL 2026.09.22 14:12:15 tk=1269 pos=1268 sell IN vol=0.23 px=4315.32 profit=0.00 comm=-0.81 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.22 14:12:15 pos=1268 sell vol=0.23 px=4315.32 sl=4325.53 tp=4312.34 bid=4315.32 ask=4315.48
+SIM DEAL 2026.09.22 14:12:30 tk=1270 pos=1268 buy OUT vol=0.23 px=4311.25 profit=93.61 comm=-0.81 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.22 14:12:30 pos=1268 reason=5 px=4311.25 open=4315.32 sl=4325.53 tp=4312.34
+EA 2026.09.22 14:15:00 Trade #1268 closed: 0.23 lots at 4311.25 | trade P&L +92.00 (costs included) | closed by its take profit
+BOOK 2026.09.22 14:15:00 pnl=92.00 hedge=0 risk=253.49 lots=0.23
+DRIVER restart at tick 201394 (off 0 ticks)
+EA 2026.09.22 15:44:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.22 15:44:30 Restart memory: continued from 22 Sep 26 | loss to win back 45.63 | streak 4W / 0L
+DRIVER restart at tick 202391 (off 0 ticks)
+EA 2026.09.22 19:53:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.22 19:53:45 Restart memory: continued from 22 Sep 26 | loss to win back 45.63 | streak 4W / 0L
+DRIVER restart at tick 203388 (off 0 ticks)
+EA 2026.09.23 01:03:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.23 01:03:00 Restart memory: continued from 23 Sep 26 | loss to win back 45.63 | streak 4W / 0L
+SIM ORDER 2026.09.23 04:05:00 tk=1271 type=3 vol=0.37 px=4354.30 sl=4361.22 tp=4353.01 bid=4351.12 ask=4351.40
+SIM CANCEL 2026.09.23 04:30:00 tk=1271
+SIM ORDER 2026.09.23 04:30:00 tk=1272 type=3 vol=0.37 px=4345.62 sl=4352.58 tp=4344.25 bid=4343.53 ask=4343.74
+SIM DEAL 2026.09.23 04:36:30 tk=1273 pos=1272 sell IN vol=0.37 px=4346.16 profit=0.00 comm=-1.29 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.23 04:36:30 pos=1272 sell vol=0.37 px=4346.16 sl=4352.58 tp=4344.25 bid=4346.16 ask=4346.46
+SIM DEAL 2026.09.23 04:38:30 tk=1274 pos=1272 buy OUT vol=0.37 px=4343.98 profit=80.66 comm=-1.29 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.23 04:38:30 pos=1272 reason=5 px=4343.98 open=4346.16 sl=4352.58 tp=4344.25
+EA 2026.09.23 04:40:00 Trade #1272 closed: 0.37 lots at 4343.98 | trade P&L +78.07 (costs included) | closed by its take profit
+BOOK 2026.09.23 04:40:00 pnl=78.07 hedge=0 risk=258.04 lots=0.37
+SIM ORDER 2026.09.23 04:55:00 tk=1275 type=3 vol=0.41 px=4341.64 sl=4348.62 tp=4340.23 bid=4340.69 ask=4340.87
+DRIVER restart at tick 204385 (off 0 ticks)
+EA 2026.09.23 05:12:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+SIM CANCEL 2026.09.23 05:12:15 tk=1275
+EA 2026.09.23 05:12:15 Restart memory: continued from 23 Sep 26 | loss to win back 167.56 | streak 5W / 0L
+SIM ORDER 2026.09.23 05:12:30 tk=1276 type=3 vol=0.41 px=4341.64 sl=4348.71 tp=4340.32 bid=4337.52 ask=4337.79
+SIM CANCEL 2026.09.23 05:20:00 tk=1276
+SIM ORDER 2026.09.23 05:40:00 tk=1277 type=3 vol=0.46 px=4334.50 sl=4340.72 tp=4333.23 bid=4333.96 ask=4334.13
+SIM DEAL 2026.09.23 05:40:30 tk=1278 pos=1277 sell IN vol=0.46 px=4335.66 profit=0.00 comm=-1.61 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.23 05:40:30 pos=1277 sell vol=0.46 px=4335.66 sl=4340.72 tp=4333.23 bid=4335.66 ask=4335.86
+SIM MODIFY 2026.09.23 05:45:00 pos=1277 sl=4340.72->4340.84 tp=4333.23->4333.35
+SIM DEAL 2026.09.23 06:40:30 tk=1279 pos=1277 buy OUT vol=0.46 px=4341.14 profit=-252.08 comm=-1.61 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.09.23 06:40:30 pos=1277 reason=4 px=4341.14 open=4335.66 sl=4340.84 tp=4333.35
+EA 2026.09.23 06:45:00 Trade #1277 closed: 0.46 lots at 4341.14 | trade P&L -255.30 (costs included) | closed by its stop loss
+BOOK 2026.09.23 06:45:00 pnl=-255.30 hedge=0 risk=288.86 lots=0.46
+DRIVER restart at tick 205382 (off 0 ticks)
+EA 2026.09.23 09:21:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.23 09:21:30 Restart memory: continued from 23 Sep 26 | loss to win back 22.86 | streak 0W / 1L
+SIM ORDER 2026.09.23 10:15:00 tk=1280 type=3 vol=0.01 px=4326.61 sl=4332.75 tp=4325.30 bid=4324.82 ask=4324.95
+SIM DEAL 2026.09.23 10:15:30 tk=1281 pos=1280 sell IN vol=0.01 px=4327.47 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.23 10:15:30 pos=1280 sell vol=0.01 px=4327.47 sl=4332.75 tp=4325.30 bid=4327.47 ask=4327.61
+SIM MODIFY 2026.09.23 10:20:00 pos=1280 sl=4332.75->4332.77 tp=4325.30->4325.32
+SIM DEAL 2026.09.23 10:25:30 tk=1282 pos=1280 buy OUT vol=0.01 px=4324.38 profit=3.09 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.23 10:25:30 pos=1280 reason=5 px=4324.38 open=4327.47 sl=4332.77 tp=4325.32
+EA 2026.09.23 10:30:00 Trade #1280 closed: 0.01 lots at 4324.38 | trade P&L +3.02 (costs included) | closed by its take profit
+BOOK 2026.09.23 10:30:00 pnl=3.02 hedge=0 risk=6.23 lots=0.01
+SIM ORDER 2026.09.23 10:35:00 tk=1283 type=3 vol=0.40 px=4322.19 sl=4328.51 tp=4320.85 bid=4320.64 ask=4320.77
+SIM DEAL 2026.09.23 10:37:30 tk=1284 pos=1283 sell IN vol=0.40 px=4323.11 profit=0.00 comm=-1.40 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.23 10:37:30 pos=1283 sell vol=0.40 px=4323.11 sl=4328.51 tp=4320.85 bid=4323.11 ask=4323.18
+SIM MODIFY 2026.09.23 10:40:00 pos=1283 sl=4328.51->4328.55 tp=4320.85->4320.89
+SIM DEAL 2026.09.23 10:41:30 tk=1285 pos=1283 buy OUT vol=0.40 px=4320.84 profit=90.80 comm=-1.40 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.23 10:41:30 pos=1283 reason=5 px=4320.84 open=4323.11 sl=4328.55 tp=4320.89
+EA 2026.09.23 10:45:00 Trade #1283 closed: 0.40 lots at 4320.84 | trade P&L +88.00 (costs included) | closed by its take profit
+BOOK 2026.09.23 10:45:00 pnl=88.00 hedge=0 risk=256.80 lots=0.40
+DRIVER restart at tick 206379 (off 0 ticks)
+EA 2026.09.23 13:30:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.23 13:30:45 Restart memory: continued from 23 Sep 26 | loss to win back 131.84 | streak 2W / 0L
+DRIVER restart at tick 207376 (off 0 ticks)
+EA 2026.09.23 17:40:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.23 17:40:00 Restart memory: continued from 23 Sep 26 | loss to win back 131.84 | streak 2W / 0L
+DRIVER restart at tick 208373 (off 0 ticks)
+EA 2026.09.23 21:49:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.23 21:49:15 Restart memory: continued from 24 Sep 26 | loss to win back 131.84 | streak 2W / 0L
+DRIVER restart at tick 209370 (off 0 ticks)
+EA 2026.09.24 02:58:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.24 02:58:30 Restart memory: continued from 24 Sep 26 | loss to win back 131.84 | streak 2W / 0L
+SIM ORDER 2026.09.24 03:45:00 tk=1286 type=2 vol=0.40 px=4294.65 sl=4288.14 tp=4295.86 bid=4294.50 ask=4294.77
+SIM DEAL 2026.09.24 03:45:30 tk=1287 pos=1286 buy IN vol=0.40 px=4292.71 profit=0.00 comm=-1.40 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.24 03:45:30 pos=1286 buy vol=0.40 px=4292.71 sl=4288.14 tp=4295.86 bid=4292.43 ask=4292.71
+SIM DEAL 2026.09.24 03:55:30 tk=1288 pos=1286 sell OUT vol=0.40 px=4297.41 profit=188.00 comm=-1.40 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.24 03:55:30 pos=1286 reason=5 px=4297.41 open=4292.71 sl=4288.14 tp=4295.86
+EA 2026.09.24 04:00:00 Trade #1286 closed: 0.40 lots at 4297.41 | trade P&L +185.20 (costs included) | closed by its take profit
+BOOK 2026.09.24 04:00:00 pnl=185.20 hedge=0 risk=258.76 lots=0.40
+SIM ORDER 2026.09.24 04:15:00 tk=1289 type=2 vol=0.31 px=4299.69 sl=4291.54 tp=4301.31 bid=4302.92 ask=4303.12
+SIM DEAL 2026.09.24 04:17:30 tk=1290 pos=1289 buy IN vol=0.31 px=4297.97 profit=0.00 comm=-1.08 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.24 04:17:30 pos=1289 buy vol=0.31 px=4297.97 sl=4291.54 tp=4301.31 bid=4297.71 ask=4297.97
+SIM DEAL 2026.09.24 04:41:15 tk=1291 pos=1289 sell OUT vol=0.31 px=4291.52 profit=-199.95 comm=-1.08 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.09.24 04:41:15 pos=1289 reason=4 px=4291.52 open=4297.97 sl=4291.54 tp=4301.31
+EA 2026.09.24 04:45:00 Trade #1289 closed: 0.31 lots at 4291.52 | trade P&L -202.12 (costs included) | closed by its stop loss
+BOOK 2026.09.24 04:45:00 pnl=-202.12 hedge=0 risk=253.30 lots=0.31
+SIM ORDER 2026.09.24 04:50:00 tk=1292 type=3 vol=0.01 px=4286.87 sl=4295.81 tp=4285.12 bid=4283.95 ask=4284.18
+SIM DEAL 2026.09.24 04:52:30 tk=1293 pos=1292 sell IN vol=0.01 px=4287.36 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.24 04:52:30 pos=1292 sell vol=0.01 px=4287.36 sl=4295.81 tp=4285.12 bid=4287.36 ask=4287.55
+SIM DEAL 2026.09.24 04:54:30 tk=1294 pos=1292 buy OUT vol=0.01 px=4282.42 profit=4.94 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.24 04:54:30 pos=1292 reason=5 px=4282.42 open=4287.36 sl=4295.81 tp=4285.12
+EA 2026.09.24 04:55:00 Trade #1292 closed: 0.01 lots at 4282.42 | trade P&L +4.87 (costs included) | closed by its take profit
+BOOK 2026.09.24 04:55:00 pnl=4.87 hedge=0 risk=8.94 lots=0.01
+SIM ORDER 2026.09.24 05:05:00 tk=1295 type=3 vol=0.26 px=4277.18 sl=4286.56 tp=4275.20 bid=4275.25 ask=4275.36
+SIM DEAL 2026.09.24 05:10:30 tk=1296 pos=1295 sell IN vol=0.26 px=4277.68 profit=0.00 comm=-0.91 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.24 05:10:30 pos=1295 sell vol=0.26 px=4277.68 sl=4286.56 tp=4275.20 bid=4277.68 ask=4277.98
+SIM MODIFY 2026.09.24 05:15:00 pos=1295 sl=4286.56->4286.75 tp=4275.20->4275.39
+SIM DEAL 2026.09.24 05:19:15 tk=1297 pos=1295 buy OUT vol=0.26 px=4286.92 profit=-240.24 comm=-0.91 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.09.24 05:19:15 pos=1295 reason=4 px=4286.92 open=4277.68 sl=4286.75 tp=4275.39
+EA 2026.09.24 05:20:00 Trade #1295 closed: 0.26 lots at 4286.92 | trade P&L -242.06 (costs included) | closed by its stop loss
+BOOK 2026.09.24 05:20:00 pnl=-242.06 hedge=0 risk=246.83 lots=0.26
+SIM ORDER 2026.09.24 06:45:00 tk=1298 type=3 vol=0.01 px=4282.63 sl=4290.34 tp=4281.14 bid=4281.74 ask=4281.98
+SIM DEAL 2026.09.24 06:46:30 tk=1299 pos=1298 sell IN vol=0.01 px=4284.32 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.24 06:46:30 pos=1298 sell vol=0.01 px=4284.32 sl=4290.34 tp=4281.14 bid=4284.32 ask=4284.48
+SIM MODIFY 2026.09.24 06:50:00 pos=1298 sl=4290.34->4290.30 tp=4281.14->4281.10
+DRIVER restart at tick 210367 (off 0 ticks)
+EA 2026.09.24 07:07:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.24 07:07:45 Adopted open position #1298 (engine is in the same trade).
+SIM MODIFY 2026.09.24 07:07:45 pos=1298 sl=4290.30->4290.30 tp=4281.10->4281.20
+EA 2026.09.24 07:07:45 Restart memory: continued from 24 Sep 26 | loss to win back 185.95 | streak 0W / 1L | trade still open
+SIM DEAL 2026.09.24 07:56:15 tk=1300 pos=1298 buy OUT vol=0.01 px=4290.42 profit=-6.10 comm=-0.04 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.09.24 07:56:15 pos=1298 reason=4 px=4290.42 open=4284.32 sl=4290.30 tp=4281.20
+EA 2026.09.24 08:00:00 Trade #1298 closed: 0.01 lots at 4290.42 | trade P&L -6.17 (costs included) | closed by its stop loss
+BOOK 2026.09.24 08:00:00 pnl=-6.17 hedge=0 risk=7.69 lots=0.01
+DRIVER restart at tick 211364 (off 0 ticks)
+EA 2026.09.24 11:17:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.24 11:17:00 Restart memory: continued from 24 Sep 26 | loss to win back 192.12 | streak 0W / 2L
+SIM ORDER 2026.09.24 11:25:00 tk=1301 type=3 vol=0.01 px=4267.90 sl=4278.33 tp=4265.82 bid=4265.72 ask=4265.92
+SIM DEAL 2026.09.24 11:30:30 tk=1302 pos=1301 sell IN vol=0.01 px=4268.59 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.24 11:30:30 pos=1301 sell vol=0.01 px=4268.59 sl=4278.33 tp=4265.82 bid=4268.59 ask=4268.72
+SIM MODIFY 2026.09.24 11:35:00 pos=1301 sl=4278.33->4278.26 tp=4265.82->4265.75
+SIM DEAL 2026.09.24 11:35:30 tk=1303 pos=1301 buy OUT vol=0.01 px=4265.56 profit=3.03 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.24 11:35:30 pos=1301 reason=5 px=4265.56 open=4268.59 sl=4278.26 tp=4265.75
+EA 2026.09.24 11:40:00 Trade #1301 closed: 0.01 lots at 4265.56 | trade P&L +2.96 (costs included) | closed by its take profit
+BOOK 2026.09.24 11:40:00 pnl=2.96 hedge=0 risk=10.45 lots=0.01
+SIM ORDER 2026.09.24 11:55:00 tk=1304 type=3 vol=0.31 px=4262.38 sl=4272.65 tp=4260.27 bid=4262.32 ask=4262.47
+SIM DEAL 2026.09.24 11:55:15 tk=1305 pos=1304 sell IN vol=0.31 px=4263.12 profit=0.00 comm=-1.08 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.24 11:55:15 pos=1304 sell vol=0.31 px=4263.12 sl=4272.65 tp=4260.27 bid=4263.12 ask=4263.27
+SIM MODIFY 2026.09.24 12:00:00 pos=1304 sl=4272.65->4272.56 tp=4260.27->4260.18
+SIM DEAL 2026.09.24 12:00:15 tk=1306 pos=1304 buy OUT vol=0.31 px=4259.52 profit=111.60 comm=-1.08 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.24 12:00:15 pos=1304 reason=5 px=4259.52 open=4263.12 sl=4272.56 tp=4260.18
+EA 2026.09.24 12:05:00 Trade #1304 closed: 0.31 lots at 4259.52 | trade P&L +109.43 (costs included) | closed by its take profit
+BOOK 2026.09.24 12:05:00 pnl=109.43 hedge=0 risk=320.74 lots=0.31
+DRIVER restart at tick 212361 (off 0 ticks)
+EA 2026.09.24 15:26:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.24 15:26:15 Restart memory: continued from 24 Sep 26 | loss to win back 79.73 | streak 2W / 0L
+SIM ORDER 2026.09.24 16:55:00 tk=1307 type=3 vol=0.27 px=4267.49 sl=4276.94 tp=4265.59 bid=4266.25 ask=4266.44
+SIM DEAL 2026.09.24 16:55:30 tk=1308 pos=1307 sell IN vol=0.27 px=4269.15 profit=0.00 comm=-0.95 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.24 16:55:30 pos=1307 sell vol=0.27 px=4269.15 sl=4276.94 tp=4265.59 bid=4269.15 ask=4269.28
+SIM DEAL 2026.09.24 16:56:30 tk=1309 pos=1307 buy OUT vol=0.27 px=4265.27 profit=104.76 comm=-0.95 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.24 16:56:30 pos=1307 reason=5 px=4265.27 open=4269.15 sl=4276.94 tp=4265.59
+EA 2026.09.24 17:00:00 Trade #1307 closed: 0.27 lots at 4265.27 | trade P&L +102.87 (costs included) | closed by its take profit
+BOOK 2026.09.24 17:00:00 pnl=102.87 hedge=0 risk=256.18 lots=0.27
+DRIVER restart at tick 213358 (off 0 ticks)
+EA 2026.09.24 19:35:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.24 19:35:30 Restart memory: continued from 24 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 214355 (off 0 ticks)
+EA 2026.09.24 23:44:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.24 23:44:45 Restart memory: continued from 25 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 215352 (off 0 ticks)
+EA 2026.09.25 04:54:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.25 04:54:00 Restart memory: continued from 25 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 216349 (off 0 ticks)
+EA 2026.09.25 09:03:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.25 09:03:15 Restart memory: continued from 25 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 217346 (off 0 ticks)
+EA 2026.09.25 13:12:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.25 13:12:30 Restart memory: continued from 25 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 218343 (off 0 ticks)
+EA 2026.09.25 17:21:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.25 17:21:45 Restart memory: continued from 25 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 219340 (off 0 ticks)
+EA 2026.09.25 21:31:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.25 21:31:00 Restart memory: continued from 26 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 220337 (off 0 ticks)
+EA 2026.09.28 02:40:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.28 02:40:15 Restart memory: continued from 28 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 221334 (off 0 ticks)
+EA 2026.09.28 06:49:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.28 06:49:30 Restart memory: continued from 28 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 222331 (off 0 ticks)
+EA 2026.09.28 10:58:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.28 10:58:45 Restart memory: continued from 28 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 223328 (off 0 ticks)
+EA 2026.09.28 15:08:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.28 15:08:00 Restart memory: continued from 28 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 224325 (off 0 ticks)
+EA 2026.09.28 19:17:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.28 19:17:15 Restart memory: continued from 28 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+DRIVER restart at tick 225322 (off 0 ticks)
+EA 2026.09.28 23:26:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.28 23:26:30 Restart memory: continued from 29 Sep 26 | loss to win back 176.86 | streak 3W / 0L
+SIM ORDER 2026.09.29 04:25:00 tk=1310 type=2 vol=0.28 px=4128.00 sl=4117.27 tp=4130.09 bid=4130.33 ask=4130.57
+SIM DEAL 2026.09.29 04:26:30 tk=1311 pos=1310 buy IN vol=0.28 px=4126.90 profit=0.00 comm=-0.98 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.29 04:26:30 pos=1310 buy vol=0.28 px=4126.90 sl=4117.27 tp=4130.09 bid=4126.77 ask=4126.90
+SIM DEAL 2026.09.29 04:28:30 tk=1312 pos=1310 sell OUT vol=0.28 px=4131.09 profit=117.32 comm=-0.98 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.29 04:28:30 pos=1310 reason=5 px=4131.09 open=4126.90 sl=4117.27 tp=4130.09
+EA 2026.09.29 04:30:00 Trade #1310 closed: 0.28 lots at 4131.09 | trade P&L +115.36 (costs included) | closed by its take profit
+BOOK 2026.09.29 04:30:00 pnl=115.36 hedge=0 risk=300.09 lots=0.28
+DRIVER restart at tick 226319 (off 0 ticks)
+EA 2026.09.29 04:35:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.29 04:35:45 Restart memory: continued from 29 Sep 26 | loss to win back 61.50 | streak 4W / 0L
+SIM ORDER 2026.09.29 04:45:00 tk=1313 type=2 vol=0.23 px=4131.94 sl=4121.02 tp=4134.20 bid=4133.92 ask=4134.05
+SIM DEAL 2026.09.29 04:51:30 tk=1314 pos=1313 buy IN vol=0.23 px=4130.83 profit=0.00 comm=-0.81 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.29 04:51:30 pos=1313 buy vol=0.23 px=4130.83 sl=4121.02 tp=4134.20 bid=4130.56 ask=4130.83
+SIM DEAL 2026.09.29 04:52:30 tk=1315 pos=1313 sell OUT vol=0.23 px=4135.00 profit=95.91 comm=-0.81 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.29 04:52:30 pos=1313 reason=5 px=4135.00 open=4130.83 sl=4121.02 tp=4134.20
+EA 2026.09.29 04:55:00 Trade #1313 closed: 0.23 lots at 4135.00 | trade P&L +94.30 (costs included) | closed by its take profit
+BOOK 2026.09.29 04:55:00 pnl=94.30 hedge=0 risk=253.41 lots=0.23
+DRIVER restart at tick 227316 (off 0 ticks)
+EA 2026.09.29 08:45:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.29 08:45:00 Restart memory: continued from 29 Sep 26 | loss to win back 167.20 | streak 5W / 0L
+DRIVER restart at tick 228313 (off 0 ticks)
+EA 2026.09.29 12:54:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.29 12:54:15 Restart memory: continued from 29 Sep 26 | loss to win back 167.20 | streak 5W / 0L
+DRIVER restart at tick 229310 (off 0 ticks)
+EA 2026.09.29 17:03:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.29 17:03:30 Restart memory: continued from 29 Sep 26 | loss to win back 167.20 | streak 5W / 0L
+DRIVER restart at tick 230307 (off 0 ticks)
+EA 2026.09.29 21:12:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.29 21:12:45 Restart memory: continued from 29 Sep 26 | loss to win back 167.20 | streak 5W / 0L
+DRIVER restart at tick 231304 (off 0 ticks)
+EA 2026.09.30 02:22:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.30 02:22:00 Restart memory: continued from 30 Sep 26 | loss to win back 167.20 | streak 5W / 0L
+SIM ORDER 2026.09.30 04:10:00 tk=1316 type=3 vol=0.46 px=4175.33 sl=4181.54 tp=4174.11 bid=4175.03 ask=4175.24
+SIM DEAL 2026.09.30 04:10:15 tk=1317 pos=1316 sell IN vol=0.46 px=4175.60 profit=0.00 comm=-1.61 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.30 04:10:15 pos=1316 sell vol=0.46 px=4175.60 sl=4181.54 tp=4174.11 bid=4175.60 ask=4175.83
+SIM DEAL 2026.09.30 04:10:30 tk=1318 pos=1316 buy OUT vol=0.46 px=4172.38 profit=148.12 comm=-1.61 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.30 04:10:30 pos=1316 reason=5 px=4172.38 open=4175.60 sl=4181.54 tp=4174.11
+EA 2026.09.30 04:15:00 Trade #1316 closed: 0.46 lots at 4172.38 | trade P&L +144.90 (costs included) | closed by its take profit
+BOOK 2026.09.30 04:15:00 pnl=144.90 hedge=0 risk=286.16 lots=0.46
+SIM ORDER 2026.09.30 04:30:00 tk=1319 type=3 vol=0.41 px=4168.99 sl=4175.23 tp=4167.71 bid=4167.69 ask=4167.86
+SIM DEAL 2026.09.30 04:30:30 tk=1320 pos=1319 sell IN vol=0.41 px=4173.15 profit=0.00 comm=-1.43 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.30 04:30:30 pos=1319 sell vol=0.41 px=4173.15 sl=4175.23 tp=4167.71 bid=4173.15 ask=4173.39
+SIM MODIFY 2026.09.30 04:35:00 pos=1319 sl=4175.23->4175.31 tp=4167.71->4167.79
+SIM DEAL 2026.09.30 05:05:30 tk=1321 pos=1319 buy OUT vol=0.41 px=4175.37 profit=-91.02 comm=-1.43 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.09.30 05:05:30 pos=1319 reason=4 px=4175.37 open=4173.15 sl=4175.31 tp=4167.79
+EA 2026.09.30 05:10:00 Trade #1319 closed: 0.41 lots at 4175.37 | trade P&L -93.89 (costs included) | closed by its stop loss
+BOOK 2026.09.30 05:10:00 pnl=-93.89 hedge=0 risk=258.19 lots=0.41
+DRIVER restart at tick 232301 (off 0 ticks)
+EA 2026.09.30 06:31:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.30 06:31:15 Restart memory: continued from 30 Sep 26 | loss to win back 116.19 | streak 0W / 1L
+SIM ORDER 2026.09.30 09:55:00 tk=1322 type=2 vol=0.01 px=4186.64 sl=4178.63 tp=4188.28 bid=4191.19 ask=4191.35
+SIM CANCEL 2026.09.30 10:20:00 tk=1322
+SIM ORDER 2026.09.30 10:25:00 tk=1323 type=2 vol=0.01 px=4199.13 sl=4190.88 tp=4200.83 bid=4201.04 ask=4201.19
+SIM DEAL 2026.09.30 10:26:30 tk=1324 pos=1323 buy IN vol=0.01 px=4196.84 profit=0.00 comm=-0.04 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.09.30 10:26:30 pos=1323 buy vol=0.01 px=4196.84 sl=4190.88 tp=4200.83 bid=4196.72 ask=4196.84
+DRIVER restart at tick 233298 (off 0 ticks)
+EA 2026.09.30 10:40:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.30 10:40:30 Adopted open position #1323 (engine is in the same trade).
+EA 2026.09.30 10:40:30 Restart memory: continued from 30 Sep 26 | loss to win back 116.19 | streak 0W / 1L | trade still open
+SIM DEAL 2026.09.30 11:22:30 tk=1325 pos=1323 sell OUT vol=0.01 px=4201.35 profit=4.51 comm=-0.04 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.09.30 11:22:30 pos=1323 reason=5 px=4201.35 open=4196.84 sl=4190.88 tp=4200.83
+EA 2026.09.30 11:25:00 Trade #1323 closed: 0.01 lots at 4201.35 | trade P&L +4.44 (costs included) | closed by its take profit
+BOOK 2026.09.30 11:25:00 pnl=4.44 hedge=0 risk=8.33 lots=0.01
+DRIVER restart at tick 234295 (off 0 ticks)
+EA 2026.09.30 14:49:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.30 14:49:45 Restart memory: continued from 30 Sep 26 | loss to win back 111.75 | streak 1W / 0L
+DRIVER restart at tick 235292 (off 0 ticks)
+EA 2026.09.30 18:59:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.30 18:59:00 Restart memory: continued from 30 Sep 26 | loss to win back 111.75 | streak 1W / 0L
+DRIVER restart at tick 236289 (off 0 ticks)
+EA 2026.09.30 23:08:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.09.30 23:08:15 Restart memory: continued from 01 Oct 26 | loss to win back 111.75 | streak 1W / 0L
+SIM ORDER 2026.10.01 03:35:00 tk=1326 type=3 vol=0.42 px=4141.41 sl=4147.32 tp=4140.09 bid=4139.96 ask=4140.04
+SIM DEAL 2026.10.01 03:37:30 tk=1327 pos=1326 sell IN vol=0.42 px=4141.45 profit=0.00 comm=-1.47 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.10.01 03:37:30 pos=1326 sell vol=0.42 px=4141.45 sl=4147.32 tp=4140.09 bid=4141.45 ask=4141.58
+SIM MODIFY 2026.10.01 03:40:00 pos=1326 sl=4147.32->4147.39 tp=4140.09->4140.16
+SIM DEAL 2026.10.01 03:53:30 tk=1328 pos=1326 buy OUT vol=0.42 px=4140.10 profit=56.70 comm=-1.47 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.10.01 03:53:30 pos=1326 reason=5 px=4140.10 open=4141.45 sl=4147.39 tp=4140.16
+EA 2026.10.01 03:55:00 Trade #1326 closed: 0.42 lots at 4140.10 | trade P&L +53.76 (costs included) | closed by its take profit
+BOOK 2026.10.01 03:55:00 pnl=53.76 hedge=0 risk=254.11 lots=0.42
+DRIVER restart at tick 237286 (off 0 ticks)
+EA 2026.10.01 04:17:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.01 04:17:30 Restart memory: continued from 01 Oct 26 | loss to win back 57.99 | streak 2W / 0L
+SIM ORDER 2026.10.01 04:20:00 tk=1329 type=2 vol=0.32 px=4161.68 sl=4153.86 tp=4163.25 bid=4163.35 ask=4163.54
+SIM DEAL 2026.10.01 04:26:30 tk=1330 pos=1329 buy IN vol=0.32 px=4160.83 profit=0.00 comm=-1.12 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.10.01 04:26:30 pos=1329 buy vol=0.32 px=4160.83 sl=4153.86 tp=4163.25 bid=4160.72 ask=4160.83
+SIM DEAL 2026.10.01 04:33:30 tk=1331 pos=1329 sell OUT vol=0.32 px=4164.47 profit=116.48 comm=-1.12 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.10.01 04:33:30 pos=1329 reason=5 px=4164.47 open=4160.83 sl=4153.86 tp=4163.25
+EA 2026.10.01 04:35:00 Trade #1329 closed: 0.32 lots at 4164.47 | trade P&L +114.24 (costs included) | closed by its take profit
+BOOK 2026.10.01 04:35:00 pnl=114.24 hedge=0 risk=251.27 lots=0.32
+SIM ORDER 2026.10.01 05:55:00 tk=1332 type=2 vol=0.37 px=4159.59 sl=4152.66 tp=4160.90 bid=4160.99 ask=4161.25
+SIM DEAL 2026.10.01 05:57:30 tk=1333 pos=1332 buy IN vol=0.37 px=4159.26 profit=0.00 comm=-1.29 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.10.01 05:57:30 pos=1332 buy vol=0.37 px=4159.26 sl=4152.66 tp=4160.90 bid=4159.14 ask=4159.26
+SIM DEAL 2026.10.01 05:59:30 tk=1334 pos=1332 sell OUT vol=0.37 px=4161.82 profit=94.72 comm=-1.29 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.10.01 05:59:30 pos=1332 reason=5 px=4161.82 open=4159.26 sl=4152.66 tp=4160.90
+EA 2026.10.01 06:00:00 Trade #1332 closed: 0.37 lots at 4161.82 | trade P&L +92.13 (costs included) | closed by its take profit
+BOOK 2026.10.01 06:00:00 pnl=92.13 hedge=0 risk=255.44 lots=0.37
+SIM ORDER 2026.10.01 06:10:00 tk=1335 type=2 vol=0.36 px=4163.90 sl=4156.87 tp=4165.34 bid=4165.62 ask=4165.79
+SIM DEAL 2026.10.01 06:26:30 tk=1336 pos=1335 buy IN vol=0.36 px=4163.84 profit=0.00 comm=-1.26 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.10.01 06:26:30 pos=1335 buy vol=0.36 px=4163.84 sl=4156.87 tp=4165.34 bid=4163.62 ask=4163.84
+SIM DEAL 2026.10.01 06:30:30 tk=1337 pos=1335 sell OUT vol=0.36 px=4166.00 profit=77.76 comm=-1.26 magic=240611 reason=5 cm=[tp]
+SIM CLOSE 2026.10.01 06:30:30 pos=1335 reason=5 px=4166.00 open=4163.84 sl=4156.87 tp=4165.34
+EA 2026.10.01 06:35:00 Trade #1335 closed: 0.36 lots at 4166.00 | trade P&L +75.24 (costs included) | closed by its take profit
+BOOK 2026.10.01 06:35:00 pnl=75.24 hedge=0 risk=254.89 lots=0.36
+SIM ORDER 2026.10.01 06:45:00 tk=1338 type=2 vol=0.39 px=4168.64 sl=4162.26 tp=4170.02 bid=4169.76 ask=4169.87
+SIM CANCEL 2026.10.01 07:10:00 tk=1338
+DRIVER restart at tick 238283 (off 0 ticks)
+EA 2026.10.01 08:26:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.01 08:26:45 Restart memory: continued from 01 Oct 26 | loss to win back 0.00 | streak 5W / 0L
+SIM ORDER 2026.10.01 10:30:00 tk=1339 type=3 vol=0.32 px=4158.84 sl=4166.69 tp=4157.22 bid=4156.75 ask=4156.91
+SIM DEAL 2026.10.01 10:32:30 tk=1340 pos=1339 sell IN vol=0.32 px=4163.70 profit=0.00 comm=-1.12 magic=240611 reason=3 cm=ARM
+SIM OPEN 2026.10.01 10:32:30 pos=1339 sell vol=0.32 px=4163.70 sl=4166.69 tp=4157.22 bid=4163.70 ask=4163.76
+SIM MODIFY 2026.10.01 10:35:00 pos=1339 sl=4166.69->4166.59 tp=4157.22->4157.12
+SIM DEAL 2026.10.01 10:47:30 tk=1341 pos=1339 buy OUT vol=0.32 px=4166.88 profit=-101.76 comm=-1.12 magic=240611 reason=4 cm=[sl]
+SIM CLOSE 2026.10.01 10:47:30 pos=1339 reason=4 px=4166.88 open=4163.70 sl=4166.59 tp=4157.12
+EA 2026.10.01 10:50:00 Trade #1339 closed: 0.32 lots at 4166.88 | trade P&L -104.00 (costs included) | closed by its stop loss
+BOOK 2026.10.01 10:50:00 pnl=-104.00 hedge=0 risk=253.33 lots=0.32
+DRIVER restart at tick 239280 (off 0 ticks)
+EA 2026.10.01 12:36:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.01 12:36:00 Restart memory: continued from 01 Oct 26 | loss to win back 80.38 | streak 0W / 1L
+DRIVER restart at tick 240277 (off 0 ticks)
+EA 2026.10.01 16:45:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.01 16:45:15 Restart memory: continued from 01 Oct 26 | loss to win back 80.38 | streak 0W / 1L
+DRIVER restart at tick 241274 (off 0 ticks)
+EA 2026.10.01 20:54:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.01 20:54:30 Restart memory: continued from 01 Oct 26 | loss to win back 80.38 | streak 0W / 1L
+DRIVER restart at tick 242271 (off 0 ticks)
+EA 2026.10.02 02:03:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.02 02:03:45 Restart memory: continued from 02 Oct 26 | loss to win back 80.38 | streak 0W / 1L
+DRIVER restart at tick 243268 (off 0 ticks)
+EA 2026.10.02 06:13:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.02 06:13:00 Restart memory: continued from 02 Oct 26 | loss to win back 80.38 | streak 0W / 1L
+DRIVER restart at tick 244265 (off 0 ticks)
+EA 2026.10.02 10:22:15 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.02 10:22:15 Restart memory: continued from 02 Oct 26 | loss to win back 80.38 | streak 0W / 1L
+DRIVER restart at tick 245262 (off 0 ticks)
+EA 2026.10.02 14:31:30 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.02 14:31:30 Restart memory: continued from 02 Oct 26 | loss to win back 80.38 | streak 0W / 1L
+DRIVER restart at tick 246259 (off 0 ticks)
+EA 2026.10.02 18:40:45 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.02 18:40:45 Restart memory: continued from 02 Oct 26 | loss to win back 80.38 | streak 0W / 1L
+DRIVER restart at tick 247256 (off 0 ticks)
+EA 2026.10.02 22:50:00 Broker server clock: GMT+3 auto (EU summer time) (read from MT5).
+EA 2026.10.02 22:50:00 Restart memory: continued from 03 Oct 26 | loss to win back 80.38 | streak 0W / 1L
+VWLINE segments 1500 (created 385863, deleted 12363) | gaps 0 | backwards 0 | first 2026.09.25 13:55:00 | last 2026.10.02 23:50:00 | last point 4168.93644 | engine VWAP 4168.93644
+END ticks 247535 bars 24699 inits 249 trades opened 102

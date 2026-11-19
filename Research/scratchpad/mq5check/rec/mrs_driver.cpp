@@ -11,6 +11,7 @@ double rec_next_m(double exitR, double minRisk, double eq);
 double rec_next_k(double exitR, double minRisk, double eq, double kRisk);
 void rec_take(); void rec_part(double np); void rec_close(); int rec_capstop(); void rec_init();
 void rec_mtick(long long t); int rec_mrestart(); void rec_restart();
+void rec_setup(double risk, double spread);
 }
 static long rs_k = 0, rs_c = 0;
 static void rp() { if(rs_k > 0 && ++rs_c % rs_k == 0) rec_restart(); }   // REC_RESTART=k: a restart (save, fresh load, reload) at every k-th point
@@ -26,6 +27,7 @@ int main(int argc, char** argv)
    rec_init();
    if(std::getenv("REC_RESTART")) rs_k = std::atol(std::getenv("REC_RESTART"));
    bool km_on = std::getenv("REC_KMIN") != nullptr;
+   bool sd_on = std::getenv("REC_SD") != nullptr;
    long long t = 1609459200LL;                          // 1 Jan 2021 (any month start; only the change of month matters)
    rec_mtick(t);
    FILE* f = std::fopen(argv[1], "r");
@@ -37,10 +39,13 @@ int main(int argc, char** argv)
       double res = std::atof(tok), c, rmin, kr = 0; int k;
       if(std::fscanf(f, "%lf %lf", &c, &rmin) != 2) return 3;
       if(km_on && std::fscanf(f, "%lf", &kr) != 1) return 3;   // v5.0 REC_KMIN: the Crooks K careful lots' $ risk after the 0.01-lot risk
+      double sdd = 0;
+      if(sd_on && std::fscanf(f, "%lf", &sdd) != 1) return 3;   // v5.1 REC_SD: the setup's stop distance (Size by Profit sizes from it)
       if(std::fscanf(f, "%d", &k) != 1) return 3;
       std::vector<double> pr(k), pw(k);
       for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
       if(rec_capstop()) { std::printf("SKIP\n"); continue; }
+      if(sd_on) rec_setup(sdd, 0.0);
       double r = km_on ? rec_next_k(exitR, rmin, eq0 + net, kr) : rec_next_m(exitR, rmin, eq0 + net);
       if(rec_capstop()) { std::printf("STOP\n"); continue; }
       rp(); rec_take(); rp();

@@ -1,0 +1,16 @@
+MISMATCH size M1 Most profit | eb 0 pct=0.5 Oscar's Grind {} N 1 cap 0.0 clamp | first diff (373, 33.72101079148508, 67.442021583, 800, 800, False, False)
+size  M1 Most profit                 runs  1248, trades   912831, tie-breaks 0, mismatches 1
+size  M1 Default settings            runs  1248, trades   693905, tie-breaks 0, mismatches 0
+size  M5 Default settings            runs  1248, trades   775549, tie-breaks 0, mismatches 0
+size  M1 Shortest losing streak      runs  1248, trades   906656, tie-breaks 2, mismatches 0
+size  M5 Most profit                 runs  1248, trades   900133, tie-breaks 0, mismatches 0
+size  M5 Shortest losing streak      runs  1248, trades   917246, tie-breaks 0, mismatches 0
+size  M15 Most profit                runs  1248, trades   895983, tie-breaks 9, mismatches 0
+size  M15 Default settings           runs  1248, trades   893821, tie-breaks 0, mismatches 0
+size  M15 Shortest losing streak     runs  1248, trades   920092, tie-breaks 0, mismatches 0
+size  H1 Default settings            runs  1248, trades   795767, tie-breaks 0, mismatches 0
+size  H1 Most profit                 runs  1248, trades   222138, tie-breaks 16, mismatches 0
+size  H1 Shortest losing streak      runs  1248, trades   240315, tie-breaks 0, mismatches 0
+size  M5 user TP1 0.1R               runs  1248, trades   474329, tie-breaks 0, mismatches 0
+size  M5 user TP1 0.3R               runs  1248, trades   661349, tie-breaks 0, mismatches 0
+SECTION size: runs 17472, trades compared 10210114, floating-point tie-breaks 27, mismatches 1 -> DIFFERENCES

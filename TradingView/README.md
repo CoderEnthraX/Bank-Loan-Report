@@ -1464,8 +1464,13 @@ Example: gold, $50, final TP 0.1R, a $2.50 stop, spread 0.16, commission $7 a lo
 **Checks**
 - **The EA matches the Python reference trade for trade** with Profit and the costs (spread 0.16, commission $7, earn-back on and off) on
   every rule, Crooks K and L in Risk and Profit, the Crooks C rule after N losing recovery trades, Fixed lots and % of equity, the monthly
-  restart and the TP1 rule: TBD_NORMAL; again with a save and reload after every step: TBD_RESTART.
-- **Risk mode and the old rules are unchanged:** the v4.9 money suites on v5.1 give 0 differences (TBD_OLD).
+  restart and the TP1 rule: 56,896 runs, 70 M trades. Every difference was traced: with earn-back off the test's own P&L makes a
+  recovery win land exactly on the amount owed, so a few runs (5 of 56,896) split on a floating-point tie (a Crooks L / Oscar test landing
+  exactly on its limit), or on the rounding of the test harness's impossible running totals (10¹² dollars); run a month at a time, those
+  match to 5 × 10⁻¹². With a save and reload of the EA's memory after every step: 22,512 more runs, 27 M trades; one difference of
+  6 × 10⁻⁹ on the trade where a test account blows (% of equity), the same without the restart. V51_RESTART_B
+- **Risk mode and the old rules are unchanged:** the v4.9 money suites on v5.1 give 0 differences (rec 8,784 runs, TP1 22,484, Crooks C
+  rule 20,544, monthly 1,536, position size 12,240: 90 M trades and signals).
 - **Broker simulator** (gold M1, Aug–Oct 2026, $50, no recovery, the commission charged): the win each trade was sized for at its TP:
 
 | Final TP | v5.0 average | v5.1 average | v5.1 largest |
@@ -1478,6 +1483,46 @@ Example: gold, $50, final TP 0.1R, a $2.50 stop, spread 0.16, commission $7 a lo
 - **The EA** compiles with 0 errors and 0 warnings. **The strategy** parses with 0 inline-title and 0 shadowing warnings, and every input
   keeps its title.
 
+
+### v5.2: Crooks X: win back the gap to the start, then to each step above it (strategy and EA)
+
+A new Loss Recovery rule, after Crooks L. It works like **Crooks E** (after a loss, 0.01 lot until a win; then N recovery trades), but
+**the loss to win back is read from your balance**, not added up from the trades:
+
+| Where the balance is | Loss to win back (N = "Win The Loss Back Over N Wins") |
+|---|---|
+| Below the start | the whole gap to the start (start $1,000, balance $700 → $300; N = 3 → $100 a trade, N = 5 → $60) |
+| Above the start, below the best | the gap up to the next step above the start, never above the best (step $1,000: balance $1,100, best $5,000 → $900 up to $2,000; then $1,000 up to $3,000, $4,000, $5,000) |
+| At the best | nothing: the base trade |
+
+- Each step is won back in N recovery trades; reaching a step starts N trades again for the next one. A loss sends it back to 0.01 lot;
+  after the next win the gap is measured again.
+- **The start and the best:** since the EA started (the backtest start in TradingView); with the monthly restart on, since the 1st of the
+  month. The best is the highest closed balance.
+- **Amounts:** with Risk each part is the loss at the stop, with Profit the win at the final TP (as every rule).
+
+| Setting | Where | Default |
+|---|---|---|
+| Loss Recovery | Strategy: Loss Recovery → "Crooks X (Crooks E, the loss = the gap to the start / the next step)"; EA: "Loss recovery" → Crooks X | Crooks C |
+| N (trades per gap) | "Crooks C: Win The Loss Back Over N Wins" (tick it and type N); EA: "...win the loss back over N wins" = true and "...N" | off (= 1) |
+| Step above the start | Strategy: "Crooks X: Step Above The Start ($)"; EA: "Crooks X: above the start, win back up to the next level every this much" | **$1,000** |
+| Limit of a recovery trade | Strategy: "Crooks X: Limit Of A Recovery Trade" (dropdown, the $ on the same line); EA: "Crooks X: limit of a recovery trade" + "...per-trade limit" | **Hard cap only** · $500 |
+| 0.01 lot while waiting | "Crooks E / I: Lot While Waiting For A Win"; EA: "Crooks E / I / K / L: lot of the trades while a loss waits for a win" | 0.01 |
+
+- **Hard cap only:** the Hard Cap (if you turn it on) limits a recovery trade, as for every rule. **Per-trade limit ($):** also, a
+  recovery trade never risks more than this (the loss at its stop; never less than the base); what it does not win back is won by the next trades.
+- A rule after N losing recovery trades (forget / % / wait / skip) or the Hard Cap's Start again clears the loss for the moment; with
+  Crooks X the gap is measured again at the next close, so it comes back while the balance is still below the level.
+
+**Checks**
+- The EA matches the Python reference trade for trade on Crooks X: Risk and Profit, N = 1 / 3 / 5, steps $1,000 / $200 / $50, hard cap
+  only / $300 limit, every hard-cap choice, the Crooks C rule after N losing recovery trades: 3,136 runs, 3.9 M trades, 0 differences;
+  again with a save and reload after every step: X_RESTART. The monthly restart suite with Crooks X: identical (month by month).
+- Broker simulator (gold M1, Aug–Oct 2026, 0.2R): Crooks X with Risk and Profit, N = 3 and 5, a $300 limit: every trade booked, 0
+  rejected orders; with 248 restarts of the EA the same bookings; the limit held (largest risk $299.95). Default settings: every order
+  and booking identical to v5.1.
+- The EA compiles with 0 errors and 0 warnings; the strategy parses with 0 inline-title and 0 shadowing warnings, every existing input
+  keeps its title (3 new inputs).
 
 ### Entry accuracy research (November 2026, no code change)
 

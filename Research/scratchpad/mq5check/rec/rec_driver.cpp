@@ -61,10 +61,13 @@ int main(int argc, char** argv)
          if(std::fscanf(f, "%lf %lf", &res, &c) != 2) return 3;
          if(rm_on && std::fscanf(f, "%lf", &rmin) != 1) return 3;
          if(km_on && std::fscanf(f, "%lf", &kr) != 1) return 3;
+         double sdd = 0;
+         if(sd_on && std::fscanf(f, "%lf", &sdd) != 1) return 3;   // v5.1: the setup's stop distance (Size by Profit sizes from it)
          if(std::fscanf(f, "%d", &k) != 1) return 3;
          std::vector<double> pr(k), pw(k);
          for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
          if(rec_paused()) { std::printf("SKIP\n"); continue; }
+         if(sd_on) rec_setup(sdd, 0.0);
          double r = km_on ? rec_next_k(exitR, rmin, eq0 + net, kr) : rec_next_m(exitR, rmin, eq0 + net);
          if(rec_capstop()) { std::printf("STOP\n"); break; }
          rp(); rec_take(); rp();

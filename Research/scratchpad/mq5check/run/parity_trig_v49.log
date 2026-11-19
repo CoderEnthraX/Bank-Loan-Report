@@ -1,0 +1,31 @@
+defaults + BE 0.3                            ref   1254 EA   1254 identical   1254 
+defaults, TP2 stop to 0 + BE 0.3             ref   1254 EA   1254 identical   1254 
+defaults + salvage 0.5                       ref   1236 EA   1236 identical   1236 
+defaults, TP2 stop to 0 + salvage 0.5        ref   1245 EA   1245 identical   1245 
+defaults + BE 0.3 + salvage 0.5              ref   1261 EA   1261 identical   1261 
+defaults, TP2 stop to 0 + BE 0.3 + salvage 0.5 ref   1261 EA   1261 identical   1261 
+defaults + BE 1.5 + salvage 0.9              ref   1200 EA   1200 identical   1200 
+defaults, TP2 stop to 0 + BE 1.5 + salvage 0.9 ref   1217 EA   1217 identical   1217 
+M5-S1 preset + BE 0.3 + salvage 0.5          ref    320 EA    320 identical    319 DIFFER CRUDE
+M5-S1 preset + BE 1.5 + salvage 0.9          ref    263 EA    263 identical    262 DIFFER CRUDE
+M5-S2 preset + BE 0.3 + salvage 0.5          ref    343 EA    343 identical    342 DIFFER CRUDE
+M5-S2 preset + BE 1.5 + salvage 0.9          ref    294 EA    294 identical    293 DIFFER CRUDE
+M15-S1 preset + BE 0.3 + salvage 0.5         ref   1101 EA   1101 identical   1101 
+M15-S1 preset + BE 1.5 + salvage 0.9         ref    700 EA    700 identical    700 
+M15-S8 preset + BE 0.3 + salvage 0.5         ref   1079 EA   1079 identical   1079 
+M15-S8 preset + BE 1.5 + salvage 0.9         ref    664 EA    664 identical    664 
+H1-S1 preset + BE 0.3 + salvage 0.5          ref    694 EA    694 identical    694 
+H1-S1 preset + BE 1.5 + salvage 0.9          ref    600 EA    600 identical    600 
+DIFF M5-S1 preset + BE 0.3 + salvage 0.5 / CRUDE trade#17
+   EA : {'dir': -1, 'arm': 2606, 'fill': 2607, 'entry': 8797.0, 'stop': 8847.0, 'exit': 2609, 'res': 0.0}
+   ref: {'dir': -1, 'arm': 2606, 'fill': 2607, 'entry': 8797.0, 'stop': 8872.421689284063, 'exit': 2611, 'res': -0.0, 'half': False, 'ghost': False, 'vwd': 62.87405609493726, 'vwdA': 2.000720695336301, 'best': 8766.0, 'stpX': 8797.0, 'trig': 'be'}
+DIFF M5-S1 preset + BE 1.5 + salvage 0.9 / CRUDE trade#12
+   EA : {'dir': -1, 'arm': 2606, 'fill': 2607, 'entry': 8797.0, 'stop': 8847.0, 'exit': 2613, 'res': -1.0}
+   ref: {'dir': -1, 'arm': 2606, 'fill': 2607, 'entry': 8797.0, 'stop': 8872.421689284063, 'exit': 2621, 'res': -1.0, 'half': False, 'ghost': False, 'vwd': 62.87405609493726, 'vwdA': 2.000720695336301, 'best': 8766.0, 'stpX': 8872.421689284063, 'trig': None}
+DIFF M5-S2 preset + BE 0.3 + salvage 0.5 / CRUDE trade#20
+   EA : {'dir': -1, 'arm': 2606, 'fill': 2607, 'entry': 8797.0, 'stop': 8847.0, 'exit': 2609, 'res': 0.0}
+   ref: {'dir': -1, 'arm': 2606, 'fill': 2607, 'entry': 8797.0, 'stop': 8872.421689284063, 'exit': 2611, 'res': -0.0, 'half': False, 'ghost': False, 'vwd': 62.87405609493726, 'vwdA': 2.000720695336301, 'best': 8766.0, 'stpX': 8797.0, 'trig': 'be'}
+DIFF M5-S2 preset + BE 1.5 + salvage 0.9 / CRUDE trade#15
+   EA : {'dir': -1, 'arm': 2606, 'fill': 2607, 'entry': 8797.0, 'stop': 8847.0, 'exit': 2613, 'res': -1.0}
+   ref: {'dir': -1, 'arm': 2606, 'fill': 2607, 'entry': 8797.0, 'stop': 8872.421689284063, 'exit': 2621, 'res': -1.0, 'half': False, 'ghost': False, 'vwd': 62.87405609493726, 'vwdA': 2.000720695336301, 'best': 8766.0, 'stpX': 8872.421689284063, 'trig': None}
+4 cases differ

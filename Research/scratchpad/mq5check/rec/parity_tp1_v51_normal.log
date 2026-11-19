@@ -1,0 +1,2 @@
+p = 50%, exit TP1: runs 7700, trades compared 14436528 (TP1-rule trades 4802862), mismatches 0
+p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 14784, trades compared 19639267 (TP1-rule trades 6679318), mismatches 0

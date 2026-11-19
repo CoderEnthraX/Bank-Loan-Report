@@ -1,0 +1,25 @@
+normal start 15:19:03 EA md5 f6fa6b8e4c35 harness 15:12:24
+normal old rec runs 8784, trades compared 13147180, mismatches 0, worst relative difference 5.00e-12; runs where the account blew (compared up to that trade): 280 15:26:10
+normal old tp1 p = 50%, exit TP1: runs 7700, trades compared 14436528 (TP1-rule trades 4802862), mismatches 0 | p = 30 / 50 / 70%, exit TP1 and TP2 (any final exit), tight and normal stop: runs 14784, trades compared 19639267 (TP1-rule trades 6679318), mismatches 0 15:26:10
+normal old crkpr runs 20544, signals compared 31277261 (skipped by the pause 4056539), mismatches 0 15:26:10
+normal v50 rec (no stop distance: D = R) SECTION rec: runs 5208, trades compared 6497155, mismatches 0 -> ALL IDENTICAL 15:26:47
+normal v51 rec SECTION rec: runs 9072, trades compared 11029444, mismatches 8 -> DIFFERENCES 15:27:30
+normal v51 pr SECTION pr: runs 13440, trades compared 16058730, mismatches 0 -> ALL IDENTICAL 15:28:39
+normal v51 size SECTION size: runs 17472, trades compared 10198010, mismatches 2 -> DIFFERENCES 15:29:35
+normal part 2 start 15:35:29 (tie-aware v5.1 suites)
+normal v51 rec SECTION rec: runs 9072, trades compared 11029444, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 15:36:23
+normal v51 pr SECTION pr: runs 13440, trades compared 16058730, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 15:37:42
+normal v51 size SECTION size: runs 17472, trades compared 10198010, floating-point tie-breaks 1, mismatches 1 -> DIFFERENCES 15:38:38
+normal v51 month MONTH v5.1: runs 3360, trades compared 5588022, months stopped by the cap 9195, months where the simulator account blew (compared up to it) 439, floating-point tie-breaks 52, mismatches 25 -> DIFFERENCES 15:43:17
+normal v51 tp1 TP1 v5.1: runs 13552, trades compared 27420181 (TP1-rule trades 3358472), floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 15:43:17
+normal old month runs 1536, trades compared 1862952, months stopped by the cap 1894, worst relative difference 4.97e-12 -> ALL IDENTICAL 15:43:17
+normal old size position size: runs 12240, trades compared 11751470, mismatches 0, worst relative difference 1.10e-10; runs where the account blew (compared up to it): 1083 15:46:07
+normal part 2 done 15:46:07
+restart B start 15:52:17
+restart A start 15:52:17
+restart v51 rec SECTION rec: runs 9072, trades compared 10972038, floating-point tie-breaks 0, mismatches 1 -> DIFFERENCES 16:39:43
+restart v51 pr SECTION pr: runs 13440, trades compared 16043727, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL 16:39:43
+restart A done 16:39:43
+v5.2 start 17:38:25 EA bd4009b696bc
+normal v52 month MONTH v5.1: runs 3440, trades compared 5720006, months stopped by the cap 9367, months where the simulator account blew (compared up to it) 595, floating-point tie-breaks 0, mismatches 5 -> DIFFERENCES 17:39:03
+restart B start 17:41:09

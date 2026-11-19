@@ -1,0 +1,12 @@
+M1 Most profit                 runs   144, trades   214938, tie-breaks 0, mismatches 0
+M1 Shortest losing streak      runs   144, trades   213848, tie-breaks 0, mismatches 0
+M1 Default settings            runs   144, trades   185592, tie-breaks 0, mismatches 0
+M5 Default settings            runs   144, trades   204276, tie-breaks 0, mismatches 0
+M5 Most profit                 runs   144, trades   211968, tie-breaks 0, mismatches 0
+M5 Shortest losing streak      runs   144, trades   214702, tie-breaks 0, mismatches 0
+M15 Default settings           runs   144, trades   202918, tie-breaks 0, mismatches 0
+M15 Most profit                runs   144, trades   199872, tie-breaks 0, mismatches 0
+M15 Shortest losing streak     runs   144, trades   163728, tie-breaks 0, mismatches 0
+H1 Most profit                 runs   144, trades    26784, tie-breaks 0, mismatches 0
+H1 Default settings            runs   144, trades   122834, tie-breaks 0, mismatches 0
+H1 Shortest losing streak      runs   144, trades    28080, tie-breaks 0, mismatches 0
