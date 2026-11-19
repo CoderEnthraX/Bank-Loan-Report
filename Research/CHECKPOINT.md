@@ -1260,6 +1260,21 @@ Other gold findings:
     trades differ from Recalculate, so the path is exercised); regression (old rec / tp1 / crkpr, v51 rec / pr / size / tp1, X rec / pr) same results as v5.2; restart fixed rec + pr identical; simulator sim53: defaults identical to
     v5.2, fixed E / X booked, restarts identical. Delivered as the EA + strategy .txt only (the user asked for two files).
 
+52. **Money rules for low R (asked 2026-11-19; the user said "remember these 5 rules", NOT built yet).** `mm/mm_test.py` -> `mm/mm_results.txt`
+    (independent trades, $1,000, $20 base, 1,000 trades; break-even win rate = 1 / (1 + R): 0.1R 90.9%, 0.2R 83.3%, 0.3R 76.9%, 0.5R 66.7%).
+    No rule makes a negative-expectancy entry profitable. NEW single rules to remember: (1) Kelly / 1/2 or 1/4 Kelly (f = (pR - q) / R of
+    equity; 0 = don't trade when the edge is negative), (2) 1-3-2-6 positive progression (reset after a loss or 4 wins), (3) equity-curve
+    filter (full size when equity >= its 20-trade average, else 1/4), (4) drawdown cut (1/2 at 10% off the best, 1/4 at 20%), (5) cooling-off
+    (after 2 losses in a row skip 3 trades). Already in the strategy and good with an edge: Paroli, % of equity.
+53. **5 combination rules (asked 2026-11-19; NOT built yet).** `mm/combo_test.py` -> `mm/combo_results.txt`. Every one: no trade above 3% of the
+    equity, the reduced sizes shrink with the account (a fixed $ floor blew the long M5 run before that change). C1 Paroli above the start /
+    brake below (1/2 under 10% off the best, 1/4 under 20%); C2 1-3-2-6 above the start / the small lot (base / 8) below; C3 1.5% of equity +
+    equity-curve filter (1/4 under the 20-trade average); C4 1/4 Kelly learned from the last 100 trades (no edge -> the small lot) + 1/2 at
+    10% off the best; C5 profit-paid recovery (above the start Over N = 3 with the extra at most 30% of the profit above the start) / brake
+    below. None blew in any test. Real 0.2R trades (one run 2021-2026 from $1,000): M5 (mean -0.087R) Fixed -968 blown, C4 -604, C3 -776,
+    C2 -778, C1 / C5 -808; M15 (mean -0.056R) Fixed -960 blown, C2 -227, C4 -320, C1 / C5 -416, C3 -430. Months fresh: M15 C3 total -800,
+    worst month -44 (Fixed -1,664 / -124). With an edge (80% at 0.5R): C4 and C3 grow the most, C1 / C2 / C5 with drawdowns of 9-10%.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |

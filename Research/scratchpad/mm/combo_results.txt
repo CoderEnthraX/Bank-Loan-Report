@@ -1,0 +1,152 @@
+
+synthetic: win rate 70%, target 0.2R (expectancy -0.16R), 1,000 trades x 1,000 orders
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   -956        -958     100.0%   100.0%
+  % of equity 2%                              -950        -948      98.7%    79.4%
+  Over N = 3                                 -1000        -995     100.0%   100.0%
+  Crooks E, N = 3 (approx)                    -951        -951     100.0%    99.6%
+  C1 Paroli up / brake down                   -601        -600      60.6%     0.0%
+  C2 1-3-2-6 up / small lot down              -418        -417      42.6%     0.0%
+  C3 % equity + equity-curve filter           -529        -528      53.3%     0.0%
+  C4 1/4 Kelly (learned) + brake              -294        -303      31.2%     0.0%
+  C5 profit-paid recovery + brake             -600        -599      60.5%     0.0%
+
+synthetic: win rate 70%, target 0.3R (expectancy -0.09R), 1,000 trades x 1,000 orders
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   -956        -956      99.9%    99.3%
+  % of equity 2%                              -846        -836      84.6%     0.1%
+  Over N = 3                                 -1000        -995     100.0%   100.0%
+  Crooks E, N = 3 (approx)                    -892        -877      89.4%    12.6%
+  C1 Paroli up / brake down                   -432        -430      45.1%     0.0%
+  C2 1-3-2-6 up / small lot down              -241        -241      26.3%     0.0%
+  C3 % equity + equity-curve filter           -403        -398      41.6%     0.0%
+  C4 1/4 Kelly (learned) + brake              -219        -224      25.0%     0.0%
+  C5 profit-paid recovery + brake             -433        -431      45.0%     0.0%
+
+synthetic: win rate 70%, target 0.5R (expectancy +0.05R), 1,000 trades x 1,000 orders
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   1000         989      20.4%     0.0%
+  % of equity 2%                              1470        1672      26.2%     0.0%
+  Over N = 3                                  2199        1685      51.1%    18.3%
+  Crooks E, N = 3 (approx)                    1294        1336      30.7%     0.0%
+  C1 Paroli up / brake down                    751         903      18.4%     0.0%
+  C2 1-3-2-6 up / small lot down               430         811      19.8%     0.0%
+  C3 % equity + equity-curve filter            427         494      13.3%     0.0%
+  C4 1/4 Kelly (learned) + brake               811        1249      24.4%     0.0%
+  C5 profit-paid recovery + brake             1329        1242      26.0%     0.0%
+
+synthetic: win rate 80%, target 0.2R (expectancy -0.04R), 1,000 trades x 1,000 orders
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   -800        -742      80.5%    33.9%
+  % of equity 2%                              -571        -551      59.5%     0.0%
+  Over N = 3                                 -1000        -946      98.3%    95.6%
+  Crooks E, N = 3 (approx)                    -660        -626      67.6%     0.0%
+  C1 Paroli up / brake down                   -272        -266      30.4%     0.0%
+  C2 1-3-2-6 up / small lot down              -117        -118      14.7%     0.0%
+  C3 % equity + equity-curve filter           -240        -233      26.9%     0.0%
+  C4 1/4 Kelly (learned) + brake              -197        -189      24.1%     0.0%
+  C5 profit-paid recovery + brake             -271        -267      30.3%     0.0%
+
+synthetic: win rate 80%, target 0.3R (expectancy +0.04R), 1,000 trades x 1,000 orders
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                    800         797      16.0%     0.0%
+  % of equity 2%                              1107        1214      20.1%     0.0%
+  Over N = 3                                  1499        1315      36.3%     8.3%
+  Crooks E, N = 3 (approx)                    1121        1112      24.4%     0.0%
+  C1 Paroli up / brake down                    704         826      16.1%     0.0%
+  C2 1-3-2-6 up / small lot down               408         713      17.1%     0.0%
+  C3 % equity + equity-curve filter            356         394      10.6%     0.0%
+  C4 1/4 Kelly (learned) + brake               792        1127      21.2%     0.0%
+  C5 profit-paid recovery + brake             1041         989      20.4%     0.0%
+
+synthetic: win rate 80%, target 0.5R (expectancy +0.20R), 1,000 trades x 1,000 orders
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   4000        4008       6.4%     0.0%
+  % of equity 2%                             49386       53171      11.3%     0.0%
+  Over N = 3                                  4864        4868      10.0%     0.0%
+  Crooks E, N = 3 (approx)                    5256        5241      11.6%     0.0%
+  C1 Paroli up / brake down                   7998        7985       9.5%     0.0%
+  C2 1-3-2-6 up / small lot down              9397        9330      10.1%     0.0%
+  C3 % equity + equity-curve filter           9696       10316       6.2%     0.0%
+  C4 1/4 Kelly (learned) + brake            297351      350759      15.9%     0.0%
+  C5 profit-paid recovery + brake             4816        4812       8.8%     0.0%
+
+synthetic: win rate 90%, target 0.2R (expectancy +0.08R), 1,000 trades x 1,000 orders
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   1600        1591       6.5%     0.0%
+  % of equity 2%                              3819        3914       9.5%     0.0%
+  Over N = 3                                  1931        1922       9.4%     0.0%
+  Crooks E, N = 3 (approx)                    2102        2089      10.5%     0.0%
+  C1 Paroli up / brake down                   3051        3004       9.8%     0.0%
+  C2 1-3-2-6 up / small lot down              3230        3172      10.6%     0.0%
+  C3 % equity + equity-curve filter           1301        1345       5.3%     0.0%
+  C4 1/4 Kelly (learned) + brake              7964        8652      13.2%     0.0%
+  C5 profit-paid recovery + brake             1878        1869       8.5%     0.0%
+
+synthetic: win rate 90%, target 0.3R (expectancy +0.17R), 1,000 trades x 1,000 orders
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   3400        3401       4.4%     0.0%
+  % of equity 2%                             27893       28836       7.4%     0.0%
+  Over N = 3                                  3766        3765       5.6%     0.0%
+  Crooks E, N = 3 (approx)                    4003        4001       7.1%     0.0%
+  C1 Paroli up / brake down                   7132        7128       6.9%     0.0%
+  C2 1-3-2-6 up / small lot down              8510        8471       7.3%     0.0%
+  C3 % equity + equity-curve filter           7880        8178       4.4%     0.0%
+  C4 1/4 Kelly (learned) + brake            143098      152015      10.9%     0.0%
+  C5 profit-paid recovery + brake             3747        3746       5.4%     0.0%
+
+synthetic: win rate 90%, target 0.5R (expectancy +0.35R), 1,000 trades x 1,000 orders
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   7000        6994       3.2%     0.0%
+  % of equity 2%                           1026647     1064251       6.2%     0.0%
+  Over N = 3                                  7436        7432       3.7%     0.0%
+  Crooks E, N = 3 (approx)                    7684        7683       5.1%     0.0%
+  C1 Paroli up / brake down                  15125       15157       5.1%     0.0%
+  C2 1-3-2-6 up / small lot down             18717       18702       5.3%     0.0%
+  C3 % equity + equity-curve filter         159713      166604       4.4%     0.0%
+  C4 1/4 Kelly (learned) + brake          27253642    30178882       9.2%     0.0%
+  C5 profit-paid recovery + brake             7417        7422       3.7%     0.0%
+
+REAL M5 trades (TP1 0.2R, your filters), 3511 trades, win rate 77.2%, mean -0.087R: one run Jan 2021 - Sep 2026 from $1,000
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   -968        -968     100.0%   100.0%
+  % of equity 2%                              -950        -950     100.0%   100.0%
+  Over N = 3                                 -1000       -1000     100.0%   100.0%
+  Crooks E, N = 3 (approx)                    -951        -951     100.0%   100.0%
+  C1 Paroli up / brake down                   -808        -808      81.4%     0.0%
+  C2 1-3-2-6 up / small lot down              -778        -778      79.4%     0.0%
+  C3 % equity + equity-curve filter           -776        -776      79.8%     0.0%
+  C4 1/4 Kelly (learned) + brake              -604        -604      60.4%     0.0%
+  C5 profit-paid recovery + brake             -808        -808      81.4%     0.0%
+  every month fresh from $1,000 (70 months): rule | total | profitable months | worst month
+  Fixed $20                                -6088   10 / 70      -258
+  % of equity 2%                           -5761   10 / 70      -230
+  Over N = 3                              -18726   15 / 70     -1000
+  Crooks E, N = 3 (approx)                 -6444   13 / 70      -267
+  C1 Paroli up / brake down                -3545    7 / 70      -135
+  C2 1-3-2-6 up / small lot down           -1632    2 / 70       -52
+  C3 % equity + equity-curve filter        -1569   13 / 70       -61
+  C4 1/4 Kelly (learned) + brake           -3741    9 / 70      -222
+  C5 profit-paid recovery + brake          -3335    8 / 70      -128
+
+REAL M15 trades (TP1 0.2R, your filters), 1497 trades, win rate 79.1%, mean -0.056R: one run Jan 2021 - Sep 2026 from $1,000
+  rule                                  median net    mean net  avg maxDD    blown
+  Fixed $20                                   -960        -960     100.0%   100.0%
+  % of equity 2%                              -823        -823      82.8%     0.0%
+  Over N = 3                                 -1000       -1000     100.0%   100.0%
+  Crooks E, N = 3 (approx)                    -916        -916      91.9%     0.0%
+  C1 Paroli up / brake down                   -416        -416      42.4%     0.0%
+  C2 1-3-2-6 up / small lot down              -227        -227      23.7%     0.0%
+  C3 % equity + equity-curve filter           -430        -430      43.5%     0.0%
+  C4 1/4 Kelly (learned) + brake              -320        -320      32.7%     0.0%
+  C5 profit-paid recovery + brake             -415        -415      42.2%     0.0%
+  every month fresh from $1,000 (70 months): rule | total | profitable months | worst month
+  Fixed $20                                -1664   23 / 70      -124
+  % of equity 2%                           -1648   23 / 70      -118
+  Over N = 3                               -2290   26 / 70      -299
+  Crooks E, N = 3 (approx)                 -1957   24 / 70      -156
+  C1 Paroli up / brake down                -1422   12 / 70       -71
+  C2 1-3-2-6 up / small lot down           -1108    7 / 70       -37
+  C3 % equity + equity-curve filter         -800   12 / 70       -44
+  C4 1/4 Kelly (learned) + brake           -1671   23 / 70      -124
+  C5 profit-paid recovery + brake          -1222   15 / 70       -68
