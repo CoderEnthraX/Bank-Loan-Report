@@ -1,0 +1,13 @@
+3511 trades {'busy': 0, 'news': 423, 'cancel': 17, 'nodata': 0} TP1 2709 stop 800 closed by news / 23:55 / weekend 2
+M5 $1000   split  risk   total -13924.01 | profitable months 15 / 69 | best  +103.90 worst  -770.19 | blown months 0
+M5 $1000   split  profit total -24720.91 | profitable months 12 / 69 | best  +630.61 worst  -841.72 | blown months 0
+M5 $1000   fixed  risk   total  -5752.45 | profitable months 10 / 69 | best   +98.87 worst  -236.09 | blown months 0
+M5 $1000   fixed  profit total -23371.88 | profitable months 10 / 69 | best  +417.78 worst  -837.29 | blown months 0
+M5 $2000   split  risk   total -17227.76 | profitable months 15 / 69 | best  +103.90 worst -1287.30 | blown months 0
+M5 $2000   split  profit total -44432.03 | profitable months 16 / 69 | best  +654.76 worst -1633.46 | blown months 0
+M5 $2000   fixed  risk   total  -5752.45 | profitable months 10 / 69 | best   +98.87 worst  -236.09 | blown months 0
+M5 $2000   fixed  profit total -32789.03 | profitable months 10 / 69 | best  +417.78 worst -1360.50 | blown months 0
+M5 $10000  split  risk   total -19561.10 | profitable months 15 / 69 | best  +103.90 worst -1815.82 | blown months 0
+M5 $10000  split  profit total -166667.80 | profitable months 27 / 69 | best  +684.11 worst -7680.60 | blown months 0
+M5 $10000  fixed  risk   total  -5752.45 | profitable months 10 / 69 | best   +98.87 worst  -236.09 | blown months 0
+M5 $10000  fixed  profit total -34195.49 | profitable months 10 / 69 | best  +417.78 worst -1451.75 | blown months 0
