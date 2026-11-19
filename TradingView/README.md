@@ -1360,7 +1360,7 @@ right after "Position size")
 | Choice | What the Base Risk $ (or the % of equity) means |
 |---|---|
 | **Risk: the loss at the stop** (default) | What the base trade loses at its stop, as before. |
-| **Profit: the win at the final TP** | What the base trade **wins** at the final TP (the Final Exit). The stop-out loss follows from it: risk = amount ÷ the final TP's R. Example: $50 with the final TP at 0.1R → the trade risks $500 and wins $50. |
+| **Profit: the win at the final TP** | What the base trade **wins** at the final TP (the Final Exit). The stop-out loss follows from it: risk = amount ÷ what $1 of risk wins at the final TP. Example: $50 with the final TP at 0.1R and a $2.50 gold stop → the trade risks $546 and wins $50 (v5.1 counts the spread and commission; see v5.1 below). |
 
 With Profit, every loss-recovery rule goes for its amounts as **wins at the final TP**, whatever the stop-out loss becomes:
 
@@ -1380,7 +1380,7 @@ With Profit, every loss-recovery rule goes for its amounts as **wins at the fina
 - **Stay on the loss at the stop:** the hard cap, the limits of Crooks F, G, H, J and K, the profit ladder, and Crooks L's part steps.
 - **Fixed lots:** the base trade stays the lots; the recovery amounts still follow the setting.
 - **Partial profits:** a full win brings a little less, because the parts closed at the earlier TPs make less than the final TP.
-- **Size:** a small final TP makes every trade big (0.1R → 10× the amount). The leverage limit and the broker's maximum lot can cut a
+- **Size:** a small final TP makes every trade big (0.1R → about 11× the amount on gold). The leverage limit and the broker's maximum lot can cut a
   recovery trade, and then it wins back only part of the loss. In the gold test with your M5 settings, a 0.1R final TP won 78% of the
   trades but lost money with every recovery rule.
 
@@ -1435,6 +1435,48 @@ The $ is the risk, or with Profit the win at the final TP. Lots are rounded up t
 - **The EA** compiles with 0 errors and 0 warnings; on the broker simulator 12 runs with the new settings (Profit at 0.6R / 0.3R / 0.1R,
   Crooks K and L, restarts, the monthly restart) booked every trade with 0 rejected orders; wrong K / L / Profit inputs are refused at
   start with a message.
+
+### v5.1: Profit amounts include the spread and commission (strategy and EA)
+
+With **Base And Recovery Amounts Are = Profit**, v5.0 sized a trade as the amount ÷ the final TP's R. But the spread and the commission
+are part of the loss at the stop, so a final-TP win came short by their share: about 8–9% with your M5 gold settings (a $50 base won about
+$46). v5.1 sizes every trade from what a final-TP win brings per $1 lost at the stop **on that trade, costs included**, so the win is the
+amount itself.
+
+Example: gold, $50, final TP 0.1R, a $2.50 stop, spread 0.16, commission $7 a lot. One lot loses $273 at the stop and wins $25 at the TP.
+
+| | Risk at the stop | Lots | Win at the final TP |
+|---|---|---|---|
+| v5.0 | $500 | 1.83 | $45.79 |
+| v5.1 | $546 | 2.00 | **$50.00** |
+
+- **Every amount** is converted the same way: the base, what each recovery rule adds, Exact at final TP and the Crooks recovery, Oscar's
+  goal (one base win), Crooks K's careful $ and Crooks L's growth. The limits (hard cap, Crooks F–K, the profit ladder, L's part steps) stay
+  on the loss at the stop, as in v5.0.
+- **Keep "Extend Targets To Earn Back Commission + Spread" on** (the default). The target is then pushed by the costs and a win nets the
+  full R. With it off the costs come out of the win, so the trade has to be far bigger: at 0.1R on a $2.50 stop a lot nets only $2 after
+  the $23 of costs, so a $50 win needs $6,825 at risk. If a target cannot even pay the costs, the size falls back to amount ÷ R (v5.0's rule).
+- **Lots are rounded down** to the lot step, so a win is the amount or a little less, never more. On a live account the fill price and the
+  spread at that moment move each win a little.
+- **Risk mode is unchanged.** The costs come from the strategy's "Spread (price)" and "Commission ($ per lot, round trip)", and from the
+  EA's "Spread for sizing" (0 = the live spread) and "Commission per lot".
+
+**Checks**
+- **The EA matches the Python reference trade for trade** with Profit and the costs (spread 0.16, commission $7, earn-back on and off) on
+  every rule, Crooks K and L in Risk and Profit, the Crooks C rule after N losing recovery trades, Fixed lots and % of equity, the monthly
+  restart and the TP1 rule: TBD_NORMAL; again with a save and reload after every step: TBD_RESTART.
+- **Risk mode and the old rules are unchanged:** the v4.9 money suites on v5.1 give 0 differences (TBD_OLD).
+- **Broker simulator** (gold M1, Aug–Oct 2026, $50, no recovery, the commission charged): the win each trade was sized for at its TP:
+
+| Final TP | v5.0 average | v5.1 average | v5.1 largest |
+|---|---|---|---|
+| 0.6R | $46.22 | $47.21 | $49.99 |
+| 0.2R | $47.78 | $49.07 | $49.99 |
+| 0.1R | $48.17 | $49.56 | $49.99 |
+
+  What v5.1 still misses is the lot rounding (largest at 0.6R, where a trade is about 0.09 lot). Every trade was booked; 0 rejected orders.
+- **The EA** compiles with 0 errors and 0 warnings. **The strategy** parses with 0 inline-title and 0 shadowing warnings, and every input
+  keeps its title.
 
 
 ### Entry accuracy research (November 2026, no code change)

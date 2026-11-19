@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.0, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.1, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -1197,6 +1197,35 @@ Other gold findings:
     - **Broker simulator (`sim/`, sim49 / sim50, M1 data re-exported from 2026-06-01 / 2025-07-15 for the warm-up):** defaults v4.9 vs v5.0
       SIM / BOOK lines identical (694 and 1,181 lines); 12 v5.0 runs (Profit at 0.6R / 0.3R / 0.1R, K lots / $ + ladder, L, restarts,
       monthly restart): every position booked, 0 rejects, 0 init failures; invalid K / L / Profit inputs refused at start with the message.
+47. **Recover losses over N trades with the user's EA settings, every month 2021-2026 (asked 2026-11-19).** `nt3/nt3_test.py` +
+    `nt3/build_xlsx.py` -> `Research/deliverables/Gold_OverN3_TP0.2_Monthly_2021_2026.xlsx` (642 formulas, recalc 0 errors). N = 3,
+    final TP = TP1 0.2R, $20 base, news window, Asia / London / New York kill zones (New York time), 06:00-23:00 IST, force close and
+    weekend close, no trade after 2 AM; every month from a fresh start. 3,507 trades, 77.2% won. Over N = 3 (Risk) -$13,924 (15 of 69 months
+    profitable); Over N = 3 with Profit (costs included) -$24,721 (12 of 69); fixed $20 risk -$5,752; fixed $20 win -$23,372; 2025 -$267
+    (6 months profitable), 2026 Jan-Sep +$51 (5 of 9). Why: at 0.2R a win nets about 0.18R against -1R for a loss (break-even win rate
+    about 85%), and recovery makes the losses bigger. Building it showed v5.0's Profit wins came short by the costs -> v5.1 (item 48).
+48. **v5.1: Size By Profit includes the spread and commission (2026-11-19)** (task #16). v5.0 sized Profit as risk = amount / exitR, so a
+    final-TP win was amount x stop / (stop + costs) (gold M5 user settings: 8-9% short).
+    - **Spec:** `v50/SPEC_v50.md` section 5. D = W / Lu per setup: Lu = the stop-out loss per unit with the costs, W = exitR x stop with
+      earn-back (the target is pushed by the costs), exitR x stop - costs without; no stop / tick value or W <= 0: D = exitR (v5.0). With
+      Profit every conversion uses D: the base, the rule add-ons, Exact (pool / D), the Crooks recovery and the ladder (x / D), L's growth,
+      K's careful $, Oscar (need (B0 D - oscP) / (B0 D), goal one base win B0 x D kept with the trade). Risk unchanged; TP1 rule unchanged.
+    - **Reference:** `v50/patch_ref_v51.py` -> `gold/recovery.py` (trade element [8] = D) and `gold/crooks_tp1.py` (`x['pd']`); v5.0 copies
+      `*_v50.py`. `v50/ref_regress51.py`: no D given = v5.0, 7,920 + 160 runs identical.
+    - **EA:** `build/patch_ea_v51.py` (from `build/bak/AuctionRetestEA_v50.mq5`): PDiv(exitR), NextRisk dv / xr, gBaseWin -> exBaseWin
+      (saved as "xw"; a v5.0 memory without it falls back to BookBase() x ExitR()), KCare / LBase take dv, ShowBase / BaseTxt / table.
+      3,035 lines, md5 f6fa6b8e4c35, mq5check 0 errors / 0 warnings, ASCII.
+    - **Strategy:** `build/patch_pine_v51.py` (from `build/bak/strategy_template_v50.pine`): f_pD, pXR, f_crkRule(..., xr), exBaseWin;
+      inline lint 0, shadow lint 0, parse ok (799), input titles unchanged (only the Size By tooltip's example changed).
+    - **Harness:** `build.sh` rec_next* also set exBaseWin; rec_driver's REC_DAYS loop and mrs_driver read the stop distance with REC_SD.
+      New suites `parity_v51.py` (rec / pr / size: Profit with REC_SD, spread 0.16, commission 7, earn-back on and off; D computed like
+      PDiv and given to the reference), `parity_month_v51.py`, `parity_tp1_v51.py`; runners `v51/run_normal.sh`, `v51/run_restart_a.sh`,
+      `v51/run_restart_b.sh`, results in `v51/progress.txt`.
+    - **Results:** TBD_CHECKPOINT
+    - **Broker simulator** (`sim/sim51`): defaults v5.0 vs v5.1 SIM / BOOK lines identical (694 and 1,181); Profit, recovery off, COMM 3.5 a
+      side: planned TP win (lots x R x stop, stop from the EA's risk) v5.0 $46.22 / $47.78 / $48.17, v5.1 $47.21 / $49.07 / $49.56 at
+      0.6R / 0.2R / 0.1R, max $49.99 (lots rounded down) (`sim/profit_win_check_v51.txt`); Oscar, Crooks C, K, L with Profit at 0.2R and a
+      restart every 997 ticks: the bookings and the filled positions identical to the runs without restarts; every position booked, 0 rejects.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
@@ -1268,6 +1297,9 @@ Pick rules:
 - A money test with a $1e12 account can still blow with 0.1R targets (x11 per loss); the EA harness has no account, so compare up to the
   blow-up and start a fresh harness after it (its totals at 1e16 lose precision).
 - Pine: a local declared with the name of a global gives TradingView's "shadowing variable" warning: run `pinecheck/shadow_lint.py`.
+- Sizing to a profit goes through the win per $ of risk WITH the costs (D = W / Lu), never through the R alone (v5.0 came 8-9% short).
+- The broker simulator's fills gap through limit and TP levels (JIT), so a realised win is not the planned one: check the sizing from the
+  EA's own BOOK risk and lots.
 - A distance from the VWAP in ATR depends on the anchor: with the Month anchor most gold signals are more than 5 ATR away, with Session about half are under 2.5 ATR.
 - EA vs TradingView comparisons: FxPro's server is EET (EU clock change), so convert with UTC+3 until the last Sunday of October and UTC+2 after;
   the EA's Orders table (armed setups, including cancelled ones) shows which TradingView-only trades were the same setup left unfilled.
