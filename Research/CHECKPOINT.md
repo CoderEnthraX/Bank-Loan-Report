@@ -1300,8 +1300,8 @@ Other gold findings:
     `Research/deliverables/Gold_Best_Settings_Per_Timeframe_2021_2026.xlsx` and `Gold_Grid_All_Timeframes_2021_2026.xlsx` (recalc 0 errors;
     totals = months = years checked). D1: 0 trades with the EA rules (23:55 force-close + cancel-before-fill). Best (fixed $20): M1 short 2R
     +$1,714 (85.7R, 517 trades), M5 long 2R +$766, M15 long 2R +$1,399, H1 short 0.6R +$245, H4 short 0.6R +$160. Grid of all five: +$4,284,
-    every year positive (648 / 837 / 1,421 / 329 / 369 / 680), max drawdown $468, 49 of 70 months positive. Picked on the same years (in-sample);
-    picked on 2021-2023 the M1 / M15 / M5 settings still made money in 2024-2026.
+    every year positive (648 / 837 / 1,421 / 329 / 369 / 680), max drawdown $468, 49 of 70 months positive. Picked on the same years (in-sample).
+    Honest check (picked on 2021-2023 only, run on 2024-2026): M1 +9.3R, M5 -18.8R, M15 -3.5R, H1 -1.4R, H4 +1.5R - the in-sample totals overstate the edge.
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
