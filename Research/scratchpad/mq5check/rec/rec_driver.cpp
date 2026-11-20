@@ -21,6 +21,7 @@ int rec_t1();
 void rec_day(int counted);
 int rec_paused();
 void rec_restart();
+int rec_cool();
 }
 // v4.5 REC_MIN=1: every trade line has the Crooks E / I small-lot $ risk right after the cost ("res c rmin k ..."); REC_START=x: the equity the
 // EA sees (Crooks H) is x + the P&L so far (default 1e12, like the simulator's start in the parity scripts)
@@ -67,6 +68,7 @@ int main(int argc, char** argv)
          std::vector<double> pr(k), pw(k);
          for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
          if(rec_paused()) { std::printf("SKIP\n"); continue; }
+         if(rec_cool()) { std::printf("SKIP\n"); continue; }   // v5.4 Cooling-off
          if(sd_on) rec_setup(sdd, 0.0);
          double r = km_on ? rec_next_k(exitR, rmin, eq0 + net, kr) : rec_next_m(exitR, rmin, eq0 + net);
          if(rec_capstop()) { std::printf("STOP\n"); break; }
@@ -107,6 +109,7 @@ int main(int argc, char** argv)
       if(std::fscanf(f, "%d", &k) != 1) return 3;
       std::vector<double> pr(k), pw(k);
       for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
+      if(rec_cool()) { std::printf("SKIP\n"); continue; }   // v5.4 Cooling-off
       if(sd_on) rec_setup(sd, 0.0);
       double r = km_on ? rec_next_k(exitR, rmin, eq0 + net, kr) : rec_next_m(exitR, rmin, eq0 + net);
       if(rec_capstop()) { std::printf("STOP\n"); break; }

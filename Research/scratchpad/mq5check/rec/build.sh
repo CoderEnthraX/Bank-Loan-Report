@@ -29,13 +29,14 @@ cat >> "$HERE/ea_rt.cpp" <<'EOW'
 // what TakeSetup / the per-bar P&L update / BookClosed do with the money-management state (no broker calls)
 extern "C" void rec_init() { PresetApply(); LabReset(); gCrkPrPrev = (int)InpCrkPr; }   // as after the first OnInit (v4.8: the preset values first)
 // v4.7: the trade keeps the base it was sized with in the same step, as in TakeSetup (no restart can come between NextRisk and the take there)
-extern "C" double rec_next(double exitR) { double r = NextRisk(exitR); exBase = gBase; exBaseWin = gBaseWin; return r; }
+extern "C" double rec_next(double exitR) { double r = NextRisk(exitR); exBase = gBase; exBaseWin = gBaseWin; exRisk0 = gRisk; return r; }
 // v4.5: the $ risk with the Crooks E / I small-lot risk of this trade and the equity (Crooks H); T1 mode: the EA's own MinLotRisk() of the set stop
-extern "C" double rec_next_m(double exitR, double minRisk, double eq) { rec_eq = eq; double r = NextRisk(exitR, true, minRisk); exBase = gBase; exBaseWin = gBaseWin; return r; }
-extern "C" double rec_next_t1(double exitR, double eq) { rec_eq = eq; double r = NextRisk(exitR, true, (InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || LadOn()) ? MinLotRisk(trRisk) : 0, InpRec == REC_CRK && InpCrkKMode == CKM_LOTS ? LotRisk(InpCrkKLots, trRisk) : 0); exBase = gBase; exBaseWin = gBaseWin; return r; }   // v5.0: as TakeSetup (K / L, the K careful lots)
+extern "C" double rec_next_m(double exitR, double minRisk, double eq) { rec_eq = eq; double r = NextRisk(exitR, true, minRisk); exBase = gBase; exBaseWin = gBaseWin; exRisk0 = gRisk; return r; }
+extern "C" double rec_next_t1(double exitR, double eq) { rec_eq = eq; double r = NextRisk(exitR, true, (InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || LadOn()) ? MinLotRisk(trRisk) : 0, InpRec == REC_CRK && InpCrkKMode == CKM_LOTS ? LotRisk(InpCrkKLots, trRisk) : 0); exBase = gBase; exBaseWin = gBaseWin; exRisk0 = gRisk; return r; }   // v5.0: as TakeSetup (K / L, the K careful lots)
 // v5.0: with the Crooks K careful lots' $ risk of this trade (REC_KMIN)
-extern "C" double rec_next_k(double exitR, double minRisk, double eq, double kRisk) { rec_eq = eq; double r = NextRisk(exitR, true, minRisk, kRisk); exBase = gBase; exBaseWin = gBaseWin; return r; }
+extern "C" double rec_next_k(double exitR, double minRisk, double eq, double kRisk) { rec_eq = eq; double r = NextRisk(exitR, true, minRisk, kRisk); exBase = gBase; exBaseWin = gBaseWin; exRisk0 = gRisk; return r; }
 extern "C" void rec_take() { crkRec = CrkRecNext(); }
+extern "C" int rec_cool() { if(InpRec == REC_COOL && mmCoolLeft > 0) { mmCoolLeft--; return 1; } return 0; }   // v5.4: as TakeSetup (a signal that can be taken)
 extern "C" void rec_part(double np) { exPnl += np; totalNet += np; if(np != 0) carried = MathMax(0.0, carried - np); }
 extern "C" void rec_close() { BookClosed(); }
 extern "C" int rec_capstop() { return capStop ? 1 : 0; }

@@ -1549,6 +1549,34 @@ every hard-cap choice, the ladder, Crooks X steps and limit, the Crooks C rule a
 results as v5.2, and the broker simulator's orders and bookings are identical to v5.2. The EA compiles with 0 errors and 0 warnings
 (its 75 saved values have unique names); the strategy parses with 0 warnings, 1 new input, no title changed.
 
+### v5.4: 10 money rules (strategy and EA)
+
+Ten new choices in **Loss Recovery** (EA: "Loss recovery"), from the money-rule research. Their settings are in the new group
+**MONEY RULES** (EA: the inputs starting "Kelly", "Equity-curve filter", "Drawdown", "Cooling-off", "Combos", "Combo 3", "Combo 5").
+
+| Rule | What a trade risks |
+|---|---|
+| Kelly (learned from the last trades) | the Kelly fraction (default ¼) of the Kelly size learned from the last 100 trades' wins and losses; the 0.01 lot while the trades show no edge; the base for the first 30 trades |
+| 1-3-2-6 (after each win) | base × 1, 3, 2, 6 after each win; back to 1 after a loss or after the 4th win |
+| Equity-curve filter | the base; × 0.25 while the closed balance is under its average of the last 20 trades |
+| Drawdown cut | the base; half from 10% below the best balance, a quarter from 20% |
+| Cooling-off after losses in a row | the base; after 2 losses in a row the next 3 signals are skipped |
+| Combo 1: Paroli up / brake down | at or above the start and less than 10% off the best: Paroli; else the brake (half / quarter, shrinking with the account) |
+| Combo 2: 1-3-2-6 up / small lot down | at or above the start: 1-3-2-6; below it the 0.01 lot |
+| Combo 3: % of equity + equity-curve filter | 1.5% of the equity; a quarter while the balance is under its average |
+| Combo 4: Kelly + brake | ¼ Kelly as above; half from 10% below the best |
+| Combo 5: profit-paid recovery + brake | at or above the start: base + losses ÷ N, the extra never more than 30% of the profit above the start; below it the brake |
+
+- The combos never risk more than **3% of the equity** on a trade (setting). The Hard Cap works as for every rule. With Profit the base
+  is the win at the final TP; Kelly and the % rules are risk amounts.
+- "The start" and "the best" are counted since the EA started (the backtest start), or since the 1st of the month with the monthly restart.
+- These rules size trades; they cannot make losing entries profitable (see the money-rule research: at 0.2R you need about 83% wins).
+
+**Checks:** the EA matches the Python reference trade for trade on all 10 rules (Risk and Profit, $1,000 and $10,000 starts, default
+and other settings, every hard-cap choice): 4,480 runs, 5.1 M trades, 0 differences; with a save and reload after every step: MM_RESTART.
+Broker simulator: every rule booked every trade, 0 rejected orders, restarts identical, defaults identical to v5.3. The EA compiles with
+0 errors and 0 warnings (all saved values have unique names); the strategy parses with 0 warnings, 12 new inputs, no title changed.
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.

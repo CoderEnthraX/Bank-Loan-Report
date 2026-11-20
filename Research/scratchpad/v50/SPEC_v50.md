@@ -129,3 +129,23 @@ update and Crooks X's new step:
   `fx = crL / parts` (set at the first win).
 - every new cycle (all won back, cap Start again, monthly restart, forget rules): `fx = 0`; EA hedge pair kept going: `fx = 0`.
 - Sizing: the part a recovery trade goes for = `fx > 0 ? min(fx, crL) : crL / parts`, then x the % rule's %, then as before (/ XR, limits).
+
+## 8. v5.4 (2026-11-20): 10 money rules (Loss Recovery 31 - 40)
+
+Notation at sizing: B = the base (as every rule; Profit: / D), E = the equity (EA AccountInfoDouble(ACCOUNT_EQUITY), Pine
+strategy.initial_capital + strategy.netprofit, reference eq), nR = closed profit since the zero line, pk = crkPk / peakNet, start0 = E - nR,
+dd = pk > nR and start0 + pk > 0 ? (pk - nR) / (start0 + pk) : 0, mlot = the 0.01-lot risk (minRisk / rmin; 0 or unknown: B).
+State (booked after every closed trade, all modes): the R of the trade = pnl / its planned risk (EA exRisk0 = NextRisk's r, saved), kept
+for the last KWin trades; the closed profit after each trade (nR, starting with 0 at the zero line), kept for the last EqN values (cleared at
+the monthly restart); s1326 (a win: (s + 1) mod 4, a loss: 0); lossRow / coolLeft. RecoveryRestart (cap Start again, monthly restart):
+s1326 = 0, lossRow = 0, coolLeft = 0.
+- Kelly(learned): with fewer than KMin R values: B. Else over the last KWin: p = share of R > 0, Rw = mean of R > 0, Lw = -mean of R <= 0
+  (none: 1), f = Rw > 0 ? max(0, (p Rw - (1 - p) Lw) / (Rw Lw)) x KFrac : 0; f > 0: r = f x E x Lw, else r = mlot.
+- 31 Kelly: Kelly(learned). 32 1-3-2-6: B x (1, 3, 2, 6)[s1326]. 33 Equity-curve filter: MA = mean of the kept nR values (incl. the last);
+  r = B x (nR >= MA - 1e-9 ? 1 : EqLow). 34 Drawdown cut: B x (dd < Dd1 ? 1 : dd < Dd2 ? 0.5 : 0.25). 35 Cooling-off: B; after CoolL losses
+  in a row the next CoolN signals that could be taken are skipped (each one counts down), then lossRow starts again.
+- 36 C1: nR >= 0 and dd < Dd1 ? B x 2^parWins (Paroli, Wins Before Reset) : B x min(1, E / start0) x (dd < Dd2 ? 0.5 : 0.25).
+  37 C2: nR >= 0 ? B x (1, 3, 2, 6)[s1326] : min(B, mlot). 38 C3: E x C3Pct / 100 / D x (nR >= MA - 1e-9 ? 1 : EqLow).
+  39 C4: Kelly(learned), x 0.5 when dd >= Dd1. 40 C5: nR >= 0 ? B + min(recPool / RecN / D, C5Share / 100 x nR) : as C1's brake.
+  C1 - C5: r = min(r, Cap / 100 x E). Then the hard cap as every rule.
+- Defaults: KFrac 0.25, KWin 100, KMin 30, EqN 20, EqLow 0.25, Dd1 10%, Dd2 20%, CoolL 2, CoolN 3, Cap 3%, C3Pct 1.5, C5Share 30%.

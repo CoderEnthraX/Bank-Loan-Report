@@ -5,7 +5,9 @@ import math
 MODES = ['Off', 'Recover all losses on the next trade', 'Recover losses over N trades', 'Recover a % of losses per trade', 'Martingale (multiply after each loss)',
          'Exact recovery at final TP', 'Step-up (+$ per loss in a row)', 'Fibonacci', "D'Alembert", 'Rule C: carry the losses', 'Rule C split', 'Labouchere',
          'Grand Martingale', 'Paroli', "Reverse D'Alembert", 'Delayed recovery', '% of equity', "Oscar's Grind", 'Crooks A', 'Crooks B', 'Crooks C', 'Crooks D',
-         'Crooks E', 'Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J', 'Crooks K', 'Crooks L', 'Crooks X']
+         'Crooks E', 'Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J', 'Crooks K', 'Crooks L', 'Crooks X',
+         'Kelly', '1-3-2-6', 'Equity-curve filter', 'Drawdown cut', 'Cooling-off', 'C1', 'C2', 'C3', 'C4', 'C5']   # v5.4: 31 - 40
+MM = ('Kelly', '1-3-2-6', 'Equity-curve filter', 'Drawdown cut', 'Cooling-off', 'C1', 'C2', 'C3', 'C4', 'C5')
 # v4.5: Crooks C and the rules built on it (everything of Crooks C applies to them: over N wins, the rule after N losing recovery trades)
 CFAM = ('Crooks C', 'Crooks E', 'Crooks F', 'Crooks G', 'Crooks H', 'Crooks I', 'Crooks J', 'Crooks K', 'Crooks L', 'Crooks X')   # v5.0: + K, L; v5.2: + X
 # v4.6 profit ladder (Crooks F - J): level -> (lock share of the highest profit, share of the cushion added to the base, most base x, most extra
@@ -22,7 +24,8 @@ def lad_state(lad, ladT, net, peakNet, base):
     return True, net <= 0, base + min((bmax - 1.0) * base, phi * C), C
 def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, start=10000.0, recN=3, recPct=50.0, mult=2.0, step=25.0, cSplit=3, parN=3, delayN=2, eqPct=1.0, trace=None, cN=1,
              crkPr='off', crkPrN=2, crkPrPct=50.0, crkPrM=2, crkPrD=3, crkPrForget=False, fK=3.0, gX=10.0, hPct=1.0, jX=20.0, lad=None, ladT=1000.0, baseMode='usd', basePct=1.0,
-             sizeBy='risk', kMode='lots', kUsd=25.0, kPct=50.0, lZ1=2.0, lZ1N=6, lZ2=5.0, lZ2N=3, lGrow=10.0, lGrowX=4.0, xStep=1000.0, xLim=0.0, partFix=False):
+             sizeBy='risk', kMode='lots', kUsd=25.0, kPct=50.0, lZ1=2.0, lZ1N=6, lZ2=5.0, lZ2N=3, lGrow=10.0, lGrowX=4.0, xStep=1000.0, xLim=0.0, partFix=False,
+             mmKFrac=0.25, mmKWin=100, mmKMin=30, mmEqN=20, mmEqLow=0.25, mmDd1=10.0, mmDd2=20.0, mmCoolL=2, mmCoolN=3, mmCap=3.0, mmC3Pct=1.5, mmC5Share=30.0):
     """trades: iterable of (R result, spread cost in R) or (R result, spread cost in R, parts) or (R, cost, parts, day events). parts = [(R of the part,
     share of the position)] for a trade with a partial close: Rule C's carried losses are then updated after each part, like the strategy (once per candle).
     v3.9 Crooks C rule after crkPrN losing recovery trades in a row (Crooks C only): crkPr 'forget' (new cycle), 'pct' (every recovery trade goes for
@@ -74,6 +77,13 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
         if v < -0.005: return -v
         if v >= peakNet - 0.005: return 0.0
         return max(0.0, min(peakNet, (math.floor((v + 0.005) / xStep) + 1) * xStep) - v)
+    mmR = []; mmEq = [0.0]; s1326 = 0; lossRow = 0; coolLeft = 0          # v5.4 money rules (SPEC section 8)
+    def kelly(B, E, ml):
+        if len(mmR) < mmKMin: return B
+        w = [v for v in mmR[-mmKWin:] if v > 0]; l = [v for v in mmR[-mmKWin:] if v <= 0]
+        p = len(w) / len(mmR[-mmKWin:]); Rw = sum(w) / len(w) if w else 0.0; Lw = -sum(l) / len(l) if l else 1.0
+        f = max(0.0, (p * Rw - (1 - p) * Lw) / (Rw * Lw)) * mmKFrac if Rw > 0 and Lw > 0 else 0.0
+        return f * E * Lw if f > 0 else ml
     def lparts(bb):                      # v5.0 Crooks L: the parts of the loss just booked (net / peakNet after it)
         if net < 0: dd, st_, mx = -net, lZ1 * bb, max(1, lZ1N)
         elif net < peakNet: dd, st_, mx = peakNet - net, lZ2 * bb, max(1, lZ2N)
@@ -142,10 +152,31 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
                     kr = tr[7] if len(tr) > 7 and tr[7] is not None and tr[7] > 0 else None
                     r = (kUsd / D) if kMode == 'usd' else (b * kPct / 100.0) if kMode == 'pct' else (kr if kr is not None else b)
                 else: r = min(b, rmin) if rmin is not None else b
+        if mode == 'Cooling-off' and coolLeft > 0:                   # v5.4: a signal skipped by the cooling-off
+            coolLeft -= 1
+            if trace is not None: trace.append('SKIP')
+            continue
+        if mode in MM:                                               # v5.4 money rules
+            E = eq; st0 = E - net; dd = (peakNet - net) / (st0 + peakNet) if peakNet > net and st0 + peakNet > 0 else 0.0
+            ml = tr[5] if len(tr) > 5 and tr[5] is not None and tr[5] > 0 else b
+            ma = sum(mmEq[-mmEqN:]) / len(mmEq[-mmEqN:])
+            brake = b * min(1.0, E / st0 if st0 > 0 else 1.0) * (0.5 if dd < mmDd2 / 100.0 else 0.25)
+            if mode == 'Kelly': r = kelly(b, E, ml)
+            elif mode == '1-3-2-6': r = b * (1, 3, 2, 6)[s1326]
+            elif mode == 'Equity-curve filter': r = b * (1.0 if net >= ma - 1e-9 else mmEqLow)
+            elif mode == 'Drawdown cut': r = b * (1.0 if dd < mmDd1 / 100.0 else 0.5 if dd < mmDd2 / 100.0 else 0.25)
+            elif mode == 'Cooling-off': r = b
+            elif mode == 'C1': r = b * 2 ** parWins if net >= 0 and dd < mmDd1 / 100.0 else brake
+            elif mode == 'C2': r = b * (1, 3, 2, 6)[s1326] if net >= 0 else min(b, ml)
+            elif mode == 'C3': r = E * mmC3Pct / 100.0 / D * (1.0 if net >= ma - 1e-9 else mmEqLow)
+            elif mode == 'C4': r = kelly(b, E, ml) * (0.5 if dd >= mmDd1 / 100.0 else 1.0)
+            elif mode == 'C5': r = b + min(recPool / recN / D, mmC5Share / 100.0 * net) if net >= 0 else brake
+            if mode in ('C1', 'C2', 'C3', 'C4', 'C5'): r = min(r, mmCap / 100.0 * E)
         if cap > 0 and r > cap:
             if capAction == 'stop': capStop = True; break
             elif capAction == 'reset':
                 recPool = 0.0; recLosses = 0; dUnits = 1; carried = 0.0; lab = [1.0, 2.0, 3.0]; parWins = 0; rdUnits = 1; oscU = 1; oscP = 0.0
+                s1326 = 0; lossRow = 0; coolLeft = 0
                 crL = 0.0; crN = 0; crRec = False; crW = False; crP = cN; crF = 0; crWait = False; crWW = 0; crNeedL = False; crFx = 0.0
                 r = min(baseC, cap)
             else: r = cap
@@ -215,6 +246,12 @@ def simulate(trades, mode, base=50.0, cap=0.0, capAction='clamp', exitR=2.0, sta
                             crSkip = True; crSkipLeft = crkPrD
                             if crkPrForget: crL = 0.0; crN = 0; crP = cN; crFx = 0.0
         crW = win
+        if r > 0: mmR.append(pnl / r)                                 # v5.4: the trade's R (pnl / its planned risk)
+        mmEq.append(net); s1326 = (s1326 + 1) % 4 if win else 0
+        if win: lossRow = 0
+        else:
+            lossRow += 1
+            if lossRow >= mmCoolL: coolLeft = mmCoolN; lossRow = 0
     return dict(mode=mode, trades=n, avgRisk=sumRisk / n if n else 0.0, net=net, end=eq, maxDD=maxDD, maxDDpct=maxDDp, maxRisk=maxRisk, maxRiskPct=maxRiskPct, ruined=ruined, ruinAt=ruinAt,
                 pf=(gp / gl) if gl > 0 else float('inf'), worstRun=-worstRun, capStopped=capStop)
 def risks(trades, mode, **kw):

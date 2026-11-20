@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.3, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.4, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -1274,6 +1274,15 @@ Other gold findings:
     below. None blew in any test. Real 0.2R trades (one run 2021-2026 from $1,000): M5 (mean -0.087R) Fixed -968 blown, C4 -604, C3 -776,
     C2 -778, C1 / C5 -808; M15 (mean -0.056R) Fixed -960 blown, C2 -227, C4 -320, C1 / C5 -416, C3 -430. Months fresh: M15 C3 total -800,
     worst month -44 (Fixed -1,664 / -124). With an edge (80% at 0.5R): C4 and C3 grow the most, C1 / C2 / C5 with drawdowns of 9-10%.
+
+54. **v5.4: the 10 money rules of items 52 / 53 built (asked 2026-11-20).** Spec `v50/SPEC_v50.md` section 8; Loss Recovery 31 - 40
+    (EA REC_KELLY .. REC_C5, Pine L_KELLY .. L_C5), group MONEY RULES (12 inputs). Reference `gold/recovery.py` MM (v5.3 copy
+    `recovery_v53.py`); EA `build/patch_ea_v54.py` (MmPushR / MmPushEq / MmMA / MmKelly, gRisk -> exRisk0, cooling skip in TakeSetup, saved
+    keys z*: "mr" was already used; mq5check 0 / 0); strategy `build/patch_pine_v54.py` (arrays mmRa / mmEqA, f_mmMA / f_mmKelly, coolSkip).
+    Harness: rec_cool + exRisk0 in the wrappers. `mq5check/rec/parity_mm.py`: 4,480 runs identical (the 2nd setting set uses a 4% cap: a
+    cap equal to the first drawdown step makes a capped loss at the best a floating-point tie); restart MM_RESTART_CP. Simulator sim54:
+    every rule booked, 0 rejects, Cooling-off 99 of 102 trades, restarts identical, defaults identical to v5.3 (the simulator's $10 M
+    account makes the equity rules' risks large).
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

@@ -12,6 +12,7 @@ double rec_next_k(double exitR, double minRisk, double eq, double kRisk);
 void rec_take(); void rec_part(double np); void rec_close(); int rec_capstop(); void rec_init();
 void rec_mtick(long long t); int rec_mrestart(); void rec_restart();
 void rec_setup(double risk, double spread);
+int rec_cool();
 }
 static long rs_k = 0, rs_c = 0;
 static void rp() { if(rs_k > 0 && ++rs_c % rs_k == 0) rec_restart(); }   // REC_RESTART=k: a restart (save, fresh load, reload) at every k-th point
@@ -45,6 +46,7 @@ int main(int argc, char** argv)
       std::vector<double> pr(k), pw(k);
       for(int j = 0; j < k; j++) if(std::fscanf(f, "%lf %lf", &pr[j], &pw[j]) != 2) return 3;
       if(rec_capstop()) { std::printf("SKIP\n"); continue; }
+      if(rec_cool()) { std::printf("SKIP\n"); continue; }   // v5.4 Cooling-off
       if(sd_on) rec_setup(sdd, 0.0);
       double r = km_on ? rec_next_k(exitR, rmin, eq0 + net, kr) : rec_next_m(exitR, rmin, eq0 + net);
       if(rec_capstop()) { std::printf("STOP\n"); continue; }
