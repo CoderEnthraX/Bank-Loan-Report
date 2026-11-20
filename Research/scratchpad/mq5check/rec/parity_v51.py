@@ -102,6 +102,7 @@ def jobs_rec(xr):
     caps = ((0.0, 'clamp'), (cap1, 'clamp'), (cap1, 'reset'), (cap1, 'stop'))
     for sb in ('risk', 'profit'):
         for mode in RC.MODES:
+            if mode in getattr(RC, 'MM', ()): continue   # v5.4 money rules: parity_mm.py
             if sb == 'risk' and mode not in ('Crooks K', 'Crooks L'): continue        # the old rules in Risk: the v4.9 suites
             cns = (1, 2) if mode in RC.CFAM else (1,)
             kws = [{}]
@@ -209,6 +210,7 @@ def work_size(src):
                 lotb = [bv * ((sd + SPR) / TS * TV + comm(eb)) for sd in sds] if bm == 'lot' else [None] * len(sds)
                 trs = [(res, c, parts, None, None, rm, lb, kr, pdiv(xr, sd, eb)) for (_, res, c, parts), rm, lb, kr, sd in zip(seq, rmin, lotb, krisk, sds)]
                 for mode in RC.MODES:
+                    if mode in getattr(RC, 'MM', ()): continue   # v5.4 money rules: parity_mm.py
                     for cn in ((1, 2) if mode in RC.CFAM else (1,)):
                         kws = [dict(kMode='pct')] if mode == 'Crooks K' else [{}]
                         for kw in kws:

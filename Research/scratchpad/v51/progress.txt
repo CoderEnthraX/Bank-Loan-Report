@@ -42,3 +42,12 @@ v53 v51-tp1 TP1 v5.1: runs 13552, trades compared 27420181 (TP1-rule trades 3358
 v53 restart fixed rec FIXED PARTS rec: runs 5488, trades compared 7014342, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
 v53 restart fixed pr FIXED PARTS pr: runs 1680, trades compared 2031732, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
 v53 done 20:50:26
+v5.4 checks start 07:29:28
+v54 v51 rec SECTION rec: runs 10416, trades compared 12571939, floating-point tie-breaks 0, mismatches 114 -> DIFFERENCES
+v54 fix rec FIXED PARTS rec: runs 5488, trades compared 7014342, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
+v54 x rec CROOKS X rec: runs 2016, trades compared 2568036, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
+v54 old rec TypeError: unsupported operand type(s) for -: 'str' and 'float'
+v54 restart mm MONEY RULES: runs 4480, trades compared 5090686, floating-point tie-breaks 0, mismatches 0 -> ALL IDENTICAL
+v54 checks done 08:50:55
+v54 old rec runs 8832, trades compared 13211474, mismatches 0, worst relative difference 5.00e-12; runs where the account blew (compared up to that trade): 281
+v54 v51 rec (money rules excluded) SECTION rec: runs 9296, trades compared 11222445, floating-point tie-breaks 0, mismatches 1 -> DIFFERENCES

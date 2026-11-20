@@ -50,6 +50,7 @@ def jobs(xr):
     J = []
     for sb in ('risk', 'profit'):
         for mode in RC.MODES:
+            if mode in getattr(RC, 'MM', ()): continue   # v5.4 money rules: parity_mm.py
             if mode in ('% of equity', 'Crooks H'): continue
             if sb == 'risk' and mode not in ('Crooks K', 'Crooks L'): continue
             kws = [{}]

@@ -41,6 +41,7 @@ def main():
         trs = [(res, c, parts, None, None, rm) for (_, res, c, parts), rm in zip(seq, rmin)]
         jobs = []
         for mode in RC.MODES:
+            if mode in getattr(RC, 'MM', ()): continue   # v5.4 money rules: parity_mm.py
             if mode == '% of equity': continue
             splits = (1, 2, 3, 4, 5) if mode in ('Crooks B', 'Rule C split', 'Rule C: carry the losses') else (3,)
             cns = (1, 2, 3) if mode == 'Crooks C' else (1, 2) if mode in NEW else (1,)    # Crooks C (and E - J) over N wins

@@ -1573,7 +1573,7 @@ Ten new choices in **Loss Recovery** (EA: "Loss recovery"), from the money-rule 
 - These rules size trades; they cannot make losing entries profitable (see the money-rule research: at 0.2R you need about 83% wins).
 
 **Checks:** the EA matches the Python reference trade for trade on all 10 rules (Risk and Profit, $1,000 and $10,000 starts, default
-and other settings, every hard-cap choice): 4,480 runs, 5.1 M trades, 0 differences; with a save and reload after every step: MM_RESTART.
+and other settings, every hard-cap choice): 4,480 runs, 5.1 M trades, 0 differences; with a save and reload after every step: the same 4,480 runs, 0 differences. Every earlier suite gives the same results as v5.3.
 Broker simulator: every rule booked every trade, 0 rejected orders, restarts identical, defaults identical to v5.3. The EA compiles with
 0 errors and 0 warnings (all saved values have unique names); the strategy parses with 0 warnings, 12 new inputs, no title changed.
 

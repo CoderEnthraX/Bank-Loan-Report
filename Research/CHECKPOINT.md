@@ -1280,7 +1280,7 @@ Other gold findings:
     `recovery_v53.py`); EA `build/patch_ea_v54.py` (MmPushR / MmPushEq / MmMA / MmKelly, gRisk -> exRisk0, cooling skip in TakeSetup, saved
     keys z*: "mr" was already used; mq5check 0 / 0); strategy `build/patch_pine_v54.py` (arrays mmRa / mmEqA, f_mmMA / f_mmKelly, coolSkip).
     Harness: rec_cool + exRisk0 in the wrappers. `mq5check/rec/parity_mm.py`: 4,480 runs identical (the 2nd setting set uses a 4% cap: a
-    cap equal to the first drawdown step makes a capped loss at the best a floating-point tie); restart MM_RESTART_CP. Simulator sim54:
+    cap equal to the first drawdown step makes a capped loss at the best a floating-point tie); restart 4,480 identical; old rec 8,832 / v51 rec 9,296 / fixed 5,488 / X 2,016 runs as v5.3 (the older suites skip the money rules: their compare does not read Cooling-off SKIP lines). Simulator sim54:
     every rule booked, 0 rejects, Cooling-off 99 of 102 trades, restarts identical, defaults identical to v5.3 (the simulator's $10 M
     account makes the equity rules' risks large).
 
