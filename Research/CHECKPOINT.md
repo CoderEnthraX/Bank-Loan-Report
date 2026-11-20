@@ -1303,6 +1303,11 @@ Other gold findings:
     every year positive (648 / 837 / 1,421 / 329 / 369 / 680), max drawdown $468, 49 of 70 months positive. Picked on the same years (in-sample).
     Honest check (picked on 2021-2023 only, run on 2024-2026): M1 +9.3R, M5 -18.8R, M15 -3.5R, H1 -1.4R, H4 +1.5R - the in-sample totals overstate the edge.
 
+57. **Grid in one file - ON HOLD (asked 2026-11-20).** Possible next work, not started: (1) a single MT5 grid EA (v6.0): one chart, five
+    engine copies (M1 / M5 / M15 / H1 / H4) with the item 56 settings, own magic per engine, hedging account, verified against five separate
+    EA copies on the broker simulator; (2) a TradingView grid backtester on an M1 chart (results table only: a Pine strategy holds one net
+    position, so opposite-direction trades cannot be real orders). Today the grid runs as five copies of the current EA with different InpMagic.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
