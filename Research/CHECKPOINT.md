@@ -1308,6 +1308,13 @@ Other gold findings:
     EA copies on the broker simulator; (2) a TradingView grid backtester on an M1 chart (results table only: a Pine strategy holds one net
     position, so opposite-direction trades cannot be real orders). Today the grid runs as five copies of the current EA with different InpMagic.
 
+58. **Order block + absorption + aggression test, 2026 (asked 2026-11-20).** `ob/ob_test.py` (all bars from M1; OB = last opposite candle with an
+    FVG within 3 candles and a close beyond it, usable from that close; absorption = volume > 20-bar mean, body < 40%, wick into the zone >= 50%;
+    aggression = later candle, body >= 55%, market entry; stops candle / last confirmed swing; outcome on M1, stop-first), `ob_summary.py`,
+    `ob_xlsx.py` -> `Research/deliverables/Gold_2026_OrderBlock_Absorption_Test.xlsx` (0 errors). Pairs M1/M3, M1/M5, M5/M15, M5/M30, M5/H1,
+    M15/H1, M15/H4, with and without the user's filters. Negative net R at every target for M1 and M5 entries; M15/H4 positive (+0.09R at 1R,
+    75 trades; +0.20R with filters, 36 trades) - too few trades to trust.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
