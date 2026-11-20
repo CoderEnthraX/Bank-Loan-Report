@@ -1,0 +1,39 @@
+M15 random runs 440
+M15 random 25
+M15 random 50
+M15 random 75
+M15 random 100
+M15 random 125
+M15 random 150
+M15 random 175
+M15 random 200
+M15 random 225
+M15 random 250
+M15 random 275
+M15 random 300
+M15 random 325
+M15 random 350
+M15 random 375
+M15 random 400
+M15 random 425
+M15 round 1 runs 237
+M15 round 1 25
+M15 round 1 50
+M15 round 1 75
+M15 round 1 100
+M15 round 1 125
+M15 round 1 150
+M15 round 1 175
+M15 round 1 200
+M15 round 1 225
+M15 round 2 runs 230
+M15 round 2 25
+M15 round 2 50
+M15 round 2 75
+M15 round 2 100
+M15 round 2 125
+M15 round 2 150
+M15 round 2 175
+M15 round 2 200
+M15 round 2 225
+M15 DONE 907 best score 62.0 {'tp': 2.0, 'stopAtr': 2.4, 'entryMode': 'market', 'entryPct': 50.0, 'chop': None, 'hours': None, 'kz': 'user', 'days': 'TWT', 'vw': 'month', 'momAtr': 0.85, 'mv': None, 'dirn': 'long'}

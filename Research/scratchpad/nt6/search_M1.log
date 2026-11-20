@@ -1,0 +1,17 @@
+M1 random runs 160
+M1 random 25
+M1 random 50
+M1 random 75
+M1 random 100
+M1 random 125
+M1 random 150
+M1 round 1 runs 216
+M1 round 1 25
+M1 round 1 50
+M1 round 1 75
+M1 round 1 100
+M1 round 1 125
+M1 round 1 150
+M1 round 1 175
+M1 round 1 200
+M1 DONE 376 best score 79.0 {'tp': 2.0, 'stopAtr': 3.0, 'entryMode': 'model', 'entryPct': 50.0, 'chop': 8.0, 'hours': (1830, 2230), 'kz': 'LNY', 'days': 'TWT', 'vw': 'session', 'momAtr': 1.1, 'mv': 'mv2', 'dirn': 'short'}

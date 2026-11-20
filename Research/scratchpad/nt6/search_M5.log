@@ -1,0 +1,41 @@
+M5 random runs 440
+M5 random 25
+M5 random 50
+M5 random 75
+M5 random 100
+M5 random 125
+M5 random 150
+M5 random 175
+M5 random 200
+M5 random 225
+M5 random 250
+M5 random 275
+M5 random 300
+M5 random 325
+M5 random 350
+M5 random 375
+M5 random 400
+M5 random 425
+M5 round 1 runs 277
+M5 round 1 25
+M5 round 1 50
+M5 round 1 75
+M5 round 1 100
+M5 round 1 125
+M5 round 1 150
+M5 round 1 175
+M5 round 1 200
+M5 round 1 225
+M5 round 1 250
+M5 round 1 275
+M5 round 2 runs 225
+M5 round 2 25
+M5 round 2 50
+M5 round 2 75
+M5 round 2 100
+M5 round 2 125
+M5 round 2 150
+M5 round 2 175
+M5 round 2 200
+M5 round 2 225
+M5 DONE 942 best score 31.9 {'tp': 2.0, 'stopAtr': 1.8, 'entryMode': 'market', 'entryPct': 50.0, 'chop': 8.0, 'hours': (1830, 2230), 'kz': 'user', 'days': 'TWT', 'vw': 'session', 'momAtr': 1.1, 'mv': 'mv2', 'dirn': 'long'}

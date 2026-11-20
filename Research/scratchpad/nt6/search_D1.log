@@ -1,0 +1,22 @@
+D1 random runs 340
+D1 random 25
+D1 random 50
+D1 random 75
+D1 random 100
+D1 random 125
+D1 random 150
+D1 random 175
+D1 random 200
+D1 random 225
+D1 random 250
+D1 random 275
+D1 random 300
+D1 random 325
+D1 round 1 runs 144
+D1 round 1 25
+D1 round 1 50
+D1 round 1 75
+D1 round 1 100
+D1 round 1 125
+D1 round 2 runs 0
+D1 DONE 484 best score -1000000000.0 {'stopAtr': 1.8, 'entryMode': 'model', 'entryPct': 25.0, 'chop': None, 'hours': (600, 2300), 'kz': 'user', 'days': 'TWT', 'vw': 'session', 'momAtr': 0.85, 'mv': None, 'dirn': 'both', 'tp': 0.5}

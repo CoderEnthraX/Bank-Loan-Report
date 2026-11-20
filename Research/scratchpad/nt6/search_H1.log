@@ -1,0 +1,43 @@
+H1 random runs 440
+H1 random 25
+H1 random 50
+H1 random 75
+H1 random 100
+H1 random 125
+H1 random 150
+H1 random 175
+H1 random 200
+H1 random 225
+H1 random 250
+H1 random 275
+H1 random 300
+H1 random 325
+H1 random 350
+H1 random 375
+H1 random 400
+H1 random 425
+H1 round 1 runs 324
+H1 round 1 25
+H1 round 1 50
+H1 round 1 75
+H1 round 1 100
+H1 round 1 125
+H1 round 1 150
+H1 round 1 175
+H1 round 1 200
+H1 round 1 225
+H1 round 1 250
+H1 round 1 275
+H1 round 1 300
+H1 round 2 runs 268
+H1 round 2 25
+H1 round 2 50
+H1 round 2 75
+H1 round 2 100
+H1 round 2 125
+H1 round 2 150
+H1 round 2 175
+H1 round 2 200
+H1 round 2 225
+H1 round 2 250
+H1 DONE 1032 best score 11.4 {'tp': 0.6, 'stopAtr': 1.8, 'entryMode': 'model', 'entryPct': 50.0, 'chop': 8.0, 'hours': (1200, 2300), 'kz': None, 'days': 'TWT', 'vw': 'month', 'momAtr': 0.85, 'mv': 'mv2', 'dirn': 'short'}

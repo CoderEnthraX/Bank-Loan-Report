@@ -1294,6 +1294,15 @@ Other gold findings:
     % of losses / Labouchere 12/12 months in 2024 but 100% drawdown in 2026 (and 2021 for some). M15 B (long, 2R, stop 4 ATR, 06-23, London +
     NY, momentum 0.6, TP2 stop move): fixed +$250 2024, 2022-2025 positive. Every candidate lost in 2021. Picked on 2024 (in-sample).
 
+56. **Best settings per timeframe + the grid, 2021 - 2 Oct 2026 (asked 2026-11-20).** `nt6/`: `make_bars.py` (H4 / D1 from H1 -> gold/data),
+    `search.py TF NRAND ROUNDS` (score = total R - 0.5 x max drawdown R; month / year R kept; random + hill-climb incl. direction; nt5 seeds),
+    `picks.py` (best + picked-on-2021-2023, money rules, hindsight best per month), `build_file1.py` / `build_file2.py` (+ `common_xl.py`) ->
+    `Research/deliverables/Gold_Best_Settings_Per_Timeframe_2021_2026.xlsx` and `Gold_Grid_All_Timeframes_2021_2026.xlsx` (recalc 0 errors;
+    totals = months = years checked). D1: 0 trades with the EA rules (23:55 force-close + cancel-before-fill). Best (fixed $20): M1 short 2R
+    +$1,714 (85.7R, 517 trades), M5 long 2R +$766, M15 long 2R +$1,399, H1 short 0.6R +$245, H4 short 0.6R +$160. Grid of all five: +$4,284,
+    every year positive (648 / 837 / 1,421 / 329 / 369 / 680), max drawdown $468, 49 of 70 months positive. Picked on the same years (in-sample);
+    picked on 2021-2023 the M1 / M15 / M5 settings still made money in 2024-2026.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |

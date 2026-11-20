@@ -8,7 +8,7 @@ Q = N.Q
 
 
 def trades_for(tf, tp, on=None, eng=None):
-    N.TF = tf; N.BARMIN = {'M5': 5, 'M15': 15}[tf]; N.TP = tp
+    N.TF = tf; N.BARMIN = {'M1': 1, 'M5': 5, 'M15': 15, 'H1': 60, 'H4': 240, 'D1': 1440}[tf]; N.TP = tp
     on0, eng0 = Q.USER_ON, Q.USER_ENG
     if on is not None: Q.USER_ON = on
     if eng is not None: Q.USER_ENG = eng
