@@ -1,0 +1,45 @@
+done M5 E: long, 1R, stop 2.4 ATR, chop 8, 12-23, your kill zones, Tue-Thu
+done M5 D: long, 2R, stop 2.4 ATR, chop 8, 12-23, your kill zones, Tue-Thu
+done M5 F: long, 2R, stop 1.8 ATR, chop 8, 12-23, your kill zones, Tue-Thu
+
+M5 D: long, 2R, stop 2.4 ATR, chop 8, 12-23, your kill zones, Tue-Thu (M5): 2024 one year from $1000 | 2024 months fresh: total, profitable months, worst | 2023 / 2025 one year
+  Labouchere                               risk   N1      +5417 dd  37% |    +2784 10/12    -29 |    +1184 /    +2968
+  D'Alembert                               risk   N1      +4635 dd  30% |    +1799 12/12    +55 |     -383 /     -769
+  Labouchere                               profit N1      +3824 dd  27% |    +1912 12/12     +6 |    +2294 /    +2501
+  Grand Martingale                         risk   N1      +3650 dd  21% |    +2887 12/12    +90 |     -638 /     -909
+  Martingale (multiply after each loss)    risk   N1      +2570 dd  18% |    +2189 12/12    +57 |     -647 /     -922
+  D'Alembert                               profit N1      +2507 dd  20% |    +1008 12/12    +29 |      -30 /     -335
+  Recover all losses on the next trade     risk   N1      +2261 dd  19% |    +2039 12/12    +57 |    +1771 /     -938
+  Grand Martingale                         profit N1      +2085 dd  13% |    +1810 12/12    +48 |     -649 /     -229
+  Step-up (+$ per loss in a row)           risk   N1      +1812 dd  15% |    +1683 12/12    +46 |    +1187 /     +739
+  Martingale (multiply after each loss)    profit N1      +1637 dd  10% |    +1353 12/12    +31 |    +1838 /     -257
+  Fibonacci                                risk   N1      +1313 dd  16% |    +1118 12/12    +25 |     +859 /    +2326
+  Recover a % of losses per trade          risk   N1      +1178 dd  12% |    +1097 12/12    +32 |     +716 /     +597
+
+M5 E: long, 1R, stop 2.4 ATR, chop 8, 12-23, your kill zones, Tue-Thu (M5): 2024 one year from $1000 | 2024 months fresh: total, profitable months, worst | 2023 / 2025 one year
+  Reverse D'Alembert                       risk   N1      +2849 dd  68% |     +453  5/12   -118 |     +133 /     +692
+  Reverse D'Alembert                       profit N1      +2822 dd  70% |     +492  5/12   -118 |      +60 /     +675
+  Labouchere                               profit N1      +2511 dd  33% |    +1750  9/12   -161 |     +435 /    +1129
+  Labouchere                               risk   N1      +2360 dd  33% |    +1666  9/12   -139 |     +460 /    +1131
+  Grand Martingale                         profit N1      +1810 dd  27% |    +1609 10/12    -80 |     +843 /     -805
+  Grand Martingale                         risk   N1      +1755 dd  26% |    +1422 10/12    -81 |     +850 /     -801
+  Martingale (multiply after each loss)    profit N1      +1397 dd  20% |    +1418 12/12    +17 |     +775 /     -820
+  Step-up (+$ per loss in a row)           profit N1      +1335 dd  16% |    +1075 10/12    -17 |    +1002 /    +1158
+  Martingale (multiply after each loss)    risk   N1      +1329 dd  19% |    +1367 12/12    +25 |     +818 /     -818
+  Step-up (+$ per loss in a row)           risk   N1      +1260 dd  15% |    +1013 10/12    -18 |     +875 /    +1236
+  Recover all losses on the next trade     profit N1      +1255 dd  23% |    +1168 12/12     +8 |     +568 /    +1284
+  Exact recovery at final TP               profit N1      +1255 dd  23% |    +1168 12/12     +8 |     +568 /    +1284
+
+M5 F: long, 2R, stop 1.8 ATR, chop 8, 12-23, your kill zones, Tue-Thu (M5): 2024 one year from $1000 | 2024 months fresh: total, profitable months, worst | 2023 / 2025 one year
+  Martingale (multiply after each loss)    risk   N1      +4139 dd  42% |     +884  9/12   -629 |    +2468 /     -922
+  Grand Martingale                         profit N1      +3244 dd  41% |    +1230  9/12   -158 |    +2256 /     -911
+  Recover all losses on the next trade     risk   N1      +2951 dd  42% |     +952  9/12   -581 |    +2482 /     -923
+  Martingale (multiply after each loss)    profit N1      +2752 dd  40% |    +1187 10/12    -87 |    +2251 /     -923
+  Step-up (+$ per loss in a row)           risk   N1      +2288 dd  49% |     +845  9/12   -535 |    +1937 /     -895
+  D'Alembert                               profit N1      +1986 dd  56% |     +624  9/12   -118 |    +1341 /     -582
+  Fibonacci                                risk   N1      +1485 dd  33% |    +1241 12/12     +6 |    +1375 /     -911
+  Recover a % of losses per trade          risk   N1      +1321 dd  33% |    +1030 11/12    -35 |     +985 /     -916
+  Exact recovery at final TP               risk   N1      +1321 dd  33% |    +1030 11/12    -35 |     +985 /     -916
+  Step-up (+$ per loss in a row)           profit N1      +1314 dd  34% |     +492  9/12   -260 |    +1035 /     -853
+  Fibonacci                                profit N1      +1078 dd  20% |     +732 12/12     +2 |     +638 /     -910
+  Rule C split                             risk   N1       +975 dd  55% |     +337 10/12    -47 |     +341 /     -918

@@ -54,11 +54,11 @@ def work(arg):
 
 
 if __name__ == '__main__':
-    C = pickle.load(open('cands.pkl', 'rb'))
+    C = pickle.load(open(os.environ.get('CANDS', 'cands.pkl'), 'rb')); OUTN = os.environ.get('OUTN', 'stage3')
     rows = []
     with Pool(4) as pool:
         for o in pool.imap_unordered(work, C): rows += o; print('done', o[0]['name'], flush=True)
-    pickle.dump(rows, open('stage3.pkl', 'wb'))
+    pickle.dump(rows, open(OUTN + '.pkl', 'wb'))
     L = []
     for name in [c[0] for c in C]:
         rs = [r for r in rows if r['name'] == name]
@@ -66,4 +66,4 @@ if __name__ == '__main__':
         for r in sorted(rs, key=lambda r: -r[2024]['net'])[:12]:
             a, b, c3 = r[2024], r[2023], r[2025]
             L.append('  %-40s %-6s N%d  %+9.0f dd %3.0f%%%s | %+8.0f %2d/%2d %+6.0f | %+8.0f / %+8.0f' % (r['mode'][:40], r['sb'], r['cn'], a['net'], 100 * a['dd'], ' BLOWN' if a['ruined'] else '', a['mnet'], a['mpos'], a['mn'], a['mworst'], b['net'], c3['net']))
-    open('stage3.txt', 'w').write('\n'.join(L)); print('\n'.join(L))
+    open(OUTN + '.txt', 'w').write('\n'.join(L)); print('\n'.join(L))

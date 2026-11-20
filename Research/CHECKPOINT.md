@@ -1284,6 +1284,16 @@ Other gold findings:
     every rule booked, 0 rejects, Cooling-off 99 of 102 trades, restarts identical, defaults identical to v5.3 (the simulator's $10 M
     account makes the equity rules' risks large).
 
+55. **2024 edge search, M5 / M15 (asked 2026-11-20).** `nt5/`: `edge.py` (nt4's EA-rule trade builder for any TF / TP / filters; replica of the
+    user's settings checked: M15 0.2R 1,497 trades, 2024 -0.097R), `stage1.py` (700 random settings per TF: TP 0.1-2R, stop ATR, entry, chop,
+    hours, kill zones, days, VWAP, momentum, stop moves), `stage2.py` (2 hill-climb rounds incl. long / short only; 1,102 M15 + 1,173 M5),
+    `stage3.py` (every money rule, Risk / Profit, on candidates), `allyears*.py`, `edge_data.py` + `build_xlsx.py` ->
+    `Research/deliverables/Gold_2024_Edge_Search_M5_M15.xlsx` (recalc 0 errors; Summary / months checked against the data). Findings: no edge
+    at 0.1-0.3R in 2024 on either TF; the edge is LONG ONLY with 1-2R targets (gold rose). M5 D (long, 2R, stop 2.4 ATR, market entry, chop 8,
+    12:00-23:00, kill zones A/L/NY, Tue-Thu, session VWAP, momentum 1.1): 2024 +21.5R, fixed $20 +$430 (8% DD, 11/12 months); with Fibonacci /
+    % of losses / Labouchere 12/12 months in 2024 but 100% drawdown in 2026 (and 2021 for some). M15 B (long, 2R, stop 4 ATR, 06-23, London +
+    NY, momentum 0.6, TP2 stop move): fixed +$250 2024, 2022-2025 positive. Every candidate lost in 2021. Picked on 2024 (in-sample).
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
