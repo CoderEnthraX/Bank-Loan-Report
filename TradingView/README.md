@@ -1674,6 +1674,33 @@ as in v6.0 (EA: VWAP retest leg = magic, Sniper leg = magic + 1, hedging account
   VWAP setup's Entry Price is Market (checked: the same 28 deals either way), and a preset trades the VWAP retest setup only (checked: the
   true grid with a preset = VWAP only, 178 deals).
 
+### Sniper accuracy research (November 2026, no code change)
+
+`Research/deliverables/Gold_Sniper_Accuracy_Research_2021_2026.xlsx`: can the VWAP Orderflow Sniper be made more accurate on gold
+(M5, M15, H1, H2, H3; FxPro M1 data 2021 - 2 Oct 2026; settings chosen on 2021-23, tested on 2024-26)?
+
+- **The default Sniper is as accurate as a random entry**: a random entry reaches +X R before -1 R in 1 / (1 + X) of the cases (83% at 0.2R,
+  67% at 0.5R, 50% at 1R); the Sniper's M5 / M15 signals score the same. With the costs (0.23 per ounce) every target loses.
+- **Tested:**
+  - every Sniper setting, one at a time;
+  - 40 order flow / context concepts: higher-timeframe trend, session and weekly VWAP, cumulative delta, volume profile POC / value area,
+    liquidity sweeps, stacked intrabars, volatility regime, time of day, round numbers, band reversal, previous day / session / week levels;
+  - about 45,000 combinations;
+  - a machine-learning model of all features. It could not separate good from bad signals in 2024-26 (AUC 0.50).
+- **Robust on M5** (better in 2021-22, 2023 and 2024-26):
+  - **Volume Average Length 80 + Structure Stop Buffer 0.3 ATR** (existing inputs): 1R accuracy 52.0% / 52.4% (2021-23 / 2024-26), net
+    -0.012R per trade instead of -0.090R.
+  - With a zone of at least 2 absorption candles (a new input): 53.7%.
+  - Also trading only 11:00-16:00 IST: 58.9% (185 trades in 2024-26).
+- **H3:** Sniper signals against the 20-bar cumulative delta reached 1R first in about 58-60% in every period (about 20 trades a year).
+- **M15, H1, H2:** nothing held in all periods.
+- **The real EA on the broker simulator, 2024-26** (Sniper only, default filters, its own TP1 0.6R exit):
+  - Win rate 57.0% with the defaults (426 trades) -> 62.6% with Volume Average 80 + Structure Stop Buffer 0.3 (655 trades).
+  - Without loss recovery ($50 a trade): -$1,173 -> +$1,343, every year positive.
+- **Checks:**
+  - The research engine gives exactly the EA's signals (148 / 148).
+  - An independent re-scoring (separate code) confirmed the accuracy numbers.
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.

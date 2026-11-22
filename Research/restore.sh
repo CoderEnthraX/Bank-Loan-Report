@@ -20,4 +20,8 @@ if python3 -c "import numba" 2>/dev/null; then
   (cd "$S/entry" && python3 -I dataset.py H1 M15 M5 M1 && python3 -I barscan.py H1 M15 M5 && python3 -I baseline_m1.py) || echo "entry datasets: rebuild failed"
   [ -f "$S/entry/of.py" ] && (cd "$S/entry" && python3 -I of.py build) || true
 fi
+# Sniper accuracy research (CHECKPOINT item 61): search results + the bar / feature caches (from entry/cache_M1.npz)
+mkdir -p "$S/snr"
+for f in "$R"/results/snr/*.xz; do xz -dc "$f" > "$S/snr/$(basename "${f%.xz}")"; done
+if [ -f "$S/entry/cache_M1.npz" ]; then (cd "$S/snr" && python3 -I data.py && python3 -I features.py) || echo "snr caches: rebuild failed"; fi
 echo "restored to $S"

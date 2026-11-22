@@ -1338,6 +1338,20 @@ Other gold findings:
     `vol_m1.txt` / `vol_m5.txt`), `sn_mirror.py` (Python copy of the Pine engine on the EA's VWAP: 149 / 149 signals), runs `q_*.log`:
     VWAP only = v5.40 (364 deals), grid legs = single modes, 30 restarts identical, 0 rejects, all booked.
 
+61. **Sniper accuracy research, M5 / M15 / H1 / H2 / H3, 2021 - 2 Oct 2026 (asked 2026-11-22).** `snr/` (copy in `Research/scratchpad/snr/`, caches rebuilt by
+    `data.py` + `features.py`): `data.py` (chart bars from M1, intrabar buy / sell volume, the EA's VWAP, the user's filters), `engine.py` (numba Sniper
+    = the EA: 148 / 148 signals; research extensions: absorption types / count, zone of N absorption candles, aggression delta %, confirmation bar,
+    band reversal (ctx 1), absorption at levels pd / sx / pw (ctx 2), VWAP side, 3 generic filter slots on `features.py`'s 25 context features),
+    `outcome.py` (M1, stop first, costs 0.23 / oz, optional 23:55 IST force close), `evalx.py`, `sweep1.py`, `featscan.py`, `concepts.py`,
+    `search.py` (random search, select on min(edge 2021-22, edge 2023)), `analyze.py`, `selz.py`, `refine.py`, `final.py`, `ml.py` (LightGBM),
+    `simple.py`, `detail.py`, `build_xlsx.py` -> `Research/deliverables/Gold_Sniper_Accuracy_Research_2021_2026.xlsx`. EA check: `obt/run_eacheck.sh`
+    (`snsimF`, `m1_full.csv`, `vol_m*_full.txt`). Findings: the default Sniper's accuracy = a random entry's (1 / (1 + X)) on M5 / M15; ~45,000
+    combinations: chosen-on-2021-23 settings keep +1..3 pts (M5), ~0 (M15), +2..6 (H1-H3, small samples); LightGBM test AUC 0.50 (M5-H2), 0.52 (H3).
+    Robust on M5: Volume Average 80 + Structure Stop Buffer 0.3 (1R 52.0 / 52.4 % train / test, net -0.012R vs -0.090R); + zone of 2 absorption
+    candles (new input) 53.7 % test; + 11:00-16:00 IST 58.9 % (185 trades). H3: against the 20-bar delta ~58-60 % in every period (~20 trades / yr).
+    Independent re-scoring (sonnet agent, own code) confirmed the accuracy numbers exactly. EA on the simulator 2024-26 (`obt/run_eacheck*.sh`,
+    Sniper only, default filters): win rate 57.0 % (426) -> 62.6 % (655) with Volume 80 + Stop Buffer 0.3; recovery off ($50): -$1,173 -> +$1,343.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
