@@ -1629,7 +1629,10 @@ money rules, streak stops, monthly lock and restart, restart memory (EA).
   - With a restart every 15,000 ticks (30 restarts) the trades are the same.
   - No order was rejected, and every trade was booked.
 - Both EAs compile with 0 errors and 0 warnings.
-@@PINECHECK@@
+- Both strategies parse with 0 inline-title warnings and 0 shadowing warnings.
+- A line-by-line Python copy of the Pine order block code gives the EA's signals on M5 (428 of 428), M15 with H1 + H4 (103 of 103) and M1 with M3 + M5 (2,148 of 2,148).
+- Grid file: no name declared inside the slot loop is used after it, and there are no history references inside the loop.
+- About 815 global variables (limit 1,000). An independent code review found no compile error and no trade-changing bug; its one finding (a too-strict same-direction check on the bar where the other slot's trade closes) is fixed.
 
 ### Entry accuracy research (November 2026, no code change)
 

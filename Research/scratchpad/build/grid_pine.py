@@ -84,7 +84,7 @@ slNet += newPnl
     s = rep(s, 'float pos = strategy.position_size\n', 'float pos = gridOn ? (curSlot == 0 ? posA : posB) : strategy.position_size\nslAvg := curSlot == 0 ? avgA : avgB\n')
     s = rep(s, 'if mRestPend and exState == 0 and strategy.position_size == 0\n', 'if mRestPend and exState == 0 and pos == 0\n')
     # same direction only: a setup against the other slot's trade (or working entry) is skipped
-    s = rep(s, '    bool preSkip = exState != 0 or pos != 0 or newsBlock', '    bool oppSkip = gridOn and sb.exState != 0 and sb.exL != isL   // v6.0 true grid: one net position on TradingView\n    bool preSkip = exState != 0 or pos != 0 or oppSkip or newsBlock')
+    s = rep(s, '    bool preSkip = exState != 0 or pos != 0 or newsBlock', '    float oPos   = curSlot == 0 ? posB : posA      // v6.0 true grid: one net position on TradingView: the other slot position now, or its working entry\n    bool oppSkip = gridOn and ((oPos != 0 and (oPos > 0) != isL) or (sb.exState == 1 and sb.exL != isL))\n    bool preSkip = exState != 0 or pos != 0 or oppSkip or newsBlock')
     s = rep(s, '    skipWhy := coolSkip ? "cooling-off" :', '    skipWhy := coolSkip ? "cooling-off" : oppSkip ? "opposite to the other setup\'s trade" :')
 
     D = decls(s)

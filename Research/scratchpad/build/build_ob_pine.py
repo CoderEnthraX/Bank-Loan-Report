@@ -324,6 +324,7 @@ def base(only_ob):
         s = rep(s, 'strategy("Auction Retest Strategy [VWAP Displacement + Retest]", shorttitle = "ARS",',
                 'strategy("Auction Retest + Order Block Strategy [VWAP + Order Block, Grid]", shorttitle = "AROB",')
         s = rep(s, 'pyramiding = 0,', 'pyramiding = 2, close_entries_rule = "ANY",')
+        s = rep(s, 'f_row(mon, 1, "STATE", stTxt + exTxt, white)', 'f_row(mon, 1, "STATE", stTxt + exTxt + (st != 0 and not trGhost and setupMode == S_ONE ? (trSrc == 2 ? " (order block)" : " (VWAP)") : ""), white)')
         s = rep(s, '    table.cell(mon, 0, 0, "AUCTION RETEST",', '    table.cell(mon, 0, 0, setupMode == S_VWAP ? "AUCTION RETEST" : setupMode == S_OB ? "ORDER BLOCK · " + f_obTfTxt() : (gridOn ? "GRID: VWAP + OB · " : "VWAP + OB · ") + f_obTfTxt(),')
     return s
 

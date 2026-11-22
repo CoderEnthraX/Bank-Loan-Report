@@ -2498,7 +2498,8 @@ for slot = 0 to (gridOn ? 1 : 0)
                     if recMode == L_C1 or recMode == L_C2 or recMode == L_C3 or recMode == L_C4 or recMode == L_C5
                         rUsd := math.min(rUsd, mmCap / 100.0 * mE)   // the combinations: never more than Cap % of the equity
                 // hard cap, only for a signal that can be taken (with a trade still open its result is not booked yet: no restart or stop on that)
-                bool oppSkip = gridOn and sb.exState != 0 and sb.exL != isL   // v6.0 true grid: one net position on TradingView
+                float oPos   = curSlot == 0 ? posB : posA      // v6.0 true grid: one net position on TradingView: the other slot position now, or its working entry
+                bool oppSkip = gridOn and ((oPos != 0 and (oPos > 0) != isL) or (sb.exState == 1 and sb.exL != isL))
                 bool preSkip = exState != 0 or pos != 0 or oppSkip or newsBlock or flatNow or capStop or paused or dayBlock or crkPause or mStop
                 bool coolSkip = recMode == L_COOL and mmCoolLeft > 0 and not preSkip   // v5.4: a signal skipped by the cooling-off
                 if coolSkip
@@ -2621,7 +2622,7 @@ if showTable and (barstate.islastconfirmedhistory or barstate.isrealtime)
     float  lots  = exQty / unitsPer
     table.cell(mon, 0, 0, setupMode == S_VWAP ? "AUCTION RETEST" : setupMode == S_OB ? "ORDER BLOCK · " + f_obTfTxt() : (gridOn ? "GRID: VWAP + OB · " : "VWAP + OB · ") + f_obTfTxt(), text_color = white, bgcolor = color.new(#29A3E0, 0), text_size = size.small)
     table.cell(mon, 1, 0, "STRATEGY", text_color = white, bgcolor = color.new(#3D8FD6, 0), text_size = size.small)
-    f_row(mon, 1, "STATE", stTxt + exTxt, white)
+    f_row(mon, 1, "STATE", stTxt + exTxt + (st != 0 and not trGhost and setupMode == S_ONE ? (trSrc == 2 ? " (order block)" : " (VWAP)") : ""), white)
     f_row(mon, 2, "ENTRY / STOP", has ? f_px(lim) + " / " + f_px(stp) + (trHalf ? " ½" : "") : "—", white)
     f_row(mon, 3, "TP1 · TP2 · TP3 · TP4 (exit " + exitAt + ")", has ? f_px(t1) + " · " + f_px(t2) + " · " + f_px(t3) + " · " + f_px(t4) : "—", posC)
     [lOn, lGuard, lB, lC] = f_lad(baseRisk)
