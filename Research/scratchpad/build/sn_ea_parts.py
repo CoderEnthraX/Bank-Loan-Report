@@ -28,7 +28,7 @@ enum ENUM_SN_STOP { SNS_STRUCT = 0, // Absorption / swing
                     SNS_PCT    = 3 };// Percent
 
 input group "SETUPS AND VWAP ORDERFLOW SNIPER"
-input ENUM_SETUPS InpSetups    = SET_ONE;      // Setups to trade
+input ENUM_SETUPS InpSetups    = SET_ONE;      // Setups to trade (a strategy preset: VWAP retest only, as tested)
 input double InpSnAggRatio  = 2.2;     // Sniper: aggression ratio (one side x the other)
 input double InpSnAbsSens   = 1.2;     // Sniper: absorption sensitivity (relative volume)
 input ENUM_SN_DS InpSnDelta = SNDS_LTF; // Sniper: delta source (intrabar: lower-timeframe candles; candle estimate below 2 of them)
@@ -64,6 +64,7 @@ input int    InpSnSwingLen  = 5;       //   ...swing lookback (bars, 1 - 200)
 input double InpSnMinRisk   = 0.3;     //   ...structure risk min (ATR)
 input double InpSnMaxRisk   = 4.0;     //   ...structure risk max (ATR)
 input bool   InpSnShowZone  = true;    // Sniper: draw the absorption zones
+ENUM_SETUPS SetupsUse() { return InpPreset == PRE_CUSTOM ? InpSetups : SET_VWAP; }   // a strategy preset trades the VWAP retest setup only
 
 '''
 

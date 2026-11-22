@@ -52,6 +52,9 @@ def patch(s):
     s = rep(s, 'TblAdd("AUCTION RETEST", "EA v5.4", white,',
             'TblAdd(InpSetups == SET_GRID ? (gLeg == 0 ? "GRID LEG 1: VWAP RETEST" : "GRID LEG 2: SNIPER") : "AUCTION RETEST + SNIPER", "EA v6.1 | " + '
             '(InpSetups == SET_VWAP ? "VWAP retest only" : InpSetups == SET_SN ? "Sniper only" : InpSetups == SET_ONE ? "both, one trade at a time" : "true grid, magic " + IntegerToString(InpMagic)), white,')
+    s = s.replace('gpEntryMode == ENTRY_MARKET || trMkt', '(trSrc != 2 && gpEntryMode == ENTRY_MARKET) || trMkt')   # Entry = Market is for the VWAP setup
+    i = s.index('ENUM_SETUPS SetupsUse()'); j = s.index('\n', i)
+    s = s[:j] + s[j:].replace('InpSetups', 'SetupsUse()')
     return s
 
 
@@ -69,7 +72,7 @@ def grid(s):
     i = w.rindex('//+------------------------------------------------------------------+')
     tail = W.TAIL.replace('the VWAP leg and the order block leg', 'the VWAP retest leg and the Sniper leg').replace('leg 1 (the order block setup, magic + 1)', 'leg 1 (the Sniper setup, magic + 1)')
     tail = tail.replace('"True grid: the VWAP leg trades with magic ", IntegerToString(gEA0.gMagic), ", the order block leg with magic "', '"True grid: the VWAP retest leg trades with magic ", IntegerToString(gEA0.gMagic), ", the Sniper leg with magic "')
-    tail = tail.replace('v6.0 the event handlers', 'v6.1 the event handlers')
+    tail = tail.replace('v6.0 the event handlers', 'v6.1 the event handlers').replace('gGridOn = InpSetups == SET_GRID;', 'gGridOn = SetupsUse() == SET_GRID;')
     w = w[:i].rstrip() + '\n' + tail
     w = w.replace('(the grid runs leg 0 = VWAP and leg 1 = order block)', '(the grid runs leg 0 = VWAP retest and leg 1 = Sniper)')
     assert 'order block' not in w.lower(), [l for l in w.split('\n') if 'order block' in l.lower()][:5]

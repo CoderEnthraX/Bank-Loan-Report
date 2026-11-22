@@ -88,7 +88,7 @@ S_VWAP = "VWAP only"
 S_OB   = "Order block only"
 S_ONE  = "Both: one trade at a time"
 S_GRID = "Both: true grid (same direction)"
-setupMode = input.string(S_ONE, "Setups", options = [S_VWAP, S_OB, S_ONE, S_GRID], group = GRP_OB, tooltip = "VWAP only: the Auction Retest setup. Order block only: the order block setup. Both, one trade at a time: whichever setup comes first is traded; a setup on the bar of a VWAP setup waits. Both, true grid: each setup has its own trade, loss recovery and money rules (on TradingView only in the same direction at one time: a strategy holds one net position; the EA trades both ways on a hedging account).")
+setupIn = input.string(S_ONE, "Setups", options = [S_VWAP, S_OB, S_ONE, S_GRID], group = GRP_OB, tooltip = "VWAP only: the Auction Retest setup. Order block only: the order block setup. Both, one trade at a time: whichever setup comes first is traded; a setup on the bar of a VWAP setup waits. Both, true grid: each setup has its own trade, loss recovery and money rules (on TradingView only in the same direction at one time: a strategy holds one net position; the EA trades both ways on a hedging account). A strategy preset (STRATEGY PRESET) trades the VWAP retest setup only, as it was tested.")
 OBT_AUTO = "Auto"
 OBT_OFF  = "Off"
 obTf1In   = input.string(OBT_AUTO, "Order Block Timeframe 1", options = [OBT_AUTO, OBT_OFF, "M3", "M5", "M15", "M30", "H1", "H4"], group = GRP_OB, tooltip = "The higher timeframe whose candles make the order blocks (built from this chart's own candles). Auto: M1 chart -> M3 and M5 · M5 -> M15, M30 and H1 · M15 -> H1 and H4 · M3 -> M15 and M30 · M30 / H1 -> H4. A timeframe must be above the chart's and a whole multiple of it; others are ignored.")
@@ -797,6 +797,7 @@ string evCancel  = ""
 // ── v6.0 order block engine (the EA's ObBar): higher-timeframe candles built from the chart's own candles; a block acts from the bar after
 // its candle closed; the first touch starts an episode: absorption (volume above the average, small body, long wick into the zone), then an
 // aggression candle = the signal (one per block); a close beyond the block's far side ends it ──
+string setupMode = PC ? setupIn : S_VWAP   // a strategy preset trades the VWAP setup only (as tested)
 var bool trMkt = false       // v6.0: the setup enters at market (order block)
 var int  trSrc = 0           // v6.0: the setup's source: 1 VWAP, 2 order block
 var int  curSlot = 0         // v6.0: the slot the engine and the execution run for (true grid: 0 VWAP, 1 order block)

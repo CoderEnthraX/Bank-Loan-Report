@@ -20,7 +20,7 @@ def base():
     s = rep(s, 'GRP_M = "SIGNAL MODEL"\n', P.INPUTS + 'GRP_M = "SIGNAL MODEL"\n')
     s = rep(s, '// ── 1. manage the live trade: stop first, then the final target, else stop moves (from the next bar) ──\n',
             P.ENGINE + '// ── 1. manage the live trade: stop first, then the final target, else stop moves (from the next bar) ──\n')
-    s = rep(s, '    bool touched = entryMode == E_MARKET ? true :', '    bool touched = entryMode == E_MARKET or trMkt ? true :')
+    s = rep(s, '    bool touched = entryMode == E_MARKET ? true :', '    bool touched = (trSrc != 2 and entryMode == E_MARKET) or trMkt ? true :')
     s = rep(s, 'bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))\nif canArm and (bullDisp or bearDisp) and not keepArm\n',
             'bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))\n'
             'bool srcV    = gridOn ? curSlot == 0 : setupMode != S_SN     // v6.1: the setups this pass arms (srcO = the Sniper)\n'
@@ -31,7 +31,7 @@ def base():
     s = rep(s, '        if not ghost\n            evArm  := true\n            evArmL := isL\n// <<< ENGINE END\n',
             '        if not ghost\n            evArm  := true\n            evArmL := isL\n' + P.ARM + '// <<< ENGINE END\n')
     s = rep(s, 'st == 1 ? "BUY LIMIT ARMED" : st == -1 ? "SELL LIMIT ARMED"', 'st == 1 ? (trMkt ? "BUY AT MARKET (NEXT BAR)" : "BUY LIMIT ARMED") : st == -1 ? (trMkt ? "SELL AT MARKET (NEXT BAR)" : "SELL LIMIT ARMED")')
-    s = rep(s, '        if entryMode == E_MARKET\n            strategy.entry(', '        if entryMode == E_MARKET or trMkt      // v6.1: a Sniper setup at the signal close enters at market\n            strategy.entry(')
+    s = rep(s, '        if entryMode == E_MARKET\n            strategy.entry(', '        if (trSrc != 2 and entryMode == E_MARKET) or trMkt      // v6.1: Entry Price = Market is for the VWAP setup; a Sniper setup at its signal close enters at market\n            strategy.entry(')
     s = rep(s, 'strategy("Auction Retest Strategy [VWAP Displacement + Retest]", shorttitle = "ARS",',
             'strategy("Auction Retest + VWAP Orderflow Sniper Strategy [Grid]", shorttitle = "ARSN",')
     s = rep(s, 'pyramiding = 0,', 'pyramiding = 2, close_entries_rule = "ANY",')

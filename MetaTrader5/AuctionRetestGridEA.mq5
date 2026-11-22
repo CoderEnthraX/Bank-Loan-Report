@@ -239,6 +239,7 @@ enum ENUM_OB_STOP { OBS_CANDLE = 0,  // Beyond the aggression candle
 
 input group "SETUPS AND ORDER BLOCK"
 input ENUM_SETUPS InpSetups    = SET_ONE;    // Setups to trade
+ENUM_SETUPS SetupsUse() { return InpPreset == PRE_CUSTOM ? InpSetups : SET_VWAP; }   // a strategy preset trades the VWAP setup only
 input ENUM_OB_TF  InpObTf1     = OBTF_AUTO;  // Order block timeframe 1 (above the chart's)
 input ENUM_OB_TF  InpObTf2     = OBTF_AUTO;  // Order block timeframe 2
 input ENUM_OB_TF  InpObTf3     = OBTF_AUTO;  // Order block timeframe 3
@@ -3055,7 +3056,7 @@ void CLeg::UpdateTable()
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd(InpSetups == SET_GRID ? (gLeg == 0 ? "GRID LEG 1: VWAP" : "GRID LEG 2: ORDER BLOCK") : "AUCTION RETEST + ORDER BLOCK", "EA v6.0 | " + (InpSetups == SET_VWAP ? "VWAP only" : InpSetups == SET_OB ? "order block only" : InpSetups == SET_ONE ? "both, one trade at a time" : "true grid, magic " + IntegerToString(gMagic)) + (gSrcO ? " | blocks " + ObTfText() : ""), white, C'61,143,214');
+   TblAdd(SetupsUse() == SET_GRID ? (gLeg == 0 ? "GRID LEG 1: VWAP" : "GRID LEG 2: ORDER BLOCK") : "AUCTION RETEST + ORDER BLOCK", "EA v6.0 | " + (SetupsUse() == SET_VWAP ? "VWAP only" : SetupsUse() == SET_OB ? "order block only" : SetupsUse() == SET_ONE ? "both, one trade at a time" : "true grid, magic " + IntegerToString(gMagic)) + (gSrcO ? " | blocks " + ObTfText() : ""), white, C'61,143,214');
    if(InpPreset != PRE_CUSTOM) TblAdd("PRESET", PresetName() + (gpTfOk ? "" : " | needs an " + TfName(gpTf) + " chart") + (InpAddMine ? " | + my filters" : ""), gpTfOk ? posC : negC, cell);
    TblAdd("STATE", gStateTxt + (has && trSrc == 2 ? " (order block)" : has && trSrc == 1 && gSrcO ? " (VWAP)" : ""), white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
@@ -3780,8 +3781,8 @@ int CLeg::Init()
    trade.SetDeviationInPoints(50);
    trade.SetTypeFillingBySymbol(_Symbol);
    PresetApply();                                        // v4.8: the preset's values (or the inputs) before anything uses them
-   gSrcV = InpSetups == SET_GRID ? gLeg == 0 : InpSetups != SET_OB;   // v6.0: the setups this engine arms
-   gSrcO = InpSetups == SET_GRID ? gLeg == 1 : InpSetups != SET_VWAP;
+   gSrcV = SetupsUse() == SET_GRID ? gLeg == 0 : SetupsUse() != SET_OB;   // v6.0: the setups this engine arms
+   gSrcO = SetupsUse() == SET_GRID ? gLeg == 1 : SetupsUse() != SET_VWAP;
    ResetEngine();
    if(ArraySize(labSeq) == 0) LabReset();               // the Labouchere list is kept with the other recovery states when inputs change
    // restart memory: on a fresh start (MT5 or the EA restarted) continue from the saved state; switched off: forget it
@@ -4012,7 +4013,7 @@ bool gGridOn = false;
 
 int OnInit()
 {
-   gGridOn = InpSetups == SET_GRID;
+   gGridOn = SetupsUse() == SET_GRID;
    gEA0.gLeg = 0; gEA1.gLeg = 1;
    if(gGridOn && AccountInfoInteger(ACCOUNT_LOGIN) != 0 && (ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE) != ACCOUNT_MARGIN_MODE_RETAIL_HEDGING)
    {

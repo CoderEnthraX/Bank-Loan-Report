@@ -1654,6 +1654,8 @@ as in v6.0 (EA: VWAP retest leg = magic, Sniper leg = magic + 1, hedging account
   side of the VWAP, not more than 2.5 ATR away, with the rolling delta agreeing. Modes: Sniper / Aggression only / Absorption breakout.
 - **Entry**: at the signal close (market), or a limit at the bar's midpoint / the VWAP (waits for the Retest Window). **Stop**: beyond the
   absorption zone (or the last swing) + 0.15 ATR, kept between 0.3 and 4 ATR; or ATR / points / percent.
+- **Entry Price = Market** (ENTRY PRICE group) is for the VWAP retest setup only; the Sniper keeps its own entry. A **strategy preset**
+  trades the VWAP retest setup only, as it was tested (also in the v6.0 VWAP + order block files).
 - Not taken over from the indicator: its own session filter, score, dynamic targets and trade tracking (the strategy's filters, targets
   and trade management are used). The Sniper uses the strategy's VWAP (VWAP group).
 
@@ -1668,6 +1670,9 @@ as in v6.0 (EA: VWAP retest leg = magic, Sniper leg = magic + 1, hedging account
   - Market, midpoint and VWAP limit entries, the ATR stop and Aggression only all ran with 0 rejected orders, and every trade was booked.
 - The EA compiles with 0 errors and 0 warnings.
 - The strategy parses with 0 inline-title and 0 shadowing warnings (outside the Slot type); no name declared inside the slot loop is used after it.
+- An independent code review found no compile error; its two findings are fixed: a Sniper limit entry no longer turns into a market order when the
+  VWAP setup's Entry Price is Market (checked: the same 28 deals either way), and a preset trades the VWAP retest setup only (checked: the
+  true grid with a preset = VWAP only, 178 deals).
 
 ### Entry accuracy research (November 2026, no code change)
 

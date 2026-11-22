@@ -65,6 +65,10 @@ def ob_patch(s, only_ob):
                 'TblAdd(InpSetups == SET_GRID ? (gLeg == 0 ? "GRID LEG 1: VWAP" : "GRID LEG 2: ORDER BLOCK") : "AUCTION RETEST + ORDER BLOCK", "EA v6.0 | " + '
                 '(InpSetups == SET_VWAP ? "VWAP only" : InpSetups == SET_OB ? "order block only" : InpSetups == SET_ONE ? "both, one trade at a time" : "true grid, magic " + IntegerToString(InpMagic)) + '
                 '(gSrcO ? " | blocks " + ObTfText() : ""), white,')
+    if not only_ob:                                      # a strategy preset trades the VWAP setup only (as tested)
+        i = s.index(P.SETUPS_INPUT); j = s.index('\n', i) + 1
+        s = s[:j] + s[j:].replace('InpSetups', 'SetupsUse()')
+        s = s[:j] + 'ENUM_SETUPS SetupsUse() { return InpPreset == PRE_CUSTOM ? InpSetups : SET_VWAP; }   // a strategy preset trades the VWAP setup only\n' + s[j:]
     return s
 
 
@@ -82,7 +86,7 @@ def grid(s):
               'void CLeg::ChartEvt(const int id, const long &lparam, const double &dparam, const string &sparam)\n{\n'):
         w = rep(w, h, h + '   trade.SetExpertMagicNumber(gMagic);                  // v6.0: every order of this call is the leg\'s\n')
     i = w.rindex('//+------------------------------------------------------------------+')
-    return w[:i].rstrip() + '\n' + W.TAIL
+    return w[:i].rstrip() + '\n' + W.TAIL.replace('gGridOn = InpSetups == SET_GRID;', 'gGridOn = SetupsUse() == SET_GRID;')
 
 
 def main():

@@ -52,13 +52,13 @@ obShow    = input.bool(true, "Draw The Order Block Zones", group = GRP_OB)
 
 '''
 
-SETUP_INPUT = 'setupMode = input.string(S_ONE, "Setups", options = [S_VWAP, S_OB, S_ONE, S_GRID], group = GRP_OB, tooltip = "VWAP only: the Auction Retest setup. Order block only: the order block setup. Both, one trade at a time: whichever setup comes first is traded; a setup on the bar of a VWAP setup waits. Both, true grid: each setup has its own trade, loss recovery and money rules (on TradingView only in the same direction at one time: a strategy holds one net position; the EA trades both ways on a hedging account).")'
+SETUP_INPUT = 'setupIn = input.string(S_ONE, "Setups", options = [S_VWAP, S_OB, S_ONE, S_GRID], group = GRP_OB, tooltip = "VWAP only: the Auction Retest setup. Order block only: the order block setup. Both, one trade at a time: whichever setup comes first is traded; a setup on the bar of a VWAP setup waits. Both, true grid: each setup has its own trade, loss recovery and money rules (on TradingView only in the same direction at one time: a strategy holds one net position; the EA trades both ways on a hedging account). A strategy preset (STRATEGY PRESET) trades the VWAP retest setup only, as it was tested.")'
 SETUP_CONST = 'string setupMode = S_OB   // this strategy trades the order block setup only'
 
 OB_ENGINE = r'''// ── v6.0 order block engine (the EA's ObBar): higher-timeframe candles built from the chart's own candles; a block acts from the bar after
 // its candle closed; the first touch starts an episode: absorption (volume above the average, small body, long wick into the zone), then an
 // aggression candle = the signal (one per block); a close beyond the block's far side ends it ──
-var bool trMkt = false       // v6.0: the setup enters at market (order block)
+@@SETUPUSE@@var bool trMkt = false       // v6.0: the setup enters at market (order block)
 var int  trSrc = 0           // v6.0: the setup's source: 1 VWAP, 2 order block
 var int  curSlot = 0         // v6.0: the slot the engine and the execution run for (true grid: 0 VWAP, 1 order block)
 bool gridOn = setupMode == S_GRID
@@ -299,7 +299,7 @@ def base(only_ob):
     s = open(SRC, encoding='utf8').read()
     s = rep(s, 'GRP_M = "SIGNAL MODEL"\n', OB_INPUTS.replace('@@SETUP@@', SETUP_CONST if only_ob else SETUP_INPUT) + 'GRP_M = "SIGNAL MODEL"\n')
     s = rep(s, '// ── 1. manage the live trade: stop first, then the final target, else stop moves (from the next bar) ──\n',
-            OB_ENGINE + '// ── 1. manage the live trade: stop first, then the final target, else stop moves (from the next bar) ──\n')
+            OB_ENGINE.replace('@@SETUPUSE@@', '' if only_ob else 'string setupMode = PC ? setupIn : S_VWAP   // a strategy preset trades the VWAP setup only (as tested)\n') + '// ── 1. manage the live trade: stop first, then the final target, else stop moves (from the next bar) ──\n')
     s = rep(s, '    bool touched = entryMode == E_MARKET ? true :', '    bool touched = entryMode == E_MARKET or trMkt ? true :')
     s = rep(s, 'bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))\nif canArm and (bullDisp or bearDisp) and not keepArm\n',
             'bool keepArm = rearmMode == REARM_KEEP and ((st == 1 and bullDisp) or (st == -1 and bearDisp))\n'

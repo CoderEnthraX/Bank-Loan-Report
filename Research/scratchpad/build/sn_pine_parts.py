@@ -8,7 +8,7 @@ S_VWAP = "VWAP retest only"
 S_SN   = "Sniper only"
 S_ONE  = "Both: one trade at a time"
 S_GRID = "Both: true grid (same direction)"
-setupMode  = input.string(S_ONE, "Setups", options = [S_VWAP, S_SN, S_ONE, S_GRID], group = GRP_SN, tooltip = "VWAP retest only: the Auction Retest setup. Sniper only: the VWAP Orderflow Sniper setup. Both, one trade at a time: whichever setup comes first is traded; a Sniper signal on the bar of a VWAP setup waits. Both, true grid: each setup has its own trade, loss recovery and money rules (on TradingView only in the same direction at one time: a strategy holds one net position; the EA trades both ways on a hedging account).")
+setupIn    = input.string(S_ONE, "Setups", options = [S_VWAP, S_SN, S_ONE, S_GRID], group = GRP_SN, tooltip = "VWAP retest only: the Auction Retest setup. Sniper only: the VWAP Orderflow Sniper setup. Both, one trade at a time: whichever setup comes first is traded; a Sniper signal on the bar of a VWAP setup waits. Both, true grid: each setup has its own trade, loss recovery and money rules (on TradingView only in the same direction at one time: a strategy holds one net position; the EA trades both ways on a hedging account). A strategy preset (STRATEGY PRESET) trades the VWAP retest setup only, as it was tested.")
 snAggRatio = input.float(2.2, "Aggression Ratio", minval = 1.0, step = 0.1, group = GRP_SN, tooltip = "Aggressive buy volume / aggressive sell volume (or the reverse) a candle needs to count as AGGRESSION.")
 snAbsSens  = input.float(1.2, "Absorption Sensitivity (relative volume)", minval = 0.1, step = 0.1, group = GRP_SN, tooltip = "Volume / its average a candle needs before it can count as ABSORPTION (high effort, low result).")
 DS_LTF = "Intrabar (lower timeframe)"
@@ -70,6 +70,7 @@ snShowZone = input.bool(true, "Draw The Absorption Zones", group = GRP_SN)
 ENGINE = r'''// ── v6.1 VWAP Orderflow Sniper (the EA's SnBar): the buy / sell volume of each candle, absorption (heavy volume that fails to move the
 // price: rejection wick, delta against the candle, churn at an extreme, delta divergence) arms a setup near the VWAP / band #1; the next
 // aggressive candle (one side >= the ratio x the other, full body, volume) on the right side of the VWAP is the signal ──
+string setupMode = PC ? setupIn : S_VWAP   // a strategy preset trades the VWAP retest setup only (as tested)
 var bool trMkt = false       // v6.0: the setup enters at market
 var int  trSrc = 0           // v6.0: the setup's source: 1 VWAP retest, 2 Sniper
 var int  curSlot = 0         // v6.0: the slot the engine and the execution run for (true grid: 0 VWAP retest, 1 Sniper)

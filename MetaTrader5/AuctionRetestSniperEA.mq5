@@ -249,7 +249,7 @@ enum ENUM_SN_STOP { SNS_STRUCT = 0, // Absorption / swing
                     SNS_PCT    = 3 };// Percent
 
 input group "SETUPS AND VWAP ORDERFLOW SNIPER"
-input ENUM_SETUPS InpSetups    = SET_ONE;      // Setups to trade
+input ENUM_SETUPS InpSetups    = SET_ONE;      // Setups to trade (a strategy preset: VWAP retest only, as tested)
 input double InpSnAggRatio  = 2.2;     // Sniper: aggression ratio (one side x the other)
 input double InpSnAbsSens   = 1.2;     // Sniper: absorption sensitivity (relative volume)
 input ENUM_SN_DS InpSnDelta = SNDS_LTF; // Sniper: delta source (intrabar: lower-timeframe candles; candle estimate below 2 of them)
@@ -285,6 +285,7 @@ input int    InpSnSwingLen  = 5;       //   ...swing lookback (bars, 1 - 200)
 input double InpSnMinRisk   = 0.3;     //   ...structure risk min (ATR)
 input double InpSnMaxRisk   = 4.0;     //   ...structure risk max (ATR)
 input bool   InpSnShowZone  = true;    // Sniper: draw the absorption zones
+ENUM_SETUPS SetupsUse() { return InpPreset == PRE_CUSTOM ? InpSetups : SET_VWAP; }   // a strategy preset trades the VWAP retest setup only
 
 input group "SIGNAL MODEL (same as the indicator)"
 input int    InpStructLen    = 10;    // Structure lookback (bars)
@@ -1987,7 +1988,7 @@ void CLeg::ProcessBar(int s)
    {
       bool isL = st == 1;
       double mt = TickSize();
-      bool touched = gpEntryMode == ENTRY_MARKET || trMkt ? true : (isL ? l <= lim + mt * 0.001 : h >= lim - mt * 0.001);
+      bool touched = (trSrc != 2 && gpEntryMode == ENTRY_MARKET) || trMkt ? true : (isL ? l <= lim + mt * 0.001 : h >= lim - mt * 0.001);
       if(touched && dayFills < gpMaxFills)
       {
          st = isL ? 2 : -2; fillBar = bi; lastFill = bi; lastDir = isL ? 1 : -1; tpHit = 0; trTrig = 0; dayFills++;
@@ -2800,7 +2801,7 @@ bool CLeg::HgMarket(double v)                                // both trades at m
 }
 bool CLeg::PlaceHedge(bool isL, double v)                    // the pair's orders: a limit in the signal's direction and a stop the other way, both at the entry level
 {
-   if(gpEntryMode == ENTRY_MARKET || trMkt) return HgMarket(v);
+   if((trSrc != 2 && gpEntryMode == ENTRY_MARKET) || trMkt) return HgMarket(v);
    double ask = SymbolInfoDouble(_Symbol, SYMBOL_ASK), bid = SymbolInfoDouble(_Symbol, SYMBOL_BID), gap = MathMax(MinDist(), TickSize());
    double pB = EntryPx(true), pS = EntryPx(false);       // the buy and the sell trigger when the bid reaches the entry level
    double slB, tpB, slS, tpS; HgLevels(true, slB, tpB); HgLevels(false, slS, tpS);
@@ -3083,7 +3084,7 @@ void CLeg::UpdateTable()
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
    string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd(InpSetups == SET_GRID ? (gLeg == 0 ? "GRID LEG 1: VWAP RETEST" : "GRID LEG 2: SNIPER") : "AUCTION RETEST + SNIPER", "EA v6.1 | " + (InpSetups == SET_VWAP ? "VWAP retest only" : InpSetups == SET_SN ? "Sniper only" : InpSetups == SET_ONE ? "both, one trade at a time" : "true grid, magic " + IntegerToString(gMagic)), white, C'61,143,214');
+   TblAdd(SetupsUse() == SET_GRID ? (gLeg == 0 ? "GRID LEG 1: VWAP RETEST" : "GRID LEG 2: SNIPER") : "AUCTION RETEST + SNIPER", "EA v6.1 | " + (SetupsUse() == SET_VWAP ? "VWAP retest only" : SetupsUse() == SET_SN ? "Sniper only" : SetupsUse() == SET_ONE ? "both, one trade at a time" : "true grid, magic " + IntegerToString(gMagic)), white, C'61,143,214');
    if(InpPreset != PRE_CUSTOM) TblAdd("PRESET", PresetName() + (gpTfOk ? "" : " | needs an " + TfName(gpTf) + " chart") + (InpAddMine ? " | + my filters" : ""), gpTfOk ? posC : negC, cell);
    TblAdd("STATE", gStateTxt + (has && trSrc == 2 ? " (Sniper)" : has && trSrc == 1 && gSrcO ? " (VWAP retest)" : ""), white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
@@ -3172,7 +3173,7 @@ void CLeg::TakeSetup(bool isL, bool newsBlk, bool flatNow)
    double minD = MinDist();
    bool ok, past = false;
    if(hg) ok = PlaceHedge(isL, v);
-   else if(gpEntryMode == ENTRY_MARKET || trMkt)        // v6.1: a Sniper setup at its signal close enters at market
+   else if((trSrc != 2 && gpEntryMode == ENTRY_MARKET) || trMkt)        // v6.1: a Sniper setup at its signal close enters at market
    {
       past = !OrderExits(isL, ep, true, sl, tp);
       ok = !past && (isL ? trade.Buy(v, _Symbol, 0, sl, tp, "ARM") : trade.Sell(v, _Symbol, 0, sl, tp, "ARM"));
@@ -3808,8 +3809,8 @@ int CLeg::Init()
    trade.SetDeviationInPoints(50);
    trade.SetTypeFillingBySymbol(_Symbol);
    PresetApply();                                        // v4.8: the preset's values (or the inputs) before anything uses them
-   gSrcV = InpSetups == SET_GRID ? gLeg == 0 : InpSetups != SET_SN;   // v6.1: the setups this engine arms
-   gSrcO = InpSetups == SET_GRID ? gLeg == 1 : InpSetups != SET_VWAP;
+   gSrcV = SetupsUse() == SET_GRID ? gLeg == 0 : SetupsUse() != SET_SN;   // v6.1: the setups this engine arms
+   gSrcO = SetupsUse() == SET_GRID ? gLeg == 1 : SetupsUse() != SET_VWAP;
    ResetEngine();
    if(ArraySize(labSeq) == 0) LabReset();               // the Labouchere list is kept with the other recovery states when inputs change
    // restart memory: on a fresh start (MT5 or the EA restarted) continue from the saved state; switched off: forget it
@@ -4041,7 +4042,7 @@ bool gGridOn = false;
 
 int OnInit()
 {
-   gGridOn = InpSetups == SET_GRID;
+   gGridOn = SetupsUse() == SET_GRID;
    gEA0.gLeg = 0; gEA1.gLeg = 1;
    if(gGridOn && AccountInfoInteger(ACCOUNT_LOGIN) != 0 && (ENUM_ACCOUNT_MARGIN_MODE)AccountInfoInteger(ACCOUNT_MARGIN_MODE) != ACCOUNT_MARGIN_MODE_RETAIL_HEDGING)
    {
