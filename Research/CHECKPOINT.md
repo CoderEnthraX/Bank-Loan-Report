@@ -1,7 +1,7 @@
 # Research checkpoint: Auction Retest project
 
 **Read this first when resuming.** It records what has been built, where every file is, how to rebuild the working
-environment, and what was decided. Last updated 2026-11-19 (session `21ed2550`, Auction Retest v5.4, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
+environment, and what was decided. Last updated 2026-11-22 (session `21ed2550`, Auction Retest v5.4 + v6.0 order block / grid files, Fractal Grid v3.2 / EA v1.1). No task is in progress: everything asked
 so far has been delivered.
 
 ## 1. Resume in one step
@@ -1314,6 +1314,21 @@ Other gold findings:
     `ob_xlsx.py` -> `Research/deliverables/Gold_2026_OrderBlock_Absorption_Test.xlsx` (0 errors). Pairs M1/M3, M1/M5, M5/M15, M5/M30, M5/H1,
     M15/H1, M15/H4, with and without the user's filters. Negative net R at every target for M1 and M5 entries; M15/H4 positive (+0.09R at 1R,
     75 trades; +0.20R with filters, 36 trades) - too few trades to trust.
+
+59. **v6.0: order block strategy / EA and VWAP + order block grid (asked 2026-11-21; TradingView grid: same direction only).** New files only,
+    v5.4 unchanged: `TradingView/OrderBlock_Strategy.pine`, `TradingView/Auction_Retest_OB_Strategy.pine` (+ `.txt` copies in
+    `Research/scratchpad/`), `MetaTrader5/OrderBlockEA.mq5`, `MetaTrader5/AuctionRetestGridEA.mq5`. Build: `python3 -I build/build_ob_ea.py`
+    (from `build/safe/AuctionRetestEA.mq5` v5.40 + `build/ob_ea_parts.py`; the grid EA = `build/classwrap.py`: the whole EA as class CLeg,
+    globals -> members (inits in the constructor), functions -> methods, two legs: magic / magic + 1, objects ARM_ / ARN_, table on the other
+    side) and `python3 -I build/build_ob_pine.py` (from `TradingView/Auction_Retest_Strategy.pine` v5.4; `build/grid_pine.py`: the per-slot
+    engine + stats + markings + execution in `for slot = 0 to (gridOn ? 1 : 0)`, slot 1's state in the UDT `sb` exchanged around its pass,
+    entries L2 / S2, exits Y1 - Y4, closed trades / positions split by entry id, `f_net()` = the slot's closed profit, `oppSkip` = same
+    direction only; pyramiding 2, close_entries_rule ANY). Order block engine = `ob/ob_stream.py` (bar by bar; identical to `ob_test.py` on
+    all 7 pairs, 14,962 trades). Checks (`obt/`): `prep.py` (M5 volumes + Python signals), `mk.py` (OBSIG log), `build_v.sh` / `build_g.sh` /
+    `build_gr.sh` (simulator with real tick volumes; class EA; class EA with restarts), `runall.sh`, `cmp.py`: EA = Python 428/428 signals;
+    grid EA VWAP only = v5.40 (364 deals), OB only = OrderBlockEA (178), grid legs = the two EAs, one at a time max 1 position, 30 restarts
+    identical, 0 rejects, all booked. The data's server clock = Europe/Athens (EU summer time), so the Pine default for the H4 candles is
+    that clock. Pine: `pinecheck/loop_audit.py` (no loop-local name used after the loop, no history refs in the loop).
 
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 

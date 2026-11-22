@@ -1577,6 +1577,60 @@ and other settings, every hard-cap choice): 4,480 runs, 5.1 M trades, 0 differen
 Broker simulator: every rule booked every trade, 0 rejected orders, restarts identical, defaults identical to v5.3. The EA compiles with
 0 errors and 0 warnings (all saved values have unique names); the strategy parses with 0 warnings, 12 new inputs, no title changed.
 
+### v6.0: Order block setup, and VWAP + order block together (new files: strategy and EA)
+
+Four new files; the Auction Retest files (v5.4) are not changed.
+
+| File | What it trades |
+|---|---|
+| `TradingView/OrderBlock_Strategy.pine` (`.txt` copy) | the order block setup only |
+| `MetaTrader5/OrderBlockEA.mq5` | the order block setup only |
+| `TradingView/Auction_Retest_OB_Strategy.pine` (`.txt` copy) | **Setups**: VWAP only / order block only / both, one trade at a time / both, true grid |
+| `MetaTrader5/AuctionRetestGridEA.mq5` | the same **Setups** choice |
+
+Every other setting is the v5.4 one and works the same for both setups: targets TP1 - TP4 and the final exit, stop moves, BE and
+salvage triggers, days / hours / kill zones, news windows and force-close, partial profits, position size, loss recovery (all rules),
+money rules, streak stops, monthly lock and restart, restart memory (EA).
+
+**The order block setup** (new group **SETUPS AND ORDER BLOCK**):
+- **Order block**: on a higher timeframe (Auto: M1 chart -> M3 + M5, M5 -> M15 + M30 + H1, M15 -> H1 + H4; or up to three of M3 - H4),
+  the last opposite candle before a move that leaves a fair value gap (candles k-2 and k do not overlap) within 3 candles and closes
+  beyond the candle. Its zone (high to low) counts from the close of that move. The higher-timeframe candles are built from the chart's
+  own candles, so the history and the live chart give the same blocks.
+- **Episode**: the first touch of the zone starts it; it lasts 30 candles. A close beyond the far side of the zone ends the block. A block
+  waits at most 20 days for its first touch. One trade per block.
+- **Absorption**: a candle in the zone with volume above the average of the last 20 candles, a body under 40% of its range and a wick into
+  the zone of at least 50%.
+- **Aggression**: a later candle in the trade's direction with a body of at least 55% of its range. **Entry at market** at its close (the
+  next candle's open).
+- **Stop**: 1 tick beyond the aggression candle, or beyond the last swing (pivot 2 / 2); at least 5 ticks. Targets are R multiples of it.
+- The filters are the usual ones (kill zones, hours, days, news); they decide whether a signal is traded.
+
+**Setups**:
+- **One trade at a time**: whichever setup comes first is traded; while a trade is open no other one is taken. A signal of the other
+  setup replaces a setup that has not filled yet; on the same candle the VWAP setup comes first.
+- **True grid, EA** (hedging account): two complete copies of the EA in one file. The VWAP leg uses the magic number, the order block leg
+  magic + 1. Each leg has its own trade, loss recovery, money rules, streaks, locks, restart memory and table (the order block leg's table
+  is on the other side of the chart). Both can be in trades at once, in either direction. On a netting account the grid does not start.
+- **True grid, TradingView**: a strategy holds one net position, so both setups can be open together only in the **same direction**; a
+  setup against the other one's open trade or working entry is skipped ("opposite to the other setup's trade"). Each setup has its own
+  loss recovery and money rules (slot 1 = VWAP, slot 2 = order block, entries L / S and L2 / S2). The table adds an ORDER BLOCK SLOT row.
+- **Higher-timeframe candles in** (TradingView only): the broker's clock for H4 candles. Default: EU summer time (FxPro: UTC+2, UTC+3 from
+  the last Sunday of March to the last Sunday of October). The EA always uses the broker's own clock.
+
+**Checks:**
+- The bar-by-bar order block engine (`ob/ob_stream.py`) gives exactly the November study's trades on all 7 timeframe pairs (14,962 trades).
+- The EA's order block signals match it on M5 gold, June - October 2026: 428 of 428 signals, same bar, direction, entry and both stops.
+- Broker simulator, June - October 2026:
+  - The grid EA in "VWAP only" trades exactly like the v5.4 EA (364 of 364 deals).
+  - In "Order block only" it trades exactly like OrderBlockEA (178 of 178 deals).
+  - In the true grid, magic 240611 trades exactly like the v5.4 EA and magic 240612 exactly like OrderBlockEA, with up to 2 positions open.
+  - One trade at a time never has 2 positions open.
+  - With a restart every 15,000 ticks (30 restarts) the trades are the same.
+  - No order was rejected, and every trade was booked.
+- Both EAs compile with 0 errors and 0 warnings.
+@@PINECHECK@@
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.
