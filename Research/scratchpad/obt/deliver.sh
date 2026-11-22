@@ -12,3 +12,10 @@ cp $S/ob/ob_stream.py $R/Research/scratchpad/ob/
 cp $S/obt/prep.py $S/obt/mk.py $S/obt/build_v.sh $S/obt/build_g.sh $S/obt/build_gr.sh $S/obt/runall.sh $S/obt/cmp.py $S/obt/pine_mirror.py $S/obt/deliver.sh $R/Research/scratchpad/obt/
 cp $S/pinecheck/loop_audit.py $R/Research/scratchpad/pinecheck/
 echo delivered
+# v6.1 Sniper files
+cp $S/build/out/Auction_Retest_Sniper_Strategy.pine $R/TradingView/
+cp $S/build/out/Auction_Retest_Sniper_Strategy.pine $R/Research/scratchpad/Auction_Retest_Sniper_Strategy.txt
+cp $S/build/out/AuctionRetestSniperEA.mq5 $R/MetaTrader5/
+cp $S/build/sn_pine_parts.py $S/build/build_sn_pine.py $S/build/sn_ea_parts.py $S/build/build_sn_ea.py $R/Research/scratchpad/build/
+cp $S/obt/build_s.sh $S/obt/build_sr.sh $S/obt/sn_mirror.py $R/Research/scratchpad/obt/
+echo delivered v6.1

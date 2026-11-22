@@ -1634,6 +1634,41 @@ money rules, streak stops, monthly lock and restart, restart memory (EA).
 - Grid file: no name declared inside the slot loop is used after it, and there are no history references inside the loop.
 - About 815 global variables (limit 1,000). An independent code review found no compile error and no trade-changing bug; its one finding (a too-strict same-direction check on the bar where the other slot's trade closes) is fixed.
 
+### v6.1: Auction Retest + VWAP Orderflow Sniper (new files: strategy and EA)
+
+| File | What it trades |
+|---|---|
+| `TradingView/Auction_Retest_Sniper_Strategy.pine` (`.txt` copy) | **Setups**: VWAP retest only / Sniper only / both, one trade at a time / both, true grid |
+| `MetaTrader5/AuctionRetestSniperEA.mq5` | the same **Setups** choice |
+
+Every v5.4 setting works for both setups (targets TP1 - TP4 and the final exit, stop moves, BE / salvage, days / hours / kill zones, news,
+force-close, partials, position size, all loss recovery and money rules, locks, restart memory). One trade at a time and the true grid work
+as in v6.0 (EA: VWAP retest leg = magic, Sniper leg = magic + 1, hedging account; TradingView: same direction only).
+
+**The Sniper setup** (group **SETUPS AND VWAP ORDERFLOW SNIPER**, the signal logic of the VWAP Orderflow Sniper indicator):
+- **Buy / sell volume** of each candle from its lower-timeframe candles (auto: M1 up to H1 charts, M5 up to H4, M15 on D1; up candle =
+  buying, down = selling, unchanged = by the previous close), or the candle estimate (volume x (close - low) / range) below 2 intrabars.
+- **Absorption** (heavy volume that fails to move the price: rejection wick, delta against the candle, churn at a local extreme, delta
+  divergence) near the strategy's VWAP or band #1 arms a setup for 10 bars; a close back through the VWAP zone or the absorption zone ends it.
+- **Signal**: an aggressive candle (one side >= 2.2 x the other, body >= 50%, volume >= its average) in the setup's direction, on the right
+  side of the VWAP, not more than 2.5 ATR away, with the rolling delta agreeing. Modes: Sniper / Aggression only / Absorption breakout.
+- **Entry**: at the signal close (market), or a limit at the bar's midpoint / the VWAP (waits for the Retest Window). **Stop**: beyond the
+  absorption zone (or the last swing) + 0.15 ATR, kept between 0.3 and 4 ATR; or ATR / points / percent.
+- Not taken over from the indicator: its own session filter, score, dynamic targets and trade tracking (the strategy's filters, targets
+  and trade management are used). The Sniper uses the strategy's VWAP (VWAP group).
+
+**Checks:**
+- A line-by-line Python copy of the Pine Sniper code gives the EA's signals on M5 gold, June - October 2026, with M1 intrabars: 149 of 149,
+  same bar, direction, entry and stop.
+- Broker simulator:
+  - "VWAP retest only" trades exactly like the v5.4 EA (364 of 364 deals).
+  - In the true grid, leg 1 trades exactly like "VWAP retest only" and leg 2 exactly like "Sniper only", with up to 2 positions open.
+  - One trade at a time never has 2 positions open.
+  - Grid and one at a time give the same trades with 30 restarts.
+  - Market, midpoint and VWAP limit entries, the ATR stop and Aggression only all ran with 0 rejected orders, and every trade was booked.
+- The EA compiles with 0 errors and 0 warnings.
+- The strategy parses with 0 inline-title and 0 shadowing warnings (outside the Slot type); no name declared inside the slot loop is used after it.
+
 ### Entry accuracy research (November 2026, no code change)
 
 Full results: `Research/deliverables/Gold_Entry_Accuracy_Research.xlsx`. The data was FxPro gold, 1-minute bars from 2021 to October 2026.

@@ -1330,6 +1330,14 @@ Other gold findings:
     identical, 0 rejects, all booked. The data's server clock = Europe/Athens (EU summer time), so the Pine default for the H4 candles is
     that clock. Pine: `pinecheck/loop_audit.py` (no loop-local name used after the loop, no history refs in the loop).
 
+60. **v6.1: Auction Retest + VWAP Orderflow Sniper strategy / EA (asked 2026-11-22: "drop the OB, add the Sniper").** New files:
+    `TradingView/Auction_Retest_Sniper_Strategy.pine` (+ `.txt`), `MetaTrader5/AuctionRetestSniperEA.mq5`; the v6.0 OB files are kept.
+    Build: `build/build_sn_pine.py` (`sn_pine_parts.py` + `grid_pine.py`), `build/build_sn_ea.py` (`sn_ea_parts.py` + `classwrap.py`).
+    The Sniper = the signal logic of `Research/scratchpad/VWAP_Orderflow_Sniper.txt` on the strategy's VWAP, with its entry / stop and the
+    strategy's targets and money management. Checks (`obt/`): `build_s.sh` (simulator with PERIOD_M1 series = its M1 bars + M1 / M5 volumes,
+    `vol_m1.txt` / `vol_m5.txt`), `sn_mirror.py` (Python copy of the Pine engine on the EA's VWAP: 149 / 149 signals), runs `q_*.log`:
+    VWAP only = v5.40 (364 deals), grid legs = single modes, 30 restarts identical, 0 rejects, all booked.
+
 ## 5. Gold pipeline: scripts in order (`$S/gold`)
 
 | Step | Command | Output | Time, 4 free cores |
