@@ -55,6 +55,27 @@ def patch(s):
     s = s.replace('gpEntryMode == ENTRY_MARKET || trMkt', '(trSrc != 2 && gpEntryMode == ENTRY_MARKET) || trMkt')   # Entry = Market is for the VWAP setup
     i = s.index('ENUM_SETUPS SetupsUse()'); j = s.index('\n', i)
     s = s[:j] + s[j:].replace('InpSetups', 'SetupsUse()')
+    # v6.2 recovery rule: 0.01 lot after a loss, base after a win (the loss is not won back)
+    s = rep(s, '   REC_C5    = 40  // Combo 5: profit-paid recovery + brake\n};', '   REC_C5    = 40, // Combo 5: profit-paid recovery + brake\n   REC_PZ    = 41  // 0.01 lot after a loss, base after a win\n};')
+    i = s.index('bool     crkW = false;'); j = s.index('\n', i) + 1
+    s = s[:j] + 'bool     pzLoss = false;                                 // v6.2 0.01 lot after a loss: the last closed trade lost (the small lot until a win)\n' + s[j:]
+    s = rep(s, '   crkSkip = false; crkSkipLeft = 0; s1326 = 0; mmLossRow = 0; mmCoolLeft = 0;\n}', '   crkSkip = false; crkSkipLeft = 0; s1326 = 0; mmLossRow = 0; mmCoolLeft = 0; pzLoss = false;\n}')
+    s = rep(s, '      default:        r = base;\n', '      case REC_PZ:    r = pzLoss && minRisk > 0 ? MathMin(base, minRisk) : base; break;   // v6.2: the small lot after a loss, the base after a win\n      default:        r = base;\n')
+    s = rep(s, '         s1326 = 0; mmLossRow = 0; mmCoolLeft = 0;   // v5.4\n', '         s1326 = 0; mmLossRow = 0; mmCoolLeft = 0; pzLoss = false;   // v5.4, v6.2\n')
+    i = s.index('   crkW = exHg ? gLastOutProfit > 0 : win;'); j = s.index('\n', i) + 1
+    s = s[:j] + '   pzLoss = !win;                                     // v6.2: a loss -> the small lot until a win\n' + s[j:]
+    s = rep(s, '   mmRn = 0; mmEn = 0; s1326 = 0; mmLossRow = 0; mmCoolLeft = 0; gRisk = 0; exRisk0 = 0;', '   mmRn = 0; mmEn = 0; s1326 = 0; mmLossRow = 0; mmCoolLeft = 0; gRisk = 0; exRisk0 = 0; pzLoss = false;')
+    s = rep(s, 'IoB("kw", crkW);', 'IoB("kw", crkW); IoB("zp", pzLoss);')
+    s = rep(s, '   double minR = (InpRec == REC_CRE ||', '   double minR = (InpRec == REC_PZ || InpRec == REC_CRE ||')
+    s = rep(s, '   if((InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || InpRec == REC_CRX) && InpCrkELot <= 0) { Print("Crooks E / I / K / L / X: the lot',
+            '   if((InpRec == REC_PZ || InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || InpRec == REC_CRX) && InpCrkELot <= 0) { Print("0.01 lot after a loss / Crooks E / I / K / L / X: the lot')
+    s = rep(s, '   string rec = InpRec == REC_OFF ? "off" : (', '   string rec = InpRec == REC_OFF ? "off" : InpRec == REC_PZ ? (pzLoss ? DoubleToString(InpCrkELot, 2) + " lot until a win" : "base") : (')
+    s = rep(s, 'input double InpCrkELot  = 0.01;   // Crooks E / I / K / L / X: lot of the trades while a loss waits for a win (the normal size if smaller)',
+            'input double InpCrkELot  = 0.01;   // Crooks E / I / K / L / X and "0.01 lot after a loss": lot of the trades while a loss waits for a win (the normal size if smaller)')
+    s = rep(s, '#property version   "6.10"', '#property version   "6.20"')
+    s = rep(s, '"EA v6.1 | "', '"EA v6.2 | "')
+    h0 = '//| true grid (hedging account: each setup its own trade, money      |\n//| management and magic number; Sniper = magic + 1).                |\n'
+    s = rep(s, h0, h0 + '//| v6.2: loss recovery "0.01 lot after a loss, base after a win":   |\n//| the base trade; after a loss the small lot until a trade wins.   |\n')
     return s
 
 

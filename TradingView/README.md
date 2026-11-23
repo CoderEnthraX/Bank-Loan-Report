@@ -1674,6 +1674,19 @@ as in v6.0 (EA: VWAP retest leg = magic, Sniper leg = magic + 1, hedging account
   VWAP setup's Entry Price is Market (checked: the same 28 deals either way), and a preset trades the VWAP retest setup only (checked: the
   true grid with a preset = VWAP only, 178 deals).
 
+### v6.2: loss recovery "0.01 lot after a loss, base after a win" (Auction Retest + Sniper files only)
+
+New choice in **Loss Recovery** (EA: "Loss recovery") of `Auction_Retest_Sniper_Strategy` and `AuctionRetestSniperEA`:
+- Every trade uses the base size. After a losing trade the next trades use the **Lot While Waiting For A Win** (default 0.01).
+- After a win, the size goes back to the base. The loss is not won back.
+- A win is a trade that closes with a profit after the costs.
+- The monthly restart and the hard cap's Start again go back to the base.
+- In the true grid each setup has its own state.
+- Checks:
+  - Broker simulator: every one of 191 trades had the expected lot (0.01 after each of the 66 losses, else the base lot), 0 rejects, all booked.
+  - 30 restarts gave identical trades; both grid legs follow their own losses.
+  - The EA compiles with 0 errors and 0 warnings; the strategy parses with 0 warnings.
+
 ### Sniper accuracy research (November 2026, no code change)
 
 `Research/deliverables/Gold_Sniper_Accuracy_Research_2021_2026.xlsx`: can the VWAP Orderflow Sniper be made more accurate on gold

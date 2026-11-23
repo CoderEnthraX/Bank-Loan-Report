@@ -98,9 +98,11 @@
 //| SETUPS: VWAP retest / Sniper / both one trade at a time / both   |
 //| true grid (hedging account: each setup its own trade, money      |
 //| management and magic number; Sniper = magic + 1).                |
+//| v6.2: loss recovery "0.01 lot after a loss, base after a win":   |
+//| the base trade; after a loss the small lot until a trade wins.   |
 //+------------------------------------------------------------------+
 #property copyright "Auction Retest Model"
-#property version   "6.10"
+#property version   "6.20"
 #property description "VWAP retest and VWAP Orderflow Sniper EA: one trade at a time, or the true grid (each setup its own trade and magic, hedging account)."
 
 #include <Trade/Trade.mqh>
@@ -176,7 +178,8 @@ enum ENUM_REC {
    REC_C2    = 37, // Combo 2: 1-3-2-6 up / small lot down
    REC_C3    = 38, // Combo 3: % of equity + equity-curve filter
    REC_C4    = 39, // Combo 4: Kelly + brake
-   REC_C5    = 40  // Combo 5: profit-paid recovery + brake
+   REC_C5    = 40, // Combo 5: profit-paid recovery + brake
+   REC_PZ    = 41  // 0.01 lot after a loss, base after a win
 };
 enum ENUM_CRK_PR { CPR_OFF    = 0,   // Off (Crooks C as now)
                    CPR_FORGET = 1,   // Forget the loss
@@ -521,7 +524,7 @@ input double InpCrkHgSl  = 1.0;    //   ...hedge rule: stop loss of the buy and 
 input double InpCrkHgTp  = 0.6;    //   ...hedge rule: take profit of the buy and the sell (R: 0.6 = TP1)
 input ENUM_HG_UNIT InpCrkHgUnit = HGU_R; //   ...hedge rule: stop loss and take profit in R or in price
 input bool   InpCrkHgForget = true; //   ...hedge rule: forget the loss after the pair (off: Crooks C goes on from the trade that closed last)
-input double InpCrkELot  = 0.01;   // Crooks E / I / K / L / X: lot of the trades while a loss waits for a win (the normal size if smaller)
+input double InpCrkELot  = 0.01;   // Crooks E / I / K / L / X and "0.01 lot after a loss": lot of the trades while a loss waits for a win (the normal size if smaller)
 input double InpCrkFK    = 3.0;    // Crooks F / I: a recovery trade risks at most this many x the base risk
 input double InpCrkGX    = 10.0;   // Crooks G: the loss to win back is at most this many x the base risk (the rest is accepted)
 input double InpCrkHPct  = 1.0;    // Crooks H: a recovery trade risks at most this % of the equity
@@ -877,6 +880,7 @@ public:
    bool crkRec;   // Crooks: $ loss to win back, closed trades in the cycle, the open trade is a recovery trade
    double crkPk;   // v4.5 Crooks J: the highest closed profit so far (its drawdown = crkPk - totalNet)
    bool crkW;   // Crooks C: the last closed trade was a win
+   bool pzLoss;   // v6.2 0.01 lot after a loss: the last closed trade lost (the small lot until a win)
    int crkP;   // Crooks C over N wins: parts of the loss still to win back (0 = not set yet)
    int crkF;   // Crooks C rule: losing recovery trades in a row in this cycle
    bool crkWait;
@@ -1306,6 +1310,7 @@ CLeg::CLeg()
    crkRec = false;
    crkPk = 0;
    crkW = false;
+   pzLoss = false;
    crkP = 0;
    crkF = 0;
    crkWait = false;
@@ -2434,7 +2439,7 @@ string CLeg::PresetName()
 void CLeg::RecoveryRestart()                                // like the hard cap's Start again: the loss recovery starts again from the base risk
 {
    recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; CrkCycle(); crkW = false;
-   crkSkip = false; crkSkipLeft = 0; s1326 = 0; mmLossRow = 0; mmCoolLeft = 0;
+   crkSkip = false; crkSkipLeft = 0; s1326 = 0; mmLossRow = 0; mmCoolLeft = 0; pzLoss = false;
 }
 void CLeg::MonthRestart()                                   // v4.8: the monthly restart: the loss recovery, the profit ladder / Crooks J / Rule C split count from here, a hard-cap stop ends
 {
@@ -2628,6 +2633,7 @@ double CLeg::NextRisk(double exitR, bool canTake, double minRisk, double kRisk)
          if(InpRec >= REC_C1) r = MathMin(r, InpMmCap / 100.0 * eq);   // the combinations: never more than Cap % of the equity
          break;
       }
+      case REC_PZ:    r = pzLoss && minRisk > 0 ? MathMin(base, minRisk) : base; break;   // v6.2: the small lot after a loss, the base after a win
       default:        r = base;
    }
    double mul = CrkT1Mult();                       // the hard cap covers the real stop-out loss of a TP1-rule trade
@@ -2637,7 +2643,7 @@ double CLeg::NextRisk(double exitR, bool canTake, double minRisk, double kRisk)
       else if(InpCapAction == CAP_RESET)
       {
          recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; CrkCycle(); crkW = false;
-         s1326 = 0; mmLossRow = 0; mmCoolLeft = 0;   // v5.4
+         s1326 = 0; mmLossRow = 0; mmCoolLeft = 0; pzLoss = false;   // v5.4, v6.2
          r = MathMin(baseC, InpHardCap);
       }
       else r = InpHardCap / mul;
@@ -3083,8 +3089,8 @@ void CLeg::UpdateTable()
                  + (exState != 0 && exT1 ? (exT1Half ? " | TP1 booked, rest to TP2" : " | TP1 rule, stop " + DoubleToString(exT1Stop, _Digits)) : "")
                  + (!CrkPrOn() ? "" : CrkPause() ? " | paused, " + IntegerToString(crkSkipLeft) + " days left" : crkWait ? " | waiting for " + IntegerToString(InpCrkPrM) + " wins in a row (" + IntegerToString(crkWW) + ")" :
                     crkNeedL ? " | waiting for a loss, then a win" : crkHg ? " | hedge pair on the next signal" : crkF > 0 ? " | lost recoveries in a row " + IntegerToString(crkF) + "/" + IntegerToString(InpCrkPrN) : "");
-   string rec = InpRec == REC_OFF ? "off" : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
-   TblAdd(SetupsUse() == SET_GRID ? (gLeg == 0 ? "GRID LEG 1: VWAP RETEST" : "GRID LEG 2: SNIPER") : "AUCTION RETEST + SNIPER", "EA v6.1 | " + (SetupsUse() == SET_VWAP ? "VWAP retest only" : SetupsUse() == SET_SN ? "Sniper only" : SetupsUse() == SET_ONE ? "both, one trade at a time" : "true grid, magic " + IntegerToString(gMagic)), white, C'61,143,214');
+   string rec = InpRec == REC_OFF ? "off" : InpRec == REC_PZ ? (pzLoss ? DoubleToString(InpCrkELot, 2) + " lot until a win" : "base") : (isC ? DoubleToString(carried, 2) + " | split " + IntegerToString(InpCSplit) : isK ? kTxt : DoubleToString(recPool, 2) + " | " + IntegerToString(recLosses) + " losses in a row");
+   TblAdd(SetupsUse() == SET_GRID ? (gLeg == 0 ? "GRID LEG 1: VWAP RETEST" : "GRID LEG 2: SNIPER") : "AUCTION RETEST + SNIPER", "EA v6.2 | " + (SetupsUse() == SET_VWAP ? "VWAP retest only" : SetupsUse() == SET_SN ? "Sniper only" : SetupsUse() == SET_ONE ? "both, one trade at a time" : "true grid, magic " + IntegerToString(gMagic)), white, C'61,143,214');
    if(InpPreset != PRE_CUSTOM) TblAdd("PRESET", PresetName() + (gpTfOk ? "" : " | needs an " + TfName(gpTf) + " chart") + (InpAddMine ? " | + my filters" : ""), gpTfOk ? posC : negC, cell);
    TblAdd("STATE", gStateTxt + (has && trSrc == 2 ? " (Sniper)" : has && trSrc == 1 && gSrcO ? " (VWAP retest)" : ""), white, act ? (st == 2 ? C'76,175,80' : C'242,54,69') : (armed ? C'255,152,0' : C'93,96,107'));
    TblAdd("ENTRY / STOP", has ? DoubleToString(lim, _Digits) + " / " + DoubleToString(stp, _Digits) + (trHalf ? " (half stop)" : "") : "-", white, cell);
@@ -3138,7 +3144,7 @@ void CLeg::TakeSetup(bool isL, bool newsBlk, bool flatNow)
    bool crkPs = CrkPause();
    bool tfHold = TfHold();                           // v4.4: the chart shows another timeframe than the one the EA trades
    bool canTake = !(exState != 0 || posNow || newsBlk || flatNow || capStop || paused || dayBlock || crkPs || monStop || tfHold);   // the hard cap acts only on a signal that can be taken
-   double minR = (InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || InpRec == REC_CRX || InpRec == REC_KELLY || InpRec == REC_C2 || InpRec == REC_C4 || LadOn()) ? MinLotRisk(trRisk) : 0;   // v4.5 Crooks E / I, v4.6 ladder guard, v5.0 K / L: the 0.01 lot on this setup
+   double minR = (InpRec == REC_PZ || InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || InpRec == REC_CRX || InpRec == REC_KELLY || InpRec == REC_C2 || InpRec == REC_C4 || LadOn()) ? MinLotRisk(trRisk) : 0;   // v4.5 Crooks E / I, v4.6 ladder guard, v5.0 K / L: the 0.01 lot on this setup
    if(canTake && InpRec == REC_COOL && mmCoolLeft > 0) { mmCoolLeft--; skipN++; skipWhy = "cooling-off"; return; }   // v5.4: a signal skipped by the cooling-off
    double kR = InpRec == REC_CRK && InpCrkKMode == CKM_LOTS ? LotRisk(InpCrkKLots, trRisk) : 0;   // v5.0 Crooks K: the careful lots on this setup
    double rAmt = NextRisk(ExitR(), canTake, minR, kR);
@@ -3303,6 +3309,7 @@ void CLeg::BookClosed()
       }
    }
    crkW = exHg ? gLastOutProfit > 0 : win;             // hedge pair: the trade that closed last decides (a win -> the next trade is a recovery trade)
+   pzLoss = !win;                                     // v6.2: a loss -> the small lot until a win
    if(exRisk0 > 0) MmPushR(exPnl / exRisk0);           // v5.4: the trade's R, the closed profit after it, 1-3-2-6, Cooling-off
    MmPushEq(totalNet - gNet0); s1326 = win ? (s1326 + 1) % 4 : 0;
    if(win) mmLossRow = 0; else if(++mmLossRow >= MathMax(1, InpMmCoolL)) { mmCoolLeft = MathMax(0, InpMmCoolN); mmLossRow = 0; }
@@ -3508,7 +3515,7 @@ void CLeg::StateIO(bool save)
    // loss recovery (every rule's state, whichever rule is chosen), total profit (Step-up rule), the hard-cap stop
    IoD("rp", recPool); IoI("rl", recLosses); IoI("du", dUnits); IoD("ca", carried); IoI("pw", parWins); IoI("rd", rdUnits);
    IoI("ou", oscU); IoD("op", oscP); IoD("tn", totalNet); IoD("pk", crkPk); IoD("rn", gNet0); IoI("ew", exW); IoI("el", exLn); IoB("cs", capStop);
-   IoD("kl", crkL); IoD("kq", crkFx); MmIo(); IoI("kn", crkN); IoB("kw", crkW); IoI("kp", crkP); IoI("kf", crkF); IoB("ka", crkWait); IoI("kb", crkWW);
+   IoD("kl", crkL); IoD("kq", crkFx); MmIo(); IoI("kn", crkN); IoB("kw", crkW); IoB("zp", pzLoss); IoI("kp", crkP); IoI("kf", crkF); IoB("ka", crkWait); IoI("kb", crkWW);
    IoB("kc", crkNeedL); IoB("ks", crkSkip); IoI("kt", crkSkipLeft); IoI("ku", crkUDay); IoB("kh", crkHg); IoI("kx", gCrkPrPrev);
    // streaks and pauses; the month of the last bar (a new month while the EA was off) and a restart still waiting for a trade to close
    IoD("dp", dayPnl); IoI("lr", lossRow); IoI("wr", winRow); IoB("db", dayBlock); IoI("pl", pauseLeft); IoB("pa", paused);
@@ -3630,7 +3637,7 @@ void CLeg::MemoryFresh()
 {
    recPool = 0; recLosses = 0; dUnits = 1; carried = 0; LabReset(); parWins = 0; rdUnits = 1; oscU = 1; oscP = 0; totalNet = 0; crkPk = 0; gNet0 = 0; exW = 0; exLn = 0; capStop = false;
    crkL = 0; crkN = 0; crkW = false; crkP = 0; crkF = 0; crkWait = false; crkWW = 0; crkNeedL = false; crkSkip = false; crkSkipLeft = 0; crkHg = false; crkFx = 0;
-   mmRn = 0; mmEn = 0; s1326 = 0; mmLossRow = 0; mmCoolLeft = 0; gRisk = 0; exRisk0 = 0;
+   mmRn = 0; mmEn = 0; s1326 = 0; mmLossRow = 0; mmCoolLeft = 0; gRisk = 0; exRisk0 = 0; pzLoss = false;
    dayPnl = 0; lossRow = 0; winRow = 0; dayBlock = false; pauseLeft = 0; paused = false; monRestPend = false;
    TradeClear(); gDayPendN = 0; gRestFlat = false; gPauseArm = -1; gRestored = false;
 }
@@ -3891,7 +3898,7 @@ int CLeg::Init()
       InpMmDd1 <= 0 || InpMmDd2 < InpMmDd1 || InpMmCoolL < 1 || InpMmCoolN < 0 || InpMmCap <= 0 || InpMmC3Pct <= 0 || InpMmC5Share < 0))
    { Print("Money rules: Kelly fraction > 0, learn from 2 - 200 trades, at least 2 to start, average of 1 - 200 balances, reduced size 0 - 1, drawdown steps > 0 (the second not below the first), losses before cooling-off 1 or more, cap and % above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRX && (InpCrkXStep <= 0 || (InpCrkXLim == CXL_TRADE && InpCrkXLimUsd <= 0))) { Print("Crooks X: the step and the per-trade limit must be above 0."); return INIT_PARAMETERS_INCORRECT; }
-   if((InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || InpRec == REC_CRX) && InpCrkELot <= 0) { Print("Crooks E / I / K / L / X: the lot while waiting for a win must be above 0."); return INIT_PARAMETERS_INCORRECT; }
+   if((InpRec == REC_PZ || InpRec == REC_CRE || InpRec == REC_CRI || InpRec == REC_CRK || InpRec == REC_CRL || InpRec == REC_CRX) && InpCrkELot <= 0) { Print("0.01 lot after a loss / Crooks E / I / K / L / X: the lot while waiting for a win must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if((InpRec == REC_CRF || InpRec == REC_CRI) && InpCrkFK < 1) { Print("Crooks F / I: the recovery limit must be 1 x the base risk or more."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRG && InpCrkGX <= 0) { Print("Crooks G: the limit of the loss to win back must be above 0."); return INIT_PARAMETERS_INCORRECT; }
    if(InpRec == REC_CRH && InpCrkHPct <= 0) { Print("Crooks H: the % of the equity must be above 0."); return INIT_PARAMETERS_INCORRECT; }

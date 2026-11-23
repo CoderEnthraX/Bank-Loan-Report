@@ -37,10 +37,21 @@ def base():
     s = rep(s, 'pyramiding = 0,', 'pyramiding = 2, close_entries_rule = "ANY",')
     s = rep(s, 'f_row(mon, 1, "STATE", stTxt + exTxt, white)', 'f_row(mon, 1, "STATE", stTxt + exTxt + (st != 0 and not trGhost and setupMode == S_ONE ? (trSrc == 2 ? " (Sniper)" : " (VWAP retest)") : ""), white)')
     s = rep(s, '    table.cell(mon, 0, 0, "AUCTION RETEST",', '    table.cell(mon, 0, 0, setupMode == S_VWAP ? "AUCTION RETEST" : setupMode == S_SN ? "VWAP ORDERFLOW SNIPER" : gridOn ? "GRID: VWAP RETEST + SNIPER" : "VWAP RETEST + SNIPER",')
+    # v6.2 recovery rule: 0.01 lot after a loss, base after a win (the loss is not won back)
+    s = rep(s, 'L_C5    = "Combo 5: profit-paid recovery + brake"\n', 'L_C5    = "Combo 5: profit-paid recovery + brake"\nL_PZ    = "0.01 lot after a loss, base after a win"\n')
+    s = rep(s, 'L_C4, L_C5], group = GRP_L, tooltip = "', 'L_C4, L_C5, L_PZ], group = GRP_L, tooltip = "0.01 lot after a loss, base after a win: every trade the base; after a losing trade the lot of Lot While Waiting For A Win (0.01) until a trade wins, then the base again (the loss is not won back).\\n')
+    s = rep(s, 'tooltip = "Crooks E, I, L and X (and Crooks K below the start).', 'tooltip = "Crooks E, I, L and X (and Crooks K below the start), and 0.01 lot after a loss.')
+    s = rep(s, 'var bool  crkW      = false  // Crooks C: the last closed trade was a win\n', 'var bool  crkW      = false  // Crooks C: the last closed trade was a win\nvar bool  pzLoss    = false  // v6.2 0.01 lot after a loss: the last closed trade lost (the small lot until a win)\n')
+    s = rep(s, '    crkW   := win\n', '    crkW   := win\n    pzLoss := not win\n')
+    s = rep(s, '    capStop     := false\n', '    capStop     := false\n    pzLoss      := false\n')
+    s = rep(s, '            mmCoolLeft := 0\n            rUsd      := math.min(baseC, hardCap)\n', '            mmCoolLeft := 0\n            pzLoss    := false\n            rUsd      := math.min(baseC, hardCap)\n')
+    s = rep(s, 'crkCFam ? crkR : baseRisk + add', 'crkCFam ? crkR : recMode == L_PZ ? (pzLoss ? math.min(baseRisk, eRisk) : baseRisk) : baseRisk + add')
+    s = rep(s, 'recMode == L_OFF ? "off" : isC ?', 'recMode == L_OFF ? "off" : recMode == L_PZ ? (pzLoss ? str.tostring(crkELot) + " lot until a win" : "base") : isC ?')
     return s
 
 
 if __name__ == '__main__':
+    G.SLOT = G.SLOT + ['pzLoss']          # v6.2: each slot keeps its own state
     g = G.grid(base())
     g = rep(g, '"ORDER BLOCK SLOT"', '"SNIPER SLOT"')
     g = g.replace('// ── v6.0 true grid: slot 1 (order block) keeps', '// ── v6.1 true grid: slot 1 (Sniper) keeps').replace('1 = the order block setup (true grid)', '1 = the Sniper setup (true grid)')
